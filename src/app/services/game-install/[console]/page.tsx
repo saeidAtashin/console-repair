@@ -9,103 +9,11 @@ import {
   consoleIdFromGameInstallSlug,
 } from "../../../../lib/repair-links";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
+import { GAME_INSTALL_PRICE_DATA } from "@/lib/game-install-pricing";
 
 type Props = {
   params: Promise<{ console: string }>;
 };
-
-type PriceRange = {
-  min: number;
-  max: number;
-};
-
-const PRICE_DATA = {
-  accountCapacityInstallation: {
-    title: "نصب با اکانت ظرفیتی/اشتراکی",
-    notes:
-      "اکانت‌های ظرفیتی یا اشتراکی، امکان محدودیت آنلاین یا حذف دسترسی وجود دارد.",
-    items: [
-      {
-        label: "تک بازی",
-        priceRangeToman: { min: 1500000, max: 3500000 } satisfies PriceRange,
-      },
-      {
-        label: "پکیج 5 بازی",
-        priceRangeToman: { min: 5000000, max: 9000000 } satisfies PriceRange,
-      },
-      {
-        label: "پکیج 10 بازی",
-        priceRangeToman: { min: 3500000, max: 12000000 } satisfies PriceRange,
-      },
-    ],
-  },
-  economyPackagesRandomGames: {
-    title: "پکیج اقتصادی (بازی تصادفی)",
-    notes: "بازی‌ها انتخابی نیستند و به صورت تصادفی ارائه می‌شوند.",
-    items: [
-      {
-        label: "پکیج 10 بازی",
-        priceRangeToman: { min: 4000000, max: 5500000 } satisfies PriceRange,
-      },
-      {
-        label: "پکیج 20 بازی",
-        priceRangeToman: { min: 6000000, max: 9000000 } satisfies PriceRange,
-      },
-    ],
-  },
-  jailbreakOfflineInstallation: {
-    title: "نصب آفلاین روی کنسول کپی خور",
-    notes: "فقط روی کنسول‌های کپی خور (اغلب PS4)، بدون امکان آنلاین.",
-    items: [
-      {
-        label: "تک بازی",
-        priceRangeToman: { min: 250000, max: 350000 } satisfies PriceRange,
-      },
-      {
-        label: "پکیج بازی عمده",
-        priceRangeToman: { min: 3000000, max: 10000000 } satisfies PriceRange,
-      },
-    ],
-  },
-  xboxInstallation: {
-    title: "نصب بازی Xbox",
-    notes: "وابسته به اکانت Microsoft و امکان استفاده از Game Pass.",
-    items: [
-      {
-        label: "تک بازی",
-        priceRangeToman: { min: 1500000, max: 3000000 } satisfies PriceRange,
-      },
-      {
-        label: "پکیج 5 تا 10 بازی",
-        priceRangeToman: { min: 4000000, max: 10000000 } satisfies PriceRange,
-      },
-    ],
-  },
-  additionalServices: {
-    title: "خدمات جانبی",
-    items: [
-      {
-        label: "انتقال دیتا یا راه اندازی هارد اکسترنال",
-        priceRangeToman: { min: 300000, max: 800000 } satisfies PriceRange,
-      },
-      {
-        label: "راه اندازی و فعال سازی اکانت",
-        priceRangeToman: { min: 200000, max: 500000 } satisfies PriceRange,
-      },
-      {
-        label: "فعال سازی آنلاین / تنظیم DNS",
-        priceRangeToman: { min: 0, max: 200000 } satisfies PriceRange,
-      },
-    ],
-  },
-  summaryTable: [
-    { label: "تک بازی", rangeText: "1.5M - 3.5M" },
-    { label: "پکیج 5 بازی", rangeText: "5M - 9M" },
-    { label: "پکیج 10 بازی", rangeText: "3.5M - 12M" },
-    { label: "تک بازی (کپی خور)", rangeText: "250K - 350K" },
-    { label: "پکیج (کپی خور)", rangeText: "3M - 10M" },
-  ],
-} as const;
 
 export function generateStaticParams() {
   return Object.keys(GAME_INSTALL_CONSOLE_META).map((console) => ({
@@ -148,11 +56,11 @@ export default async function GameInstallPage({ params }: Props) {
     consoleId: consoleIdFromGameInstallSlug(consoleSlug),
   });
   const pricingSections = [
-    PRICE_DATA.accountCapacityInstallation,
-    PRICE_DATA.economyPackagesRandomGames,
-    PRICE_DATA.jailbreakOfflineInstallation,
-    PRICE_DATA.xboxInstallation,
-    PRICE_DATA.additionalServices,
+    GAME_INSTALL_PRICE_DATA.accountCapacityInstallation,
+    GAME_INSTALL_PRICE_DATA.economyPackagesRandomGames,
+    GAME_INSTALL_PRICE_DATA.jailbreakOfflineInstallation,
+    GAME_INSTALL_PRICE_DATA.xboxInstallation,
+    GAME_INSTALL_PRICE_DATA.additionalServices,
   ];
   const jsonLdDescription = `تعرفه نصب بازی ${meta.label}: از نصب با اکانت ظرفیتی تا نصب آفلاین کپی خور و خدمات جانبی.`;
 
@@ -182,7 +90,7 @@ export default async function GameInstallPage({ params }: Props) {
         </p>
 
         <section className="mb-10 grid gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 sm:grid-cols-2 xl:grid-cols-5">
-          {PRICE_DATA.summaryTable.map((item) => (
+          {GAME_INSTALL_PRICE_DATA.summaryTable.map((item) => (
             <div
               key={item.label}
               className="rounded-xl border border-white/10 bg-white/5 p-4"

@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  formatRangeCompact,
+  HOME_GAME_INSTALL_DISCOUNTED,
+  type HomeGameInstallTab,
+} from "@/lib/game-install-pricing";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -10,58 +15,13 @@ const CONSOLE_TABS = [
   { id: "xbox", label: "Xbox", href: "/services/game-install/xbox-series" },
 ] as const;
 
-type ConsoleTab = (typeof CONSOLE_TABS)[number]["id"];
-
-const GAME_INSTALL_BY_CONSOLE: Record<
-  ConsoleTab,
-  {
-    title: string;
-    description: string;
-    highlights: { title: string; range: string }[];
-  }
-> = {
-  ps4: {
-    title: "تعرفه نصب بازی PS4",
-    description:
-      "PS4 بیشترین تنوع روش نصب را دارد؛ از نصب اکانتی تا نصب آفلاین کپی خور.",
-    highlights: [
-      { title: "تک بازی (اکانتی)", range: "1.5M - 3.5M" },
-      { title: "پکیج 5 بازی", range: "5M - 9M" },
-      { title: "نصب آفلاین (کپی خور)", range: "250K - 350K" },
-      { title: "پکیج کپی خور", range: "3M - 10M" },
-    ],
-  },
-  ps5: {
-    title: "تعرفه نصب بازی PS5",
-    description:
-      "روی PS5 تمرکز اصلی روی نصب اکانتی و پکیج‌های انتخابی یا اقتصادی است.",
-    highlights: [
-      { title: "تک بازی", range: "1.5M - 3.5M" },
-      { title: "پکیج 5 بازی", range: "5M - 9M" },
-      { title: "پکیج 10 بازی", range: "3.5M - 12M" },
-      { title: "پکیج اقتصادی", range: "4M - 9M" },
-    ],
-  },
-  xbox: {
-    title: "تعرفه نصب بازی Xbox",
-    description:
-      "هزینه نصب Xbox وابسته به اکانت Microsoft، Game Pass و تعداد بازی است.",
-    highlights: [
-      { title: "تک بازی", range: "1.5M - 3M" },
-      { title: "پکیج 5 تا 10 بازی", range: "4M - 10M" },
-      { title: "راه اندازی اکانت", range: "200K - 500K" },
-      { title: "انتقال دیتا", range: "300K - 800K" },
-    ],
-  },
-};
-
 const PriceTable = () => {
-  const [activeTab, setActiveTab] = useState<ConsoleTab>("ps5");
+  const [activeTab, setActiveTab] = useState<HomeGameInstallTab>("ps5");
   const activeData = useMemo(
-    () => GAME_INSTALL_BY_CONSOLE[activeTab],
+    () => HOME_GAME_INSTALL_DISCOUNTED[activeTab],
     [activeTab],
   );
-  const activeHref = CONSOLE_TABS.find((tab) => tab.id === activeTab)?.href;
+  const activeHref = activeData.href;
 
   return (
     <div className="container mx-auto px-6">
@@ -110,9 +70,13 @@ const PriceTable = () => {
               className="rounded-2xl border border-white/10 bg-black/25 p-4"
             >
               <p className="text-sm text-zinc-300">{item.title}</p>
-              <p className="mt-1 text-lg font-black text-cyan-300">
-                {item.range}
+              <p className="mt-1 text-sm text-zinc-500 line-through decoration-red-400/70">
+                {formatRangeCompact(item.previous)}
               </p>
+              <p className="mt-1 text-lg font-black text-cyan-300">
+                {formatRangeCompact(item.current)}
+              </p>
+              <p className="mt-1 text-xs text-emerald-300">قیمت ویژه</p>
             </div>
           ))}
         </div>
