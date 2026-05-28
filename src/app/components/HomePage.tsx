@@ -35,7 +35,7 @@ export default function HomePage() {
       <ContactCTA />
       <ServicesSection />
       <WhyUs />
-      <Testimonials />
+      {/* <Testimonials /> */}
     </main>
   );
 }
