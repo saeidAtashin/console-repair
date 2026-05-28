@@ -23,7 +23,7 @@ export default function CtaButtonGroup({
 }: CtaButtonGroupProps) {
   return (
     <div
-      className={cn("mt-10 flex flex-wrap items-center gap-4", className)}
+      className={cn("mt-10 flex md:flex-row flex-col flex-wrap items-center gap-4", className)}
     >
       <RepairCtaLink href={repairHref} label={repairLabel} />
       {secondary === "consult" ? (

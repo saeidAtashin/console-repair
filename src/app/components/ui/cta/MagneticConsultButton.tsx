@@ -2,7 +2,13 @@
 
 import { motion, useSpring } from "framer-motion";
 import { Phone } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import { SITE_PHONE } from "../../../../lib/seo/site";
 
@@ -81,7 +87,7 @@ export default function MagneticConsultButton() {
   const telHref = `tel:${SITE_PHONE.replace(/\s/g, "")}`;
 
   return (
-    <div className="relative flex-1">
+    <div className="relative flex-1 w-full md:w-auto">
       <motion.div
         aria-hidden
         className="pointer-events-none absolute inset-0 -m-6 rounded-[2rem] bg-cyan-500/10 blur-2xl"

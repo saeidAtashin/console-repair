@@ -17,7 +17,7 @@ const features = [
 
 export default function HeroFeatures() {
   return (
-    <div className="mt-10 grid gap-4 sm:grid-cols-3">
+    <div className="mt-10 grid gap-4 grid-cols-3">
       {features.map((item, i) => {
         const Icon = item.icon;
 
