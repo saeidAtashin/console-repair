@@ -4,7 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import NextImage from "next/image";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Gamepad2,
+  ShoppingBag,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import Tilt from "react-parallax-tilt";
 import HeroQuickAccessButton from "./HeroQuickAccessButton";
 import {
@@ -27,10 +33,14 @@ const consoleOptions: { id: ConsoleId; iconSrc: string }[] = [
   { id: "xbox", iconSrc: "/icons/xbox.svg" },
 ];
 
-const serviceOptions: { id: ConsoleServiceKind; label: string }[] = [
-  { id: "game-install", label: "نصب بازی" },
-  { id: "repair", label: "تعمیرات" },
-  { id: "shop", label: "خرید" },
+const serviceOptions: {
+  id: ConsoleServiceKind;
+  label: string;
+  icon: LucideIcon;
+}[] = [
+  { id: "game-install", label: "نصب بازی", icon: Gamepad2 },
+  { id: "repair", label: "تعمیرات", icon: Wrench },
+  { id: "shop", label: "خرید", icon: ShoppingBag },
 ];
 
 const PICKER_IMAGE_HEIGHT = 360;
@@ -39,11 +49,16 @@ const PREVIEW_IMAGE_HEIGHT_MOBILE = 268;
 const RAIL_WIDTH = 84;
 const RAIL_WIDTH_SM = 72;
 const MOBILE_CONSOLE_ROW_HEIGHT = 92;
-const SERVICE_ROW_HEIGHT = 76;
-const SERVICE_ROW_HEIGHT_MOBILE = 92;
+const SERVICE_ROW_HEIGHT = 96;
+const SERVICE_ROW_HEIGHT_MOBILE = 108;
 
 const springSelect = { type: "spring" as const, stiffness: 400, damping: 30 };
 const springBtn = { type: "spring" as const, stiffness: 260, damping: 18 };
+const springService = {
+  type: "spring" as const,
+  stiffness: 320,
+  damping: 22,
+};
 const springSize = {
   type: "spring" as const,
   stiffness: 200,
@@ -197,6 +212,114 @@ function ConsolePickerButton({
   );
 }
 
+type ServicePickerButtonProps = {
+  id: ConsoleServiceKind;
+  label: string;
+  icon: LucideIcon;
+  index: number;
+  active: boolean;
+  isPickerOpen: boolean;
+  onSelect: (id: ConsoleServiceKind) => void;
+};
+
+function ServicePickerButton({
+  id,
+  label,
+  icon: Icon,
+  index,
+  active,
+  isPickerOpen,
+  onSelect,
+}: ServicePickerButtonProps) {
+  return (
+    <motion.button
+      type="button"
+      aria-pressed={active}
+      tabIndex={isPickerOpen ? 0 : -1}
+      initial={false}
+      animate={{
+        opacity: isPickerOpen ? 1 : 0,
+        y: isPickerOpen ? 0 : 22,
+        scale: isPickerOpen ? 1 : 0.86,
+        filter: isPickerOpen ? "blur(0px)" : "blur(6px)",
+      }}
+      transition={{
+        ...springService,
+        delay: isPickerOpen ? 0.22 + index * 0.07 : 0,
+      }}
+      onClick={() => onSelect(id)}
+      whileHover={
+        isPickerOpen ? { y: -3, scale: 1.03, transition: { duration: 0.2 } } : {}
+      }
+      whileTap={{ scale: 0.94, y: 0 }}
+      className={`group relative flex min-h-[52px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border px-1 py-2 text-center backdrop-blur-xl transition-[color,box-shadow] duration-300 sm:min-h-[56px] sm:gap-1.5 sm:rounded-2xl sm:px-1 sm:py-1 ${
+        active
+          ? "border-cyan-400/55 text-cyan-50 shadow-[0_0_28px_rgba(34,211,238,0.32)]"
+          : "border-white/10 bg-white/[0.04] text-zinc-200 active:border-cyan-400/35 sm:hover:border-cyan-400/35 sm:hover:bg-white/[0.07] sm:hover:shadow-[0_0_20px_rgba(34,211,238,0.14)]"
+      }`}
+    >
+      {active && (
+        <motion.span
+          layoutId="hero-service-select"
+          className="absolute inset-0 rounded-xl border border-cyan-400/45 bg-gradient-to-b from-cyan-500/20 via-cyan-500/10 to-cyan-900/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_0_24px_rgba(34,211,238,0.14)] sm:rounded-2xl"
+          transition={springSelect}
+        />
+      )}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.28),transparent_60%)] opacity-0 transition-opacity duration-300 group-active:opacity-100 sm:rounded-2xl sm:group-hover:opacity-100"
+      />
+      {active && (
+        <motion.span
+          aria-hidden
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: [0.4, 0.15, 0.4], scale: 1 }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute inset-0 rounded-xl bg-cyan-400/10 sm:rounded-2xl"
+        />
+      )}
+      <motion.span
+        aria-hidden
+        className="relative z-10 flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-black/30 sm:h-8 sm:w-8"
+        animate={{
+          scale: active ? 1.06 : 1,
+          borderColor: active
+            ? "rgba(34,211,238,0.45)"
+            : "rgba(255,255,255,0.1)",
+          boxShadow: active
+            ? "0 0 16px rgba(34,211,238,0.35)"
+            : "0 0 0 rgba(0,0,0,0)",
+        }}
+        transition={springSelect}
+      >
+        <Icon
+          className={`h-3.5 w-3.5 transition-colors duration-300 sm:h-4 sm:w-4 ${
+            active
+              ? "text-cyan-300"
+              : "text-zinc-400 sm:group-hover:text-cyan-200/90"
+          }`}
+          strokeWidth={active ? 2.25 : 1.75}
+        />
+      </motion.span>
+      <span
+        className={`relative z-10 text-[11px] font-semibold leading-tight transition-colors duration-300 sm:text-sm ${
+          active ? "text-cyan-100" : "sm:group-hover:text-cyan-100"
+        }`}
+      >
+        {label}
+      </span>
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 rounded-full bg-cyan-400 transition-all duration-500 ${
+          active
+            ? "w-[72%] opacity-100 shadow-[0_0_10px_rgba(34,211,238,0.9)]"
+            : "w-0 opacity-0"
+        }`}
+      />
+    </motion.button>
+  );
+}
+
 export default function HeroDeviceScene() {
   const isMobile = useIsMobile();
   const previewHeight = usePreviewImageHeight(isMobile);
@@ -258,6 +381,10 @@ export default function HeroDeviceScene() {
   const dismissGuide = () => setShowGuide(false);
   const selectConsole = useCallback(
     (id: ConsoleId) => setSelectedConsole(id),
+    [],
+  );
+  const selectService = useCallback(
+    (id: ConsoleServiceKind) => setSelectedService(id),
     [],
   );
 
@@ -415,59 +542,43 @@ export default function HeroDeviceScene() {
                   className="overflow-hidden"
                   aria-hidden={!isPickerOpen}
                 >
-                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                    {serviceOptions.map(({ id, label }, index) => {
-                      const active = selectedService === id;
-                      return (
-                        <motion.button
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      scale: isPickerOpen ? 1 : 0.97,
+                      filter: isPickerOpen ? "blur(0px)" : "blur(4px)",
+                    }}
+                    transition={springSize}
+                  >
+                    <motion.p
+                      initial={false}
+                      animate={{
+                        opacity: isPickerOpen ? 1 : 0,
+                        y: isPickerOpen ? 0 : 6,
+                      }}
+                      transition={{
+                        ...springService,
+                        delay: isPickerOpen ? 0.14 : 0,
+                      }}
+                      className="mb-2 text-center text-[10px] font-medium tracking-wide text-cyan-300/75 sm:mb-2.5 sm:text-xs"
+                    >
+                      نوع سرویس را انتخاب کنید
+                    </motion.p>
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                      {serviceOptions.map(({ id, label, icon }, index) => (
+                        <ServicePickerButton
                           key={id}
-                          type="button"
-                          aria-pressed={active}
-                          tabIndex={isPickerOpen ? 0 : -1}
-                          initial={false}
-                          animate={{
-                            opacity: isPickerOpen ? 1 : 0,
-                            y: isPickerOpen ? 0 : 18,
-                            scale: isPickerOpen ? 1 : 0.88,
-                          }}
-                          transition={{
-                            ...springBtn,
-                            delay: isPickerOpen ? 0.2 + index * 0.06 : 0,
-                          }}
-                          onClick={() => setSelectedService(id)}
-                          whileTap={{ scale: 0.96 }}
-                          className={`group relative flex min-h-[44px] min-w-0 cursor-pointer items-center justify-center overflow-hidden rounded-xl border px-1.5 py-3 text-center backdrop-blur-xl transition-[color,box-shadow] duration-300 sm:rounded-2xl sm:px-4 sm:py-3.5 ${
-                            active
-                              ? "border-cyan-400/50 text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,0.28)]"
-                              : "border-white/10 bg-white/[0.04] text-white active:border-cyan-400/30 sm:hover:border-cyan-400/30 sm:hover:shadow-[0_0_16px_rgba(34,211,238,0.1)]"
-                          }`}
-                        >
-                          {active && (
-                            <motion.span
-                              layoutId="hero-service-select"
-                              className="absolute inset-0 rounded-xl border border-cyan-400/40 bg-cyan-500/15 shadow-[inset_0_0_20px_rgba(34,211,238,0.12)] sm:rounded-2xl"
-                              transition={springSelect}
-                            />
-                          )}
-                          <span
-                            aria-hidden
-                            className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.2),transparent_55%)] opacity-0 transition-opacity duration-300 sm:rounded-2xl sm:group-hover:opacity-100"
-                          />
-                          <span className="relative z-10 text-xs font-semibold leading-tight transition-colors duration-300 sm:text-sm sm:group-hover:text-cyan-200">
-                            {label}
-                          </span>
-                          <span
-                            aria-hidden
-                            className={`pointer-events-none absolute bottom-0 left-0 h-[2px] bg-cyan-400 transition-all duration-500 ${
-                              active
-                                ? "w-full opacity-100 shadow-[0_0_8px_rgba(34,211,238,0.8)]"
-                                : "w-0 opacity-0"
-                            }`}
-                          />
-                        </motion.button>
-                      );
-                    })}
-                  </div>
+                          id={id}
+                          label={label}
+                          icon={icon}
+                          index={index}
+                          active={selectedService === id}
+                          isPickerOpen={isPickerOpen}
+                          onSelect={selectService}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
                 </motion.div>
               </div>
             </div>
