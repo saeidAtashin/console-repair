@@ -94,7 +94,7 @@ export default async function IssuePage({ params }: Props) {
               className="object-cover opacity-40"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-950/80 to-zinc-950" />
+            <div className="absolute inset-0 bg-linear-to-b from-zinc-950 via-zinc-950/80 to-zinc-950" />
           </div>
 
           <div className="relative mx-auto max-w-5xl px-6 py-20">
@@ -220,21 +220,51 @@ export default async function IssuePage({ params }: Props) {
             </section>
           )}
 
-          <section className="rounded-3xl bg-gradient-to-r from-blue-600 to-blue-500 p-12 text-center md:p-16">
-            <h3 className="mb-6 text-3xl font-extrabold md:text-4xl">
-              آیا کنسول شما نیاز به تعمیر دارد؟
-            </h3>
-            <p className="mx-auto mb-10 max-w-xl text-lg text-blue-100">
-              درخواست مشاوره رایگان ثبت کنید تا کارشناسان ما مشکل دستگاه شما را
-              بررسی کنند.
-            </p>
-            <Link
-              href={repairHref}
-              className="inline-flex items-center gap-3 rounded-full bg-white px-10 py-5 text-lg font-bold text-blue-700 transition hover:scale-105"
-            >
-              شروع درخواست تعمیر
-              <ArrowRight />
-            </Link>
+          <section className="relative isolate overflow-hidden rounded-4xl border border-amber-200/20 bg-zinc-950 p-8 text-zinc-100 shadow-[0_40px_100px_-45px_rgba(0,0,0,0.9)] md:p-14">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(251,191,36,0.22),transparent_35%),radial-gradient(circle_at_90%_85%,rgba(244,114,182,0.18),transparent_38%)]" />
+            <div className="absolute -right-16 top-0 h-52 w-52 rounded-full bg-amber-300/15 blur-3xl" />
+            <div className="absolute -bottom-14 left-10 h-48 w-48 rounded-full bg-rose-400/10 blur-3xl" />
+            <div className="absolute inset-x-8 top-8 h-px bg-linear-to-r from-transparent via-amber-200/50 to-transparent" />
+
+            <div className="relative grid gap-8 md:grid-cols-[1.2fr_auto] md:items-end">
+              <div className="rounded-3xl border border-amber-100/15 bg-zinc-900/30 p-7 backdrop-blur-sm md:p-9">
+                <span className="inline-flex items-center rounded-full border border-amber-200/30 bg-amber-100/10 px-4 py-1 text-sm font-semibold text-amber-100">
+                  مشاوره تخصصی رایگان
+                </span>
+
+                <h3 className="mt-5 text-3xl font-extrabold leading-tight text-zinc-50 md:text-4xl">
+                  آیا کنسول شما نیاز به تعمیر دارد؟
+                </h3>
+
+                <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-300 md:text-lg">
+                  درخواست مشاوره رایگان ثبت کنید تا کارشناسان ما مشکل دستگاه شما
+                  را بررسی کنند.
+                </p>
+
+                <div className="mt-7 flex flex-wrap items-center justify-center gap-3 text-sm text-zinc-200">
+                  <span className="rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 my-auto">
+                    پاسخ اولیه سریع
+                  </span>
+                  <span className="rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 my-auto">
+                    بررسی توسط تکنسین متخصص
+                  </span>
+                  <span className="rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 my-auto">
+                    بدون هزینه مشاوره
+                  </span>
+                  <Link
+                    href={repairHref}
+                    className="group inline-flex items-center mx-auto gap-3 rounded-2xl border border-amber-200/30 bg-linear-to-r from-amber-300 to-orange-300 px-7 py-4 text-base font-extrabold text-zinc-900 shadow-[0_18px_45px_-20px_rgba(251,191,36,0.95)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-20px_rgba(251,191,36,0.95)] active:translate-y-0 my-auto "
+                  >
+                    شروع درخواست تعمیر
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-amber-200 transition-transform duration-300 group-hover:translate-x-1">
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* <div className="md:justify-self-end"></div> */}
+            </div>
           </section>
         </div>
       </PageShell>
