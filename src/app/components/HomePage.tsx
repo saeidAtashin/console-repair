@@ -6,7 +6,6 @@ import ContactCTA from "./sections/ContactCTA";
 import Hero from "./sections/hero/Hero";
 import Services from "./sections/Services";
 import ServicesSection from "./sections/ServicesSection";
-import Testimonials from "./sections/Testimonials";
 import WhyUs from "./sections/WhyUs";
 import GamingBackground from "./ui/GamingBackground";
 import PriceTable from "./sections/PriceTable";
