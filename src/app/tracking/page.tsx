@@ -113,7 +113,7 @@ export default function TrackingPage() {
   }
 
   return (
-    <div className="px-6 py-8">
+    <div className="px-6 py-8 min-h-screen">
       <div className="mx-auto max-w-3xl">
         <div className="text-center mb-12">
           <div className="w-20 h-20 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-6">
