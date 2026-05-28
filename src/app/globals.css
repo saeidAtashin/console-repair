@@ -190,28 +190,96 @@ textarea.input-neon:autofill {
   stroke-linecap: round;
   stroke-dasharray: 100;
   stroke-dashoffset: 100;
-  animation: route-loader-draw 0.58s ease forwards;
+  animation-duration: 1.17s;
+  animation-timing-function: ease;
+  animation-iteration-count: infinite;
 }
 
 .route-loader-path-1 {
-  animation-delay: 0s;
+  animation-name: route-loader-path-1;
 }
 
 .route-loader-path-2 {
-  animation-delay: 0.13s;
+  animation-name: route-loader-path-2;
 }
 
 .route-loader-path-3 {
-  animation-delay: 0.26s;
+  animation-name: route-loader-path-3;
 }
 
 .route-loader-path-4 {
-  animation-delay: 0.39s;
+  animation-name: route-loader-path-4;
 }
 
-@keyframes route-loader-draw {
-  to {
+/* 580ms draw + 390ms stagger + 200ms pause = 1170ms cycle */
+@keyframes route-loader-path-1 {
+  0% {
+    stroke-dashoffset: 100;
+  }
+
+  49.57% {
     stroke-dashoffset: 0;
+  }
+
+  82.91% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: 100;
+  }
+}
+
+@keyframes route-loader-path-2 {
+  0%,
+  11.11% {
+    stroke-dashoffset: 100;
+  }
+
+  60.68% {
+    stroke-dashoffset: 0;
+  }
+
+  82.91% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: 100;
+  }
+}
+
+@keyframes route-loader-path-3 {
+  0%,
+  22.22% {
+    stroke-dashoffset: 100;
+  }
+
+  71.79% {
+    stroke-dashoffset: 0;
+  }
+
+  82.91% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: 100;
+  }
+}
+
+@keyframes route-loader-path-4 {
+  0%,
+  33.33% {
+    stroke-dashoffset: 100;
+  }
+
+  82.91% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: 100;
   }
 }
 
