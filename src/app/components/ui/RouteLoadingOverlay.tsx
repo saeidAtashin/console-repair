@@ -17,12 +17,15 @@ function isInternalNavigationAnchor(element: HTMLAnchorElement) {
   try {
     const url = new URL(href, window.location.href);
     const isSameOrigin = url.origin === window.location.origin;
-    const isHashOnly =
+    const isSamePathAndSearch =
       url.pathname === window.location.pathname &&
-      url.search === window.location.search &&
-      url.hash.length > 0;
+      url.search === window.location.search;
+    const isHashOnly =
+      isSamePathAndSearch && url.hash.length > 0;
+    const isSameRouteNoNavigation =
+      isSamePathAndSearch && (url.hash === "" || url.hash === window.location.hash);
 
-    return isSameOrigin && !isHashOnly;
+    return isSameOrigin && !isHashOnly && !isSameRouteNoNavigation;
   } catch {
     return false;
   }
@@ -92,7 +95,9 @@ export default function RouteLoadingOverlay() {
         return;
       }
 
-      const button = target.closest("button, [role='button']");
+      const button = target.closest(
+        "button[data-route-loader-trigger='true'], [role='button'][data-route-loader-trigger='true']",
+      );
       if (button) {
         startLoader();
       }
