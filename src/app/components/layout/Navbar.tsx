@@ -1,23 +1,122 @@
 "use client";
 
 import { useAuth } from "@/app/context/AuthContext";
+import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import SiteLogo from "../ui/SiteLogo";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
+import { X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
+
+const CD_SCROLL_FACTOR = 0.35;
+const CD_BURST_MS = 520;
+const CD_BURST_EXTRA_DEG = 900;
+const OPEN_MENU_DELAY_MS = 200;
+
+function getRotationDeg(el: HTMLElement) {
+  const { transform } = window.getComputedStyle(el);
+  if (!transform || transform === "none") return 0;
+  const { a, b } = new DOMMatrix(transform);
+  return (Math.atan2(b, a) * 180) / Math.PI;
+}
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const cdRef = useRef<HTMLDivElement>(null);
+  const burstRafRef = useRef<number | null>(null);
+  const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollRafPendingRef = useRef(false);
+  const isBurstingRef = useRef(false);
+  const scrollRotationRef = useRef(0);
 
-  // تغییر استایل در هنگام اسکرول
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const updateCdFromScroll = () => {
+      const el = cdRef.current;
+      if (!el || isBurstingRef.current) return;
+      el.style.transform = `rotate(${scrollRotationRef.current}deg)`;
+    };
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+      scrollRotationRef.current = window.scrollY * CD_SCROLL_FACTOR;
+
+      if (scrollRafPendingRef.current) return;
+      scrollRafPendingRef.current = true;
+      requestAnimationFrame(() => {
+        scrollRafPendingRef.current = false;
+        updateCdFromScroll();
+      });
+    };
+
     window.addEventListener("scroll", handleScroll);
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (burstRafRef.current) cancelAnimationFrame(burstRafRef.current);
+      if (openTimerRef.current) clearTimeout(openTimerRef.current);
+    };
+  }, []);
+
+  const burstCdOnOpen = useCallback(() => {
+    const el = cdRef.current;
+    if (!el) return;
+
+    if (burstRafRef.current) cancelAnimationFrame(burstRafRef.current);
+    isBurstingRef.current = true;
+
+    const startTime = performance.now();
+    const startAngle = getRotationDeg(el);
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / CD_BURST_MS, 1);
+      const eased = 1 - (1 - progress) ** 3;
+      const burstAngle = startAngle + CD_BURST_EXTRA_DEG * eased;
+      el.style.transform = `rotate(${burstAngle}deg)`;
+
+      if (progress < 1) {
+        burstRafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      isBurstingRef.current = false;
+      el.style.transform = `rotate(${scrollRotationRef.current}deg)`;
+      burstRafRef.current = null;
+    };
+
+    burstRafRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  const openMenu = useCallback(() => {
+    burstCdOnOpen();
+    if (openTimerRef.current) clearTimeout(openTimerRef.current);
+    openTimerRef.current = setTimeout(() => {
+      setOpen(true);
+      openTimerRef.current = null;
+    }, OPEN_MENU_DELAY_MS);
+  }, [burstCdOnOpen]);
+
+  const closeMenu = useCallback(() => {
+    if (openTimerRef.current) {
+      clearTimeout(openTimerRef.current);
+      openTimerRef.current = null;
+    }
+    setOpen(false);
+    const el = cdRef.current;
+    if (el && !isBurstingRef.current) {
+      el.style.transform = `rotate(${scrollRotationRef.current}deg)`;
+    }
+  }, []);
+
+  const toggleMenu = useCallback(() => {
+    if (open) closeMenu();
+    else openMenu();
+  }, [open, closeMenu, openMenu]);
 
   const navItems = [
     { title: "خانه", href: "/" },
@@ -73,10 +172,25 @@ export default function Navbar() {
           {/* Actions / Auth (Left Side) */}
           <div className="flex items-center gap-4 flex-1">
             <button
-              onClick={() => setOpen(true)}
-              className="md:hidden text-white"
+              type="button"
+              onClick={toggleMenu}
+              className="md:hidden relative h-11 w-11 shrink-0 touch-manipulation"
+              aria-label={open ? "بستن منو" : "باز کردن منو"}
+              aria-expanded={open}
             >
-              <Menu size={28} />
+              <div
+                ref={cdRef}
+                className="h-11 w-11 will-change-transform"
+              >
+                <Image
+                  src="/obj-console/cd.png"
+                  alt=""
+                  width={44}
+                  height={44}
+                  className="h-11 w-11 object-contain drop-shadow-[0_0_12px_rgba(6,182,212,0.35)] filter hue-rotate-331 saturate-200"
+                  priority
+                />
+              </div>
             </button>
 
             <div className="hidden md:flex items-center gap-3">
@@ -169,7 +283,7 @@ export default function Navbar() {
       >
         <div
           className="absolute inset-0 bg-black/80 backdrop-blur-md"
-          onClick={() => setOpen(false)}
+          onClick={closeMenu}
         />
 
         <div
@@ -186,7 +300,7 @@ export default function Navbar() {
                 className="gap-0"
               />
               <button
-                onClick={() => setOpen(false)}
+                onClick={closeMenu}
                 className="text-zinc-500 hover:text-white transition-colors"
               >
                 <X size={32} />
@@ -221,7 +335,7 @@ export default function Navbar() {
                             <Link
                               key={sub.href}
                               href={sub.href}
-                              onClick={() => setOpen(false)}
+                              onClick={closeMenu}
                               className="text-zinc-400 hover:text-cyan-400 transition-colors"
                             >
                               {sub.title}
@@ -233,7 +347,7 @@ export default function Navbar() {
                   ) : (
                     <Link
                       href={item.href}
-                      onClick={() => setOpen(false)}
+                      onClick={closeMenu}
                       className="text-xl font-bold text-white hover:text-cyan-400 transition-colors"
                     >
                       {item.title}
@@ -248,14 +362,14 @@ export default function Navbar() {
               <div className="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
                 <Link
                   href="/login"
-                  onClick={() => setOpen(false)}
+                  onClick={closeMenu}
                   className="w-full py-4 rounded-xl bg-white/5 text-center text-white"
                 >
                   ورود
                 </Link>
                 <Link
                   href="/register"
-                  onClick={() => setOpen(false)}
+                  onClick={closeMenu}
                   className="w-full py-4 rounded-xl bg-cyan-500 text-center text-black font-bold shadow-lg shadow-cyan-500/20"
                 >
                   ثبت نام
