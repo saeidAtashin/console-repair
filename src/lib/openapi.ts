@@ -2,34 +2,52 @@
  * OpenAPI 3.0 specification for Console Repair API routes.
  * Served at GET /api/openapi and used by /api-docs (Swagger UI).
  */
-export const openApiDocument = {
+
+const DEFAULT_BASE_URL = "http://localhost:3000";
+
+export function resolveApiBaseUrl(requestOrigin?: string): string {
+  const fromEnv =
+    process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (fromEnv) {
+    return fromEnv.replace(/\/$/, "");
+  }
+  if (requestOrigin) {
+    return requestOrigin.replace(/\/$/, "");
+  }
+  return DEFAULT_BASE_URL;
+}
+
+export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
+  const normalizedBaseUrl = baseUrl.replace(/\/$/, "");
+
+  return {
   openapi: "3.0.3",
   info: {
-    title: "Console Repair API",
+    title: `Console Repair API [ Base URL: ${normalizedBaseUrl} ]`,
     description:
-      "REST API for repair orders, authentication, admin management, and game catalog (RAWG proxy).",
+      "REST API for authentication (JWT Bearer), repair orders, admin management, and game catalog (RAWG proxy). Use **Authorize** to set `Bearer <access_token>` after login or OTP verify.",
     version: "1.0.0",
   },
   servers: [
     {
-      url: "/",
-      description: "Current host",
+      url: normalizedBaseUrl,
+      description: "API server",
     },
   ],
   tags: [
+    { name: "auth", description: "Login, OTP, password reset, and token refresh" },
     { name: "Repair", description: "Public repair request and order tracking" },
-    { name: "Admin", description: "Admin-only order management (session required)" },
-    { name: "Auth", description: "Login, OTP, and session" },
+    { name: "Admin", description: "Admin-only order management (Bearer required)" },
     { name: "Games", description: "Game catalog by console (RAWG)" },
   ],
   components: {
     securitySchemes: {
-      sessionCookie: {
+      Bearer: {
         type: "apiKey",
-        in: "cookie",
-        name: "console_session",
+        in: "header",
+        name: "Authorization",
         description:
-          "HTTP-only session cookie set by POST /api/auth/login or POST /api/auth/otp/verify. Admin routes require role `admin`.",
+          'JWT access token. Format: `Bearer <access_token>` (from login, verify-otp, or token refresh).',
       },
     },
     schemas: {
@@ -39,6 +57,24 @@ export const openApiDocument = {
         properties: {
           success: { type: "boolean", example: false },
           message: { type: "string", description: "Persian error message" },
+        },
+      },
+      TokenPair: {
+        type: "object",
+        required: ["access", "refresh"],
+        properties: {
+          access: { type: "string", description: "JWT access token" },
+          refresh: { type: "string", description: "JWT refresh token" },
+        },
+      },
+      AuthUser: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          phone: { type: "string", pattern: "^09\\d{9}$" },
+          username: { type: "string" },
+          name: { type: "string" },
+          role: { type: "string", enum: ["admin", "user"] },
         },
       },
       SessionUser: {
@@ -205,7 +241,7 @@ export const openApiDocument = {
       patch: {
         tags: ["Repair", "Admin"],
         summary: "Update order status (admin)",
-        security: [{ sessionCookie: [] }],
+        security: [{ Bearer: [] }],
         parameters: [
           {
             name: "code",
@@ -274,7 +310,7 @@ export const openApiDocument = {
       get: {
         tags: ["Admin"],
         summary: "List all repair orders",
-        security: [{ sessionCookie: [] }],
+        security: [{ Bearer: [] }],
         responses: {
           "200": {
             description: "Order list",
@@ -308,7 +344,7 @@ export const openApiDocument = {
       patch: {
         tags: ["Admin"],
         summary: "Update order status by tracking code",
-        security: [{ sessionCookie: [] }],
+        security: [{ Bearer: [] }],
         parameters: [
           {
             name: "code",
@@ -373,52 +409,59 @@ export const openApiDocument = {
         },
       },
     },
-    "/api/auth/login": {
+    "/auth/login/": {
       post: {
-        tags: ["Auth"],
-        summary: "Login with username and password",
+        tags: ["auth"],
+        operationId: "auth_login_create",
+        summary: "Login",
         description:
-          "Admin credentials (from env) receive role `admin`. Any other username/password pair receives role `user` and a session.",
+          "Authenticate with phone/username and password. Returns JWT access and refresh tokens.",
         requestBody: {
           required: true,
           content: {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["username", "password"],
                 properties: {
+                  phone: {
+                    type: "string",
+                    pattern: "^09\\d{9}$",
+                    example: "09123456789",
+                  },
                   username: { type: "string" },
                   password: { type: "string", format: "password" },
                 },
+                required: ["password"],
               },
             },
           },
         },
         responses: {
           "200": {
-            description: "Logged in; sets `console_session` cookie",
+            description: "Authenticated",
             content: {
               "application/json": {
                 schema: {
                   type: "object",
                   properties: {
-                    success: { type: "boolean", example: true },
-                    user: { $ref: "#/components/schemas/SessionUser" },
+                    access: { type: "string" },
+                    refresh: { type: "string" },
+                    user: { $ref: "#/components/schemas/AuthUser" },
                   },
                 },
               },
             },
           },
           "400": {
-            description: "Missing credentials",
+            description: "Invalid credentials",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ApiError" },
               },
             },
           },
-          "500": {
-            description: "Server error",
+          "401": {
+            description: "Unauthorized",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ApiError" },
@@ -428,60 +471,222 @@ export const openApiDocument = {
         },
       },
     },
-    "/api/auth/logout": {
+    "/auth/password/reset/send/": {
       post: {
-        tags: ["Auth"],
-        summary: "Clear session",
-        responses: {
-          "200": {
-            description: "Session cleared",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean", example: true },
+        tags: ["auth"],
+        operationId: "auth_password_reset_send_create",
+        summary: "Send password reset OTP",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["phone"],
+                properties: {
+                  phone: {
+                    type: "string",
+                    pattern: "^09\\d{9}$",
+                    example: "09123456789",
                   },
                 },
               },
             },
           },
         },
-      },
-    },
-    "/api/auth/me": {
-      get: {
-        tags: ["Auth"],
-        summary: "Get current session user",
         responses: {
           "200": {
-            description: "Session state",
+            description: "Reset code sent",
             content: {
               "application/json": {
                 schema: {
                   type: "object",
                   properties: {
                     success: { type: "boolean", example: true },
-                    user: {
-                      oneOf: [
-                        { $ref: "#/components/schemas/SessionUser" },
-                        { type: "null" },
-                      ],
+                    message: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          "400": {
+            description: "Invalid phone",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/auth/password/reset/verify/": {
+      post: {
+        tags: ["auth"],
+        operationId: "auth_password_reset_verify_create",
+        summary: "Verify password reset OTP",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["phone", "code"],
+                properties: {
+                  phone: {
+                    type: "string",
+                    pattern: "^09\\d{9}$",
+                    example: "09123456789",
+                  },
+                  code: { type: "string", example: "1234" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "OTP verified",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", example: true },
+                    reset_token: {
+                      type: "string",
+                      description: "Short-lived token for confirm step",
                     },
                   },
                 },
               },
             },
           },
+          "400": {
+            description: "Invalid or expired code",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
         },
       },
     },
-    "/api/auth/otp/send": {
+    "/auth/password/reset/confirm/": {
       post: {
-        tags: ["Auth"],
-        summary: "Send OTP to mobile number",
-        description:
-          "In development, response may include `devCode`. OTP is logged to the server console in development.",
+        tags: ["auth"],
+        operationId: "auth_password_reset_confirm_create",
+        summary: "Confirm password reset",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["phone", "reset_token", "new_password"],
+                properties: {
+                  phone: {
+                    type: "string",
+                    pattern: "^09\\d{9}$",
+                    example: "09123456789",
+                  },
+                  reset_token: { type: "string" },
+                  new_password: { type: "string", format: "password" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Password updated",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", example: true },
+                    message: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          "400": {
+            description: "Invalid token or password",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/auth/password/set/": {
+      post: {
+        tags: ["auth"],
+        operationId: "auth_password_set_create",
+        summary: "Set or change password",
+        security: [{ Bearer: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["new_password"],
+                properties: {
+                  current_password: {
+                    type: "string",
+                    format: "password",
+                  },
+                  new_password: { type: "string", format: "password" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Password set",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", example: true },
+                    message: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          "400": {
+            description: "Validation error",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
+          "401": {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/auth/send-otp/": {
+      post: {
+        tags: ["auth"],
+        operationId: "auth_send-otp_create",
+        summary: "Send login OTP",
         requestBody: {
           required: true,
           content: {
@@ -510,10 +715,6 @@ export const openApiDocument = {
                   properties: {
                     success: { type: "boolean", example: true },
                     message: { type: "string" },
-                    devCode: {
-                      type: "string",
-                      description: "Present only in development",
-                    },
                   },
                 },
               },
@@ -527,8 +728,39 @@ export const openApiDocument = {
               },
             },
           },
-          "500": {
-            description: "Server error",
+        },
+      },
+    },
+    "/auth/token/refresh/": {
+      post: {
+        tags: ["auth"],
+        operationId: "auth_token_refresh_create",
+        summary: "Refresh access token",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["refresh"],
+                properties: {
+                  refresh: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "New tokens",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/TokenPair" },
+              },
+            },
+          },
+          "401": {
+            description: "Invalid or expired refresh token",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ApiError" },
@@ -538,10 +770,13 @@ export const openApiDocument = {
         },
       },
     },
-    "/api/auth/otp/verify": {
+    "/auth/verify-otp/": {
       post: {
-        tags: ["Auth"],
-        summary: "Verify OTP and create user session",
+        tags: ["auth"],
+        operationId: "auth_verify-otp_create",
+        summary: "Verify login OTP",
+        description:
+          "Verify OTP and receive JWT tokens. Use the access token with **Authorize** (`Bearer <token>`).",
         requestBody: {
           required: true,
           content: {
@@ -555,7 +790,7 @@ export const openApiDocument = {
                     pattern: "^09\\d{9}$",
                     example: "09123456789",
                   },
-                  code: { type: "string", example: "A1B2" },
+                  code: { type: "string", example: "1234" },
                 },
               },
             },
@@ -563,14 +798,15 @@ export const openApiDocument = {
         },
         responses: {
           "200": {
-            description: "Verified; sets `console_session` cookie",
+            description: "Verified",
             content: {
               "application/json": {
                 schema: {
                   type: "object",
                   properties: {
-                    success: { type: "boolean", example: true },
-                    user: { $ref: "#/components/schemas/SessionUser" },
+                    access: { type: "string" },
+                    refresh: { type: "string" },
+                    user: { $ref: "#/components/schemas/AuthUser" },
                   },
                 },
               },
@@ -586,14 +822,6 @@ export const openApiDocument = {
           },
           "401": {
             description: "Wrong code",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/ApiError" },
-              },
-            },
-          },
-          "500": {
-            description: "Server error",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ApiError" },
@@ -697,4 +925,8 @@ export const openApiDocument = {
       },
     },
   },
-} as const;
+  };
+}
+
+/** Default document (localhost base URL). Prefer `buildOpenApiDocument` from the route handler. */
+export const openApiDocument = buildOpenApiDocument();

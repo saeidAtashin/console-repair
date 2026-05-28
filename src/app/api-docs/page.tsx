@@ -7,8 +7,14 @@ const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
 export default function ApiDocsPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <SwaggerUI url="/api/openapi" docExpansion="list" defaultModelsExpandDepth={1} />
+    <main className="min-h-screen bg-white invert" dir="ltr">
+      <SwaggerUI
+        url="/api/openapi"
+        docExpansion="list"
+        defaultModelsExpandDepth={1}
+        persistAuthorization
+        tryItOutEnabled
+      />
     </main>
   );
 }
