@@ -1,25 +1,111 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import GameCatalogSections from "@/app/components/game-install/GameCatalogSections";
 import PageShell from "@/app/components/seo/PageShell";
 import { webPageJsonLd } from "../../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../../lib/seo/metadata";
-import { GAME_CATALOG_FILTER_IDS } from "@/lib/game-filters";
 import {
   buildRepairHref,
   consoleIdFromGameInstallSlug,
 } from "../../../../lib/repair-links";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
-import {
-  fetchGameCatalogSections,
-  isGameInstallConsole,
-  type GameInstallConsole,
-} from "@/lib/rawg";
 
 type Props = {
   params: Promise<{ console: string }>;
 };
+
+type PriceRange = {
+  min: number;
+  max: number;
+};
+
+const PRICE_DATA = {
+  accountCapacityInstallation: {
+    title: "نصب با اکانت ظرفیتی/اشتراکی",
+    notes:
+      "اکانت‌های ظرفیتی یا اشتراکی، امکان محدودیت آنلاین یا حذف دسترسی وجود دارد.",
+    items: [
+      {
+        label: "تک بازی",
+        priceRangeToman: { min: 1500000, max: 3500000 } satisfies PriceRange,
+      },
+      {
+        label: "پکیج 5 بازی",
+        priceRangeToman: { min: 5000000, max: 9000000 } satisfies PriceRange,
+      },
+      {
+        label: "پکیج 10 بازی",
+        priceRangeToman: { min: 3500000, max: 12000000 } satisfies PriceRange,
+      },
+    ],
+  },
+  economyPackagesRandomGames: {
+    title: "پکیج اقتصادی (بازی تصادفی)",
+    notes: "بازی‌ها انتخابی نیستند و به صورت تصادفی ارائه می‌شوند.",
+    items: [
+      {
+        label: "پکیج 10 بازی",
+        priceRangeToman: { min: 4000000, max: 5500000 } satisfies PriceRange,
+      },
+      {
+        label: "پکیج 20 بازی",
+        priceRangeToman: { min: 6000000, max: 9000000 } satisfies PriceRange,
+      },
+    ],
+  },
+  jailbreakOfflineInstallation: {
+    title: "نصب آفلاین روی کنسول کپی خور",
+    notes: "فقط روی کنسول‌های کپی خور (اغلب PS4)، بدون امکان آنلاین.",
+    items: [
+      {
+        label: "تک بازی",
+        priceRangeToman: { min: 250000, max: 350000 } satisfies PriceRange,
+      },
+      {
+        label: "پکیج بازی عمده",
+        priceRangeToman: { min: 3000000, max: 10000000 } satisfies PriceRange,
+      },
+    ],
+  },
+  xboxInstallation: {
+    title: "نصب بازی Xbox",
+    notes: "وابسته به اکانت Microsoft و امکان استفاده از Game Pass.",
+    items: [
+      {
+        label: "تک بازی",
+        priceRangeToman: { min: 1500000, max: 3000000 } satisfies PriceRange,
+      },
+      {
+        label: "پکیج 5 تا 10 بازی",
+        priceRangeToman: { min: 4000000, max: 10000000 } satisfies PriceRange,
+      },
+    ],
+  },
+  additionalServices: {
+    title: "خدمات جانبی",
+    items: [
+      {
+        label: "انتقال دیتا یا راه اندازی هارد اکسترنال",
+        priceRangeToman: { min: 300000, max: 800000 } satisfies PriceRange,
+      },
+      {
+        label: "راه اندازی و فعال سازی اکانت",
+        priceRangeToman: { min: 200000, max: 500000 } satisfies PriceRange,
+      },
+      {
+        label: "فعال سازی آنلاین / تنظیم DNS",
+        priceRangeToman: { min: 0, max: 200000 } satisfies PriceRange,
+      },
+    ],
+  },
+  summaryTable: [
+    { label: "تک بازی", rangeText: "1.5M - 3.5M" },
+    { label: "پکیج 5 بازی", rangeText: "5M - 9M" },
+    { label: "پکیج 10 بازی", rangeText: "3.5M - 12M" },
+    { label: "تک بازی (کپی خور)", rangeText: "250K - 350K" },
+    { label: "پکیج (کپی خور)", rangeText: "3M - 10M" },
+  ],
+} as const;
 
 export function generateStaticParams() {
   return Object.keys(GAME_INSTALL_CONSOLE_META).map((console) => ({
@@ -40,10 +126,14 @@ export async function generateMetadata({ params }: Props) {
   }
 
   return createPageMetadata({
-    title: meta.title,
-    description: meta.description,
+    title: `تعرفه نصب بازی ${meta.label}`,
+    description: `لیست کامل هزینه نصب بازی روی ${meta.label} شامل نصب اکانتی، پکیج اقتصادی، نصب آفلاین کپی خور و خدمات جانبی.`,
     path: `/services/game-install/${consoleSlug}`,
-    keywords: [`نصب بازی ${meta.label}`, `خدمات ${meta.label}`],
+    keywords: [
+      `تعرفه نصب بازی ${meta.label}`,
+      `قیمت نصب بازی ${meta.label}`,
+      `نصب بازی ${meta.label}`,
+    ],
   });
 }
 
@@ -57,56 +147,87 @@ export default async function GameInstallPage({ params }: Props) {
   const repairHref = buildRepairHref({
     consoleId: consoleIdFromGameInstallSlug(consoleSlug),
   });
+  const pricingSections = [
+    PRICE_DATA.accountCapacityInstallation,
+    PRICE_DATA.economyPackagesRandomGames,
+    PRICE_DATA.jailbreakOfflineInstallation,
+    PRICE_DATA.xboxInstallation,
+    PRICE_DATA.additionalServices,
+  ];
+  const jsonLdDescription = `تعرفه نصب بازی ${meta.label}: از نصب با اکانت ظرفیتی تا نصب آفلاین کپی خور و خدمات جانبی.`;
 
-  let sections: Awaited<ReturnType<typeof fetchGameCatalogSections>> = [];
-  let gamesError: string | null = null;
-
-  if (isGameInstallConsole(consoleSlug)) {
-    try {
-      sections = await fetchGameCatalogSections(
-        consoleSlug as GameInstallConsole,
-        GAME_CATALOG_FILTER_IDS,
-        12,
-      );
-    } catch {
-      gamesError = "در حال حاضر امکان بارگذاری لیست بازی‌ها وجود ندارد.";
-    }
-  }
+  const formatToman = (value: number) => {
+    if (value === 0) return "رایگان";
+    return `${value.toLocaleString("fa-IR")} تومان`;
+  };
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 text-white">
       <PageShell
         currentPath={path}
         jsonLd={webPageJsonLd({
-          name: meta.title,
-          description: meta.description,
+          name: `تعرفه نصب بازی ${meta.label}`,
+          description: jsonLdDescription,
           path,
         })}
-        containerClassName="mx-auto max-w-7xl px-6"
+        containerClassName="relative z-10 mx-auto max-w-5xl px-6"
+        className="relative z-10 mx-auto max-w-5xl px-6 pb-16"
       >
-        <h1 className="mb-6 text-4xl font-black">{meta.title}</h1>
+        <h1 className="mb-6 text-4xl font-black md:text-5xl">
+          تعرفه نصب بازی {meta.label}
+        </h1>
         <p className="mb-10 max-w-2xl text-lg text-zinc-400">
-          {meta.description}
+          هزینه‌ها به نوع نصب، تعداد بازی و وضعیت کنسول بستگی دارد. بازه‌های زیر
+          برای {meta.label} ارائه می‌شوند.
         </p>
 
-        {gamesError ? (
-          <p className="mb-10 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-4 text-amber-200">
-            {gamesError}
-          </p>
-        ) : (
-          <div className="mb-12">
-            <GameCatalogSections
-              consoleSlug={consoleSlug}
-              sections={sections}
-            />
-          </div>
-        )}
+        <section className="mb-10 grid gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 sm:grid-cols-2 xl:grid-cols-5">
+          {PRICE_DATA.summaryTable.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-xl border border-white/10 bg-white/5 p-4"
+            >
+              <p className="mb-2 text-sm text-zinc-300">{item.label}</p>
+              <p className="font-extrabold text-cyan-300">{item.rangeText}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="mb-12 grid gap-6 lg:grid-cols-2">
+          {pricingSections.map((section) => (
+            <article
+              key={section.title}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6"
+            >
+              <h2 className="mb-4 text-xl font-black">{section.title}</h2>
+              <div className="space-y-3">
+                {section.items.map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex flex-col gap-1 rounded-xl border border-white/10 bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <span className="text-zinc-200">{item.label}</span>
+                    <span className="font-bold text-cyan-300">
+                      {formatToman(item.priceRangeToman.min)} -{" "}
+                      {formatToman(item.priceRangeToman.max)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {"notes" in section && section.notes ? (
+                <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+                  {section.notes}
+                </p>
+              ) : null}
+            </article>
+          ))}
+        </section>
 
         <Link
           href={repairHref}
           className="inline-flex rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-black transition hover:bg-cyan-400"
         >
-          ثبت درخواست
+          ثبت درخواست نصب بازی
         </Link>
       </PageShell>
     </main>
