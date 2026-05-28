@@ -405,7 +405,7 @@ export default function HeroDeviceScene() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 45 }}
+      initial={{ opacity: 1, x: 28 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.9, ease: "easeOut" }}
       className="relative flex w-full items-start justify-center"

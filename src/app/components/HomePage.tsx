@@ -23,7 +23,7 @@ export default function HomePage() {
   return (
     <main
       onMouseMove={(e) => setMouse({ x: e.clientX, y: e.clientY })}
-      className="relative overflow-hidden bg-black pt-20"
+      className="relative bg-black pt-20"
     >
       <div
         className="pointer-events-none fixed inset-0 z-10 opacity-60"

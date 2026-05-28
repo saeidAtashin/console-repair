@@ -7,14 +7,14 @@ import HeroCtaButtons from "./HeroCtaButtons";
 export default function HeroContent() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 1, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="relative"
     >
       {/* Eyebrow */}
       <motion.div
-        initial={{ opacity: 0, x: 20 }}
+        initial={{ opacity: 1, x: 12 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1, duration: 0.6 }}
         className="mb-6 inline-flex items-center gap-3 rounded-full border border-cyan-400/20 bg-white/5 px-4 py-2 backdrop-blur-xl"
@@ -28,7 +28,7 @@ export default function HeroContent() {
       {/* Heading */}
       <div className="max-w-3xl">
         <motion.h1
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 1, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.7 }}
           className="font-black sorenanormal leading-[1.05] tracking-tight text-white text-[clamp(2.8rem,5vw,4.5rem)]"
@@ -43,7 +43,7 @@ export default function HeroContent() {
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 1, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, duration: 0.7 }}
           className="mt-8 max-w-2xl text-lg leading-8 text-zinc-400 sm:text-xl"
@@ -55,7 +55,7 @@ export default function HeroContent() {
 
       {/* Features */}
       <motion.div
-        initial={{ opacity: 0, y: 18 }}
+        initial={{ opacity: 1, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.7 }}
       >
@@ -63,7 +63,7 @@ export default function HeroContent() {
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 18 }}
+        initial={{ opacity: 1, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45, duration: 0.7 }}
       >
