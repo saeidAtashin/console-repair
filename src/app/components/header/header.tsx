@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { navItems } from "@/lib/nav-items";
+import { headerNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
 
 export default function Header() {
@@ -21,7 +21,7 @@ export default function Header() {
           {/* desktop menu */}
 
           <nav className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
+            {headerNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -75,7 +75,7 @@ export default function Header() {
           </div>
 
           <div className="flex flex-col gap-6">
-            {navItems.map((item) => (
+            {headerNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

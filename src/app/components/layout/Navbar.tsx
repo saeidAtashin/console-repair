@@ -4,13 +4,14 @@ import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { navbarNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
 import { X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
 
 const CD_SCROLL_FACTOR = 0.35;
 const CD_BURST_MS = 520;
 const CD_BURST_EXTRA_DEG = 900;
-const OPEN_MENU_DELAY_MS = 200;
+const OPEN_MENU_DELAY_MS = 2000;
 
 function getRotationDeg(el: HTMLElement) {
   const { transform } = window.getComputedStyle(el);
@@ -118,47 +119,6 @@ export default function Navbar() {
     else openMenu();
   }, [open, closeMenu, openMenu]);
 
-  const navItems = [
-    { title: "خانه", href: "/" },
-    {
-      title: "تعمیرات",
-      children: [
-        { title: "تعمیر PS5", href: "/services/ps5-repair" },
-        { title: "تعمیر PS4", href: "/services/ps4-repair" },
-        { title: "تعمیر Xbox", href: "/services/xbox-repair" },
-        { title: "تعمیر دسته", href: "/services/controller-repair" },
-      ],
-    },
-    {
-      title: "بازی",
-      children: [
-        { title: "نصب بازی PS5", href: "/services/game-install/ps5" },
-        { title: "نصب بازی PS4", href: "/services/game-install/ps4" },
-        { title: "نصب بازی Xbox One", href: "/services/game-install/xbox-one" },
-        {
-          title: "نصب بازی Xbox Series",
-          href: "/services/game-install/xbox-series",
-        },
-      ],
-    },
-    {
-      title: "فروشگاه",
-      children: [
-        { title: "خرید PS5", href: "/shop/ps5" },
-        { title: "خرید PS4", href: "/shop/ps4" },
-        { title: "خرید Xbox", href: "/shop/xbox" },
-      ],
-    },
-    {
-      title: "بلاگ",
-      href: "/blog/controller-repair",
-    },
-    {
-      title: "پیگیری",
-      href: "/tracking",
-    },
-  ];
-
   return (
     <>
       <header
@@ -232,7 +192,7 @@ export default function Navbar() {
 
           {/* Desktop Nav (Center) */}
           <nav className="hidden md:flex items-center gap-1 flex-[2] justify-center">
-            {navItems.map((item) =>
+            {navbarNavItems.map((item) =>
               item.children ? (
                 <div key={item.title} className="relative group px-3 py-2">
                   <button className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-cyan-400 transition-colors">
@@ -308,7 +268,7 @@ export default function Navbar() {
             </div>
 
             <div className="flex flex-col gap-6 text-right">
-              {navItems.map((item) => (
+              {navbarNavItems.map((item) => (
                 <div key={item.title}>
                   {item.children ? (
                     <>
