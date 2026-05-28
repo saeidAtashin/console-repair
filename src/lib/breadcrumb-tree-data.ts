@@ -128,5 +128,25 @@ export const siteBreadcrumbTree: BranchNode = {
       title: "پیگیری تعمیر",
       href: "/tracking",
     },
+    {
+      title: "درباره ما",
+      href: "/about-us",
+    },
+    {
+      title: "تماس با ما",
+      href: "/contact",
+    },
+    {
+      title: "سوالات متداول",
+      href: "/faq",
+    },
+    {
+      title: "قوانین و شرایط",
+      href: "/terms",
+    },
+    {
+      title: "حریم خصوصی",
+      href: "/privacy-policy",
+    },
   ],
 };

@@ -82,3 +82,18 @@ export const headerNavItems: SiteNavLeaf[] = [
   { title: "مشکلات رایج", href: "/issues" },
   trackingItem(),
 ];
+
+export const footerQuickLinks: SiteNavLeaf[] = [
+  { title: "خانه", href: "/" },
+  { title: "همه خدمات", href: "/services" },
+  { title: "ثبت سفارش تعمیر", href: "/repair" },
+  trackingItem(),
+];
+
+export const footerInfoLinks: SiteNavLeaf[] = [
+  { title: "درباره ما", href: "/about-us" },
+  { title: "تماس با ما", href: "/contact" },
+  { title: "سوالات متداول", href: "/faq" },
+  { title: "قوانین و شرایط", href: "/terms" },
+  { title: "حریم خصوصی", href: "/privacy-policy" },
+];
