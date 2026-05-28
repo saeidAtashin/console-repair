@@ -249,7 +249,9 @@ function ServicePickerButton({
       }}
       onClick={() => onSelect(id)}
       whileHover={
-        isPickerOpen ? { y: -3, scale: 1.03, transition: { duration: 0.2 } } : {}
+        isPickerOpen
+          ? { y: -3, scale: 1.03, transition: { duration: 0.2 } }
+          : {}
       }
       whileTap={{ scale: 0.94, y: 0 }}
       className={`group relative flex min-h-[52px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border px-1 py-2 text-center backdrop-blur-xl transition-[color,box-shadow] duration-300 sm:min-h-[56px] sm:gap-1.5 sm:rounded-2xl sm:px-1 sm:py-1 ${
@@ -452,6 +454,20 @@ export default function HeroDeviceScene() {
                   style={{ width: railWidth }}
                   className="flex flex-col justify-center gap-2 mb-2 sm:gap-2.5"
                 >
+                  <motion.p
+                    initial={false}
+                    animate={{
+                      opacity: isPickerOpen ? 1 : 0,
+                      y: isPickerOpen ? 0 : 6,
+                    }}
+                    transition={{
+                      ...springService,
+                      delay: isPickerOpen ? 0.14 : 0,
+                    }}
+                    className="mb-2 text-center text-[10px] font-medium tracking-wide text-cyan-300/75 sm:mb-2.5 sm:text-xs"
+                  >
+                    انتخاب کنسول
+                  </motion.p>{" "}
                   {consoleButtons("rail")}
                 </div>
               </motion.div>

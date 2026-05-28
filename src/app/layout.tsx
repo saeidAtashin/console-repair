@@ -17,6 +17,38 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const vazirmatn = localFont({
+  src: [
+    {
+      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Black.woff2",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-vazirmatn",
+  display: "swap",
+});
+
 const pixel = localFont({
   src: "./fonts/A-Pixel.ttf",
   variable: "--font-pixel",
@@ -79,7 +111,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body
-        className={`${pixel.variable} ${pixel2.variable} ${sorenanormal.variable} ${sorenapixelFont.variable} ${Cristik.variable} ${Mojita.variable} ${WAGHUBold.variable} ${WAGHURegular.variable} ${unixelFont.variable} `}
+        className={`${vazirmatn.variable} ${pixel.variable} ${pixel2.variable} ${sorenanormal.variable} ${sorenapixelFont.variable} ${Cristik.variable} ${Mojita.variable} ${WAGHUBold.variable} ${WAGHURegular.variable} ${unixelFont.variable} `}
       >
         <AuthProvider>
           <LocalBusinessSchema />
