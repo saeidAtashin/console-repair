@@ -28,7 +28,10 @@ function trackingItem(): SiteNavLeaf {
 }
 
 function issueLabel(consoleId: ConsoleId) {
-  return getRepairService(consoleId)?.title ?? `تعمیر ${consoleCatalog[consoleId].title}`;
+  return (
+    getRepairService(consoleId)?.title ??
+    `تعمیر ${consoleCatalog[consoleId].title}`
+  );
 }
 
 function repairChildren(): SiteNavLeaf[] {
@@ -50,7 +53,8 @@ function gameChildren(): SiteNavLeaf[] {
 function shopChildren(): SiteNavLeaf[] {
   return consoleIds.map((id) => ({
     title: `خرید ${consoleCatalog[id].title}`,
-    href: `/shop/${id}`,
+    // href: `/shop/${id}`,
+    href: "/coming-soon",
   }));
 }
 
