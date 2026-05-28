@@ -7,15 +7,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Wrench } from "lucide-react";
 
-import {
-  FormInput,
-  FormSelect,
-  FormTextarea,
-  ImageUploadField,
-} from "../components/ui/form";
+import { FormInput, FormTextarea, ImageUploadField } from "../components/ui/form";
+import RepairDevicePicker from "./RepairDevicePicker";
 import {
   consoleCatalog,
-  consoleIds,
   getRepairService,
   type ConsoleId,
 } from "../../lib/console-catalog";
@@ -196,28 +191,14 @@ export default function RepairFormClient({ initialPrefill }: Props) {
               {deviceLabel}
             </p>
           ) : (
-            <FormSelect
-              label="نوع دستگاه *"
-              id="repair-device"
-              fieldClassName="relative mx-auto mt-5 w-full max-w-sm text-start"
-              labelClassName="text-sm font-medium"
-              errorClassName="text-sm"
-              error={deviceError}
+            <RepairDevicePicker
               value={selectedConsoleId}
-              onChange={(e) => {
-                setSelectedConsoleId(e.target.value as ConsoleId);
+              onChange={(id) => {
+                setSelectedConsoleId(id);
                 setDeviceError(null);
               }}
-            >
-              <option value="" disabled>
-                دستگاه خود را انتخاب کنید
-              </option>
-              {consoleIds.map((id) => (
-                <option key={id} value={id}>
-                  {getRepairDeviceLabel(id)}
-                </option>
-              ))}
-            </FormSelect>
+              error={deviceError}
+            />
           )}
         </header>
 
