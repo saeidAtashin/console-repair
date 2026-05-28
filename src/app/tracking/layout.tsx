@@ -27,8 +27,9 @@ export default function TrackingLayout({
         description: DESCRIPTION,
         path: PATH,
       })}
-      className="min-h-screen bg-[#050816] pt-24 text-white"
+      className="min-h-screen bg-[#050816] text-white"
       containerClassName="container mx-auto max-w-3xl px-6"
+      breadcrumbClassName="mb-6 pt-24"
     >
       {children}
     </PageShell>
