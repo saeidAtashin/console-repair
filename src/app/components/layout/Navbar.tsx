@@ -139,10 +139,7 @@ export default function Navbar() {
               aria-label={open ? "بستن منو" : "باز کردن منو"}
               aria-expanded={open}
             >
-              <div
-                ref={cdRef}
-                className="h-11 w-11 will-change-transform"
-              >
+              <div ref={cdRef} className="h-11 w-11 will-change-transform">
                 <Image
                   src="/obj-console/cd.png"
                   alt=""
@@ -159,16 +156,9 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className="text-sm font-medium text-zinc-400 hover:text-white transition-colors px-4"
-                  >
-                    ورود
-                  </Link>
-                  <Link
-                    href="/register"
                     className="relative group overflow-hidden px-6 py-2 rounded-lg bg-cyan-500 text-black font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all hover:scale-105 active:scale-95"
                   >
-                    <span className="relative z-10">شروع تعمیرات</span>
-                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+                    ورود
                   </Link>
                 </>
               ) : (
@@ -326,16 +316,9 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   onClick={closeMenu}
-                  className="w-full py-4 rounded-xl bg-white/5 text-center text-white"
-                >
-                  ورود
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={closeMenu}
                   className="w-full py-4 rounded-xl bg-cyan-500 text-center text-black font-bold shadow-lg shadow-cyan-500/20"
                 >
-                  ثبت نام
+                  ورود
                 </Link>
               </div>
             )}
