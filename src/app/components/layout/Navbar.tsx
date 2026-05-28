@@ -4,13 +4,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import SiteLogo from "../ui/SiteLogo";
-import {
-  Menu,
-  X,
-  ChevronDown,
-  LogOut,
-  LayoutDashboard,
-} from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -42,7 +36,10 @@ export default function Navbar() {
         { title: "نصب بازی PS5", href: "/services/game-install/ps5" },
         { title: "نصب بازی PS4", href: "/services/game-install/ps4" },
         { title: "نصب بازی Xbox One", href: "/services/game-install/xbox-one" },
-        { title: "نصب بازی Xbox Series", href: "/services/game-install/xbox-series" },
+        {
+          title: "نصب بازی Xbox Series",
+          href: "/services/game-install/xbox-series",
+        },
       ],
     },
     {
@@ -202,6 +199,7 @@ export default function Navbar() {
                   {item.children ? (
                     <>
                       <button
+                        dir="ltr"
                         className="flex justify-between items-center w-full text-xl font-bold text-white"
                         onClick={() =>
                           setMobileOpen(
