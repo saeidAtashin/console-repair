@@ -164,3 +164,60 @@ textarea.input-neon:autofill {
   background-color: #09090b !important;
   box-shadow: 0 0 0 1000px #09090b inset !important;
 }
+
+.route-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: rgba(9, 9, 11, 0.92);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.route-loader-svg {
+  width: clamp(120px, 16vw, 210px);
+  color: #22d3ee;
+  filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.4));
+}
+
+.route-loader-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: route-loader-draw 0.58s ease forwards;
+}
+
+.route-loader-path-1 {
+  animation-delay: 0s;
+}
+
+.route-loader-path-2 {
+  animation-delay: 0.13s;
+}
+
+.route-loader-path-3 {
+  animation-delay: 0.26s;
+}
+
+.route-loader-path-4 {
+  animation-delay: 0.39s;
+}
+
+@keyframes route-loader-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loader-path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
+import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
 import { rootMetadata } from "../lib/seo/metadata";
 
@@ -82,6 +83,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <LocalBusinessSchema />
+          <RouteLoadingOverlay />
           <Navbar />
           {children}
           <Footer />

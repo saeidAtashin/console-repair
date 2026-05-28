@@ -11,7 +11,7 @@ import { X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
 const CD_SCROLL_FACTOR = 0.35;
 const CD_BURST_MS = 520;
 const CD_BURST_EXTRA_DEG = 900;
-const OPEN_MENU_DELAY_MS = 2000;
+const OPEN_MENU_DELAY_MS = 200;
 
 function getRotationDeg(el: HTMLElement) {
   const { transform } = window.getComputedStyle(el);
@@ -134,6 +134,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={toggleMenu}
+              data-route-loader-ignore="true"
               className="md:hidden relative h-11 w-11 shrink-0 touch-manipulation"
               aria-label={open ? "بستن منو" : "باز کردن منو"}
               aria-expanded={open}
@@ -261,6 +262,7 @@ export default function Navbar() {
               />
               <button
                 onClick={closeMenu}
+                data-route-loader-ignore="true"
                 className="text-zinc-500 hover:text-white transition-colors"
               >
                 <X size={32} />
@@ -274,6 +276,7 @@ export default function Navbar() {
                     <>
                       <button
                         dir="ltr"
+                        data-route-loader-ignore="true"
                         className="flex justify-between items-center w-full text-xl font-bold text-white"
                         onClick={() =>
                           setMobileOpen(
