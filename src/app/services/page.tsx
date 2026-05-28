@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 
 import PageShell from "@/app/components/seo/PageShell";
 import { services } from "@/app/data/services";
+// import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
 import { collectionPageJsonLd, itemListJsonLd } from "../../lib/seo/jsonld";
 import { createPageMetadata } from "../../lib/seo/metadata";
 
@@ -11,6 +12,7 @@ const PATH = "/services";
 const TITLE = "خدمات تعمیر کنسول بازی";
 const DESCRIPTION =
   "لیست خدمات تعمیر PS5، PS4، Xbox، HDMI و دسته بازی با ضمانت، زمان تقریبی و هزینه شفاف.";
+
 
 export const metadata = createPageMetadata({
   title: TITLE,

@@ -9,6 +9,7 @@ import ServicesSection from "./sections/ServicesSection";
 import Testimonials from "./sections/Testimonials";
 import WhyUs from "./sections/WhyUs";
 import GamingBackground from "./ui/GamingBackground";
+import PriceTable from "./sections/PriceTable";
 
 export default function HomePage() {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -32,6 +33,7 @@ export default function HomePage() {
       <GamingBackground />
       <Hero />
       <Services />
+      <PriceTable />
       <ContactCTA />
       <ServicesSection />
       <WhyUs />
