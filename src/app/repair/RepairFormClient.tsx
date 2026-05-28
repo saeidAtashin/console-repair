@@ -7,7 +7,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Wrench } from "lucide-react";
 
-import { FormInput, FormTextarea, ImageUploadField } from "../components/ui/form";
+import {
+  FormInput,
+  FormTextarea,
+  ImageUploadField,
+} from "../components/ui/form";
 import RepairDevicePicker from "./RepairDevicePicker";
 import {
   consoleCatalog,
@@ -164,14 +168,14 @@ export default function RepairFormClient({ initialPrefill }: Props) {
             </div>
           )}
 
-          <div className="relative mx-auto mb-8 flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 shadow-[0_0_25px_rgba(0,255,255,0.25)] backdrop-blur-xl">
+          <div className="relative mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 shadow-[0_0_25px_rgba(0,255,255,0.25)] backdrop-blur-xl">
             {consoleId ? (
               <Image
                 src={consoleRepairIcons[consoleId]}
                 alt={consoleConfig?.title ?? ""}
                 width={56}
                 height={56}
-                className="relative z-10 h-14 w-14 object-contain"
+                className="relative invert z-10 h-24 w-24 object-contain"
               />
             ) : (
               <Wrench className="h-12 w-12 text-cyan-400" aria-hidden />
