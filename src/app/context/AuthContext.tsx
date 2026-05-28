@@ -1,0 +1,120 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+
+type Role = "admin" | "user";
+
+type User = {
+  name: string;
+  role: Role;
+};
+
+type AuthContextType = {
+  user: User | null;
+  loading: boolean;
+  loginWithPassword: (username: string, password: string) => Promise<User | null>;
+  sendOtp: (phone: string) => Promise<boolean>;
+  loginWithOtp: (phone: string, code: string) => Promise<User | null>;
+  register: (name: string) => void;
+  logout: () => Promise<void>;
+};
+
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setUser(data.user);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const loginWithPassword = useCallback(
+    async (username: string, password: string): Promise<User | null> => {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      if (!data.success || !data.user) {
+        return null;
+      }
+
+      setUser(data.user);
+      return data.user;
+    },
+    [],
+  );
+
+  const sendOtp = useCallback(async (phone: string): Promise<boolean> => {
+    const res = await fetch("/api/auth/otp/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone }),
+    });
+
+    const data = await res.json();
+    return data.success === true;
+  }, []);
+
+  const loginWithOtp = useCallback(
+    async (phone: string, code: string): Promise<User | null> => {
+      const res = await fetch("/api/auth/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, code }),
+      });
+
+      const data = await res.json();
+      if (!data.success || !data.user) {
+        return null;
+      }
+
+      setUser(data.user);
+      return data.user;
+    },
+    [],
+  );
+
+  const register = useCallback((name: string) => {
+    setUser({ name, role: "user" });
+  }, []);
+
+  const logout = useCallback(async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        loginWithPassword,
+        sendOtp,
+        loginWithOtp,
+        register,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);
