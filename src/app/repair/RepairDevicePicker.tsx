@@ -72,7 +72,7 @@ export default function RepairDevicePicker({ value, onChange, error }: Props) {
                 width={48}
                 height={48}
                 className={cn(
-                  "relative z-10 h-12 w-12 object-contain transition-all duration-300",
+                  "relative invert text-white z-10 h-20 w-20 object-contain transition-all duration-300",
                   active
                     ? "drop-shadow-[0_0_12px_rgba(34,211,238,0.45)]"
                     : "opacity-75 group-hover:opacity-95",
