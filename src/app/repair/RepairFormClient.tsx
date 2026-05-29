@@ -39,9 +39,15 @@ type RepairFormData = z.infer<typeof repairSchema>;
 
 type Props = {
   initialPrefill: RepairPrefill;
+  defaultPhone?: string;
+  onSuccess?: () => void;
 };
 
-export default function RepairFormClient({ initialPrefill }: Props) {
+export default function RepairFormClient({
+  initialPrefill,
+  defaultPhone = "",
+  onSuccess,
+}: Props) {
   const consoleId = initialPrefill.consoleId;
   const consoleConfig = consoleId ? consoleCatalog[consoleId] : null;
   const repairService = consoleId ? getRepairService(consoleId) : null;
@@ -60,11 +66,11 @@ export default function RepairFormClient({ initialPrefill }: Props) {
   const defaultValues = useMemo<RepairFormData>(
     () => ({
       name: "",
-      phone: "",
+      phone: defaultPhone,
       issue: initialPrefill.issue ?? "",
       description: initialPrefill.description ?? "",
     }),
-    [initialPrefill.issue, initialPrefill.description],
+    [defaultPhone, initialPrefill.issue, initialPrefill.description],
   );
 
   const [loading, setLoading] = useState(false);
@@ -122,6 +128,7 @@ export default function RepairFormClient({ initialPrefill }: Props) {
         reset(defaultValues);
         setSelectedFile(null);
         setImagePreview(null);
+        onSuccess?.();
       }
     } catch (error) {
       console.log(error);
@@ -234,6 +241,7 @@ export default function RepairFormClient({ initialPrefill }: Props) {
               placeholder="09xxxxxxxxx"
               className="placeholder:text-end text-end"
               error={errors.phone?.message}
+              readOnly={Boolean(defaultPhone)}
               {...register("phone")}
             />
 

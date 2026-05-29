@@ -3,9 +3,12 @@ import { cookies } from "next/headers";
 
 export type SessionRole = "admin" | "user";
 
+export const ADMIN_PHONE = "09368165125";
+
 export type SessionUser = {
   name: string;
   role: SessionRole;
+  phone?: string;
 };
 
 const SESSION_COOKIE = "console_session";
@@ -58,7 +61,11 @@ function decodeSession(token: string): SessionUser | null {
       return null;
     }
 
-    return { name: data.name, role: data.role };
+    return {
+      name: data.name,
+      role: data.role,
+      phone: typeof data.phone === "string" ? data.phone : undefined,
+    };
   } catch {
     return null;
   }
@@ -93,6 +100,18 @@ export async function requireAdmin(): Promise<SessionUser | null> {
     return null;
   }
   return session;
+}
+
+export async function requireUser(): Promise<SessionUser | null> {
+  const session = await getSession();
+  if (!session || session.role !== "user") {
+    return null;
+  }
+  return session;
+}
+
+export function resolveRoleForPhone(phone: string): SessionRole {
+  return phone === ADMIN_PHONE ? "admin" : "user";
 }
 
 export function verifyAdminCredentials(

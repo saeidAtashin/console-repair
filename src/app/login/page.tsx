@@ -142,7 +142,8 @@ export default function LoginPage() {
     try {
       const user = await loginWithOtp(phone, otp);
       if (user) {
-        router.push("/dashboard");
+        if (user.role === "admin") router.push("/admin");
+        else router.push("/dashboard");
       } else {
         setError("کد تایید اشتباه است.");
       }

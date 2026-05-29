@@ -50,6 +50,13 @@ export async function getRepairOrderByCode(trackingCode: string) {
   });
 }
 
+export async function listRepairOrdersByPhone(phone: string) {
+  return prisma.repairOrder.findMany({
+    where: { phone },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function listRepairOrders() {
   return prisma.repairOrder.findMany({
     orderBy: { createdAt: "desc" },

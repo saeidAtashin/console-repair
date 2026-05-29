@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { setSession } from "@/lib/auth";
+import { resolveRoleForPhone, setSession } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -51,18 +51,25 @@ export async function POST(req: Request) {
 
     await prisma.otpSession.deleteMany({ where: { phone } });
 
+    const role = resolveRoleForPhone(phone);
+
     let user = await prisma.user.findUnique({ where: { phone } });
     if (!user) {
       user = await prisma.user.create({
-        data: { name: "کاربر", phone, role: "user" },
+        data: { name: role === "admin" ? "مدیر" : "کاربر", phone, role },
+      });
+    } else if (user.role !== role) {
+      user = await prisma.user.update({
+        where: { phone },
+        data: { role },
       });
     }
 
-    await setSession({ name: user.name, role: "user" });
+    await setSession({ name: user.name, role, phone });
 
     return NextResponse.json({
       success: true,
-      user: { name: user.name, role: "user" },
+      user: { name: user.name, role, phone },
     });
   } catch (error) {
     console.error("POST /api/auth/otp/verify failed:", error);

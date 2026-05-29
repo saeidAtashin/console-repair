@@ -13,6 +13,7 @@ type Role = "admin" | "user";
 type User = {
   name: string;
   role: Role;
+  phone?: string;
 };
 
 type SendOtpResult = {
