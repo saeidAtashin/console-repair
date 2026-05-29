@@ -15,5 +15,13 @@ export default function manifest(): MetadataRoute.Manifest {
     dir: "rtl",
     orientation: "portrait",
     categories: ["business", "utilities"],
+    icons: [
+      {
+        src: "/logos/logo-nobg.png",
+        sizes: "any",
+        type: "image/png",
+        purpose: "any",
+      },
+    ],
   };
 }

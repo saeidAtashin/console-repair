@@ -107,4 +107,9 @@ export const rootMetadata: Metadata = {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
+  icons: {
+    icon: "/logos/logo-nobg.png",
+    shortcut: "/logos/logo-nobg.png",
+    apple: "/logos/logo-nobg.png",
+  },
 };
