@@ -1,22 +1,21 @@
 FROM node:22-alpine AS base
-RUN apk add --no-cache libc6-compat
+WORKDIR /app
+RUN apk add --no-cache libc6-compat python3 make g++
 
 FROM base AS deps
-WORKDIR /app
-RUN apk add --no-cache python3 make g++
 COPY package.json package-lock.json* ./
+COPY prisma ./prisma
 RUN npm install
 
 FROM base AS builder
-WORKDIR /app
-RUN apk add --no-cache python3 make g++
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV DATABASE_URL="file:./prisma/dev.db"
 RUN npm run build
 
-FROM base AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
+RUN apk add --no-cache libc6-compat
 ENV NODE_ENV=production
 ENV DATABASE_URL="file:./prisma/dev.db"
 
