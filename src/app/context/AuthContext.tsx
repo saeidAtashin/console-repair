@@ -18,6 +18,7 @@ type User = {
 type SendOtpResult = {
   success: boolean;
   message?: string;
+  smsSent?: boolean;
   devCode?: string;
 };
 
@@ -78,6 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return {
       success: data.success === true,
       message: typeof data.message === "string" ? data.message : undefined,
+      smsSent: data.smsSent === true,
       devCode: typeof data.devCode === "string" ? data.devCode : undefined,
     };
   }, []);

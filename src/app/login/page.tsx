@@ -22,6 +22,9 @@ export default function LoginPage() {
   const [counter, setCounter] = useState<number>(0);
   const [codeSent, setCodeSent] = useState<boolean>(false);
   const [sendingOtp, setSendingOtp] = useState<boolean>(false);
+  /** Shown when SMS is skipped (OTP_SKIP_SMS) — matches server-side code for verify */
+  const [devOtpHint, setDevOtpHint] = useState<string>("");
+  const [smsSent, setSmsSent] = useState<boolean>(false);
 
   // refs برای ۴ input
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -33,42 +36,16 @@ export default function LoginPage() {
     }
   }, [codeSent]);
 
-  // Countdown timer
+  // Countdown timer (server validates expiry on /api/auth/otp/verify)
   useEffect(() => {
     if (!codeSent || counter <= 0) return;
 
     const timer = setInterval(() => {
-      setCounter((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setCounter((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
   }, [codeSent, counter]);
-
-  // timeout OTP
-  useEffect(() => {
-    if (!codeSent) return;
-
-    const timer = setInterval(() => {
-      setCounter((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setCodeSent(false);
-          setOtpDigits(["", "", "", ""]);
-          setError("⏰ زمان کد تایید به پایان رسید.");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [codeSent]);
 
   const validatePhone = (value: string): boolean => /^09\d{9}$/.test(value);
 
@@ -138,10 +115,8 @@ export default function LoginPage() {
       setCodeSent(true);
       setCounter(120);
       setOtpDigits(["", "", "", ""]);
-
-      if (result.devCode) {
-        console.log(`[OTP dev] ${phone} => ${result.devCode}`);
-      }
+      setSmsSent(result.smsSent === true);
+      setDevOtpHint(result.smsSent ? "" : (result.devCode ?? ""));
     } catch {
       setError("خطا در ارسال کد تایید.");
     } finally {
@@ -194,6 +169,8 @@ export default function LoginPage() {
             onClick={() => {
               setMode("password");
               setError("");
+              setDevOtpHint("");
+              setSmsSent(false);
             }}
             className={`flex-1 py-3 rounded-xl ${
               mode === "password" ? "bg-cyan-500 text-black" : "bg-white/5"
@@ -206,6 +183,8 @@ export default function LoginPage() {
             onClick={() => {
               setMode("otp");
               setError("");
+              setDevOtpHint("");
+              setSmsSent(false);
             }}
             className={`flex-1 py-3 rounded-xl ${
               mode === "otp" ? "bg-cyan-500 text-black" : "bg-white/5"
@@ -268,7 +247,7 @@ export default function LoginPage() {
             ) : (
               <>
                 {/* 4 input OTP */}
-                <div className="flex justify-center gap-3">
+                <div className="flex justify-center gap-3" dir="ltr">
                   {otpDigits.map((digit, index) => (
                     <input
                       key={index}
@@ -290,15 +269,46 @@ export default function LoginPage() {
                 </div>
 
                 <p className="text-sm text-center text-zinc-400">
-                  زمان باقی‌مانده: {formatTime(counter)}
+                  {counter > 0
+                    ? `زمان باقی‌مانده: ${formatTime(counter)}`
+                    : "زمان کد به پایان رسید — دوباره ارسال کنید."}
                 </p>
+
+                {smsSent && (
+                  <p className="text-sm text-center text-emerald-400/90">
+                    کد تأیید به {phone} پیامک شد.
+                  </p>
+                )}
+
+                {devOtpHint && (
+                  <p className="text-sm text-center text-amber-400/90">
+                    بدون پیامک (OTP_SKIP_SMS): کد {devOtpHint}
+                  </p>
+                )}
 
                 <button
                   onClick={handleOtpLogin}
-                  className="w-full bg-cyan-500 text-black font-bold py-3 rounded-xl"
+                  disabled={counter <= 0}
+                  className="w-full bg-cyan-500 text-black font-bold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   تایید و ورود
                 </button>
+
+                {counter <= 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCodeSent(false);
+                      setOtpDigits(["", "", "", ""]);
+                      setDevOtpHint("");
+                      setSmsSent(false);
+                      setError("");
+                    }}
+                    className="w-full bg-white/10 py-3 rounded-xl"
+                  >
+                    ارسال مجدد کد
+                  </button>
+                )}
               </>
             )}
           </div>

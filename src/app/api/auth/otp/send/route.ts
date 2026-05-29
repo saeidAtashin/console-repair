@@ -29,22 +29,20 @@ export async function POST(req: Request) {
 
     const skipSms = process.env.OTP_SKIP_SMS === "true";
     const ippanelError = getIppanelConfigError();
+    let smsSent = false;
 
     if (skipSms) {
       console.log(`[OTP skip] ${phone} => ${code}`);
     } else if (ippanelError) {
-      if (process.env.NODE_ENV === "development") {
-        console.log(`[OTP dev] ${phone} => ${code} (${ippanelError})`);
-      } else {
-        await prisma.otpSession.deleteMany({ where: { phone } });
-        return NextResponse.json(
-          { success: false, message: ippanelError },
-          { status: 503 },
-        );
-      }
+      await prisma.otpSession.deleteMany({ where: { phone } });
+      return NextResponse.json(
+        { success: false, message: ippanelError },
+        { status: 503 },
+      );
     } else {
       try {
         await sendLoginOtpPattern(phone, code);
+        smsSent = true;
         console.log(`[IPPanel] POST ${getIppanelSendUrl()} → ${phone}`);
       } catch (error) {
         await prisma.otpSession.deleteMany({ where: { phone } });
@@ -58,8 +56,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "کد تایید ارسال شد",
-      ...(process.env.NODE_ENV === "development" ? { devCode: code } : {}),
+      message: smsSent ? "کد تایید پیامک شد" : "کد تایید (بدون پیامک)",
+      smsSent,
+      ...(!smsSent ? { devCode: code } : {}),
     });
   } catch (error) {
     console.error("POST /api/auth/otp/send failed:", error);
