@@ -151,6 +151,34 @@ export default function Navbar() {
               </div>
             </button>
 
+            <div className="flex md:hidden items-center gap-2">
+              {!user ? (
+                <Link
+                  href="/login"
+                  className="px-4 py-2 rounded-lg bg-cyan-500 text-black font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all hover:scale-105 active:scale-95"
+                >
+                  ورود
+                </Link>
+              ) : (
+                <>
+                  <button
+                    onClick={logout}
+                    className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                    aria-label="خروج"
+                  >
+                    <LogOut size={18} />
+                  </button>
+                  <Link
+                    href={user.role === "admin" ? "/admin" : "/dashboard"}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-white font-bold text-xs hover:border-cyan-500/50 transition-all"
+                  >
+                    <LayoutDashboard size={16} className="text-cyan-400 shrink-0" />
+                    پنل
+                  </Link>
+                </>
+              )}
+            </div>
+
             <div className="hidden md:flex items-center gap-3">
               {!user ? (
                 <>
@@ -311,8 +339,8 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Auth Actions */}
-            {!user && (
-              <div className="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
+            <div className="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
+              {!user ? (
                 <Link
                   href="/login"
                   onClick={closeMenu}
@@ -320,8 +348,30 @@ export default function Navbar() {
                 >
                   ورود
                 </Link>
-              </div>
-            )}
+              ) : (
+                <>
+                  <Link
+                    href={user.role === "admin" ? "/admin" : "/dashboard"}
+                    onClick={closeMenu}
+                    className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-center text-white font-bold hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
+                  >
+                    <LayoutDashboard size={20} className="text-cyan-400" />
+                    پنل کاربری
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeMenu();
+                      logout();
+                    }}
+                    className="w-full py-4 rounded-xl bg-red-500/10 text-red-400 font-bold hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <LogOut size={20} />
+                    خروج
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
