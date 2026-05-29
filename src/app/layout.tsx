@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 
 import "./globals.css";
 import Navbar from "./components/layout/Navbar";
@@ -115,7 +116,9 @@ export default function RootLayout({
       >
         <AuthProvider>
           <LocalBusinessSchema />
-          <RouteLoadingOverlay />
+          <Suspense fallback={null}>
+            <RouteLoadingOverlay />
+          </Suspense>
           <Navbar />
           {children}
           <Footer />
