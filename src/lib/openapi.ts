@@ -4,6 +4,7 @@
  */
 
 const DEFAULT_BASE_URL = "http://localhost:3000";
+const IPPANEL_BASE_URL = "https://edge.ippanel.com/v1";
 
 export function resolveApiBaseUrl(requestOrigin?: string): string {
   const fromEnv =
@@ -23,15 +24,19 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
   return {
   openapi: "3.0.3",
   info: {
-    title: `Console Repair API [ Base URL: ${normalizedBaseUrl} ]`,
+    title: `Console Repair API [ App: ${normalizedBaseUrl} | IPPanel: ${IPPANEL_BASE_URL} ]`,
     description:
-      "REST API for authentication (JWT Bearer), repair orders, admin management, and game catalog (RAWG proxy). Use **Authorize** to set `Bearer <access_token>` after login or OTP verify.",
+      "REST API for authentication, repair orders, admin management, and game catalog. OTP SMS is sent via **IPPanel Edge API** (`POST /api/send` on `https://edge.ippanel.com/v1`). Use **Authorize** for Bearer token on protected routes.",
     version: "1.0.0",
   },
   servers: [
     {
       url: normalizedBaseUrl,
-      description: "API server",
+      description: "Console Repair App (Next.js)",
+    },
+    {
+      url: IPPANEL_BASE_URL,
+      description: "IPPanel Edge API (SMS / pattern OTP)",
     },
   ],
   tags: [
@@ -47,7 +52,14 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
         in: "header",
         name: "Authorization",
         description:
-          'JWT access token. Format: `Bearer <access_token>` (from login, verify-otp, or token refresh).',
+          'App JWT access token. Format: `Bearer <access_token>` (from login or verify-otp).',
+      },
+      IppanelApiKey: {
+        type: "apiKey",
+        in: "header",
+        name: "Authorization",
+        description:
+          "IPPanel API key from your panel. Paste the key directly (example: `YTFlNDI4...`). Do not use app JWT here.",
       },
     },
     schemas: {
@@ -682,11 +694,121 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
         },
       },
     },
-    "/auth/send-otp/": {
+    "/api/send": {
       post: {
         tags: ["auth"],
         operationId: "auth_send-otp_create",
-        summary: "Send login OTP",
+        summary: "Send login OTP (IPPanel pattern SMS)",
+        description:
+          "IPPanel Edge API — sends OTP using an approved pattern. " +
+          "Pattern: `کد ورود شما: %otp% تست @fixbazi.ir #%otpconfirm%`. " +
+          "This app calls this endpoint from `POST /api/auth/otp/send`.",
+        servers: [{ url: IPPANEL_BASE_URL, description: "IPPanel Edge API" }],
+        security: [{ IppanelApiKey: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: [
+                  "sending_type",
+                  "from_number",
+                  "code",
+                  "recipients",
+                  "params",
+                ],
+                properties: {
+                  sending_type: {
+                    type: "string",
+                    enum: ["pattern"],
+                    example: "pattern",
+                  },
+                  from_number: {
+                    type: "string",
+                    example: "+983000505",
+                    description: "Sender line (E.164)",
+                  },
+                  code: {
+                    type: "string",
+                    description: "Approved pattern code from IPPanel panel",
+                  },
+                  recipients: {
+                    type: "array",
+                    items: { type: "string" },
+                    example: ["+989123456789"],
+                    description: "One recipient in E.164 format",
+                  },
+                  params: {
+                    type: "object",
+                    properties: {
+                      otp: { type: "string", example: "1234" },
+                      otpconfirm: { type: "string", example: "1234" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "SMS queued",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    data: {
+                      type: "object",
+                      properties: {
+                        message_outbox_ids: {
+                          type: "array",
+                          items: { type: "integer" },
+                        },
+                      },
+                    },
+                    meta: {
+                      type: "object",
+                      properties: {
+                        status: { type: "boolean", example: true },
+                        message: { type: "string" },
+                        message_code: { type: "string", example: "200-1" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "401": {
+            description: "Invalid API key",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
+          "422": {
+            description: "Validation error",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/auth/otp/send": {
+      post: {
+        tags: ["auth"],
+        operationId: "app_send_otp",
+        summary: "Send OTP (app proxy → IPPanel)",
+        description:
+          "Call this from the login page. Browser → **localhost** (this route) → server calls IPPanel `https://edge.ippanel.com/v1/api/send`. Requires `IPPANEL_*` env vars on the server.",
+        servers: [{ url: normalizedBaseUrl, description: "Console Repair App" }],
+        security: [],
         requestBody: {
           required: true,
           content: {
@@ -707,7 +829,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
         },
         responses: {
           "200": {
-            description: "OTP sent",
+            description: "OTP sent (via IPPanel)",
             content: {
               "application/json": {
                 schema: {
@@ -715,6 +837,10 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                   properties: {
                     success: { type: "boolean", example: true },
                     message: { type: "string" },
+                    devCode: {
+                      type: "string",
+                      description: "Only in development",
+                    },
                   },
                 },
               },
@@ -722,6 +848,14 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
           },
           "400": {
             description: "Invalid phone",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiError" },
+              },
+            },
+          },
+          "502": {
+            description: "IPPanel send failed",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ApiError" },

@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string>("");
   const [counter, setCounter] = useState<number>(0);
   const [codeSent, setCodeSent] = useState<boolean>(false);
+  const [sendingOtp, setSendingOtp] = useState<boolean>(false);
 
   // refs برای ۴ input
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -124,19 +125,33 @@ export default function LoginPage() {
       return;
     }
 
+    if (sendingOtp) return;
+
+    setSendingOtp(true);
     try {
-      const success = await sendOtp(phone);
-      if (!success) {
-        setError("خطا در ارسال کد تایید.");
+      const result = await sendOtp(phone);
+      if (!result.success) {
+        setError(result.message ?? "خطا در ارسال کد تایید.");
         return;
       }
 
       setCodeSent(true);
       setCounter(120);
       setOtpDigits(["", "", "", ""]);
+
+      if (result.devCode) {
+        console.log(`[OTP dev] ${phone} => ${result.devCode}`);
+      }
     } catch {
       setError("خطا در ارسال کد تایید.");
+    } finally {
+      setSendingOtp(false);
     }
+  };
+
+  const handleSendOtpSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    void handleSendOtp();
   };
 
   const handleOtpLogin = async (): Promise<void> => {
@@ -231,23 +246,25 @@ export default function LoginPage() {
         ) : (
           <div className="space-y-4">
             {!codeSent ? (
-              <>
+              <form onSubmit={handleSendOtpSubmit} className="space-y-4">
                 <input
                   type="tel"
                   inputMode="numeric"
                   value={phone}
                   onChange={handlePhoneChange}
                   placeholder="شماره موبایل"
+                  autoComplete="tel"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
                 />
 
                 <button
-                  onClick={handleSendOtp}
-                  className="w-full bg-white/10 py-3 rounded-xl"
+                  type="submit"
+                  disabled={sendingOtp || !validatePhone(phone)}
+                  className="w-full bg-white/10 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  ارسال کد
+                  {sendingOtp ? "در حال ارسال..." : "ارسال کد"}
                 </button>
-              </>
+              </form>
             ) : (
               <>
                 {/* 4 input OTP */}

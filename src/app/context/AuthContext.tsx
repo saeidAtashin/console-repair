@@ -15,11 +15,17 @@ type User = {
   role: Role;
 };
 
+type SendOtpResult = {
+  success: boolean;
+  message?: string;
+  devCode?: string;
+};
+
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   loginWithPassword: (username: string, password: string) => Promise<User | null>;
-  sendOtp: (phone: string) => Promise<boolean>;
+  sendOtp: (phone: string) => Promise<SendOtpResult>;
   loginWithOtp: (phone: string, code: string) => Promise<User | null>;
   register: (name: string) => void;
   logout: () => Promise<void>;
@@ -61,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const sendOtp = useCallback(async (phone: string): Promise<boolean> => {
+  const sendOtp = useCallback(async (phone: string): Promise<SendOtpResult> => {
     const res = await fetch("/api/auth/otp/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -69,7 +75,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     const data = await res.json();
-    return data.success === true;
+    return {
+      success: data.success === true,
+      message: typeof data.message === "string" ? data.message : undefined,
+      devCode: typeof data.devCode === "string" ? data.devCode : undefined,
+    };
   }, []);
 
   const loginWithOtp = useCallback(

@@ -1,4 +1,4 @@
-import { createHmac, randomBytes, timingSafeEqual } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
 export type SessionRole = "admin" | "user";
@@ -109,7 +109,7 @@ export function generateOtpCode(): string {
   if (devCode) {
     return devCode;
   }
-  return randomBytes(3).toString("hex").slice(0, 4).toUpperCase();
+  return String(Math.floor(1000 + Math.random() * 9000));
 }
 
 export function getOtpExpiry(): Date {
