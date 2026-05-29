@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
 import { createRepairOrder, serializeOrder } from "@/lib/orders";
+import {
+  IRAN_PHONE_INVALID_MESSAGE,
+  normalizeIranPhone,
+} from "@/lib/phone";
 import { saveRepairImage } from "@/lib/uploads";
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
 
-    const phone = String(formData.get("phone") ?? "").trim();
-    if (!/^09\d{9}$/.test(phone)) {
+    const phone = normalizeIranPhone(String(formData.get("phone") ?? ""));
+    if (!phone) {
       return NextResponse.json(
-        { success: false, message: "شماره تماس معتبر نیست" },
+        { success: false, message: IRAN_PHONE_INVALID_MESSAGE },
         { status: 400 },
       );
     }

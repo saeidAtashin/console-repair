@@ -1,3 +1,5 @@
+import { normalizeIranPhone } from "@/lib/phone";
+
 const DEFAULT_IPPANEL_BASE_URL = "https://edge.ippanel.com/v1";
 
 type IppanelSendResponse = {
@@ -18,11 +20,12 @@ export function getIppanelSendUrl(): string {
   return `${getIppanelBaseUrl()}/api/send`;
 }
 
-/** 09123456789 → +989123456789 */
+/** 09123456789 (or +98/98/9…) → +989123456789 */
 export function toE164Iran(phone: string): string {
+  const normalized = normalizeIranPhone(phone);
+  if (normalized) return `+98${normalized.slice(1)}`;
   const trimmed = phone.trim();
-  if (trimmed.startsWith("+98")) return trimmed;
-  if (trimmed.startsWith("09")) return `+98${trimmed.slice(1)}`;
+  if (trimmed.startsWith("+")) return trimmed;
   return trimmed;
 }
 

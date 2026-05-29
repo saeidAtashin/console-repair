@@ -20,6 +20,12 @@ import {
 } from "../../lib/console-catalog";
 import { neonInputProps } from "../../lib/neon-autofill";
 import {
+  IRAN_PHONE_INVALID_MESSAGE,
+  isValidIranPhone,
+  normalizeIranPhone,
+  sanitizePhoneInput,
+} from "../../lib/phone";
+import {
   consoleRepairIcons,
   getRepairDeviceLabel,
   type RepairPrefill,
@@ -29,13 +35,17 @@ const repairSchema = z.object({
   name: z.string().optional(),
   phone: z
     .string()
-    .min(11, "شماره تماس معتبر نیست")
-    .max(11, "شماره تماس معتبر نیست"),
+    .min(1, "شماره تماس الزامی است")
+    .refine((value) => isValidIranPhone(value), {
+      message: IRAN_PHONE_INVALID_MESSAGE,
+    })
+    .transform((value) => normalizeIranPhone(value)!),
   issue: z.string().optional(),
   description: z.string().optional(),
 });
 
-type RepairFormData = z.infer<typeof repairSchema>;
+type RepairFormInput = z.input<typeof repairSchema>;
+type RepairFormData = z.output<typeof repairSchema>;
 
 type Props = {
   initialPrefill: RepairPrefill;
@@ -63,7 +73,7 @@ export default function RepairFormClient({
       ? getRepairDeviceLabel(selectedConsoleId)
       : null;
 
-  const defaultValues = useMemo<RepairFormData>(
+  const defaultValues = useMemo<RepairFormInput>(
     () => ({
       name: "",
       phone: defaultPhone,
@@ -84,10 +94,12 @@ export default function RepairFormClient({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<RepairFormData>({
+  } = useForm<RepairFormInput, unknown, RepairFormData>({
     resolver: zodResolver(repairSchema),
     defaultValues,
   });
+
+  const phoneField = register("phone");
 
   useEffect(() => {
     reset(defaultValues);
@@ -238,11 +250,15 @@ export default function RepairFormClient({
               type="tel"
               inputMode="tel"
               autoComplete="tel"
-              placeholder="09xxxxxxxxx"
+              placeholder="09 / +98 / 98 / 9..."
               className="placeholder:text-end text-end"
               error={errors.phone?.message}
               readOnly={Boolean(defaultPhone)}
-              {...register("phone")}
+              {...phoneField}
+              onChange={(e) => {
+                e.target.value = sanitizePhoneInput(e.target.value);
+                phoneField.onChange(e);
+              }}
             />
 
             <FormInput

@@ -2,6 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
+import {
+  IRAN_PHONE_INVALID_MESSAGE,
+  isValidIranPhone,
+  normalizeIranPhone,
+  sanitizePhoneInput,
+} from "@/lib/phone";
 import { useRouter } from "next/navigation";
 
 type Mode = "password" | "otp";
@@ -47,7 +53,7 @@ export default function LoginPage() {
     return () => clearInterval(timer);
   }, [codeSent, counter]);
 
-  const validatePhone = (value: string): boolean => /^09\d{9}$/.test(value);
+  const validatePhone = (value: string): boolean => isValidIranPhone(value);
 
   const handlePasswordLogin = async (): Promise<void> => {
     setError("");
@@ -65,8 +71,7 @@ export default function LoginPage() {
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const value = e.target.value.replace(/\D/g, "");
-    setPhone(value.slice(0, 11));
+    setPhone(sanitizePhoneInput(e.target.value));
   };
 
   const handleOtpDigitChange = (index: number, value: string): void => {
@@ -98,7 +103,7 @@ export default function LoginPage() {
     setError("");
 
     if (!validatePhone(phone)) {
-      setError("شماره موبایل باید با 09 شروع شود و 11 رقم باشد.");
+      setError(IRAN_PHONE_INVALID_MESSAGE);
       return;
     }
 
@@ -140,7 +145,13 @@ export default function LoginPage() {
     }
 
     try {
-      const user = await loginWithOtp(phone, otp);
+      const normalizedPhone = normalizeIranPhone(phone);
+      if (!normalizedPhone) {
+        setError(IRAN_PHONE_INVALID_MESSAGE);
+        return;
+      }
+
+      const user = await loginWithOtp(normalizedPhone, otp);
       if (user) {
         if (user.role === "admin") router.push("/admin");
         else router.push("/dashboard");
@@ -232,7 +243,7 @@ export default function LoginPage() {
                   inputMode="numeric"
                   value={phone}
                   onChange={handlePhoneChange}
-                  placeholder="شماره موبایل"
+                  placeholder="09 / +98 / 98 / 9..."
                   autoComplete="tel"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
                 />

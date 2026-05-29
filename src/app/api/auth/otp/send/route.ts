@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { generateOtpCode, getOtpExpiry } from "@/lib/auth";
 import {
+  IRAN_PHONE_INVALID_MESSAGE,
+  normalizeIranPhone,
+} from "@/lib/phone";
+import {
   getIppanelConfigError,
   sendLoginOtpPattern,
   getIppanelSendUrl,
@@ -10,11 +14,11 @@ import {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const phone = String(body.phone ?? "").trim();
+    const phone = normalizeIranPhone(String(body.phone ?? ""));
 
-    if (!/^09\d{9}$/.test(phone)) {
+    if (!phone) {
       return NextResponse.json(
-        { success: false, message: "شماره موبایل معتبر نیست" },
+        { success: false, message: IRAN_PHONE_INVALID_MESSAGE },
         { status: 400 },
       );
     }

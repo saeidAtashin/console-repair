@@ -83,7 +83,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
         type: "object",
         properties: {
           id: { type: "integer" },
-          phone: { type: "string", pattern: "^09\\d{9}$" },
+          phone: { type: "string", pattern: "^(?:\\+?98|0)?9\\d{9}$" },
           username: { type: "string" },
           name: { type: "string" },
           role: { type: "string", enum: ["admin", "user"] },
@@ -119,7 +119,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
           name: { type: "string" },
           phone: {
             type: "string",
-            pattern: "^09\\d{9}$",
+            pattern: "^(?:\\+?98|0)?9\\d{9}$",
             description: "Iranian mobile (09xxxxxxxxx)",
           },
           device: { type: "string" },
@@ -165,7 +165,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                   name: { type: "string" },
                   phone: {
                     type: "string",
-                    pattern: "^09\\d{9}$",
+                    pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
                   device: { type: "string", default: "دستگاه نامشخص" },
@@ -437,7 +437,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                 properties: {
                   phone: {
                     type: "string",
-                    pattern: "^09\\d{9}$",
+                    pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
                   username: { type: "string" },
@@ -498,7 +498,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                 properties: {
                   phone: {
                     type: "string",
-                    pattern: "^09\\d{9}$",
+                    pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
                 },
@@ -547,7 +547,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                 properties: {
                   phone: {
                     type: "string",
-                    pattern: "^09\\d{9}$",
+                    pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
                   code: { type: "string", example: "1234" },
@@ -600,7 +600,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                 properties: {
                   phone: {
                     type: "string",
-                    pattern: "^09\\d{9}$",
+                    pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
                   reset_token: { type: "string" },
@@ -819,7 +819,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                 properties: {
                   phone: {
                     type: "string",
-                    pattern: "^09\\d{9}$",
+                    pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
                 },
@@ -921,7 +921,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                 properties: {
                   phone: {
                     type: "string",
-                    pattern: "^09\\d{9}$",
+                    pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
                   code: { type: "string", example: "1234" },
