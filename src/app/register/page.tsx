@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
+import { getPostLoginPath } from "@/lib/auth-shared";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
@@ -13,8 +14,7 @@ export default function RegisterPage() {
 
   const handleRegister = () => {
     register(name);
-
-    router.push("/dashboard");
+    router.replace(getPostLoginPath("user"));
   };
 
   return (

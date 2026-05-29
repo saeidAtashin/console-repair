@@ -8,13 +8,15 @@ import {
   normalizeIranPhone,
   sanitizePhoneInput,
 } from "@/lib/phone";
+import { getPostLoginPath } from "@/lib/auth-shared";
 import { useRouter } from "next/navigation";
 
 type Mode = "password" | "otp";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginWithPassword, loginWithOtp, sendOtp } = useAuth();
+  const { user, loading: authLoading, loginWithPassword, loginWithOtp, sendOtp } =
+    useAuth();
 
   const [mode, setMode] = useState<Mode>("password");
 
@@ -31,6 +33,12 @@ export default function LoginPage() {
   /** Shown when SMS is skipped (OTP_SKIP_SMS) — matches server-side code for verify */
   const [devOtpHint, setDevOtpHint] = useState<string>("");
   const [smsSent, setSmsSent] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace(getPostLoginPath(user.role));
+    }
+  }, [authLoading, user, router]);
 
   // refs برای ۴ input
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -58,11 +66,8 @@ export default function LoginPage() {
   const handlePasswordLogin = async (): Promise<void> => {
     setError("");
     try {
-      const user = await loginWithPassword(username, password);
-      if (user) {
-        if (user.role === "admin") router.push("/admin");
-        else router.push("/dashboard");
-      } else {
+      const loggedIn = await loginWithPassword(username, password);
+      if (!loggedIn) {
         setError("نام کاربری یا رمز عبور اشتباه است.");
       }
     } catch {
@@ -111,7 +116,8 @@ export default function LoginPage() {
 
     setSendingOtp(true);
     try {
-      const result = await sendOtp(phone);
+      const normalizedPhone = normalizeIranPhone(phone)!;
+      const result = await sendOtp(normalizedPhone);
       if (!result.success) {
         setError(result.message ?? "خطا در ارسال کد تایید.");
         return;
@@ -151,11 +157,8 @@ export default function LoginPage() {
         return;
       }
 
-      const user = await loginWithOtp(normalizedPhone, otp);
-      if (user) {
-        if (user.role === "admin") router.push("/admin");
-        else router.push("/dashboard");
-      } else {
+      const loggedIn = await loginWithOtp(normalizedPhone, otp);
+      if (!loggedIn) {
         setError("کد تایید اشتباه است.");
       }
     } catch {
@@ -168,6 +171,14 @@ export default function LoginPage() {
     const sec = seconds % 60;
     return `${min}:${sec.toString().padStart(2, "0")}`;
   };
+
+  if (authLoading || user) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-zinc-400">در حال بارگذاری...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-black text-white flex items-center justify-center px-4">

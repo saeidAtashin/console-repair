@@ -1,15 +1,17 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
-export type SessionRole = "admin" | "user";
+import type { SessionUser } from "@/lib/auth-shared";
 
-export const ADMIN_PHONE = "09368165125";
-
-export type SessionUser = {
-  name: string;
-  role: SessionRole;
-  phone?: string;
-};
+export type { SessionRole, SessionUser } from "@/lib/auth-shared";
+export {
+  ADMIN_PHONE,
+  generateOtpCode,
+  getOtpExpiry,
+  getPostLoginPath,
+  resolveRoleForPhone,
+  verifyAdminCredentials,
+} from "@/lib/auth-shared";
 
 const SESSION_COOKIE = "console_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -108,29 +110,4 @@ export async function requireUser(): Promise<SessionUser | null> {
     return null;
   }
   return session;
-}
-
-export function resolveRoleForPhone(phone: string): SessionRole {
-  return phone === ADMIN_PHONE ? "admin" : "user";
-}
-
-export function verifyAdminCredentials(
-  username: string,
-  password: string,
-): boolean {
-  const adminUsername = process.env.ADMIN_USERNAME ?? "admin";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "changeme";
-  return username === adminUsername && password === adminPassword;
-}
-
-export function generateOtpCode(): string {
-  const devCode = process.env.OTP_DEV_CODE;
-  if (devCode) {
-    return devCode;
-  }
-  return String(Math.floor(1000 + Math.random() * 9000));
-}
-
-export function getOtpExpiry(): Date {
-  return new Date(Date.now() + 2 * 60 * 1000);
 }

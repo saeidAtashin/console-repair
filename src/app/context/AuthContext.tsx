@@ -7,6 +7,9 @@ import {
   useState,
   useCallback,
 } from "react";
+import { useRouter } from "next/navigation";
+
+import { getPostLoginPath } from "@/lib/auth-shared";
 
 type Role = "admin" | "user";
 
@@ -36,6 +39,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,9 +68,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(data.user);
+      router.replace(getPostLoginPath(data.user.role));
       return data.user;
     },
-    [],
+    [router],
   );
 
   const sendOtp = useCallback(async (phone: string): Promise<SendOtpResult> => {
@@ -99,9 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(data.user);
+      router.replace(getPostLoginPath(data.user.role));
       return data.user;
     },
-    [],
+    [router],
   );
 
   const register = useCallback((name: string) => {
@@ -111,7 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
-  }, []);
+    router.replace("/");
+  }, [router]);
 
   return (
     <AuthContext.Provider
