@@ -157,9 +157,9 @@ export default function LoginPage() {
         return;
       }
 
-      const loggedIn = await loginWithOtp(normalizedPhone, otp);
-      if (!loggedIn) {
-        setError("کد تایید اشتباه است.");
+      const result = await loginWithOtp(normalizedPhone, otp);
+      if (!result.user) {
+        setError(result.message ?? "کد تایید اشتباه است.");
       }
     } catch {
       setError("خطا در اعتبارسنجی کد تایید.");

@@ -33,6 +33,8 @@ export function generateOtpCode(): string {
   return String(Math.floor(1000 + Math.random() * 9000));
 }
 
+export const OTP_TTL_SEC = 2 * 60;
+
 export function getOtpExpiry(): Date {
-  return new Date(Date.now() + 2 * 60 * 1000);
+  return new Date(Date.now() + OTP_TTL_SEC * 1000);
 }

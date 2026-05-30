@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
-import { generateOtpCode, getOtpExpiry } from "@/lib/auth";
+import { generateOtpCode } from "@/lib/auth";
 import {
   IRAN_PHONE_INVALID_MESSAGE,
   normalizeIranPhone,
@@ -10,6 +9,7 @@ import {
   sendLoginOtpPattern,
   getIppanelSendUrl,
 } from "@/lib/ippanel";
+import { setOtpCookie } from "@/lib/otp-cookie";
 
 export async function POST(req: Request) {
   try {
@@ -24,13 +24,6 @@ export async function POST(req: Request) {
     }
 
     const code = generateOtpCode();
-    const expiresAt = getOtpExpiry();
-
-    await prisma.otpSession.deleteMany({ where: { phone } });
-    await prisma.otpSession.create({
-      data: { phone, code, expiresAt },
-    });
-
     const skipSms = process.env.OTP_SKIP_SMS === "true";
     const ippanelError = getIppanelConfigError();
     let smsSent = false;
@@ -38,7 +31,6 @@ export async function POST(req: Request) {
     if (skipSms) {
       console.log(`[OTP skip] ${phone} => ${code}`);
     } else if (ippanelError) {
-      await prisma.otpSession.deleteMany({ where: { phone } });
       return NextResponse.json(
         { success: false, message: ippanelError },
         { status: 503 },
@@ -49,7 +41,6 @@ export async function POST(req: Request) {
         smsSent = true;
         console.log(`[IPPanel] POST ${getIppanelSendUrl()} → ${phone}`);
       } catch (error) {
-        await prisma.otpSession.deleteMany({ where: { phone } });
         console.error("IPPanel OTP send failed:", error);
         return NextResponse.json(
           { success: false, message: "خطا در ارسال پیامک" },
@@ -57,6 +48,8 @@ export async function POST(req: Request) {
         );
       }
     }
+
+    await setOtpCookie(phone, code);
 
     return NextResponse.json({
       success: true,
@@ -68,11 +61,8 @@ export async function POST(req: Request) {
     console.error("POST /api/auth/otp/send failed:", error);
 
     const message =
-      error instanceof Error &&
-      (error.message.includes("better_sqlite3") ||
-        error.message.includes("bindings file") ||
-        error.message.includes("SQLITE"))
-        ? "خطا در اتصال به پایگاه داده"
+      error instanceof Error && error.message === "AUTH_SECRET is not configured"
+        ? "AUTH_SECRET تنظیم نشده است"
         : "خطا در ارسال کد";
 
     return NextResponse.json({ success: false, message }, { status: 500 });

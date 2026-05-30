@@ -5,6 +5,7 @@ import {
   IRAN_PHONE_INVALID_MESSAGE,
   normalizeIranPhone,
 } from "@/lib/phone";
+import { verifyOtpCookie } from "@/lib/otp-cookie";
 
 export async function POST(req: Request) {
   try {
@@ -26,34 +27,35 @@ export async function POST(req: Request) {
       );
     }
 
-    const session = await prisma.otpSession.findFirst({
-      where: { phone },
-      orderBy: { createdAt: "desc" },
-    });
+    const verification = await verifyOtpCookie(phone, code);
 
-    if (!session) {
-      return NextResponse.json(
-        { success: false, message: "کد تایید یافت نشد" },
-        { status: 400 },
-      );
-    }
+    if (!verification.ok) {
+      if (verification.reason === "missing") {
+        return NextResponse.json(
+          { success: false, message: "کد تایید یافت نشد. دوباره درخواست ارسال کد دهید." },
+          { status: 400 },
+        );
+      }
 
-    if (session.expiresAt < new Date()) {
-      await prisma.otpSession.delete({ where: { id: session.id } });
-      return NextResponse.json(
-        { success: false, message: "کد تایید منقضی شده است" },
-        { status: 400 },
-      );
-    }
+      if (verification.reason === "expired") {
+        return NextResponse.json(
+          { success: false, message: "کد تایید منقضی شده است" },
+          { status: 400 },
+        );
+      }
 
-    if (session.code !== code) {
+      if (verification.reason === "phone_mismatch") {
+        return NextResponse.json(
+          { success: false, message: "شماره موبایل با کد ارسال‌شده مطابقت ندارد" },
+          { status: 400 },
+        );
+      }
+
       return NextResponse.json(
         { success: false, message: "کد تایید اشتباه است" },
         { status: 401 },
       );
     }
-
-    await prisma.otpSession.deleteMany({ where: { phone } });
 
     const role = resolveRoleForPhone(phone);
 

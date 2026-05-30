@@ -26,12 +26,17 @@ type SendOtpResult = {
   devCode?: string;
 };
 
+type LoginWithOtpResult = {
+  user: User | null;
+  message?: string;
+};
+
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   loginWithPassword: (username: string, password: string) => Promise<User | null>;
   sendOtp: (phone: string) => Promise<SendOtpResult>;
-  loginWithOtp: (phone: string, code: string) => Promise<User | null>;
+  loginWithOtp: (phone: string, code: string) => Promise<LoginWithOtpResult>;
   register: (name: string) => void;
   logout: () => Promise<void>;
 };
@@ -78,6 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const res = await fetch("/api/auth/otp/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify({ phone }),
     });
 
@@ -91,21 +97,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithOtp = useCallback(
-    async (phone: string, code: string): Promise<User | null> => {
+    async (phone: string, code: string): Promise<LoginWithOtpResult> => {
       const res = await fetch("/api/auth/otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ phone, code }),
       });
 
       const data = await res.json();
       if (!data.success || !data.user) {
-        return null;
+        return {
+          user: null,
+          message: typeof data.message === "string" ? data.message : undefined,
+        };
       }
 
       setUser(data.user);
       router.replace(getPostLoginPath(data.user.role));
-      return data.user;
+      return { user: data.user };
     },
     [router],
   );
