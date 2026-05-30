@@ -53,3 +53,30 @@ export function collectionPageJsonLd(input: {
     publisher: { "@type": "Organization", name: SITE_NAME },
   };
 }
+
+export function productJsonLd(input: {
+  name: string;
+  description: string;
+  path: string;
+  price: number;
+  image?: string | null;
+  inStock: boolean;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: input.name,
+    description: input.description,
+    url: absoluteUrl(input.path),
+    image: input.image ? absoluteUrl(input.image) : undefined,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "IRR",
+      price: input.price,
+      availability: input.inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      url: absoluteUrl(input.path),
+    },
+  };
+}

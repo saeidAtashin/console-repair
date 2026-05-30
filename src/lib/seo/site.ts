@@ -1,6 +1,6 @@
 export const SITE_NAME = "فیکس‌بازی | fix bazi";
 export const SITE_TAGLINE =
-  "fix bazi (فیکس‌بازی) - تعمیر تخصصی پلی‌استیشن و ایکس‌باکس با گارانتی و قطعات اورجینال";
+  "فروشگاه آنلاین هدیه گیمینگ — بسته هدیه، گیم‌پد، هدست و گیفت کارت PlayStation و Xbox";
 export const SITE_LOCALE = "fa_IR";
 /** Default social preview — use a real 1200×630 asset at /og.jpg when available. */
 export const DEFAULT_OG_IMAGE = "/images/ps5-repair.webp";

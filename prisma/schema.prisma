@@ -32,9 +32,140 @@ model OtpSession {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   name      String
-  phone     String?  @unique
-  role      String   @default("user")
+  phone     String?   @unique
+  role      String    @default("user")
+  createdAt DateTime  @default(now())
+  addresses Address[]
+  cartItems CartItem[]
+  orders    ShopOrder[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String    @default("")
+  imageUrl    String    @default("")
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Product {
+  id               String         @id @default(cuid())
+  name             String
+  slug             String         @unique
+  description      String         @default("")
+  shortDescription String         @default("")
+  price            Int
+  compareAtPrice   Int?
+  stock            Int            @default(0)
+  isActive         Boolean        @default(true)
+  isFeatured       Boolean        @default(false)
+  isGiftReady      Boolean        @default(true)
+  giftNote         String         @default("")
+  categoryId       String
+  category         Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  images           ProductImage[]
+  cartItems        CartItem[]
+  orderItems       ShopOrderItem[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([categoryId])
+  @@index([isActive, isFeatured])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String  @default("")
+  sortOrder Int     @default(0)
+
+  @@index([productId])
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName    String
+  phone       String
+  province    String
+  city        String
+  addressLine String
+  postalCode  String   @default("")
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@unique([sessionId, productId])
+  @@index([userId])
+  @@index([sessionId])
+}
+
+model ShopOrder {
+  id              String          @id @default(cuid())
+  orderNumber     String          @unique
+  userId          String?
+  user            User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestName       String
+  guestPhone      String
+  status          String          @default("pending_payment")
+  paymentMethod   String
+  paymentStatus   String          @default("pending")
+  paymentRef      String?
+  authority       String?
+  subtotal        Int
+  shippingCost    Int             @default(0)
+  discount        Int             @default(0)
+  total           Int
+  shippingName    String
+  shippingPhone   String
+  shippingProvince String
+  shippingCity    String
+  shippingAddress String
+  shippingPostalCode String        @default("")
+  adminNote       String          @default("")
+  items           ShopOrderItem[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([guestPhone])
+}
+
+model ShopOrderItem {
+  id          String    @id @default(cuid())
+  orderId     String
+  order       ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productName String
+  unitPrice   Int
+  quantity    Int
+
+  @@index([orderId])
 }

@@ -13,7 +13,7 @@ export default function AuthPage() {
   const handleSubmit = () => {
     loginWithPassword("k3", "k3");
 
-    router.push("/dashboard");
+    router.push("/account");
   };
 
   return (

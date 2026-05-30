@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { navbarNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
-import { X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
+import { X, ChevronDown, LogOut, LayoutDashboard, ShoppingCart } from "lucide-react";
 
 const CD_SCROLL_FACTOR = 0.35;
 const CD_BURST_MS = 520;
@@ -31,6 +31,24 @@ export default function Navbar() {
   const scrollRafPendingRef = useRef(false);
   const isBurstingRef = useRef(false);
   const scrollRotationRef = useRef(0);
+  const [cartCount, setCartCount] = useState(0);
+
+  const loadCartCount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/cart");
+      const data = await res.json();
+      setCartCount(data.cart?.itemCount ?? 0);
+    } catch {
+      setCartCount(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadCartCount();
+    const onCartUpdate = () => void loadCartCount();
+    window.addEventListener("cart-updated", onCartUpdate);
+    return () => window.removeEventListener("cart-updated", onCartUpdate);
+  }, [loadCartCount]);
 
   useEffect(() => {
     const updateCdFromScroll = () => {
@@ -169,7 +187,7 @@ export default function Navbar() {
                     <LogOut size={18} />
                   </button>
                   <Link
-                    href={user.role === "admin" ? "/admin" : "/dashboard"}
+                    href={user.role === "admin" ? "/admin" : "/account"}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-white font-bold text-xs hover:border-cyan-500/50 transition-all"
                   >
                     <LayoutDashboard size={16} className="text-cyan-400 shrink-0" />
@@ -180,6 +198,18 @@ export default function Navbar() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
+              <Link
+                href="/cart"
+                className="relative p-2 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300 hover:border-cyan-500/50 hover:text-cyan-400 transition-all"
+                aria-label="سبد خرید"
+              >
+                <ShoppingCart size={20} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -left-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-black">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </Link>
               {!user ? (
                 <>
                   <Link
@@ -198,7 +228,7 @@ export default function Navbar() {
                     <LogOut size={18} />
                   </button>
                   <Link
-                    href={user.role === "admin" ? "/admin" : "/dashboard"}
+                    href={user.role === "admin" ? "/admin" : "/account"}
                     className="flex items-center gap-2 px-5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-white font-bold text-sm hover:border-cyan-500/50 transition-all"
                   >
                     <LayoutDashboard size={18} className="text-cyan-400" />
@@ -351,7 +381,7 @@ export default function Navbar() {
               ) : (
                 <>
                   <Link
-                    href={user.role === "admin" ? "/admin" : "/dashboard"}
+                    href={user.role === "admin" ? "/admin" : "/account"}
                     onClick={closeMenu}
                     className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-center text-white font-bold hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
                   >

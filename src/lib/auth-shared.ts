@@ -13,7 +13,7 @@ export function resolveRoleForPhone(phone: string): SessionRole {
 }
 
 export function getPostLoginPath(role: SessionRole): string {
-  return role === "admin" ? "/admin" : "/dashboard";
+  return role === "admin" ? "/admin" : "/account";
 }
 
 export function verifyAdminCredentials(

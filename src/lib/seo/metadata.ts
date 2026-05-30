@@ -95,12 +95,12 @@ export const rootMetadata: Metadata = {
     description: SITE_TAGLINE,
     path: "/",
     keywords: [
-      "تعمیر کنسول",
-      "تعمیر ps5",
-      "تعمیر ps4",
-      "تعمیر xbox",
-      "تعمیر hdmi",
-      "تعمیر دسته بازی",
+      "فروشگاه هدیه",
+      "هدیه گیمینگ",
+      "گیفت کارت PS",
+      "گیفت کارت Xbox",
+      "گیم‌پد",
+      "بسته هدیه گیمینگ",
     ],
   }),
   title: {
