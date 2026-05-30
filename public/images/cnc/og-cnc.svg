@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <rect x="100" y="150" width="500" height="330" rx="12" fill="#1c1917" stroke="#f97316" stroke-width="3"/>
+  <text x="350" y="320" text-anchor="middle" fill="#f97316" font-family="sans-serif" font-size="48" font-weight="bold">©'1¯'G CNC</text>
+  <text x="350" y="380" text-anchor="middle" fill="#a8a29e" font-family="sans-serif" font-size="24">./E'* CNC | BÌE* 1H2 ('2'1</text>
+  <circle cx="900" cy="315" r="120" fill="#f97316" opacity="0.15"/>
+  <path d="M820 315 L980 315 M900 235 L900 395" stroke="#f97316" stroke-width="4"/>
+</svg>

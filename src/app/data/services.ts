@@ -1,466 +1,309 @@
-import { Cpu, Monitor, Gamepad2, Fan, Cable } from "lucide-react";
+import {
+  Layers,
+  Zap,
+  Cog,
+  PenTool,
+  Puzzle,
+  Signpost,
+} from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { Brand } from "../../lib/brand-theme";
 
 export interface Service {
   slug: string;
   brand: Brand;
-
-  problemtag: string;
-
+  categoryTag: string;
   title: string;
   shortTitle: string;
-
   description: string;
   longDescription: string;
-
   icon: LucideIcon;
-
   image: string;
   cover: string;
-
   seoTitle: string;
   seoDescription: string;
-
   keywords: string[];
-
   estimatedTime: string;
   warranty: string;
   priceRange: string;
-
   features: string[];
-  commonIssues: { slug: string; title: string }[];
-  repairSteps: string[];
-
-  faqs: {
-    question: string;
-    answer: string;
-  }[];
+  relatedProducts: { slug: string; title: string }[];
+  processSteps: string[];
+  faqs: { question: string; answer: string }[];
   layout: string;
 }
 
 export const services: Service[] = [
   {
-    slug: "ps5-repair",
+    slug: "cnc-wood-cutting",
     layout: "A",
-
-    brand: "playstation",
-
-    problemtag: "PS5",
-
-    title: "تعمیر PS5",
-
-    shortTitle: "PS5 Repair",
-
+    brand: "wood",
+    categoryTag: "برش چوب",
+    title: "برش CNC چوب و MDF",
+    shortTitle: "Wood Cutting",
     description:
-      "تعمیر تخصصی پلی استیشن 5 با قطعات اصلی، تجهیزات حرفه‌ای و ضمانت خدمات.",
-
+      "برش دقیق MDF، HDF و چوب با دستگاه CNC و قیمت روز بازار.",
     longDescription:
-      "انواع خدمات تعمیر پلی استیشن 5 شامل تعمیر HDMI، تعمیر مادربرد، رفع مشکل روشن نشدن، سرویس فن، تعمیر دسته DualSense و تعویض قطعات با استفاده از تجهیزات تخصصی انجام می‌شود. تمامی مراحل تعمیر توسط تکنسین‌های حرفه‌ای و با استفاده از قطعات اصلی انجام شده و دستگاه قبل از تحویل تست کامل می‌شود.",
-
-    icon: Cpu,
-
-    image: "/images/Ps5-Parts-1-scaled.webp",
-
-    cover: "/images/Ps5-Parts-1-scaled.webp",
-
-    seoTitle: "تعمیر PS5 | تعمیر تخصصی پلی استیشن 5 با ضمانت",
-
+      "خدمات برش CNC روی MDF، HDF و انواع چوب با دقت بالا. مناسب مبلمان، دکور، ماکت، بسته‌بندی و قطعات ساختاری. فایل DXF، SVG یا PDF ارسال کنید تا قیمت و زمان تحویل اعلام شود.",
+    icon: Layers,
+    image: "/images/cnc/mdf-cutting.svg",
+    cover: "/images/cnc/mdf-cutting.svg",
+    seoTitle: "برش CNC چوب و MDF | قیمت روز",
     seoDescription:
-      "تعمیر تخصصی PS5 شامل HDMI، فن، پاور، مادربرد، داغ شدن و روشن نشدن با ضمانت خدمات.",
-
-    keywords: [
-      "تعمیر ps5",
-      "تعمیر پلی استیشن 5",
-      "تعمیر hdmi ps5",
-      "تعمیر دسته ps5",
-    ],
-
-    estimatedTime: "1 تا 5 روز کاری",
-
-    warranty: "30 روز ضمانت تست",
-
-    priceRange: "از 800 هزار تومان",
-
+      "برش CNC MDF و چوب از ۱۵۰ هزار تومان. سفارش آنلاین با ارسال فایل.",
+    keywords: ["برش cnc", "برش mdf", "cnc چوب", "قیمت برش mdf"],
+    estimatedTime: "۱ تا ۵ روز کاری",
+    warranty: "تضمین کیفیت برش",
+    priceRange: "از ۱۵۰ هزار تومان",
     features: [
-      "استفاده از قطعات اورجینال",
-      "عیب‌یابی تخصصی",
+      "برش MDF 3 تا 25mm",
+      "دقت میلی‌متری",
+      "لبه تمیز و صاف",
       "تحویل سریع",
-      "ضمانت خدمات",
-      "تجهیزات حرفه‌ای BGA",
-      "تست کامل قبل تحویل",
+      "امکان تیراژ",
+      "مشاوره فنی رایگان",
     ],
-
-    commonIssues: [
-      { title: "روشن نشدن PS5", slug: "ps5-not-turning-on" },
-      { title: "خرابی HDMI", slug: "ps5-hdmi-port-damage" },
-      { title: "داغ شدن بیش از حد", slug: "ps5-overheating" },
-      { title: "خاموش شدن ناگهانی", slug: "ps5-random-shutdown" },
-      { title: "صدای زیاد فن", slug: "ps5-loud-fan-noise" },
-      {
-        title: "خرابی دسته DualSense",
-        slug: "ps5-dualsense-controller-problem",
-      },
-      { title: "اتصال نداشتن به اینترنت", slug: "ps5-wifi-connection-problem" },
-      { title: "مشکل درایو دیسک", slug: "ps5-disc-drive-not-working" },
+    relatedProducts: [
+      { slug: "mdf-cutting-3mm", title: "برش MDF 3mm" },
+      { slug: "mdf-cutting-8mm", title: "برش MDF 8mm" },
     ],
-    repairSteps: [
-      "بررسی اولیه دستگاه",
-      "عیب‌یابی تخصصی",
-      "اعلام هزینه تعمیر",
-      "تعمیر و تعویض قطعات",
-      "تست کامل دستگاه",
-      "تحویل به مشتری",
+    processSteps: [
+      "ارسال فایل و مشخصات",
+      "بررسی و استعلام قیمت",
+      "تأیید سفارش",
+      "برش CNC",
+      "کنترل کیفیت",
+      "تحویل",
     ],
-
     faqs: [
       {
-        question: "هزینه تعمیر PS5 چقدر است؟",
-
-        answer: "هزینه تعمیر بسته به نوع خرابی و قطعه مورد نیاز مشخص می‌شود.",
+        question: "چه فایل‌هایی برای برش لازم است؟",
+        answer: "DXF، SVG، PDF یا فایل vector. در صورت نداشتن فایل، طراحی با هزینه جداگانه انجام می‌شود.",
       },
-
       {
-        question: "تعمیر HDMI PS5 چقدر زمان می‌برد؟",
-
-        answer: "معمولاً بین 1 تا 3 روز کاری زمان نیاز دارد.",
-      },
-
-      {
-        question: "آیا تعمیرات PS5 ضمانت دارند؟",
-
-        answer: "بله تمامی خدمات همراه با ضمانت تست ارائه می‌شوند.",
-      },
-
-      {
-        question: "آیا از قطعات اصلی استفاده می‌شود؟",
-
-        answer: "بله در تمامی تعمیرات از قطعات اصلی و باکیفیت استفاده می‌شود.",
+        question: "حداقل سفارش چقدر است؟",
+        answer: "معمولاً حداقل یک برگه 60×120 سانتی‌متری یا معادل آن.",
       },
     ],
   },
-
   {
-    slug: "ps4-repair",
-    brand: "playstation",
+    slug: "laser-cutting",
     layout: "A",
-
-    problemtag: "PS4",
-    title: "تعمیر PS4",
-
-    shortTitle: "PS4 Repair",
-
+    brand: "laser",
+    categoryTag: "لیزر",
+    title: "برش و حکاکی لیزر",
+    shortTitle: "Laser Cutting",
     description:
-      "تعمیر تخصصی پلی استیشن 4 شامل تعمیر پاور، HDMI، فن و مادربرد.",
-
+      "برش و حکاکی لیزر روی MDF، چوب، اکریلیک و PVC.",
     longDescription:
-      "خدمات تعمیر PS4 Slim و PS4 Pro با تجهیزات حرفه‌ای و تعمیر تخصصی انواع خرابی‌های سخت‌افزاری و نرم‌افزاری انجام می‌شود. تمامی دستگاه‌ها قبل از تحویل تست کامل می‌شوند تا از عملکرد صحیح آن‌ها اطمینان حاصل شود.",
-
-    icon: Gamepad2,
-
-    image: "/images/PS4-service-center-in-Delhi.webp",
-
-    cover: "/images/PS4-service-center-in-Delhi.webp",
-
-    seoTitle: "تعمیر PS4 | تعمیر پلی استیشن 4 با ضمانت",
-
+      "برش و حکاکی با دستگاه لیزر CO2 برای پروژه‌های دکور، تابلو، هدیه و قطعات ظریف. دقت بالا، لبه تمیز و امکان اجرای طرح‌های پیچیده.",
+    icon: Zap,
+    image: "/images/cnc/laser-cutting.svg",
+    cover: "/images/cnc/laser-cutting.svg",
+    seoTitle: "برش و حکاکی لیزر | قیمت CNC",
     seoDescription:
-      "تعمیر تخصصی PS4 شامل تعمیر HDMI، پاور، فن و رفع مشکل روشن نشدن.",
-
-    keywords: [
-      "تعمیر ps4",
-      "تعمیر پلی استیشن 4",
-      "تعمیر ps4 slim",
-      "تعمیر ps4 pro",
-    ],
-
-    estimatedTime: "1 تا 4 روز کاری",
-
-    warranty: "30 روز ضمانت تست",
-
-    priceRange: "از 600 هزار تومان",
-
+      "برش لیزر MDF و اکریلیک از ۱۸۰ هزار تومان. حکاکی لیزر از ۲۵۰ هزار تومان.",
+    keywords: ["برش لیزر", "حکاکی لیزر", "لیزر mdf", "لیزر اکریلیک"],
+    estimatedTime: "۱ تا ۴ روز کاری",
+    warranty: "تضمین کیفیت",
+    priceRange: "از ۱۸۰ هزار تومان",
     features: [
-      "تعمیر تخصصی PS4",
-      "تحویل سریع",
-      "ضمانت خدمات",
-      "قطعات اصلی",
-      "تست کامل دستگاه",
-      "عیب‌یابی حرفه‌ای",
+      "برش MDF و اکریلیک",
+      "حکاکی متن و لوگو",
+      "حروف برجسته",
+      "لبه براق",
+      "طرح پیچیده",
+      "سرعت بالا",
     ],
-
-    commonIssues: [
-      { title: "روشن نشدن PS4", slug: "ps4-not-turning-on" },
-      { title: "خرابی HDMI", slug: "ps4-hdmi-port-damage" },
-      { title: "صدای زیاد فن", slug: "ps4-loud-fan-noise" },
-      { title: "داغ شدن دستگاه", slug: "ps4-overheating" },
-      { title: "خرابی هارد", slug: "ps4-hard-drive-failure" },
-      { title: "مشکل اتصال اینترنت", slug: "ps4-wifi-connection-problem" },
-      { title: "خاموش شدن ناگهانی", slug: "ps4-random-shutdown" },
-      { title: "ارور Safe Mode", slug: "ps4-safe-mode-error" },
+    relatedProducts: [
+      { slug: "laser-acrylic-cutting", title: "برش لیزر اکریلیک" },
+      { slug: "laser-engraving", title: "حکاکی لیزر" },
+      { slug: "raised-letters-mdf", title: "حروف برجسته MDF" },
     ],
-    repairSteps: [
-      "بررسی دستگاه",
-      "عیب‌یابی",
-      "اعلام هزینه",
-      "تعمیر تخصصی",
-      "تست نهایی",
-      "تحویل دستگاه",
+    processSteps: [
+      "ارسال طرح",
+      "بررسی جنس و ضخامت",
+      "اعلام قیمت",
+      "برش/حکاکی لیزر",
+      "پرداخت نهایی",
+      "تحویل",
     ],
-
     faqs: [
       {
-        question: "آیا PS4 Pro هم تعمیر می‌شود؟",
-
-        answer: "بله تمامی مدل‌های PS4 شامل Slim و Pro تعمیر می‌شوند.",
-      },
-
-      {
-        question: "هزینه تعمیر HDMI PS4 چقدر است؟",
-
-        answer: "بسته به میزان خرابی و آسیب برد متفاوت است.",
-      },
-
-      {
-        question: "چقدر زمان برای تعمیر نیاز است؟",
-
-        answer: "بسته به نوع خرابی بین 1 تا 4 روز کاری زمان نیاز است.",
+        question: "روی چه جنس‌هایی کار می‌کنید؟",
+        answer: "MDF، چوب، اکریلیک، PVC، چرم و برخی پارچه‌ها.",
       },
     ],
   },
-
   {
-    slug: "xbox-repair",
-    brand: "xbox",
+    slug: "cnc-milling",
     layout: "A",
-
-    problemtag: "Xbox",
-
-    title: "تعمیر Xbox",
-
-    shortTitle: "Xbox Repair",
-
-    description: "تعمیر تخصصی Xbox Series X/S و Xbox One با تجهیزات حرفه‌ای.",
-
-    longDescription:
-      "انواع خدمات تعمیر Xbox شامل تعمیر HDMI، پاور، فن و رفع مشکلات سخت‌افزاری و نرم‌افزاری انجام می‌شود. تعمیرات با استفاده از قطعات باکیفیت و تجهیزات حرفه‌ای انجام شده و دستگاه قبل از تحویل تست کامل می‌شود.",
-
-    icon: Monitor,
-
-    image: "/images/Series_X_Digital_Edition_Layout.jpg",
-
-    cover: "/images/Series_X_Digital_Edition_Layout.jpg",
-
-    seoTitle: "تعمیر Xbox | تعمیر تخصصی ایکس باکس",
-
-    seoDescription: "تعمیر Xbox Series و Xbox One با ضمانت خدمات و قطعات اصلی.",
-
-    keywords: ["تعمیر xbox", "تعمیر xbox series x", "تعمیر xbox one"],
-
-    estimatedTime: "1 تا 5 روز کاری",
-
-    warranty: "30 روز ضمانت",
-
-    priceRange: "از 700 هزار تومان",
-
-    features: [
-      "تعمیر تخصصی Xbox",
-      "تجهیزات حرفه‌ای",
-      "ضمانت تعمیر",
-      "پشتیبانی کامل",
-      "قطعات باکیفیت",
-      "تست کامل",
-    ],
-
-    commonIssues: [
-      { title: "روشن نشدن Xbox", slug: "xbox-not-turning-on" },
-      { title: "خرابی HDMI", slug: "xbox-hdmi-port-damage" },
-      { title: "مشکل پاور", slug: "xbox-power-supply-problem" },
-      { title: "صدای زیاد فن", slug: "xbox-loud-fan-noise" },
-      { title: "داغ شدن دستگاه", slug: "xbox-overheating" },
-      { title: "خرابی هارد", slug: "xbox-hard-drive-failure" },
-      { title: "مشکل اتصال اینترنت", slug: "xbox-wifi-connection-problem" },
-      { title: "کرش بازی‌ها", slug: "xbox-game-crashing" },
-    ],
-    repairSteps: [
-      "بررسی اولیه",
-      "تشخیص خرابی",
-      "اعلام هزینه",
-      "تعمیر",
-      "تست کامل",
-      "تحویل دستگاه",
-    ],
-
-    faqs: [
-      {
-        question: "آیا تعمیر Xbox ضمانت دارد؟",
-
-        answer: "بله تمامی تعمیرات شامل ضمانت تست هستند.",
-      },
-
-      {
-        question: "Xbox Series X هم تعمیر می‌شود؟",
-
-        answer: "بله تمامی مدل‌های Xbox تعمیر می‌شوند.",
-      },
-
-      {
-        question: "از قطعات اصلی استفاده می‌کنید؟",
-
-        answer: "بله در تمامی تعمیرات از قطعات باکیفیت استفاده می‌شود.",
-      },
-    ],
-  },
-
-  {
-    slug: "hdmi-repair",
-    brand: "gaming",
-    layout: "A",
-
-    problemtag: "انواع کنسول",
-
-    title: "تعمیر HDMI کنسول",
-
-    shortTitle: "HDMI Repair",
-
-    description: "تعمیر و تعویض سوکت HDMI انواع کنسول بازی.",
-
-    longDescription:
-      "خرابی HDMI یکی از رایج‌ترین مشکلات کنسول‌ها است که با تجهیزات تخصصی BGA تعمیر می‌شود. در صورت شکستگی یا قطعی تصویر، پورت HDMI تعویض شده و تست کامل تصویر انجام می‌شود.",
-
-    icon: Cable,
-
-    image: "/obj-console/s-l1600.webp",
-
-    cover: "/obj-console/s-l1600.webp",
-
-    seoTitle: "تعمیر HDMI کنسول | تعمیر سوکت HDMI PS5 و Xbox",
-
-    seoDescription: "تعمیر تخصصی HDMI انواع کنسول بازی با تجهیزات حرفه‌ای.",
-
-    keywords: ["تعمیر hdmi ps5", "تعمیر hdmi xbox", "تعویض سوکت hdmi"],
-
-    estimatedTime: "1 تا 2 روز کاری",
-
-    warranty: "ضمانت تست",
-
-    priceRange: "از 900 هزار تومان",
-
-    features: [
-      "تعویض سوکت HDMI",
-      "تست تصویر",
-      "تعمیر تخصصی برد",
-      "استفاده از تجهیزات BGA",
-    ],
-
-    commonIssues: [
-      { title: "قطع بودن تصویر", slug: "console-no-video-signal" },
-      { title: "پرش تصویر", slug: "console-screen-flickering" },
-      { title: "شکستگی HDMI", slug: "console-hdmi-port-broken" },
-      { title: "عدم شناسایی مانیتور", slug: "console-monitor-not-detected" },
-      { title: "تصویر سیاه", slug: "console-black-screen" },
-      { title: "لق بودن سوکت", slug: "console-hdmi-loose-port" },
-    ],
-    repairSteps: [
-      "بررسی پورت",
-      "باز کردن دستگاه",
-      "تعویض HDMI",
-      "تست تصویر",
-      "تحویل دستگاه",
-    ],
-
-    faqs: [
-      {
-        question: "آیا HDMI قابل تعمیر است؟",
-
-        answer: "بله در اکثر موارد سوکت HDMI تعویض یا تعمیر می‌شود.",
-      },
-
-      {
-        question: "چقدر زمان برای تعمیر HDMI نیاز است؟",
-
-        answer: "معمولاً بین 1 تا 2 روز کاری زمان نیاز دارد.",
-      },
-    ],
-  },
-
-  {
-    slug: "controller-repair",
-    brand: "gaming",
-    layout: "A",
-
-    problemtag: "تعمیرات دسته",
-
-    title: "تعمیرات دسته بازی",
-
-    shortTitle: "controller-repair",
-
+    brand: "metal",
+    categoryTag: "فرز CNC",
+    title: "فرز CNC",
+    shortTitle: "CNC Milling",
     description:
-      "تعمیر تخصصی انواع دسته بازی PS5، PS4 و Xbox شامل رفع مشکل آنالوگ، دکمه‌ها و شارژ.",
-
+      "ماشین‌کاری، فرز CNC و تولید قطعات و پروتوتایپ.",
     longDescription:
-      "اگر دسته بازی شما دچار مشکل در آنالوگ، دکمه‌ها، شارژ نشدن یا قطع و وصل شدن شده است، تیم ما با تجهیزات تخصصی تمامی مشکلات دسته‌های PS5، PS4 و Xbox را برطرف می‌کند. تعمیرات شامل تعویض آنالوگ، تعمیر برد، رفع مشکل دکمه‌ها و تعمیر درگاه شارژ می‌باشد.",
-
-    icon: Gamepad2,
-
-    image: "/images/controller-repair.jpg",
-
-    cover: "/images/controller-repair.jpg",
-
-    seoTitle: "تعمیر دسته PS5، PS4 و Xbox",
-
+      "خدمات فرز CNC برای قطعات صنعتی، قالب، پروفیل، پروتوتایپ و کارهای سه‌بعدی. روی MDF، چوب، PVC و آلومینیوم.",
+    icon: Cog,
+    image: "/images/cnc/milling.svg",
+    cover: "/images/cnc/milling.svg",
+    seoTitle: "فرز CNC | ماشین‌کاری CNC",
     seoDescription:
-      "تعمیر تخصصی دسته پلی استیشن و ایکس باکس شامل رفع مشکل آنالوگ، دکمه‌ها و شارژ دسته.",
-
-    keywords: [
-      "تعمیر دسته ps5",
-      "تعمیر دسته ps4",
-      "تعمیر دسته xbox",
-      "تعمیر آنالوگ دسته",
-      "تعمیر joystick دسته",
-    ],
-
-    estimatedTime: "چند ساعت تا 1 روز",
-
-    warranty: "ضمانت تعمیر دسته",
-
-    priceRange: "از 300 هزار تومان",
-
+      "فرز CNC و پروتوتایپ از ۵۰۰ هزار تومان. استعلام بر اساس فایل STEP/DXF.",
+    keywords: ["فرز cnc", "ماشین کاری cnc", "پروتوتایپ cnc"],
+    estimatedTime: "۳ تا ۱۰ روز کاری",
+    warranty: "کنترل کیفیت",
+    priceRange: "از ۵۰۰ هزار تومان",
     features: [
-      "تعویض آنالوگ (Joystick)",
-      "تعمیر یا تعویض دکمه‌ها",
-      "تعمیر درگاه شارژ",
-      "رفع مشکل Drift آنالوگ",
-      "تعمیر برد دسته",
+      "فرز 3 محور",
+      "پروتوتایپ",
+      "قالب و پروفیل",
+      "آلومینیوم و MDF",
+      "دقت صنعتی",
+      "مشاوره فنی",
     ],
-
-    commonIssues: [
-      { title: "حرکت خودکار آنالوگ (Drift)", slug: "controller-analog-drift" },
-      { title: "کار نکردن دکمه‌ها", slug: "controller-buttons-not-working" },
-      { title: "شارژ نشدن دسته", slug: "controller-not-charging" },
-      { title: "قطع و وصل شدن اتصال", slug: "controller-connection-dropping" },
-      { title: "خرابی آنالوگ", slug: "controller-analog-stick-broken" },
+    relatedProducts: [
+      { slug: "industrial-prototype", title: "پروتوتایپ قطعه صنعتی" },
     ],
-    repairSteps: [
-      "بررسی و عیب‌یابی دسته",
-      "باز کردن دسته",
-      "تعویض یا تعمیر قطعات معیوب",
-      "بستن دسته",
-      "تست کامل عملکرد",
+    processSteps: [
+      "ارسال فایل STEP/DXF",
+      "بررسی فنی",
+      "استعلام قیمت",
+      "برنامه‌ریزی CAM",
+      "فرز CNC",
+      "تحویل",
     ],
-
     faqs: [
       {
-        question: "مشکل Drift دسته چیست؟",
-        answer:
-          "Drift زمانی است که آنالوگ بدون لمس شما حرکت می‌کند و معمولاً با تعویض آنالوگ برطرف می‌شود.",
-      },
-
-      {
-        question: "آیا آنالوگ دسته قابل تعویض است؟",
-        answer:
-          "بله آنالوگ دسته PS و Xbox قابل تعویض است و پس از تعویض عملکرد آن مانند حالت اولیه می‌شود.",
+        question: "چه فایل‌هایی برای فرز لازم است؟",
+        answer: "STEP، STL، DXF یا PDF با ابعاد دقیق.",
       },
     ],
+  },
+  {
+    slug: "cnc-engraving",
+    layout: "A",
+    brand: "laser",
+    categoryTag: "حکاکی",
+    title: "حکاکی و تراش CNC",
+    shortTitle: "CNC Engraving",
+    description:
+      "حکاکی و تراش CNC روی چوب، MDF و سطوح مختلف.",
+    longDescription:
+      "حکاکی و تراش با CNC برای تابلو، هدیه، قطعات دکور و شخصی‌سازی. مناسب متن، لوگو، نقش و الگوهای تزئینی.",
+    icon: PenTool,
+    image: "/images/cnc/laser-cutting.svg",
+    cover: "/images/cnc/laser-cutting.svg",
+    seoTitle: "حکاکی CNC | تراش CNC",
+    seoDescription: "حکاکی و تراش CNC از ۲۵۰ هزار تومان.",
+    keywords: ["حکاکی cnc", "تراش cnc", "حکاکی چوب"],
+    estimatedTime: "۱ تا ۳ روز کاری",
+    warranty: "تضمین کیفیت",
+    priceRange: "از ۲۵۰ هزار تومان",
+    features: [
+      "حکاکی متن و لوگو",
+      "تراش سه‌بعدی",
+      "چوب و MDF",
+      "جزئیات بالا",
+      "شخصی‌سازی",
+    ],
+    relatedProducts: [
+      { slug: "laser-engraving", title: "حکاکی لیزر" },
+    ],
+    processSteps: [
+      "ارسال طرح",
+      "انتخاب جنس",
+      "حکاکی/تراش",
+      "پرداخت",
+      "تحویل",
+    ],
+    faqs: [],
+  },
+  {
+    slug: "custom-parts",
+    layout: "A",
+    brand: "industrial",
+    categoryTag: "سفارشی",
+    title: "تولید قطعات سفارشی",
+    shortTitle: "Custom Parts",
+    description:
+      "تولید قطعات دکور، صنعتی و پروتوتایپ بر اساس فایل شما.",
+    longDescription:
+      "هر قطعه سفارشی — از المان دکور تا قطعه صنعتی — با CNC تولید می‌شود. فایل طراحی ارسال کنید یا از مشاوره طراحی استفاده کنید.",
+    icon: Puzzle,
+    image: "/images/cnc/milling.svg",
+    cover: "/images/cnc/milling.svg",
+    seoTitle: "قطعات سفارشی CNC",
+    seoDescription: "تولید قطعه سفارشی CNC از ۳۰۰ هزار تومان.",
+    keywords: ["قطعه cnc", "تولید سفارشی cnc"],
+    estimatedTime: "بر اساس پروژه",
+    warranty: "کنترل کیفیت",
+    priceRange: "از ۳۰۰ هزار تومان",
+    features: [
+      "سفارشی 100%",
+      "MDF، چوب، PVC",
+      "پروتوتایپ",
+      "تیراژ",
+      "طراحی فایل",
+    ],
+    relatedProducts: [
+      { slug: "custom-decor-part", title: "قطعه دکوراتیو" },
+      { slug: "industrial-prototype", title: "پروتوتایپ صنعتی" },
+    ],
+    processSteps: [
+      "مشاوره",
+      "طراحی/دریافت فایل",
+      "استعلام",
+      "تولید",
+      "تحویل",
+    ],
+    faqs: [],
+  },
+  {
+    slug: "signs-decor",
+    layout: "A",
+    brand: "wood",
+    categoryTag: "دکور",
+    title: "تابلو و محصولات دکور",
+    shortTitle: "Signs & Decor",
+    description:
+      "تابلو، حروف برجسته، استند و محصولات دکوراتیو CNC.",
+    longDescription:
+      "طراحی و تولید تابلو مغازه، حروف برجسته MDF، استند، جاکلیدی و محصولات دکور با CNC و لیزر.",
+    icon: Signpost,
+    image: "/images/cnc/sign-decor.svg",
+    cover: "/images/cnc/sign-decor.svg",
+    seoTitle: "تابلو CNC | دکور CNC",
+    seoDescription: "تابلو و دکور CNC از ۱۵۰ هزار تومان.",
+    keywords: ["تابلو cnc", "حروف برجسته", "دکور cnc"],
+    estimatedTime: "۲ تا ۷ روز کاری",
+    warranty: "تضمین کیفیت",
+    priceRange: "از ۱۵۰ هزار تومان",
+    features: [
+      "تابلو مغازه",
+      "حروف برجسته",
+      "استند و جاکلیدی",
+      "رنگ‌آمیزی",
+      "نصب",
+    ],
+    relatedProducts: [
+      { slug: "wood-sign-cnc", title: "تابلو چوبی CNC" },
+      { slug: "raised-letters-mdf", title: "حروف برجسته" },
+      { slug: "key-holder-stand", title: "جاکلیدی CNC" },
+    ],
+    processSteps: [
+      "انتخاب محصول یا طرح",
+      "ابعاد و جنس",
+      "تولید",
+      "رنگ (در صورت نیاز)",
+      "تحویل/نصب",
+    ],
+    faqs: [],
   },
 ];
+
+export function getService(slug: string): Service | undefined {
+  return services.find((s) => s.slug === slug);
+}

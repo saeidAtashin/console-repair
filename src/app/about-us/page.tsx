@@ -4,13 +4,13 @@ import { createPageMetadata } from "@/lib/seo/metadata";
 const PATH = "/about-us";
 const TITLE = "درباره ما";
 const DESCRIPTION =
-  "آشنایی با کنسول ریپیر، تیم فنی، رویکرد تعمیر تخصصی کنسول و تعهد ما به کیفیت خدمات.";
+  "آشنایی با کارگاه CNC، تیم فنی، رویکرد تولید و تعهد ما به کیفیت و قیمت شفاف.";
 
 export const metadata = createPageMetadata({
   title: TITLE,
   description: DESCRIPTION,
   path: PATH,
-  keywords: ["درباره ما", "کنسول ریپیر", "تیم تعمیرات کنسول"],
+  keywords: ["درباره ما", "کارگاه cnc", "خدمات cnc"],
 });
 
 export default function AboutUsPage() {
@@ -23,12 +23,12 @@ export default function AboutUsPage() {
       >
         <h1 className="text-4xl font-black md:text-5xl">{TITLE}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-9 text-zinc-300">
-          کنسول ریپیر با تمرکز بر عیب یابی دقیق، استفاده از قطعات باکیفیت و تحویل
-          سریع، خدمات تعمیر PS5، PS4، Xbox و دسته بازی را ارائه می دهد.
+          کارگاه CNC با تمرکز بر دقت برش، قیمت‌گذاری شفاف و تحویل به‌موقع،
+          خدمات برش MDF، لیزر، فرز CNC و تولید محصولات دکور را ارائه می‌دهد.
         </p>
         <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-400">
-          هدف ما این است که تجربه ای شفاف و قابل اعتماد برای مشتریان ایجاد کنیم؛
-          از ثبت سفارش و اعلام هزینه تقریبی تا پیگیری وضعیت تعمیر.
+          هدف ما ایجاد تجربه‌ای ساده و قابل اعتماد است؛ از ثبت سفارش و ارسال
+          فایل طراحی تا استعلام قیمت و پیگیری وضعیت تولید.
         </p>
       </PageShell>
     </main>

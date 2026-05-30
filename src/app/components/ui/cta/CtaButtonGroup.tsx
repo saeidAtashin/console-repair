@@ -15,8 +15,8 @@ export type CtaButtonGroupProps = {
 };
 
 export default function CtaButtonGroup({
-  repairHref = "/repair",
-  repairLabel = "ثبت درخواست",
+  repairHref = "/order",
+  repairLabel = "ثبت سفارش",
   secondary = "consult",
   trackingHref = "/tracking",
   className,

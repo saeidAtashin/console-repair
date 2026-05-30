@@ -1,12 +1,11 @@
-export const SITE_NAME = "فیکس‌بازی | fix bazi";
+export const SITE_NAME = "کارگاه CNC | CNC Workshop";
 export const SITE_TAGLINE =
-  "fix bazi (فیکس‌بازی) - تعمیر تخصصی پلی‌استیشن و ایکس‌باکس با گارانتی و قطعات اورجینال";
+  "خدمات CNC، برش لیزر، فرز و تولید محصولات چوب و MDF با قیمت روز بازار";
 export const SITE_LOCALE = "fa_IR";
-/** Default social preview — use a real 1200×630 asset at /og.jpg when available. */
-export const DEFAULT_OG_IMAGE = "/images/ps5-repair.webp";
+export const DEFAULT_OG_IMAGE = "/images/cnc/og-cnc.svg";
 export const SITE_PHONE = "+989107701704";
 export const SITE_ADDRESS = {
-  streetAddress: "تهران",
+  streetAddress: "تهران، توپخانه پاساژ لیلا طبقه 4 واحد 21",
   addressLocality: "تهران",
   addressRegion: "تهران",
   addressCountry: "IR",

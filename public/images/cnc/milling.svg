@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#1a1a1a"/>
+  <rect x="100" y="100" width="200" height="100" rx="4" fill="#3f3f46" stroke="#71717a" stroke-width="2"/>
+  <circle cx="150" cy="150" r="20" fill="#52525b" stroke="#a1a1aa"/>
+  <circle cx="250" cy="150" r="20" fill="#52525b" stroke="#a1a1aa"/>
+  <path d="M80 80 L320 80 L320 220 L80 220 Z" stroke="#f97316" stroke-width="1" fill="none" opacity="0.5"/>
+  <text x="200" y="260" text-anchor="middle" fill="#a8a29e" font-family="sans-serif" font-size="14">CNC Milling</text>
+</svg>

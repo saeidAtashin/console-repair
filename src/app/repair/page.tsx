@@ -1,46 +1,34 @@
-import PageShell from "@/app/components/seo/PageShell";
-import { createPageMetadata } from "../../lib/seo/metadata";
-import {
-  repairBreadcrumbItems,
-  repairPageJsonLd,
-  repairPrefillFromPageSearchParams,
-  resolveRepairSeo,
-} from "../../lib/seo/repair-seo";
-import RepairFormClient from "@/app/repair/RepairFormClient";
+import { redirect } from "next/navigation";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export async function generateMetadata({ searchParams }: Props) {
+export default async function RepairRedirectPage({ searchParams }: Props) {
   const params = await searchParams;
-  const seo = resolveRepairSeo(params);
+  const query = new URLSearchParams();
 
-  return createPageMetadata({
-    title: seo.title,
-    description: seo.description,
-    path: seo.canonicalPath,
-    keywords: seo.keywords,
-    ogImage: seo.ogImage,
-    noIndex: seo.noIndex,
-  });
-}
+  const consoleParam = params.console;
+  const consoleVal = Array.isArray(consoleParam)
+    ? consoleParam[0]
+    : consoleParam;
 
-export default async function RepairPage({ searchParams }: Props) {
-  const params = await searchParams;
-  const seo = resolveRepairSeo(params);
-  const initialPrefill = repairPrefillFromPageSearchParams(params);
+  if (consoleVal) {
+    const map: Record<string, string> = {
+      ps5: "cnc-wood-cutting",
+      ps4: "cnc-wood-cutting",
+      xbox: "cnc-milling",
+    };
+    const service = map[consoleVal] ?? "cnc-wood-cutting";
+    query.set("service", service);
+  }
 
-  return (
-    <PageShell
-      currentPath={seo.canonicalPath}
-      breadcrumbs={repairBreadcrumbItems(seo)}
-      jsonLd={repairPageJsonLd(seo)}
-      className="min-h-screen bg-[#030510] text-white"
-      containerClassName="container mx-auto max-w-3xl px-6"
-      breadcrumbClassName="mb-6 pt-24"
-    >
-      <RepairFormClient initialPrefill={initialPrefill} />
-    </PageShell>
-  );
+  for (const key of ["issue", "description", "service", "product", "material"]) {
+    const val = params[key];
+    const str = Array.isArray(val) ? val[0] : val;
+    if (str) query.set(key, str);
+  }
+
+  const qs = query.toString();
+  redirect(qs ? `/order?${qs}` : "/order");
 }

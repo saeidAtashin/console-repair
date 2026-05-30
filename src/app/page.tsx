@@ -4,24 +4,24 @@ import { createPageMetadata } from "../lib/seo/metadata";
 import { webPageJsonLd } from "../lib/seo/jsonld";
 
 export const metadata = createPageMetadata({
-  title: "تعمیر تخصصی کنسول بازی | PS5، PS4 و Xbox",
+  title: "خدمات CNC و تولید محصولات | قیمت روز بازار",
   description:
-    "تعمیر تخصصی پلی‌استیشن 5، PS4، Xbox و دسته بازی با گارانتی، عیب‌یابی دقیق و تحویل سریع. ثبت سفارش آنلاین و پیگیری وضعیت تعمیر.",
+    "خدمات CNC، برش لیزر، فرز CNC و تولید محصولات MDF و چوب با قیمت روز. ثبت سفارش آنلاین و پیگیری تولید.",
   path: "/",
   keywords: [
-    "تعمیر کنسول",
-    "تعمیر ps5",
-    "تعمیر ps4",
-    "تعمیر xbox",
-    "تعمیر hdmi کنسول",
-    "تعمیر دسته ps5",
+    "cnc",
+    "برش mdf",
+    "برش لیزر",
+    "فرز cnc",
+    "تابلو cnc",
+    "قیمت cnc",
   ],
 });
 
 const HOME_SCHEMA = webPageJsonLd({
-  name: "تعمیر تخصصی کنسول بازی | PS5، PS4 و Xbox",
+  name: "خدمات CNC و تولید محصولات | قیمت روز بازار",
   description:
-    "تعمیر تخصصی پلی‌استیشن 5، PS4، Xbox و دسته بازی با گارانتی، عیب‌یابی دقیق و تحویل سریع. ثبت سفارش آنلاین و پیگیری وضعیت تعمیر.",
+    "خدمات CNC، برش لیزر، فرز CNC و تولید محصولات MDF و چوب با قیمت روز.",
   path: "/",
 });
 

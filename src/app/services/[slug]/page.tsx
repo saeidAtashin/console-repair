@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 import { CtaButtonGroup } from "@/app/components/ui/cta";
-import ServiceCommonIssues from "@/app/components/services/ServiceCommonIssues";
+import ServiceRelatedProducts from "@/app/components/services/ServiceRelatedProducts";
 import ServiceFeaturesGrid from "@/app/components/services/ServiceFeaturesGrid";
 import ServiceRepairSteps from "../../components/services/ServiceRepairSteps";
 import PageShell from "@/app/components/seo/PageShell";
@@ -17,17 +17,12 @@ import FAQSchema from "@/app/components/schema/FAQSchema";
 import ServiceSchema from "@/app/components/schema/ServiceSchema";
 import { services } from "@/app/data/services";
 import { brandThemes } from "../../../lib/brand-theme";
-import {
-  buildRepairHref,
-  consoleIdFromRepairSlug,
-} from "../../../lib/repair-links";
+import { buildOrderHref } from "../../../lib/order-links";
 import { webPageJsonLd } from "../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
 
 type Props = {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
@@ -63,8 +58,7 @@ export default async function ServicePage({ params }: Props) {
 
   const theme = brandThemes[service.brand];
   const servicePath = `/services/${service.slug}`;
-  const consoleId = consoleIdFromRepairSlug(service.slug);
-  const repairHref = buildRepairHref(consoleId ? { consoleId } : undefined);
+  const orderHref = buildOrderHref({ serviceSlug: service.slug });
 
   return (
     <main className="min-h-screen bg-black pt-24 text-white">
@@ -94,7 +88,7 @@ export default async function ServicePage({ params }: Props) {
               <div
                 className={`mb-5 inline-flex items-center rounded-full border px-4 py-2 text-sm ${theme.border} ${theme.bg} ${theme.primary}`}
               >
-                تعمیر تخصصی کنسول بازی
+                {service.categoryTag}
               </div>
 
               <h1 className="text-4xl font-black leading-tight md:text-6xl">
@@ -108,24 +102,24 @@ export default async function ServicePage({ params }: Props) {
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 <InfoBox
                   icon={<Clock3 className={theme.primary} />}
-                  label="زمان تعمیر"
+                  label="زمان تحویل"
                   value={service.estimatedTime}
                 />
                 <InfoBox
                   icon={<ShieldCheck className={theme.primary} />}
-                  label="ضمانت خدمات"
+                  label="ضمانت"
                   value={service.warranty}
                 />
                 <InfoBox
                   icon={<BadgeDollarSign className={theme.primary} />}
-                  label="حدود هزینه"
+                  label="حدود قیمت"
                   value={service.priceRange}
                 />
               </div>
 
               <CtaButtonGroup
-                repairHref={repairHref}
-                repairLabel="ثبت سفارش تعمیر"
+                repairHref={orderHref}
+                repairLabel="ثبت سفارش"
                 secondary="tracking"
               />
             </div>
@@ -134,7 +128,7 @@ export default async function ServicePage({ params }: Props) {
               <div
                 className={`absolute -inset-5 rounded-[40px] ${theme.bg} blur-3xl`}
               />
-              <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-zinc-900">
+              <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-zinc-900 aspect-[4/3]">
                 <Image
                   src={service.cover}
                   alt={service.title}
@@ -150,39 +144,24 @@ export default async function ServicePage({ params }: Props) {
 
         <section className="container mx-auto px-6 py-24">
           <div className="mb-14">
-            <h2 className="text-3xl font-black">
-              چرا تعمیر کنسول خود را به ما بسپارید؟
-            </h2>
+            <h2 className="text-3xl font-black">چرا این خدمت را از ما بگیرید؟</h2>
             <p className="mt-4 max-w-2xl text-zinc-400">
-              تعمیرات تخصصی با قطعات باکیفیت، ابزار حرفه‌ای و تکنسین‌های باتجربه
-              انجام می‌شود.
+              تولید با تجهیزات CNC حرفه‌ای، قیمت شفاف و کنترل کیفیت.
             </p>
           </div>
-
           <ServiceFeaturesGrid features={service.features} theme={theme} />
         </section>
 
-        <ServiceCommonIssues issues={service.commonIssues} />
+        <ServiceRelatedProducts products={service.relatedProducts} />
 
-        <section className="relative overflow-hidden border-y border-[#c9a227]/10 bg-[#0a0908]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-6 top-10 h-52 rounded-[2.5rem] bg-linear-to-r from-amber-500/18 via-orange-500/10 to-red-700/16 blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-6 bottom-10 h-28 rounded-4xl bg-linear-to-r from-transparent via-amber-300/10 to-transparent blur-2xl"
-          />
-          <div className="container relative mx-auto rounded-2xl border border-amber-200/15 bg-[linear-gradient(135deg,rgba(20,12,9,0.88),rgba(12,10,9,0.72))] px-6 py-5 mt-8 mb-1 shadow-[inset_0_1px_0_rgba(251,191,36,0.12)]">
-            <span className="mb-2 block font-mono text-[11px] uppercase tracking-[0.24em] text-amber-300/60">
-              RUNE FORGE
-            </span>
-            <h2 className="text-3xl font-black text-amber-50">
-              مراحل تعمیر دستگاه
+        <section className="relative overflow-hidden border-y border-orange-500/10 bg-[#0a0908]">
+          <div className="container relative mx-auto rounded-2xl border border-orange-200/15 bg-[linear-gradient(135deg,rgba(20,12,9,0.88),rgba(12,10,9,0.72))] px-6 py-5 mt-8 mb-1">
+            <h2 className="text-3xl font-black text-orange-50">
+              مراحل انجام سفارش
             </h2>
           </div>
           <div className="container relative mx-auto px-0 pb-12">
-            <ServiceRepairSteps steps={service.repairSteps} />
+            <ServiceRepairSteps steps={service.processSteps} />
           </div>
         </section>
 
@@ -213,15 +192,13 @@ export default async function ServicePage({ params }: Props) {
               className={`relative overflow-hidden rounded-[40px] border px-8 py-16 text-center ${theme.border} ${theme.bg}`}
             >
               <div className="relative z-10">
-                <h2 className="text-4xl font-black">
-                  آماده تعمیر کنسول خود هستید؟
-                </h2>
+                <h2 className="text-4xl font-black">آماده ثبت سفارش هستید؟</h2>
                 <div className="mt-10 flex justify-center">
                   <Link
-                    href={repairHref}
-                    className={`flex items-center gap-2 rounded-2xl px-8 py-4 text-lg font-black text-black transition hover:scale-105 ${theme.bg} ${theme.primary}`}
+                    href={orderHref}
+                    className={`flex items-center gap-2 rounded-2xl px-8 py-4 text-lg font-black text-black transition hover:scale-105 bg-orange-500 hover:bg-orange-400`}
                   >
-                    ثبت سفارش تعمیر
+                    ثبت سفارش CNC
                     <ChevronLeft size={20} />
                   </Link>
                 </div>

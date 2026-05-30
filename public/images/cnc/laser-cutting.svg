@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#1a1a1a"/>
+  <rect x="80" y="60" width="240" height="180" rx="4" fill="#292524" stroke="#fb923c" stroke-width="2"/>
+  <path d="M120 140 Q200 100 280 140" stroke="#fb923c" stroke-width="3" fill="none"/>
+  <path d="M140 180 Q200 220 260 180" stroke="#fdba74" stroke-width="2" fill="none"/>
+  <circle cx="200" cy="150" r="40" fill="#f97316" opacity="0.2"/>
+  <text x="200" y="270" text-anchor="middle" fill="#a8a29e" font-family="sans-serif" font-size="14">Laser Cutting</text>
+</svg>

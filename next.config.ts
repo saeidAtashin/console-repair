@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  // Allow LAN phone access during `next dev` (Next.js 16 blocks cross-origin /_next by default)
   allowedDevOrigins: [
     "192.168.1.101",
     "192.168.176.1",
@@ -11,13 +10,41 @@ const nextConfig: NextConfig = {
   ],
   serverExternalPackages: ["better-sqlite3"],
   images: {
-    remotePatterns: [
+    remotePatterns: [],
+  },
+  async redirects() {
+    return [
       {
-        protocol: "https",
-        hostname: "media.rawg.io",
-        pathname: "/media/**",
+        source: "/repair",
+        destination: "/order",
+        permanent: true,
       },
-    ],
+      {
+        source: "/repair/:path*",
+        destination: "/order",
+        permanent: true,
+      },
+      {
+        source: "/services/game-install/:path*",
+        destination: "/services",
+        permanent: true,
+      },
+      {
+        source: "/consoles/:path*",
+        destination: "/services",
+        permanent: true,
+      },
+      {
+        source: "/issues/:path*",
+        destination: "/services",
+        permanent: true,
+      },
+      {
+        source: "/shop/:path*",
+        destination: "/products",
+        permanent: true,
+      },
+    ];
   },
 };
 

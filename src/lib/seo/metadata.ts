@@ -95,12 +95,12 @@ export const rootMetadata: Metadata = {
     description: SITE_TAGLINE,
     path: "/",
     keywords: [
-      "تعمیر کنسول",
-      "تعمیر ps5",
-      "تعمیر ps4",
-      "تعمیر xbox",
-      "تعمیر hdmi",
-      "تعمیر دسته بازی",
+      "cnc",
+      "برش mdf",
+      "برش لیزر",
+      "فرز cnc",
+      "تابلو cnc",
+      "قیمت cnc",
     ],
   }),
   title: {
@@ -108,8 +108,8 @@ export const rootMetadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   icons: {
-    icon: "/logos/logo-nobg.png",
-    shortcut: "/logos/logo-nobg.png",
-    apple: "/logos/logo-nobg.png",
+    icon: "/images/cnc/milling.svg",
+    shortcut: "/images/cnc/milling.svg",
+    apple: "/images/cnc/milling.svg",
   },
 };

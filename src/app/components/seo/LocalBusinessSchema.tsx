@@ -30,11 +30,12 @@ export default function LocalBusinessSchema() {
           name: "تهران",
         },
         knowsAbout: [
-          "تعمیر PS5",
-          "تعمیر PS4",
-          "تعمیر Xbox",
-          "تعمیر HDMI",
-          "تعمیر دسته بازی",
+          "CNC",
+          "برش MDF",
+          "برش لیزر",
+          "فرز CNC",
+          "تابلو CNC",
+          "حکاکی CNC",
         ],
       },
       {

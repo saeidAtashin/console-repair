@@ -1,30 +1,31 @@
 import Link from "next/link";
 import { footerInfoLinks, footerQuickLinks } from "@/lib/site-nav";
+import { SITE_ADDRESS, SITE_PHONE } from "@/lib/seo/site";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const phoneDisplay = "09107701704";
 
   return (
     <footer className="mt-20 border-t border-white/10 bg-black/50 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
-            <p className="text-lg font-bold text-white">فیکس بازی</p>
+            <p className="text-lg font-bold text-white">کارگاه CNC</p>
             <p className="text-sm leading-7 text-zinc-400">
-              مرکز تخصصی تعمیرات پلی استیشن، ایکس باکس و دسته بازی با پشتیبانی
-              سریع.
+              خدمات CNC، برش لیزر، فرز و تولید محصولات چوب و MDF با قیمت روز
+              بازار.
             </p>
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-cyan-400">دسترسی سریع</p>
+            <p className="text-sm font-semibold text-orange-400">دسترسی سریع</p>
             <div className="flex flex-wrap gap-3">
               {footerQuickLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  // href="/coming-soon"
-                  className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
+                  className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-orange-400/50 hover:text-white"
                 >
                   {link.title}
                 </Link>
@@ -33,14 +34,13 @@ export default function Footer() {
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-cyan-400">اطلاعات</p>
+            <p className="text-sm font-semibold text-orange-400">اطلاعات</p>
             <div className="flex flex-wrap gap-3">
               {footerInfoLinks.map((link) => (
                 <Link
                   key={link.href}
-                  // href={link.href}
-                  href="/coming-soon"
-                  className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
+                  href={link.href}
+                  className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-orange-400/50 hover:text-white"
                 >
                   {link.title}
                 </Link>
@@ -49,30 +49,21 @@ export default function Footer() {
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-cyan-400">ارتباط</p>
-            <p className="text-sm text-zinc-400">تلفن: ۰۲۱-۱۲۳۴۵۶۷۸</p>
+            <p className="text-sm font-semibold text-orange-400">ارتباط</p>
             <p className="text-sm text-zinc-400">
-              آدرس: تهران، خیابان مثال، پلاک ۲۴
+              تلفن:{" "}
+              <a href={`tel:${SITE_PHONE}`} className="hover:text-orange-400">
+                {phoneDisplay}
+              </a>
+            </p>
+            <p className="text-sm text-zinc-400">
+              آدرس: {SITE_ADDRESS.streetAddress}
             </p>
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-dashed border-white/15 bg-white/2 p-4">
-          <p className="text-sm font-semibold text-cyan-400">مجوز های ما</p>
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <div
-                key={index}
-                className="flex h-16 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-xs text-zinc-500"
-              >
-                جای لوگو
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div className="mt-8 border-t border-white/10 pt-4 text-center text-xs text-zinc-500">
-          {`© ${year} Console Repair. All rights reserved.`}
+          {`© ${year} کارگاه CNC. All rights reserved.`}
         </div>
       </div>
     </footer>

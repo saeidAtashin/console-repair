@@ -1,5 +1,5 @@
 /**
- * OpenAPI 3.0 specification for Console Repair API routes.
+ * OpenAPI 3.0 specification for CNC Workshop API routes.
  * Served at GET /api/openapi and used by /api-docs (Swagger UI).
  */
 
@@ -24,15 +24,15 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
   return {
   openapi: "3.0.3",
   info: {
-    title: `Console Repair API [ App: ${normalizedBaseUrl} | IPPanel: ${IPPANEL_BASE_URL} ]`,
+    title: `CNC Workshop API [ App: ${normalizedBaseUrl} | IPPanel: ${IPPANEL_BASE_URL} ]`,
     description:
-      "REST API for authentication, repair orders, admin management, and game catalog. OTP SMS is sent via **IPPanel Edge API** (`POST /api/send` on `https://edge.ippanel.com/v1`). Use **Authorize** for Bearer token on protected routes.",
+      "REST API for authentication, CNC orders, admin management, and order tracking. OTP SMS is sent via **IPPanel Edge API**.",
     version: "1.0.0",
   },
   servers: [
     {
       url: normalizedBaseUrl,
-      description: "Console Repair App (Next.js)",
+      description: "CNC Workshop App (Next.js)",
     },
     {
       url: IPPANEL_BASE_URL,
@@ -41,9 +41,8 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
   ],
   tags: [
     { name: "auth", description: "Login, OTP, password reset, and token refresh" },
-    { name: "Repair", description: "Public repair request and order tracking" },
+    { name: "Orders", description: "Public CNC order submission and tracking" },
     { name: "Admin", description: "Admin-only order management (Bearer required)" },
-    { name: "Games", description: "Game catalog by console (RAWG)" },
   ],
   components: {
     securitySchemes: {
@@ -150,10 +149,10 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
   paths: {
     "/api/repair": {
       post: {
-        tags: ["Repair"],
-        summary: "Submit a repair request",
+        tags: ["Orders"],
+        summary: "Submit a CNC order",
         description:
-          "Creates a repair order. Accepts `multipart/form-data`. Optional image: JPEG, PNG, WebP, or GIF, max 5 MB.",
+          "Creates a CNC production order. Accepts `multipart/form-data`. Optional design file: JPEG, PNG, WebP, PDF, or GIF, max 5 MB.",
         requestBody: {
           required: true,
           content: {
@@ -168,8 +167,8 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
                     pattern: "^(?:\\+?98|0)?9\\d{9}$",
                     example: "09123456789",
                   },
-                  device: { type: "string", default: "دستگاه نامشخص" },
-                  issue: { type: "string" },
+                  device: { type: "string", description: "Service or product name", default: "سفارش CNC" },
+                  issue: { type: "string", description: "Material / dimensions" },
                   description: { type: "string" },
                   image: { type: "string", format: "binary" },
                 },
@@ -214,7 +213,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
     },
     "/api/repair/orders/{code}": {
       get: {
-        tags: ["Repair"],
+        tags: ["Orders"],
         summary: "Get order by tracking code",
         parameters: [
           {
@@ -251,7 +250,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
         },
       },
       patch: {
-        tags: ["Repair", "Admin"],
+        tags: ["Orders", "Admin"],
         summary: "Update order status (admin)",
         security: [{ Bearer: [] }],
         parameters: [
@@ -321,7 +320,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
     "/api/admin/orders": {
       get: {
         tags: ["Admin"],
-        summary: "List all repair orders",
+        summary: "List all CNC orders",
         security: [{ Bearer: [] }],
         responses: {
           "200": {
@@ -807,7 +806,7 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
         summary: "Send OTP (app proxy → IPPanel)",
         description:
           "Call this from the login page. Browser → **localhost** (this route) → server calls IPPanel `https://edge.ippanel.com/v1/api/send`. Requires `IPPANEL_*` env vars on the server.",
-        servers: [{ url: normalizedBaseUrl, description: "Console Repair App" }],
+        servers: [{ url: normalizedBaseUrl, description: "CNC Workshop App" }],
         security: [],
         requestBody: {
           required: true,
@@ -956,99 +955,6 @@ export function buildOpenApiDocument(baseUrl: string = DEFAULT_BASE_URL) {
           },
           "401": {
             description: "Wrong code",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/ApiError" },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/api/games": {
-      get: {
-        tags: ["Games"],
-        summary: "List games for a console",
-        parameters: [
-          {
-            name: "console",
-            in: "query",
-            required: true,
-            schema: {
-              type: "string",
-              enum: ["ps4", "ps5", "xbox-one", "xbox-series"],
-            },
-          },
-          {
-            name: "filter",
-            in: "query",
-            schema: {
-              type: "string",
-              enum: ["popular", "newest", "best", "metacritic"],
-              default: "best",
-            },
-          },
-          {
-            name: "page",
-            in: "query",
-            schema: { type: "integer", minimum: 1, default: 1 },
-          },
-          {
-            name: "pageSize",
-            in: "query",
-            schema: {
-              type: "integer",
-              minimum: 1,
-              maximum: 40,
-              default: 24,
-            },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "Paginated game list",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    success: { type: "boolean", example: true },
-                    console: { type: "string" },
-                    games: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/RawgGame" },
-                    },
-                    count: { type: "integer" },
-                    page: { type: "integer" },
-                    pageSize: { type: "integer" },
-                    hasNext: { type: "boolean" },
-                    filter: {
-                      type: "string",
-                      enum: ["popular", "newest", "best", "metacritic"],
-                    },
-                  },
-                },
-              },
-            },
-          },
-          "400": {
-            description: "Invalid query parameters",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/ApiError" },
-              },
-            },
-          },
-          "502": {
-            description: "RAWG upstream error",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/ApiError" },
-              },
-            },
-          },
-          "503": {
-            description: "RAWG_API_KEY not configured",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ApiError" },

@@ -13,10 +13,12 @@ export function normalizePath(path: string) {
 export function pathForBreadcrumbMatch(path: string) {
   if (!path.includes("?")) return normalizePath(path);
   const [pathname, query] = path.split("?");
-  if (!pathname.startsWith("/repair") || !query) return normalizePath(path);
+  if (!pathname.startsWith("/order") || !query) return normalizePath(path);
   const params = new URLSearchParams(query);
-  const console = params.get("console")?.trim();
-  if (console) return `/repair?console=${console}`;
+  const service = params.get("service")?.trim();
+  if (service) return `/order?service=${service}`;
+  const product = params.get("product")?.trim();
+  if (product) return `/order?product=${product}`;
   return normalizePath(path);
 }
 

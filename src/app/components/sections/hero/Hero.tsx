@@ -1,7 +1,7 @@
 import FuturisticBreadcrumbTree from "../../FuturisticBreadcrumbTree";
 import HeroBackground from "./HeroBackground";
 import HeroContent from "./HeroContent";
-import HeroDeviceScene from "./HeroDeviceScene";
+import CncShowcaseScene from "./CncShowcaseScene";
 
 export default function Hero() {
   return (
@@ -15,7 +15,7 @@ export default function Hero() {
         <div className="grid min-h-0 items-start gap-8 py-6 sm:min-h-[90vh] sm:gap-14 sm:py-10 lg:min-h-[92vh] lg:grid-cols-[1.05fr_0.95fr] lg:py-14 xl:gap-20">
           <HeroContent />
 
-          <HeroDeviceScene />
+          <CncShowcaseScene />
         </div>
       </div>
     </section>

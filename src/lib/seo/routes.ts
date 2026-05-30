@@ -1,13 +1,6 @@
-import { issues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
-import { repairSitemapPaths } from "./repair-seo";
-
-export const GAME_INSTALL_CONSOLES = [
-  "ps4",
-  "ps5",
-  "xbox-one",
-  "xbox-series",
-] as const;
+import { products } from "@/app/data/products";
+import { orderSitemapPaths } from "../cnc-seo";
 
 export type SitemapEntry = {
   path: string;
@@ -26,26 +19,24 @@ export type SitemapEntry = {
 export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/services", changeFrequency: "weekly", priority: 0.9 },
-  { path: "/issues", changeFrequency: "weekly", priority: 0.8 },
-  ...repairSitemapPaths().map((path) => ({
+  { path: "/products", changeFrequency: "weekly", priority: 0.9 },
+  ...orderSitemapPaths().map((path) => ({
     path,
     changeFrequency: "monthly" as const,
-    priority: path === "/repair" ? 0.85 : 0.8,
+    priority: path === "/order" ? 0.85 : 0.8,
   })),
   { path: "/tracking", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/about-us", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/faq", changeFrequency: "monthly", priority: 0.5 },
   ...services.map((s) => ({
     path: `/services/${s.slug}`,
     changeFrequency: "weekly" as const,
     priority: 0.85,
   })),
-  ...issues.map((i) => ({
-    path: `/issues/${i.slug}`,
-    changeFrequency: "monthly" as const,
-    priority: 0.75,
-  })),
-  ...GAME_INSTALL_CONSOLES.map((slug) => ({
-    path: `/services/game-install/${slug}`,
-    changeFrequency: "monthly" as const,
-    priority: 0.65,
+  ...products.map((p) => ({
+    path: `/products/${p.slug}`,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
   })),
 ];

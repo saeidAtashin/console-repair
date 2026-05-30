@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Phone, Search, Wrench } from "lucide-react";
+import { Cog, Phone, Search } from "lucide-react";
 
 import { useAuth } from "@/app/context/AuthContext";
-import RepairFormClient from "@/app/repair/RepairFormClient";
-import { getRepairStatusLabel } from "@/lib/repair-status";
+import OrderFormClient from "@/app/order/OrderFormClient";
+import { getOrderStatusLabel } from "@/lib/order-status";
 import { SITE_PHONE } from "@/lib/seo/site";
 
 type Order = {
@@ -103,7 +103,7 @@ export default function DashboardPage() {
     <main className="min-h-screen bg-[#030510] text-white pt-24 pb-16">
       <div className="mx-auto max-w-4xl px-6">
         <header className="mb-10">
-          <p className="text-sm text-cyan-400">پنل کاربری</p>
+          <p className="text-sm text-orange-400">پنل کاربری</p>
           <h1 className="mt-2 text-4xl font-black text-white">
             سلام {user.name}
           </h1>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
         <div className="mb-10 flex flex-wrap gap-3">
           <a
             href={`tel:${SITE_PHONE}`}
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-3 font-bold text-black shadow-[0_0_20px_rgba(0,255,255,0.25)] transition hover:from-cyan-400 hover:to-blue-400"
+            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-3 font-bold text-black transition hover:from-orange-400 hover:to-amber-400"
           >
             <Phone className="h-5 w-5" />
             تماس با پشتیبانی ({DISPLAY_PHONE})
@@ -125,25 +125,25 @@ export default function DashboardPage() {
 
           <Link
             href="/tracking"
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-bold text-white transition hover:border-cyan-500/40 hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-bold text-white transition hover:border-orange-500/40 hover:bg-white/10"
           >
-            <Search className="h-5 w-5 text-cyan-400" />
+            <Search className="h-5 w-5 text-orange-400" />
             پیگیری با کد رهگیری
           </Link>
 
           <button
             type="button"
             onClick={() => setShowForm((prev) => !prev)}
-            className="inline-flex items-center gap-2 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-6 py-3 font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+            className="inline-flex items-center gap-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-6 py-3 font-bold text-orange-300 transition hover:bg-orange-500/20"
           >
-            <Wrench className="h-5 w-5" />
-            {showForm ? "بستن فرم" : "ثبت درخواست تعمیر"}
+            <Cog className="h-5 w-5" />
+            {showForm ? "بستن فرم" : "ثبت سفارش CNC"}
           </button>
         </div>
 
         <section className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold text-cyan-400">
-            سفارشات تعمیر من
+          <h2 className="mb-6 text-2xl font-bold text-orange-400">
+            سفارشات CNC من
           </h2>
 
           {ordersLoading ? (
@@ -154,7 +154,7 @@ export default function DashboardPage() {
             <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center">
               <p className="text-lg text-zinc-300">سفارشی ثبت نشده است</p>
               <p className="mt-2 text-sm text-zinc-500">
-                با دکمه «ثبت درخواست تعمیر» اولین درخواست خود را ثبت کنید.
+                با دکمه «ثبت سفارش CNC» اولین سفارش خود را ثبت کنید.
               </p>
             </div>
           ) : (
@@ -168,18 +168,18 @@ export default function DashboardPage() {
                     <div className="space-y-3">
                       <div>
                         <span className="text-xs text-zinc-500">کد رهگیری</span>
-                        <p className="text-2xl font-black tracking-widest text-cyan-400">
+                        <p className="text-2xl font-black tracking-widest text-orange-400">
                           {order.trackingCode}
                         </p>
                       </div>
 
                       <div className="grid gap-3 text-sm sm:grid-cols-2">
                         <div>
-                          <span className="text-zinc-500">دستگاه:</span>
+                          <span className="text-zinc-500">خدمت/محصول:</span>
                           <p className="mt-1 text-white">{order.device}</p>
                         </div>
                         <div>
-                          <span className="text-zinc-500">مشکل:</span>
+                          <span className="text-zinc-500">جنس/ابعاد:</span>
                           <p className="mt-1 text-white">
                             {order.issue || "—"}
                           </p>
@@ -194,8 +194,8 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="shrink-0 text-left sm:text-right">
-                      <span className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-bold text-cyan-300">
-                        {getRepairStatusLabel(order.status)}
+                      <span className="inline-flex rounded-full border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-sm font-bold text-orange-300">
+                        {getOrderStatusLabel(order.status)}
                       </span>
                       <p className="mt-3 text-xs text-zinc-500">
                         {new Date(order.createdAt).toLocaleDateString("fa-IR")}
@@ -210,7 +210,7 @@ export default function DashboardPage() {
 
         {showForm && (
           <section className="rounded-3xl border border-white/10 bg-black/40">
-            <RepairFormClient
+            <OrderFormClient
               initialPrefill={{}}
               defaultPhone={user.phone ?? ""}
               onSuccess={() => {

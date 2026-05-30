@@ -1,9 +1,5 @@
-import {
-  consoleCatalog,
-  consoleIds,
-  getRepairService,
-  type ConsoleId,
-} from "./console-catalog";
+import { services } from "@/app/data/services";
+import { productCategories } from "@/app/data/products";
 import { siteBreadcrumbTree } from "./breadcrumb-tree-data";
 
 export type SiteNavLeaf = {
@@ -27,70 +23,49 @@ function trackingItem(): SiteNavLeaf {
   };
 }
 
-function issueLabel(consoleId: ConsoleId) {
-  return (
-    getRepairService(consoleId)?.title ??
-    `تعمیر ${consoleCatalog[consoleId].title}`
-  );
-}
-
-function repairChildren(): SiteNavLeaf[] {
-  return consoleIds.map((id) => ({
-    title: issueLabel(id),
-    href: `/services/${consoleCatalog[id].repairSlug}`,
+function serviceChildren(): SiteNavLeaf[] {
+  return services.map((s) => ({
+    title: s.title,
+    href: `/services/${s.slug}`,
   }));
 }
 
-function gameChildren(): SiteNavLeaf[] {
-  return consoleIds.flatMap((id) =>
-    consoleCatalog[id].gameInstallSlugs.map((game) => ({
-      title: game.label,
-      href: `/services/game-install/${game.slug}`,
-    })),
-  );
-}
-
-function shopChildren(): SiteNavLeaf[] {
-  return consoleIds.map((id) => ({
-    title: `خرید ${consoleCatalog[id].title}`,
-    // href: `/shop/${id}`,
-    href: "/coming-soon",
+function productChildren(): SiteNavLeaf[] {
+  return productCategories.map((c) => ({
+    title: c.title,
+    href: `/products?category=${c.id}`,
   }));
 }
 
 export const navbarNavItems: SiteNavItem[] = [
   { title: "خانه", href: "/" },
   {
-    title: "تعمیرات",
+    title: "خدمات",
     href: "/services",
-    children: repairChildren(),
+    children: serviceChildren(),
   },
   {
-    title: "بازی",
-    href: "/services/game-install",
-    children: gameChildren(),
+    title: "محصولات",
+    href: "/products",
+    children: productChildren(),
   },
-  {
-    title: "فروشگاه",
-    href: "/shop",
-    children: shopChildren(),
-  },
-  { title: "بلاگ", href: "/blog/controller-repair" },
+  { title: "ثبت سفارش", href: "/order" },
   trackingItem(),
 ];
 
 export const headerNavItems: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
   { title: "همه خدمات", href: "/services" },
-  { title: "ثبت سفارش تعمیر", href: "/repair" },
-  { title: "مشکلات رایج", href: "/issues" },
+  { title: "محصولات", href: "/products" },
+  { title: "ثبت سفارش", href: "/order" },
   trackingItem(),
 ];
 
 export const footerQuickLinks: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
   { title: "همه خدمات", href: "/services" },
-  { title: "ثبت سفارش تعمیر", href: "/repair" },
+  { title: "محصولات", href: "/products" },
+  { title: "ثبت سفارش", href: "/order" },
   trackingItem(),
 ];
 

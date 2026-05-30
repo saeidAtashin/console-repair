@@ -1,10 +1,5 @@
 import { services } from "@/app/data/services";
-import {
-  consoleCatalog,
-  consoleIds,
-  getRepairService,
-  type ConsoleId,
-} from "./console-catalog";
+import { productCategories, products } from "@/app/data/products";
 
 export type BranchNode = {
   title: string;
@@ -14,118 +9,51 @@ export type BranchNode = {
 
 const serviceBySlug = Object.fromEntries(services.map((s) => [s.slug, s]));
 
-function issuesBranch(
-  consoleId: ConsoleId,
-  repairSlug: string,
-  limit = 5,
-): BranchNode {
-  const repair = serviceBySlug[repairSlug];
-  const issues = repair?.commonIssues?.slice(0, limit) ?? [];
-
+function serviceBranch(): BranchNode {
   return {
-    title: "مشکلات رایج",
-    href: `/consoles/${consoleId}/issues`,
-    children: issues.map((issue) => ({
-      title: issue.title,
-      href: `/issues/${issue.slug}`,
+    title: "خدمات CNC",
+    href: "/services",
+    children: services.map((s) => ({
+      title: s.title,
+      href: `/services/${s.slug}`,
     })),
   };
 }
 
-function consoleBranch(consoleId: ConsoleId): BranchNode {
-  const config = consoleCatalog[consoleId];
-  const repair = serviceBySlug[config.repairSlug];
-
-  const gameInstallChildren: BranchNode[] = config.gameInstallSlugs.map(
-    (g) => ({
-      title: g.label,
-      href: `/services/game-install/${g.slug}`,
-    }),
-  );
-
-  const gameInstallNode: BranchNode =
-    gameInstallChildren.length === 1
-      ? gameInstallChildren[0]
-      : {
-          title: "نصب بازی",
-          href: `/consoles/${consoleId}`,
-          children: gameInstallChildren,
-        };
-
+function productsBranch(): BranchNode {
   return {
-    title: config.title,
-    href: `/consoles/${consoleId}`,
-    children: [
-      {
-        title: repair?.title ?? `تعمیر ${config.title}`,
-        href: `/services/${config.repairSlug}`,
-      },
-      gameInstallNode,
-      {
-        title: "فروش کنسول",
-        href: `/shop/${consoleId}`,
-      },
-      {
-        title: "فروش قطعات",
-        href: `/shop/${consoleId}/parts`,
-      },
-      issuesBranch(consoleId, config.repairSlug),
-    ],
+    title: "محصولات",
+    href: "/products",
+    children: productCategories.map((c) => ({
+      title: c.title,
+      href: `/products?category=${c.id}`,
+      children: products
+        .filter((p) => p.category === c.id)
+        .slice(0, 4)
+        .map((p) => ({
+          title: p.title,
+          href: `/products/${p.slug}`,
+        })),
+    })),
   };
 }
 
-/** خانه → کنسول / خدمات / … → زیرخدمات (+ مشکلات رایج) */
 export const siteBreadcrumbTree: BranchNode = {
   title: "خانه",
   href: "/",
   children: [
-    ...consoleIds.map((id) => consoleBranch(id)),
+    serviceBranch(),
+    productsBranch(),
     {
-      title: "تعمیر دسته",
-      href: "/services/controller-repair",
-      children: [
-        {
-          title: "تعمیرات دسته بازی",
-          href: "/services/controller-repair",
-        },
-        {
-          title: "مشکلات رایج دسته",
-          href: "/issues",
-          children:
-            serviceBySlug["controller-repair"]?.commonIssues
-              ?.slice(0, 4)
-              .map((issue) => ({
-                title: issue.title,
-                href: `/issues/${issue.slug}`,
-              })) ?? [],
-        },
-      ],
+      title: "ثبت سفارش",
+      href: "/order",
+      children: services.map((s) => ({
+        title: s.title,
+        href: `/order?service=${s.slug}`,
+      })),
     },
     {
-      title: "همه خدمات",
-      href: "/services",
-    },
-    {
-      title: "تعمیر HDMI",
-      href: "/services/hdmi-repair",
-    },
-    {
-      title: "مشکلات رایج",
-      href: "/issues",
-    },
-    {
-      title: "ثبت سفارش تعمیر",
-      href: "/repair",
-      children: consoleIds.map((id) => {
-        const service = getRepairService(id);
-        return {
-          title: service?.title ?? `تعمیر ${consoleCatalog[id].title}`,
-          href: `/repair?console=${id}`,
-        };
-      }),
-    },
-    {
-      title: "پیگیری تعمیر",
+      title: "پیگیری سفارش",
       href: "/tracking",
     },
     {
@@ -150,3 +78,5 @@ export const siteBreadcrumbTree: BranchNode = {
     },
   ],
 };
+
+export { serviceBySlug };
