@@ -66,9 +66,15 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("POST /api/auth/otp/send failed:", error);
-    return NextResponse.json(
-      { success: false, message: "خطا در ارسال کد" },
-      { status: 500 },
-    );
+
+    const message =
+      error instanceof Error &&
+      (error.message.includes("better_sqlite3") ||
+        error.message.includes("bindings file") ||
+        error.message.includes("SQLITE"))
+        ? "خطا در اتصال به پایگاه داده"
+        : "خطا در ارسال کد";
+
+    return NextResponse.json({ success: false, message }, { status: 500 });
   }
 }
