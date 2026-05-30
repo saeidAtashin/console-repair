@@ -79,7 +79,7 @@ export default function ContactConsultation() {
           <div className="grid gap-4">
             <FadeUp delay={0.2}>
               <a
-                href="tel:09123456789"
+                href="tel:09107701704"
                 className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-cyan-500/40 hover:bg-zinc-900/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-cyan-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
@@ -99,7 +99,7 @@ export default function ContactConsultation() {
 
             <FadeUp delay={0.3}>
               <a
-                href="https://wa.me/989123456789"
+                href="https://wa.me/989107701704"
                 className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-green-500/40 hover:bg-zinc-900/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-green-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />

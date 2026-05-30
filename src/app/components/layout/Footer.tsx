@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
-            <p className="text-lg font-bold text-white">کنسول ریپیر</p>
+            <p className="text-lg font-bold text-white">فیکس بازی</p>
             <p className="text-sm leading-7 text-zinc-400">
               مرکز تخصصی تعمیرات پلی استیشن، ایکس باکس و دسته بازی با پشتیبانی
               سریع.

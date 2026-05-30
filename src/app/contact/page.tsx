@@ -25,12 +25,12 @@ export default function ContactPage() {
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6">
             <p className="text-sm text-cyan-400">تلفن پشتیبانی</p>
-            <p className="mt-3 text-lg text-zinc-100">۰۲۱-۱۲۳۴۵۶۷۸</p>
+            <p className="mt-3 text-lg text-zinc-100">09107701704</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6">
             <p className="text-sm text-cyan-400">آدرس</p>
             <p className="mt-3 text-lg text-zinc-100">
-              تهران، خیابان مثال، پلاک ۲۴
+              تهران، توپخانه پاساژ لیلا طبقه 4 واحد 21
             </p>
           </div>
         </div>
