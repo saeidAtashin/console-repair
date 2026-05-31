@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { generateOtpCode } from "@/lib/auth";
 import {
+  getAuthSecretConfigError,
+  isAuthSecretMissingError,
+} from "@/lib/auth-secret";
+import {
   IRAN_PHONE_INVALID_MESSAGE,
   normalizeIranPhone,
 } from "@/lib/phone";
@@ -9,10 +13,22 @@ import {
   sendLoginOtpPattern,
   getIppanelSendUrl,
 } from "@/lib/ippanel";
-import { setOtpCookie } from "@/lib/otp-cookie";
+import {
+  buildOtpCookieToken,
+  getOtpCookieOptions,
+  OTP_COOKIE_NAME,
+} from "@/lib/otp-cookie";
 
 export async function POST(req: Request) {
   try {
+    const authError = getAuthSecretConfigError();
+    if (authError) {
+      return NextResponse.json(
+        { success: false, message: authError },
+        { status: 503 },
+      );
+    }
+
     const body = await req.json();
     const phone = normalizeIranPhone(String(body.phone ?? ""));
 
@@ -49,21 +65,26 @@ export async function POST(req: Request) {
       }
     }
 
-    await setOtpCookie(phone, code);
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: smsSent ? "کد تایید پیامک شد" : "کد تایید (بدون پیامک)",
       smsSent,
       ...(!smsSent ? { devCode: code } : {}),
     });
+
+    response.cookies.set(
+      OTP_COOKIE_NAME,
+      buildOtpCookieToken(phone, code),
+      getOtpCookieOptions(),
+    );
+
+    return response;
   } catch (error) {
     console.error("POST /api/auth/otp/send failed:", error);
 
-    const message =
-      error instanceof Error && error.message === "AUTH_SECRET is not configured"
-        ? "AUTH_SECRET تنظیم نشده است"
-        : "خطا در ارسال کد";
+    const message = isAuthSecretMissingError(error)
+      ? "AUTH_SECRET تنظیم نشده است"
+      : "خطا در ارسال کد";
 
     return NextResponse.json({ success: false, message }, { status: 500 });
   }

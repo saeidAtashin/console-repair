@@ -1,9 +1,10 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
+import { getAuthSecret } from "@/lib/auth-secret";
 import { OTP_TTL_SEC } from "@/lib/auth-shared";
 
-const OTP_COOKIE = "otp_pending";
+export const OTP_COOKIE_NAME = "otp_pending";
 
 type OtpPayload = {
   phone: string;
@@ -11,19 +12,11 @@ type OtpPayload = {
   exp: number;
 };
 
-function getAuthSecret(): string {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) {
-    throw new Error("AUTH_SECRET is not configured");
-  }
-  return secret;
-}
-
 function signPayload(payload: string): string {
   return createHmac("sha256", getAuthSecret()).update(payload).digest("hex");
 }
 
-function encodeOtpToken(phone: string, code: string): string {
+export function buildOtpCookieToken(phone: string, code: string): string {
   const payload = JSON.stringify({
     phone,
     code,
@@ -31,6 +24,16 @@ function encodeOtpToken(phone: string, code: string): string {
   });
   const signature = signPayload(payload);
   return Buffer.from(`${payload}.${signature}`).toString("base64url");
+}
+
+export function getOtpCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: OTP_TTL_SEC,
+  };
 }
 
 function decodeOtpToken(token: string): OtpPayload | null {
@@ -78,23 +81,17 @@ function codesMatch(stored: string, provided: string): boolean {
 
 export async function setOtpCookie(phone: string, code: string): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(OTP_COOKIE, encodeOtpToken(phone, code), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: OTP_TTL_SEC,
-  });
+  cookieStore.set(OTP_COOKIE_NAME, buildOtpCookieToken(phone, code), getOtpCookieOptions());
 }
 
 export async function clearOtpCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(OTP_COOKIE);
+  cookieStore.delete(OTP_COOKIE_NAME);
 }
 
 export async function readOtpCookie(): Promise<OtpPayload | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get(OTP_COOKIE)?.value;
+  const token = cookieStore.get(OTP_COOKIE_NAME)?.value;
   if (!token) return null;
   return decodeOtpToken(token);
 }

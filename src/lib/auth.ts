@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
+import { getAuthSecret } from "@/lib/auth-secret";
 import type { SessionUser } from "@/lib/auth-shared";
 
 export type { SessionRole, SessionUser } from "@/lib/auth-shared";
@@ -15,14 +16,6 @@ export {
 
 const SESSION_COOKIE = "console_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
-
-function getAuthSecret(): string {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret) {
-    throw new Error("AUTH_SECRET is not configured");
-  }
-  return secret;
-}
 
 function signPayload(payload: string): string {
   return createHmac("sha256", getAuthSecret()).update(payload).digest("hex");

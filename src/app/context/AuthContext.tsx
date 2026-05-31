@@ -87,7 +87,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ phone }),
     });
 
-    const data = await res.json();
+    let data: Record<string, unknown>;
+    try {
+      data = (await res.json()) as Record<string, unknown>;
+    } catch {
+      return {
+        success: false,
+        message: "پاسخ نامعتبر از سرور",
+      };
+    }
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message:
+          typeof data.message === "string"
+            ? data.message
+            : `خطا در ارسال کد (${res.status})`,
+      };
+    }
+
     return {
       success: data.success === true,
       message: typeof data.message === "string" ? data.message : undefined,
@@ -105,17 +124,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ phone, code }),
       });
 
-      const data = await res.json();
-      if (!data.success || !data.user) {
+      let data: Record<string, unknown>;
+      try {
+        data = (await res.json()) as Record<string, unknown>;
+      } catch {
+        return { user: null, message: "پاسخ نامعتبر از سرور" };
+      }
+
+      const userPayload = data.user as User | undefined;
+
+      if (!res.ok || data.success !== true || !userPayload) {
         return {
           user: null,
-          message: typeof data.message === "string" ? data.message : undefined,
+          message:
+            typeof data.message === "string"
+              ? data.message
+              : `خطا در تایید کد (${res.status})`,
         };
       }
 
-      setUser(data.user);
-      router.replace(getPostLoginPath(data.user.role));
-      return { user: data.user };
+      setUser(userPayload);
+      router.replace(getPostLoginPath(userPayload.role));
+      return { user: userPayload };
     },
     [router],
   );

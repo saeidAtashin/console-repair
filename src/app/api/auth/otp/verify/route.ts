@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAuthSecretConfigError } from "@/lib/auth-secret";
 import { prisma } from "@/lib/db";
 import { resolveRoleForPhone, setSession } from "@/lib/auth";
 import {
@@ -9,6 +10,14 @@ import { verifyOtpCookie } from "@/lib/otp-cookie";
 
 export async function POST(req: Request) {
   try {
+    const authError = getAuthSecretConfigError();
+    if (authError) {
+      return NextResponse.json(
+        { success: false, message: authError },
+        { status: 503 },
+      );
+    }
+
     const body = await req.json();
     const phone = normalizeIranPhone(String(body.phone ?? ""));
     const code = String(body.code ?? "").trim();
