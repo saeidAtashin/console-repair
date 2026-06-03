@@ -11,7 +11,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV DATABASE_URL="file:/data/app.db"
 RUN npm rebuild better-sqlite3
-RUN npx prisma generate
 RUN npm run build
 
 FROM node:22-alpine AS runner
