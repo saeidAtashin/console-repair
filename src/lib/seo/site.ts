@@ -14,7 +14,7 @@ export const SITE_ADDRESS = {
 
 export function getSiteUrl(): string {
   const url =
-    process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3002";
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://fixbazi.ir";
   return url.replace(/\/$/, "");
 }
 
