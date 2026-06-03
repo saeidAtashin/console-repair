@@ -1,6 +1,7 @@
 import {
   DEFAULT_OG_IMAGE,
   SITE_ADDRESS,
+  SITE_HOURS,
   SITE_NAME,
   SITE_PHONE,
   SITE_TAGLINE,
@@ -21,6 +22,7 @@ export default function LocalBusinessSchema() {
         telephone: SITE_PHONE,
         image: absoluteUrl(DEFAULT_OG_IMAGE),
         priceRange: "IRR",
+        openingHours: SITE_HOURS,
         address: {
           "@type": "PostalAddress",
           ...SITE_ADDRESS,

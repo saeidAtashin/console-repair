@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import {
+  BRAND_SHORT,
   DEFAULT_OG_IMAGE,
   SITE_LOCALE,
   SITE_NAME,
@@ -8,6 +9,14 @@ import {
   absoluteUrl,
   getSiteUrl,
 } from "./site";
+
+function buildFullTitle(pageTitle: string): string {
+  if (pageTitle === SITE_NAME) return pageTitle;
+  if (pageTitle.includes(SITE_NAME) || pageTitle.includes(BRAND_SHORT)) {
+    return pageTitle;
+  }
+  return `${pageTitle} | ${SITE_NAME}`;
+}
 
 export type PageMetadataInput = {
   title: string;
@@ -27,8 +36,7 @@ export function createPageMetadata(input: PageMetadataInput): Metadata {
   const ogImageUrl = ogImage.startsWith("http")
     ? ogImage
     : absoluteUrl(ogImage);
-  const fullTitle =
-    input.title === SITE_NAME ? input.title : `${input.title} | ${SITE_NAME}`;
+  const fullTitle = buildFullTitle(input.title);
 
   return {
     title: input.title,

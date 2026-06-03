@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import ContactCTA from "./sections/ContactCTA";
+import AboutFixBazi from "./sections/AboutFixBazi";
 import Hero from "./sections/hero/Hero";
 import Services from "./sections/Services";
 import ServicesSection from "./sections/ServicesSection";
@@ -31,6 +32,7 @@ export default function HomePage() {
       />
       <GamingBackground />
       <Hero />
+      <AboutFixBazi />
       <Services />
       <PriceTable />
       <ContactCTA />

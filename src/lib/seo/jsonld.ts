@@ -53,3 +53,39 @@ export function collectionPageJsonLd(input: {
     publisher: { "@type": "Organization", name: SITE_NAME },
   };
 }
+
+export function aboutPageJsonLd(input: {
+  name: string;
+  description: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: input.name,
+    description: input.description,
+    url: absoluteUrl(input.path),
+    inLanguage: "fa-IR",
+    isPartOf: { "@id": `${absoluteUrl("/")}#website` },
+    mainEntity: { "@id": `${absoluteUrl("/")}#business` },
+    publisher: { "@id": `${absoluteUrl("/")}#business` },
+  };
+}
+
+export function contactPageJsonLd(input: {
+  name: string;
+  description: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: input.name,
+    description: input.description,
+    url: absoluteUrl(input.path),
+    inLanguage: "fa-IR",
+    isPartOf: { "@id": `${absoluteUrl("/")}#website` },
+    mainEntity: { "@id": `${absoluteUrl("/")}#business` },
+    publisher: { "@id": `${absoluteUrl("/")}#business` },
+  };
+}

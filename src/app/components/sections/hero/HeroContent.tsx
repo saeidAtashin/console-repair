@@ -21,7 +21,7 @@ export default function HeroContent() {
       >
         <span className="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_14px_#22d3ee]" />
         <span className="text-sm font-medium text-cyan-200/90">
-          مرکز تخصصی تعمیر PS5 / PS4 / Xbox
+          فیکس بازی — مرکز تخصصی تعمیر PS5 / PS4 / Xbox
         </span>
       </motion.div>
 
@@ -41,6 +41,18 @@ export default function HeroContent() {
             دقیق، سریع، مطمئن
           </span>
         </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 1, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="mt-4 font-mono text-lg tracking-tight text-cyan-400 lowercase sm:text-xl"
+        >
+          FixBazi ·{" "}
+          <span className="font-black text-white sorenanormal normal-case">
+            فیکس<span className="text-cyan-500">‌بازی</span>
+          </span>
+        </motion.p>
 
         <motion.p
           initial={{ opacity: 1, y: 16 }}
