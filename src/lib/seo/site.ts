@@ -1,4 +1,4 @@
-export const SITE_NAME = "فیکس‌بازی | fix bazi";
+export const SITE_NAME = "فیکس‌ بازی | fix bazi";
 export const SITE_TAGLINE =
   "fix bazi (فیکس‌بازی) - تعمیر تخصصی پلی‌استیشن و ایکس‌باکس با گارانتی و قطعات اورجینال";
 export const SITE_LOCALE = "fa_IR";
@@ -13,8 +13,7 @@ export const SITE_ADDRESS = {
 };
 
 export function getSiteUrl(): string {
-  const url =
-    process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://fixbazi.ir";
+  const url = "https://fixbazi.ir";
   return url.replace(/\/$/, "");
 }
 

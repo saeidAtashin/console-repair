@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import GoftinoWidget from "./components/GoftinoWidget";
 import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
@@ -122,6 +123,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <Footer />
+          <GoftinoWidget />
         </AuthProvider>
       </body>
     </html>
