@@ -62,9 +62,9 @@ export async function apiRequest<T = unknown>(
   if (!response.ok) {
     const message =
       payload &&
-      typeof payload === "object" &&
-      "message" in payload &&
-      typeof (payload as { message?: unknown }).message === "string"
+        typeof payload === "object" &&
+        "message" in payload &&
+        typeof (payload as { message?: unknown }).message === "string"
         ? (payload as { message: string }).message
         : `Request failed with status ${response.status}`;
     throw new ApiError(message, response.status);

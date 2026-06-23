@@ -9,6 +9,7 @@ import ServicesSection from "./sections/ServicesSection";
 import WhyUs from "./sections/WhyUs";
 import GamingBackground from "./ui/GamingBackground";
 import PriceTable from "./sections/PriceTable";
+// import Testimonials from "./sections/Testimonials";
 
 export default function HomePage() {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
