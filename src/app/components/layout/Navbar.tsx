@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { navbarNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
+import ShopSearch from "../shop/ShopSearch";
 import {
   X,
   ChevronDown,
@@ -200,6 +201,7 @@ export default function Navbar() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
+              <ShopSearch variant="header" onNavigate={closeMenu} />
               <Link
                 href="/shop/cart"
                 className="relative rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-200 transition hover:border-cyan-500/50"
@@ -317,6 +319,10 @@ export default function Navbar() {
               >
                 <X size={32} />
               </button>
+            </div>
+
+            <div className="mb-8 md:hidden">
+              <ShopSearch variant="header" onNavigate={closeMenu} />
             </div>
 
             <div className="flex flex-col gap-6 text-right">

@@ -17,6 +17,7 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: true,
     badges: ["نو", "ضمانت تست"],
     highlights: ["کابل کامل", "ریجن آزاد"],
+    searchTerms: ["playstation 5 disc", "ps5 disc", "پلی استیشن 5 دیسک"],
   },
   {
     id: "ps5-digital-used",
@@ -47,6 +48,7 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: false,
     badges: ["نو"],
     highlights: ["نسخه جدید", "مصرف کمتر"],
+    searchTerms: ["slim", "اسلیم", "playstation 5 slim", "ps5 slim"],
   },
   // PS4 consoles
   {
@@ -105,6 +107,7 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: true,
     badges: ["نو", "ضمانت تست"],
     highlights: ["قدرت بالا", "مناسب 4K"],
+    searchTerms: ["series x", "xbox series x", "xsx"],
   },
   {
     id: "xbox-series-s-used",
@@ -119,8 +122,8 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: true,
     badges: ["دست دوم", "تست شده"],
     highlights: ["بدون ایراد", "تحویل فوری"],
+    searchTerms: ["series s", "xbox series s", "xss"],
   },
-  // Xbox One consoles
   {
     id: "xbox-one-s-used",
     slug: "xbox-one-s-used",
@@ -163,6 +166,7 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: true,
     badges: ["اورجینال"],
     highlights: ["هپتیک فیدبک", "تریگر تطبیقی"],
+    searchTerms: ["dualsense", "dual sense", "دوالسنس", "دسته ps5", "controller ps5"],
   },
   {
     id: "ps5-charging-dock",
@@ -190,6 +194,7 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: true,
     badges: ["سازگار PS4"],
     highlights: ["تاچ پد", "اسپیکر داخلی"],
+    searchTerms: ["dualshock", "dual shock 4", "دسته ps4"],
   },
   {
     id: "ps4-cooling-stand",
@@ -272,6 +277,7 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: true,
     badges: ["4K 120Hz"],
     highlights: ["طول ۲ متر", "کیفیت بالا"],
+    searchTerms: ["hdmi", "hdmi 2.1", "کابل hdmi", "کابل"],
   },
   {
     id: "ps5-headset",
@@ -285,8 +291,8 @@ export const STATIC_SHOP_PRODUCTS: ShopProduct[] = [
     inStock: true,
     badges: ["صدای فراگیر"],
     highlights: ["میکروفون نویزگیر", "راحت برای بازی طولانی"],
+    searchTerms: ["headset", "هدست", "هدفون گیمینگ"],
   },
-  // PS4 accessories
   {
     id: "ps4-hdmi-cable",
     slug: "ps4-hdmi-cable",

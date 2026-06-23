@@ -1,6 +1,6 @@
-import ShopCatalog from "@/app/components/shop/ShopCatalog";
-import ShopServicesSection from "@/app/components/shop/ShopServicesSection";
-import ShopTrustBar from "@/app/components/shop/ShopTrustBar";
+import { Suspense } from "react";
+
+import ShopPageClient from "./ShopPageClient";
 import PageShell from "@/app/components/seo/PageShell";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import {
@@ -57,9 +57,9 @@ export default function ShopIndexPage() {
       >
         <h1 className="text-4xl font-black md:text-5xl">فروشگاه کنسول بازی</h1>
         <p className="mt-4 max-w-3xl text-lg text-zinc-400">{DESCRIPTION}</p>
-        <ShopTrustBar />
-        <ShopCatalog />
-        <ShopServicesSection />
+        <Suspense fallback={null}>
+          <ShopPageClient />
+        </Suspense>
       </PageShell>
     </main>
   );

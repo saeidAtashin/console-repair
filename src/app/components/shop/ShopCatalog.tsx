@@ -11,6 +11,7 @@ import {
   SHOP_CONSOLE_META,
   SHOP_CONSOLE_ORDER,
   getProducts,
+  getSearchResultProducts,
   type ProductCategory,
   type ProductCondition,
   type ShopConsole,
@@ -27,6 +28,7 @@ const CONDITION_FILTERS: { key: FilterKey; label: string }[] = [
 
 type Props = {
   defaultConsole?: ShopConsole;
+  searchQuery?: string;
 };
 
 function ProductSection({
@@ -65,9 +67,18 @@ function ProductSection({
   );
 }
 
-export default function ShopCatalog({ defaultConsole = "ps5" }: Props) {
+export default function ShopCatalog({
+  defaultConsole = "ps5",
+  searchQuery,
+}: Props) {
   const [activeConsole, setActiveConsole] = useState<ShopConsole>(defaultConsole);
   const [condition, setCondition] = useState<FilterKey>("all");
+
+  const isSearchMode = Boolean(searchQuery && searchQuery.length >= 2);
+  const searchResults = useMemo(
+    () => (isSearchMode ? getSearchResultProducts(searchQuery!, { limit: 48 }) : []),
+    [isSearchMode, searchQuery],
+  );
 
   const theme = brandThemes[SHOP_CONSOLE_META[activeConsole].brand];
   const consoleLabel = SHOP_CONSOLE_META[activeConsole].label;
@@ -96,6 +107,21 @@ export default function ShopCatalog({ defaultConsole = "ps5" }: Props) {
 
   return (
     <section className="mt-14">
+      {isSearchMode ? (
+        <>
+          <p className="text-sm text-zinc-400">
+            {searchResults.length} نتیجه برای «{searchQuery}»
+          </p>
+          {searchResults.length > 0 ? (
+            <ProductSection title="نتایج جستجو" products={searchResults} />
+          ) : (
+            <div className="mt-6 rounded-2xl border border-white/10 bg-zinc-900/40 p-6 text-zinc-300">
+              نتیجه‌ای برای «{searchQuery}» پیدا نشد.
+            </div>
+          )}
+        </>
+      ) : (
+        <>
       <div className="flex snap-x gap-3 overflow-x-auto pb-2">
         {SHOP_CONSOLE_ORDER.map((slug) => {
           const tab = SHOP_CONSOLE_META[slug];
@@ -165,6 +191,8 @@ export default function ShopCatalog({ defaultConsole = "ps5" }: Props) {
             title={PRODUCT_CATEGORY_LABELS.accessories}
             products={productsByCategory.accessories}
           />
+        </>
+      )}
         </>
       )}
     </section>

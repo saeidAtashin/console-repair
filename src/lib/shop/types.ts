@@ -19,6 +19,7 @@ export type ShopProduct = {
   inStock: boolean;
   badges?: string[];
   highlights?: string[];
+  searchTerms?: string[];
 };
 
 export type CartLineItem = {
