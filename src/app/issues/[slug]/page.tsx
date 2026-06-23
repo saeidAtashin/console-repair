@@ -11,19 +11,38 @@ import {
   Gauge,
 } from "lucide-react";
 
+import FaqSection from "@/app/components/seo/FaqSection";
+import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
 import JsonLd from "@/app/components/seo/JsonLd";
 import { issues } from "@/app/data/issues";
 import {
+  buildIssueSeoExtras,
+  enrichIssueSeoDescription,
+} from "@/lib/issues/issue-seo-content";
+import {
   buildRepairHref,
   consoleIdFromIssueSlug,
 } from "../../../lib/repair-links";
+import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
 import { absoluteUrl, SITE_NAME } from "../../../lib/seo/site";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+const DIFFICULTY_LABELS = {
+  easy: "آسان",
+  medium: "متوسط",
+  hard: "پیشرفته",
+} as const;
+
+const COST_LABELS = {
+  low: "پایین",
+  medium: "متوسط",
+  high: "بالا",
+} as const;
 
 export function generateStaticParams() {
   return issues.map((issue) => ({ slug: issue.slug }));
@@ -43,7 +62,7 @@ export async function generateMetadata({ params }: Props) {
 
   return createPageMetadata({
     title: issue.seoTitle ?? issue.title,
-    description: issue.seoDescription ?? issue.description,
+    description: enrichIssueSeoDescription(issue),
     path: `/issues/${issue.slug}`,
     type: "article",
     ogImage: issue.image,
@@ -56,6 +75,7 @@ export default async function IssuePage({ params }: Props) {
 
   if (!issue) notFound();
 
+  const seo = buildIssueSeoExtras(issue);
   const issuePath = `/issues/${issue.slug}`;
   const consoleId = consoleIdFromIssueSlug(issue.slug);
   const repairHref = buildRepairHref({
@@ -69,7 +89,7 @@ export default async function IssuePage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: issue.seoTitle ?? issue.title,
-    description: issue.seoDescription ?? issue.description,
+    description: enrichIssueSeoDescription(issue),
     url: absoluteUrl(issuePath),
     inLanguage: "fa-IR",
     author: { "@type": "Organization", name: SITE_NAME },
@@ -77,9 +97,27 @@ export default async function IssuePage({ params }: Props) {
     image: issue.image ? absoluteUrl(issue.image) : undefined,
   };
 
+  const diagnosticSteps = [
+    "مقایسه علائم دستگاه با لیست علائم این راهنما",
+    "بررسی علل احتمالی و اقدامات اولیه ایمن",
+    "ثبت درخواست تعمیر در صورت ادامه مشکل",
+    "عیب‌یابی تخصصی و اعلام هزینه",
+    "تعمیر، تست و تحویل با ضمانت",
+  ];
+
   return (
     <main className="min-h-screen bg-zinc-950 pt-24 text-white">
-      <JsonLd data={articleSchema} />
+      <JsonLd
+        data={[
+          articleSchema,
+          howToJsonLd({
+            name: `عیب‌یابی ${issue.title}`,
+            description: issue.description,
+            path: issuePath,
+            steps: diagnosticSteps,
+          }),
+        ]}
+      />
 
       <PageShell
         currentPath={issuePath}
@@ -100,7 +138,7 @@ export default async function IssuePage({ params }: Props) {
           <div className="relative mx-auto max-w-5xl px-6 py-20">
             <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-blue-500">
               <Wrench size={16} />
-              راهنمای فنی
+              راهنمای فنی · {seo.consoleLabel}
             </span>
 
             <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight md:text-6xl xl:text-7xl">
@@ -114,7 +152,8 @@ export default async function IssuePage({ params }: Props) {
             <div className="mt-10 flex flex-wrap gap-6 text-sm text-zinc-300">
               {issue.difficulty && (
                 <span className="flex items-center gap-2">
-                  <Gauge size={16} /> سختی: {issue.difficulty}
+                  <Gauge size={16} /> سختی:{" "}
+                  {DIFFICULTY_LABELS[issue.difficulty]}
                 </span>
               )}
               {issue.repairTime && (
@@ -124,7 +163,7 @@ export default async function IssuePage({ params }: Props) {
               )}
               {issue.costLevel && (
                 <span className="flex items-center gap-2">
-                  هزینه: {issue.costLevel}
+                  هزینه: {COST_LABELS[issue.costLevel]}
                 </span>
               )}
             </div>
@@ -132,9 +171,18 @@ export default async function IssuePage({ params }: Props) {
         </section>
 
         <div className="mx-auto max-w-5xl space-y-24 px-6 py-20">
+          <OverviewSection
+            title={`راهنمای کامل ${issue.title}`}
+            paragraphs={seo.overview}
+            className="border-t-0 py-0"
+          />
+
           <div className="grid gap-10 md:grid-cols-2">
-            <section>
-              <h2 className="mb-8 flex items-center gap-3 text-2xl font-bold">
+            <section aria-labelledby="symptoms-title">
+              <h2
+                id="symptoms-title"
+                className="mb-8 flex items-center gap-3 text-2xl font-bold"
+              >
                 <AlertTriangle className="text-red-400" />
                 علائم خرابی
               </h2>
@@ -150,8 +198,11 @@ export default async function IssuePage({ params }: Props) {
               </ul>
             </section>
 
-            <section>
-              <h2 className="mb-8 flex items-center gap-3 text-2xl font-bold">
+            <section aria-labelledby="causes-title">
+              <h2
+                id="causes-title"
+                className="mb-8 flex items-center gap-3 text-2xl font-bold"
+              >
                 <Search className="text-yellow-400" />
                 دلایل احتمالی
               </h2>
@@ -168,19 +219,43 @@ export default async function IssuePage({ params }: Props) {
             </section>
           </div>
 
-          <section className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10 md:p-14">
-            <h2 className="mb-8 flex items-center gap-3 text-3xl font-extrabold text-blue-400">
+          <section
+            className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10 md:p-14"
+            aria-labelledby="solution-title"
+          >
+            <h2
+              id="solution-title"
+              className="mb-8 flex items-center gap-3 text-3xl font-extrabold text-blue-400"
+            >
               <Wrench />
               راه حل تخصصی
             </h2>
             <div className="text-lg leading-9 text-zinc-300">
               {issue.solution}
             </div>
+            <p className="mt-6 text-zinc-400">
+              <Link
+                href={seo.servicePath}
+                className="text-cyan-400 transition hover:text-cyan-300"
+              >
+                مشاهده خدمات تعمیر {seo.consoleLabel}
+              </Link>
+              {" · "}
+              <Link
+                href="/issues"
+                className="text-cyan-400 transition hover:text-cyan-300"
+              >
+                بازگشت به فهرست مشکلات
+              </Link>
+            </p>
           </section>
 
           {issue.prevention.length > 0 && (
-            <section>
-              <h2 className="mb-8 flex items-center gap-3 text-2xl font-bold">
+            <section aria-labelledby="prevention-title">
+              <h2
+                id="prevention-title"
+                className="mb-8 flex items-center gap-3 text-2xl font-bold"
+              >
                 <ShieldCheck className="text-green-400" />
                 روش‌های پیشگیری
               </h2>
@@ -198,8 +273,10 @@ export default async function IssuePage({ params }: Props) {
           )}
 
           {related.length > 0 && (
-            <section>
-              <h2 className="mb-8 text-2xl font-bold">مشکلات مرتبط</h2>
+            <section aria-labelledby="related-title">
+              <h2 id="related-title" className="mb-8 text-2xl font-bold">
+                مشکلات مرتبط
+              </h2>
               <div className="grid gap-6 md:grid-cols-2">
                 {related.map(
                   (item) =>
@@ -220,6 +297,8 @@ export default async function IssuePage({ params }: Props) {
             </section>
           )}
 
+          <FaqSection items={seo.faqs} className="rounded-3xl py-12" />
+
           <section className="relative isolate overflow-hidden rounded-4xl border border-amber-200/20 bg-zinc-950 p-8 text-zinc-100 shadow-[0_40px_100px_-45px_rgba(0,0,0,0.9)] md:p-14">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(251,191,36,0.22),transparent_35%),radial-gradient(circle_at_90%_85%,rgba(244,114,182,0.18),transparent_38%)]" />
             <div className="absolute -right-16 top-0 h-52 w-52 rounded-full bg-amber-300/15 blur-3xl" />
@@ -237,23 +316,23 @@ export default async function IssuePage({ params }: Props) {
                 </h3>
 
                 <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-300 md:text-lg">
-                  درخواست مشاوره رایگان ثبت کنید تا کارشناسان ما مشکل دستگاه شما
-                  را بررسی کنند.
+                  درخواست مشاوره رایگان ثبت کنید تا کارشناسان ما مشکل «
+                  {issue.title}» را بررسی کنند.
                 </p>
 
                 <div className="mt-7 flex flex-wrap items-center justify-center gap-3 text-sm text-zinc-200">
-                  <span className="rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 my-auto">
+                  <span className="my-auto rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5">
                     پاسخ اولیه سریع
                   </span>
-                  <span className="rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 my-auto">
+                  <span className="my-auto rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5">
                     بررسی توسط تکنسین متخصص
                   </span>
-                  <span className="rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 my-auto">
+                  <span className="my-auto rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1.5">
                     بدون هزینه مشاوره
                   </span>
                   <Link
                     href={repairHref}
-                    className="group inline-flex items-center mx-auto gap-3 rounded-2xl border border-amber-200/30 bg-linear-to-r from-amber-300 to-orange-300 px-7 py-4 text-base font-extrabold text-zinc-900 shadow-[0_18px_45px_-20px_rgba(251,191,36,0.95)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-20px_rgba(251,191,36,0.95)] active:translate-y-0 my-auto "
+                    className="group my-auto mx-auto inline-flex items-center gap-3 rounded-2xl border border-amber-200/30 bg-linear-to-r from-amber-300 to-orange-300 px-7 py-4 text-base font-extrabold text-zinc-900 shadow-[0_18px_45px_-20px_rgba(251,191,36,0.95)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-20px_rgba(251,191,36,0.95)] active:translate-y-0"
                   >
                     شروع درخواست تعمیر
                     <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-amber-200 transition-transform duration-300 group-hover:translate-x-1">
@@ -262,8 +341,6 @@ export default async function IssuePage({ params }: Props) {
                   </Link>
                 </div>
               </div>
-
-              {/* <div className="md:justify-self-end"></div> */}
             </div>
           </section>
         </div>
