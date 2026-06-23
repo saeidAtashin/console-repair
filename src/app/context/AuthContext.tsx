@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithPassword = useCallback(
     async (phone_number: string, password: string): Promise<User | null> => {
-      const data = await apiRequest<AuthPayload>("/api/auth/login", {
+      const data = await apiRequest<AuthPayload>("/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone_number, password }),
