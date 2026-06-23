@@ -2,7 +2,7 @@
 
 import FadeUp from "@/app/components/animations/FadeUp";
 import {
-  formatRangeCompact,
+  formatRangeToman,
   HOME_GAME_INSTALL_DISCOUNTED,
   type HomeGameInstallTab,
   type PriceRange,
@@ -19,6 +19,7 @@ import {
   Timer,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -27,6 +28,7 @@ const CONSOLE_TABS = [
     id: "ps4" as const,
     label: "PS4",
     sublabel: "PlayStation 4",
+    iconSrc: "/icons/ps4.svg",
     href: "/services/game-install/ps4",
     brand: "playstation" as Brand,
   },
@@ -34,6 +36,7 @@ const CONSOLE_TABS = [
     id: "ps5" as const,
     label: "PS5",
     sublabel: "PlayStation 5",
+    iconSrc: "/icons/ps5.svg",
     href: "/services/game-install/ps5",
     brand: "playstation" as Brand,
   },
@@ -41,6 +44,7 @@ const CONSOLE_TABS = [
     id: "xbox" as const,
     label: "Xbox",
     sublabel: "Series X|S",
+    iconSrc: "/icons/xbox.svg",
     href: "/services/game-install/xbox-series",
     brand: "xbox" as Brand,
   },
@@ -133,21 +137,35 @@ const PriceTable = () => {
                       role="tab"
                       aria-selected={isActive}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`group relative shrink-0 snap-start overflow-hidden rounded-2xl border px-4 py-3 text-right transition-all duration-300 cursor-pointer sm:min-w-[132px] sm:px-5 ${
+                      className={`group relative shrink-0 snap-start overflow-hidden rounded-2xl border px-4 py-3 text-right transition-all duration-300 cursor-pointer sm:min-w-[148px] sm:px-5 ${
                         isActive
                           ? `${tabTheme.border} ${tabTheme.bg} shadow-[0_0_24px_rgba(56,189,248,0.15)]`
                           : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
                       }`}
                     >
-                      <span
-                        className={`block text-base font-black tracking-wide ${
-                          isActive ? tabTheme.primary : "text-white"
-                        }`}
-                      >
-                        {tab.label}
-                      </span>
-                      <span className="mt-0.5 block text-xs text-zinc-500 group-hover:text-zinc-400">
-                        {tab.sublabel}
+                      <span className="flex items-center gap-2.5">
+                        <Image
+                          src={tab.iconSrc}
+                          alt=""
+                          width={26}
+                          height={26}
+                          aria-hidden
+                          className={`shrink-0 object-contain invert transition-opacity ${
+                            isActive ? "opacity-100" : "opacity-70 group-hover:opacity-90"
+                          }`}
+                        />
+                        <span className="min-w-0 text-right">
+                          <span
+                            className={`block text-base font-black tracking-wide ${
+                              isActive ? tabTheme.primary : "text-white"
+                            }`}
+                          >
+                            {tab.label}
+                          </span>
+                          <span className="mt-0.5 block text-xs text-zinc-500 group-hover:text-zinc-400">
+                            {tab.sublabel}
+                          </span>
+                        </span>
                       </span>
                       {isActive ? (
                         <span
@@ -242,25 +260,27 @@ const PriceTable = () => {
                             : "border-white/10 hover:border-white/20"
                         }`}
                       >
-                        {isFeatured ? (
-                          <span
-                            className={`absolute left-0 top-4 rounded-r-full px-3 py-1 text-[11px] font-black tracking-wide ${theme.bg} ${theme.primary} border-y border-r ${theme.border}`}
-                          >
-                            پرفروش‌ترین
-                          </span>
-                        ) : null}
-
                         <div className="flex items-start justify-between gap-3">
                           <div
                             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${theme.border} ${theme.bg}`}
                           >
                             <Icon className={`h-5 w-5 ${theme.primary}`} aria-hidden />
                           </div>
-                          {discount > 0 ? (
-                            <span className="rounded-full bg-red-500/15 px-2.5 py-1 text-xs font-black text-red-300 ring-1 ring-red-400/30">
-                              {discount}% تخفیف
-                            </span>
-                          ) : null}
+                          <div className="flex shrink-0 flex-col items-end gap-1.5">
+                            {discount > 0 ? (
+                              <span className="rounded-full bg-red-500/15 px-2.5 py-1 text-xs font-black text-red-300 ring-1 ring-red-400/30">
+                                {discount}% تخفیف
+                              </span>
+                            ) : null}
+                            {isFeatured ? (
+                              <span
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide ${theme.bg} ${theme.primary} ring-1 ${theme.border}`}
+                              >
+                                <Flame className="h-3 w-3" aria-hidden />
+                                پرفروش‌ترین
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
 
                         <p className="mt-4 text-base font-bold leading-7 text-zinc-100">
@@ -268,13 +288,13 @@ const PriceTable = () => {
                         </p>
 
                         <div className="mt-5">
-                          <p className="text-sm text-zinc-500 line-through decoration-red-400/80">
-                            {formatRangeCompact(item.previous)}
+                          <p className="text-xs text-zinc-500 line-through decoration-red-400/80">
+                            {formatRangeToman(item.previous)}
                           </p>
                           <p
-                            className={`mt-1 text-2xl font-black tracking-tight sm:text-3xl ${theme.primary}`}
+                            className={`mt-1 text-lg font-black leading-7 sm:text-xl ${theme.primary}`}
                           >
-                            {formatRangeCompact(item.current)}
+                            {formatRangeToman(item.current)}
                           </p>
                           <p className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-emerald-300">
                             <Sparkles className="h-3.5 w-3.5" aria-hidden />

@@ -69,14 +69,35 @@ export const GAME_INSTALL_PRICE_DATA = {
       },
     ] as PriceItem[],
   },
-  summaryTable: [
-    { label: "تک بازی", rangeText: "1.5M - 3.5M" },
-    { label: "پکیج 5 بازی", rangeText: "5M - 9M" },
-    { label: "پکیج 10 بازی", rangeText: "3.5M - 12M" },
-    { label: "تک بازی (کپی خور)", rangeText: "250K - 350K" },
-    { label: "پکیج (کپی خور)", rangeText: "3M - 10M" },
-  ],
 } as const;
+
+export const GAME_INSTALL_SUMMARY_TABLE = [
+  {
+    label: "تک بازی",
+    range: GAME_INSTALL_PRICE_DATA.accountCapacityInstallation.items[0]
+      .priceRangeToman,
+  },
+  {
+    label: "پکیج 5 بازی",
+    range: GAME_INSTALL_PRICE_DATA.accountCapacityInstallation.items[1]
+      .priceRangeToman,
+  },
+  {
+    label: "پکیج 10 بازی",
+    range: GAME_INSTALL_PRICE_DATA.accountCapacityInstallation.items[2]
+      .priceRangeToman,
+  },
+  {
+    label: "تک بازی (کپی خور)",
+    range: GAME_INSTALL_PRICE_DATA.jailbreakOfflineInstallation.items[0]
+      .priceRangeToman,
+  },
+  {
+    label: "پکیج (کپی خور)",
+    range: GAME_INSTALL_PRICE_DATA.jailbreakOfflineInstallation.items[1]
+      .priceRangeToman,
+  },
+] as const;
 
 type HomeHighlight = {
   title: string;
@@ -197,17 +218,56 @@ export const HOME_GAME_INSTALL_DISCOUNTED = {
   },
 } as const;
 
-export const formatRangeCompact = (range: PriceRange): string => {
-  const toCompact = (value: number) => {
-    if (value >= 1_000_000) {
-      const million = value / 1_000_000;
-      return `${Number.isInteger(million) ? million : million.toFixed(1)}M`;
-    }
-    if (value >= 1_000) {
-      const thousand = value / 1_000;
-      return `${Number.isInteger(thousand) ? thousand : thousand.toFixed(0)}K`;
-    }
-    return String(value);
-  };
-  return `${toCompact(range.min)} - ${toCompact(range.max)}`;
+export const formatToman = (value: number): string => {
+  if (value === 0) return "رایگان";
+  const unit = getPriceUnit(value);
+  return `${formatValueOnly(value, unit)} ${unitLabel(unit)}`;
 };
+
+export const formatRangeToman = (range: PriceRange): string => {
+  if (range.min === range.max) return formatToman(range.min);
+  if (range.min === 0) return `تا ${formatToman(range.max)}`;
+
+  const minUnit = getPriceUnit(range.min);
+  const maxUnit = getPriceUnit(range.max);
+
+  if (minUnit === maxUnit && minUnit !== "toman") {
+    return `${formatValueOnly(range.min, minUnit)} - ${formatValueOnly(range.max, maxUnit)} ${unitLabel(maxUnit)}`;
+  }
+
+  return `${formatToman(range.min)} - ${formatToman(range.max)}`;
+};
+
+type PriceUnit = "million" | "thousand" | "toman";
+
+function getPriceUnit(value: number): PriceUnit {
+  if (value >= 1_000_000) return "million";
+  if (value >= 1_000) return "thousand";
+  return "toman";
+}
+
+function unitLabel(unit: PriceUnit): string {
+  if (unit === "million") return "میلیون تومان";
+  if (unit === "thousand") return "هزار تومان";
+  return "تومان";
+}
+
+function formatValueOnly(value: number, unit: PriceUnit): string {
+  if (unit === "million") {
+    return formatCompactNumber(value / 1_000_000);
+  }
+  if (unit === "thousand") {
+    return formatCompactNumber(value / 1_000);
+  }
+  return value.toLocaleString("fa-IR");
+}
+
+function formatCompactNumber(value: number): string {
+  if (Number.isInteger(value)) {
+    return value.toLocaleString("fa-IR");
+  }
+  return value.toLocaleString("fa-IR", {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 0,
+  });
+}

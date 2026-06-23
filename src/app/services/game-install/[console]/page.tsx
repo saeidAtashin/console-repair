@@ -9,7 +9,11 @@ import {
   consoleIdFromGameInstallSlug,
 } from "../../../../lib/repair-links";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
-import { GAME_INSTALL_PRICE_DATA } from "@/lib/game-install-pricing";
+import {
+  formatRangeToman,
+  GAME_INSTALL_PRICE_DATA,
+  GAME_INSTALL_SUMMARY_TABLE,
+} from "@/lib/game-install-pricing";
 
 type Props = {
   params: Promise<{ console: string }>;
@@ -64,11 +68,6 @@ export default async function GameInstallPage({ params }: Props) {
   ];
   const jsonLdDescription = `تعرفه نصب بازی ${meta.label}: از نصب با اکانت ظرفیتی تا نصب آفلاین کپی خور و خدمات جانبی.`;
 
-  const formatToman = (value: number) => {
-    if (value === 0) return "رایگان";
-    return `${value.toLocaleString("fa-IR")} تومان`;
-  };
-
   return (
     <main className="min-h-screen bg-[#050816] pt-24 text-white">
       <PageShell
@@ -90,13 +89,15 @@ export default async function GameInstallPage({ params }: Props) {
         </p>
 
         <section className="mb-10 grid gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 sm:grid-cols-2 xl:grid-cols-5">
-          {GAME_INSTALL_PRICE_DATA.summaryTable.map((item) => (
+          {GAME_INSTALL_SUMMARY_TABLE.map((item) => (
             <div
               key={item.label}
               className="rounded-xl border border-white/10 bg-white/5 p-4"
             >
               <p className="mb-2 text-sm text-zinc-300">{item.label}</p>
-              <p className="font-extrabold text-cyan-300">{item.rangeText}</p>
+              <p className="font-extrabold leading-7 text-cyan-300">
+                {formatRangeToman(item.range)}
+              </p>
             </div>
           ))}
         </section>
@@ -115,9 +116,8 @@ export default async function GameInstallPage({ params }: Props) {
                     className="flex flex-col gap-1 rounded-xl border border-white/10 bg-black/20 p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <span className="text-zinc-200">{item.label}</span>
-                    <span className="font-bold text-cyan-300">
-                      {formatToman(item.priceRangeToman.min)} -{" "}
-                      {formatToman(item.priceRangeToman.max)}
+                    <span className="font-bold leading-7 text-cyan-300">
+                      {formatRangeToman(item.priceRangeToman)}
                     </span>
                   </div>
                 ))}
