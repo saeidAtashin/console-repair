@@ -39,8 +39,7 @@ export default function HeroQuickAccessButton({
 
         <span
           aria-hidden
-          className="animate-hero-quick-pointer pointer-events-none absolute z-10 text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.55)]"
-          style={{ top: "-0.35rem", insetInlineEnd: "-0.15rem" }}
+          className="animate-hero-quick-pointer pointer-events-none absolute left-1/2 top-1/2 z-10 text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.55)]"
         >
           <MousePointer2
             className="h-5 w-5 sm:h-6 sm:w-6"
