@@ -10,7 +10,9 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import HeroQuickAccessButton from "./HeroQuickAccessButton";
+import { brandThemes } from "@/lib/brand-theme";
 import {
   consoleIds,
   consoleCatalog,
@@ -51,6 +53,12 @@ const RAIL_WIDTH_SM = 72;
 const MOBILE_CONSOLE_ROW_HEIGHT = 92;
 const GLOW_BASE_SIZE = 320;
 const DEFAULT_CONSOLE: ConsoleId = "ps5";
+
+const consoleBrands = {
+  ps4: "playstation",
+  ps5: "playstation",
+  xbox: "xbox",
+} as const;
 
 function useHeroViewport() {
   const [viewport, setViewport] = useState({
@@ -150,6 +158,7 @@ const ConsolePickerButton = memo(function ConsolePickerButton({
   onSelect,
 }: ConsoleButtonProps) {
   const isRail = variant === "rail";
+  const iconTheme = brandThemes[consoleBrands[id]];
 
   return (
     <button
@@ -172,20 +181,16 @@ const ConsolePickerButton = memo(function ConsolePickerButton({
           className="pointer-events-none absolute inset-0 rounded-xl border border-cyan-400/55 bg-cyan-500/25 shadow-[inset_0_0_24px_rgba(34,211,238,0.15)]"
         />
       )}
-      <NextImage
+      <ConsoleTabIcon
         src={iconSrc}
-        alt=""
-        width={32}
-        height={32}
-        aria-hidden
         className={cn(
-          "relative z-10 shrink object-cover invert transition-opacity duration-200",
+          "relative z-10 transition-[color,opacity,transform] duration-200",
           isRail
             ? "h-20 w-12 sm:h-24 sm:w-14 sm:group-hover:scale-105"
             : "h-14 w-9",
           active
-            ? "opacity-100 drop-shadow-[0_0_12px_rgba(34,211,238,0.45)]"
-            : "opacity-75 sm:opacity-70 sm:group-hover:opacity-95",
+            ? cn(iconTheme.primary, "opacity-100 drop-shadow-[0_0_12px_rgba(34,211,238,0.45)]")
+            : "text-zinc-400 opacity-75 sm:opacity-70 sm:group-hover:text-zinc-300 sm:group-hover:opacity-95",
         )}
       />
       <span className="relative z-10 -mt-4 px-0.5 text-2xl text-cyan-300">

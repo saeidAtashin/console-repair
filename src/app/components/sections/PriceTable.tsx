@@ -1,6 +1,7 @@
 "use client";
 
 import FadeUp from "@/app/components/animations/FadeUp";
+import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import {
   formatRangeToman,
   HOME_GAME_INSTALL_DISCOUNTED,
@@ -67,31 +68,6 @@ function highlightIcon(title: string, index: number) {
   if (title.includes("پکیج")) return Layers;
   if (index === 0) return Gamepad2;
   return Sparkles;
-}
-
-function ConsoleTabIcon({
-  src,
-  className,
-}: {
-  src: string;
-  className?: string;
-}) {
-  return (
-    <span
-      aria-hidden
-      className={`inline-block h-[26px] w-[26px] shrink-0 bg-current ${className ?? ""}`}
-      style={{
-        WebkitMaskImage: `url(${src})`,
-        maskImage: `url(${src})`,
-        WebkitMaskSize: "contain",
-        maskSize: "contain",
-        WebkitMaskRepeat: "no-repeat",
-        maskRepeat: "no-repeat",
-        WebkitMaskPosition: "center",
-        maskPosition: "center",
-      }}
-    />
-  );
 }
 
 const PriceTable = () => {
@@ -170,7 +146,7 @@ const PriceTable = () => {
                       <span className="flex items-center gap-2.5 text-white">
                         <ConsoleTabIcon
                           src={tab.iconSrc}
-                          className={`transition-[color,opacity] ${isActive
+                          className={`h-[46px] w-[46px] transition-[color,opacity] ${isActive
                             ? tabTheme.primary
                             : "text-zinc-400 opacity-70 group-hover:text-zinc-300 group-hover:opacity-90"
                             }`}
