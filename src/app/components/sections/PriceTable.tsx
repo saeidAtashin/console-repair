@@ -19,12 +19,8 @@ import {
   Timer,
   Zap,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import Ps4Icon from "../../../../public/icons/ps4.svg";
-import Ps5Icon from "../../../../public/icons/ps5.svg";
-import XboxIcon from "../../../../public/icons/xbox.svg";
 
 
 const CONSOLE_TABS = [
@@ -32,7 +28,7 @@ const CONSOLE_TABS = [
     id: "ps4" as const,
     label: "PS4",
     sublabel: "PlayStation 4",
-    iconSrc: Ps4Icon,
+    iconSrc: "/icons/ps4.svg",
     href: "/services/game-install/ps4",
     brand: "playstation" as Brand,
   },
@@ -40,7 +36,7 @@ const CONSOLE_TABS = [
     id: "ps5" as const,
     label: "PS5",
     sublabel: "PlayStation 5",
-    iconSrc: Ps5Icon,
+    iconSrc: "/icons/ps5.svg",
     href: "/services/game-install/ps5",
     brand: "playstation" as Brand,
   },
@@ -48,7 +44,7 @@ const CONSOLE_TABS = [
     id: "xbox" as const,
     label: "Xbox",
     sublabel: "Series X|S",
-    iconSrc: XboxIcon,
+    iconSrc: "/icons/xbox.svg",
     href: "/services/game-install/xbox-series",
     brand: "xbox" as Brand,
   },
@@ -71,6 +67,31 @@ function highlightIcon(title: string, index: number) {
   if (title.includes("پکیج")) return Layers;
   if (index === 0) return Gamepad2;
   return Sparkles;
+}
+
+function ConsoleTabIcon({
+  src,
+  className,
+}: {
+  src: string;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={`inline-block h-[26px] w-[26px] shrink-0 bg-current ${className ?? ""}`}
+      style={{
+        WebkitMaskImage: `url(${src})`,
+        maskImage: `url(${src})`,
+        WebkitMaskSize: "contain",
+        maskSize: "contain",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
+      }}
+    />
+  );
 }
 
 const PriceTable = () => {
@@ -147,15 +168,11 @@ const PriceTable = () => {
                         }`}
                     >
                       <span className="flex items-center gap-2.5 text-white">
-                        <Image
+                        <ConsoleTabIcon
                           src={tab.iconSrc}
-                          alt=""
-                          width={26}
-                          height={26}
-                          aria-hidden
-                          className={`shrink-0 object-contain transition-opacity ${isActive
-                            ? "opacity-100 text-white"
-                            : "opacity-70 group-hover:opacity-90 text-white"
+                          className={`transition-[color,opacity] ${isActive
+                            ? tabTheme.primary
+                            : "text-zinc-400 opacity-70 group-hover:text-zinc-300 group-hover:opacity-90"
                             }`}
                         />
                         <span className="min-w-0 text-right">
