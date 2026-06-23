@@ -18,7 +18,7 @@ type Role = "admin" | "user";
 type User = {
   name: string;
   role: Role;
-  phone?: string;
+  phone_number?: string;
 };
 
 type SendOtpResult = {
@@ -47,8 +47,8 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   loginWithPassword: (phone_number: string, password: string) => Promise<User | null>;
-  sendOtp: (phone: string) => Promise<SendOtpResult>;
-  loginWithOtp: (phone: string, code: string) => Promise<LoginWithOtpResult>;
+  sendOtp: (phone_number: string) => Promise<SendOtpResult>;
+  loginWithOtp: (phone_number: string, code: string) => Promise<LoginWithOtpResult>;
   register: (name: string) => void;
   logout: () => Promise<void>;
 };
@@ -109,12 +109,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [router],
   );
 
-  const sendOtp = useCallback(async (phone: string): Promise<SendOtpResult> => {
+  const sendOtp = useCallback(async (phone_number: string): Promise<SendOtpResult> => {
     try {
-      const data = await apiRequest<AuthPayload>("/api/auth/otp/send", {
+      const data = await apiRequest<AuthPayload>("/auth/send-otp/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ phone_number }),
         auth: false,
       });
       return {
@@ -135,12 +135,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithOtp = useCallback(
-    async (phone: string, code: string): Promise<LoginWithOtpResult> => {
+    async (phone_number: string, code: string): Promise<LoginWithOtpResult> => {
       try {
         const data = await apiRequest<AuthPayload>("/api/auth/otp/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, code }),
+          body: JSON.stringify({ phone_number, code }),
           auth: false,
         });
         const userPayload = data.user ?? undefined;
