@@ -9,17 +9,20 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  buildUserFromPhone,
+  extractAuthTokenData,
+  refreshAccessToken,
+  type AuthLoginPayload,
+  type SessionUser,
+} from "@/lib/auth-api";
 import { getPostLoginPath } from "@/lib/auth-shared";
 import { apiRequest, ApiError } from "@/lib/api-client";
-import { clearAuthToken, setAuthToken } from "@/lib/auth-storage";
-
-type Role = "admin" | "user";
-
-type User = {
-  name: string;
-  role: Role;
-  phone_number?: string;
-};
+import {
+  clearAuthSession,
+  setAuthToken,
+  setRefreshToken,
+} from "@/lib/auth-storage";
 
 type SendOtpResult = {
   success: boolean;
@@ -29,27 +32,22 @@ type SendOtpResult = {
 };
 
 type LoginWithOtpResult = {
-  user: User | null;
+  user: SessionUser | null;
   message?: string;
 };
 
-type AuthPayload = {
-  success?: boolean;
-  message?: string;
-  user?: User | null;
+type AuthPayload = AuthLoginPayload & {
+  user?: SessionUser | null;
   token?: string;
   accessToken?: string;
   smsSent?: boolean;
   devCode?: string;
-  data?: {
-    phone_number?: string;
-  };
 };
 
 type AuthContextType = {
-  user: User | null;
+  user: SessionUser | null;
   loading: boolean;
-  loginWithPassword: (phone_number: string, password: string) => Promise<User | null>;
+  loginWithPassword: (phone_number: string, password: string) => Promise<SessionUser | null>;
   sendOtp: (phone_number: string) => Promise<SendOtpResult>;
   loginWithOtp: (phone_number: string, otp: string) => Promise<LoginWithOtpResult>;
   register: (name: string) => void;
@@ -58,18 +56,6 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-function resolveAuthToken(payload: AuthPayload): string | null {
-  if (typeof payload.token === "string" && payload.token) {
-    return payload.token;
-  }
-
-  if (typeof payload.accessToken === "string" && payload.accessToken) {
-    return payload.accessToken;
-  }
-
-  return null;
-}
-
 /** Remote API often returns 2xx with `{ message, data }` and no `success` flag. */
 function isSuccessfulPayload(payload: AuthPayload): boolean {
   return payload.success !== false;
@@ -77,7 +63,7 @@ function isSuccessfulPayload(payload: AuthPayload): boolean {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -93,28 +79,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const loginWithPassword = useCallback(
-    async (phone_number: string, password: string): Promise<User | null> => {
-      const data = await apiRequest<AuthPayload>("/auth/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_number, password }),
-        auth: false,
-      });
+  const completeLoginSession = useCallback(
+    async (
+      phone_number: string,
+      refreshToken: string,
+    ): Promise<SessionUser | null> => {
+      try {
+        const refreshed = await refreshAccessToken(refreshToken);
+        setAuthToken(refreshed.access);
+        setRefreshToken(refreshed.refresh ?? refreshToken);
 
-      if (!data.success || !data.user) {
+        const sessionUser = buildUserFromPhone(phone_number);
+        setUser(sessionUser);
+        router.replace(getPostLoginPath(sessionUser.role));
+        return sessionUser;
+      } catch {
         return null;
       }
-
-      const token = resolveAuthToken(data);
-      if (token) {
-        setAuthToken(token);
-      }
-      setUser(data.user);
-      router.replace(getPostLoginPath(data.user.role));
-      return data.user;
     },
     [router],
+  );
+
+  const loginWithPassword = useCallback(
+    async (phone_number: string, password: string): Promise<SessionUser | null> => {
+      try {
+        const data = await apiRequest<AuthPayload>("/auth/login/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone_number, password }),
+          auth: false,
+        });
+
+        const tokenData = extractAuthTokenData(data);
+        if (!isSuccessfulPayload(data) || !tokenData?.refresh) {
+          return null;
+        }
+
+        const resolvedPhone = tokenData.phone_number ?? phone_number;
+        return completeLoginSession(resolvedPhone, tokenData.refresh);
+      } catch {
+        return null;
+      }
+    },
+    [completeLoginSession],
   );
 
   const sendOtp = useCallback(async (phone_number: string): Promise<SendOtpResult> => {
@@ -125,7 +132,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ phone_number }),
         auth: false,
       });
-      // Remote API returns 2xx with `{ message, data }` and no `success` flag.
       return {
         success: isSuccessfulPayload(payload),
         message:
@@ -154,8 +160,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           body: JSON.stringify({ phone_number, otp }),
           auth: false,
         });
-        const userPayload = data.user ?? undefined;
-        if (data.success !== true || !userPayload) {
+
+        const tokenData = extractAuthTokenData(data);
+        if (!isSuccessfulPayload(data) || !tokenData?.refresh) {
           return {
             user: null,
             message:
@@ -163,14 +170,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           };
         }
 
-        const token = resolveAuthToken(data);
-        if (token) {
-          setAuthToken(token);
+        const resolvedPhone = tokenData.phone_number ?? phone_number;
+        const sessionUser = await completeLoginSession(resolvedPhone, tokenData.refresh);
+        if (!sessionUser) {
+          return { user: null, message: "خطا در تمدید نشست" };
         }
 
-        setUser(userPayload);
-        router.replace(getPostLoginPath(userPayload.role));
-        return { user: userPayload };
+        return { user: sessionUser };
       } catch (error) {
         if (error instanceof ApiError) {
           return { user: null, message: error.message };
@@ -178,7 +184,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { user: null, message: "پاسخ نامعتبر از سرور" };
       }
     },
-    [router],
+    [completeLoginSession],
   );
 
   const register = useCallback((name: string) => {
@@ -191,7 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore remote logout failure and clear local session state.
     }
-    clearAuthToken();
+    clearAuthSession();
     setUser(null);
     router.replace("/");
   }, [router]);
