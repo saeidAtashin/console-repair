@@ -22,13 +22,17 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import Ps4Icon from "../../../../public/icons/ps4.svg";
+import Ps5Icon from "../../../../public/icons/ps5.svg";
+import XboxIcon from "../../../../public/icons/xbox.svg";
+
 
 const CONSOLE_TABS = [
   {
     id: "ps4" as const,
     label: "PS4",
     sublabel: "PlayStation 4",
-    iconSrc: "/icons/ps4.svg",
+    iconSrc: Ps4Icon,
     href: "/services/game-install/ps4",
     brand: "playstation" as Brand,
   },
@@ -36,7 +40,7 @@ const CONSOLE_TABS = [
     id: "ps5" as const,
     label: "PS5",
     sublabel: "PlayStation 5",
-    iconSrc: "/icons/ps5.svg",
+    iconSrc: Ps5Icon,
     href: "/services/game-install/ps5",
     brand: "playstation" as Brand,
   },
@@ -44,7 +48,7 @@ const CONSOLE_TABS = [
     id: "xbox" as const,
     label: "Xbox",
     sublabel: "Series X|S",
-    iconSrc: "/icons/xbox.svg",
+    iconSrc: XboxIcon,
     href: "/services/game-install/xbox-series",
     brand: "xbox" as Brand,
   },
@@ -137,28 +141,27 @@ const PriceTable = () => {
                       role="tab"
                       aria-selected={isActive}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`group relative shrink-0 snap-start overflow-hidden rounded-2xl border px-4 py-3 text-right transition-all duration-300 cursor-pointer sm:min-w-[148px] sm:px-5 ${
-                        isActive
-                          ? `${tabTheme.border} ${tabTheme.bg} shadow-[0_0_24px_rgba(56,189,248,0.15)]`
-                          : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
-                      }`}
+                      className={`group relative shrink-0 snap-start overflow-hidden rounded-2xl border px-4 py-3 text-right transition-all duration-300 cursor-pointer sm:min-w-[148px] sm:px-5 ${isActive
+                        ? `${tabTheme.border} ${tabTheme.bg} shadow-[0_0_24px_rgba(56,189,248,0.15)]`
+                        : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
+                        }`}
                     >
-                      <span className="flex items-center gap-2.5">
+                      <span className="flex items-center gap-2.5 text-white">
                         <Image
                           src={tab.iconSrc}
                           alt=""
                           width={26}
                           height={26}
                           aria-hidden
-                          className={`shrink-0 object-contain invert transition-opacity ${
-                            isActive ? "opacity-100" : "opacity-70 group-hover:opacity-90"
-                          }`}
+                          className={`shrink-0 object-contain transition-opacity ${isActive
+                            ? "opacity-100 text-white"
+                            : "opacity-70 group-hover:opacity-90 text-white"
+                            }`}
                         />
                         <span className="min-w-0 text-right">
                           <span
-                            className={`block text-base font-black tracking-wide ${
-                              isActive ? tabTheme.primary : "text-white"
-                            }`}
+                            className={`block text-base font-black tracking-wide ${isActive ? tabTheme.primary : "text-white"
+                              }`}
                           >
                             {tab.label}
                           </span>
@@ -186,11 +189,10 @@ const PriceTable = () => {
                 </Link>
                 <Link
                   href={activeHref ?? "/services/game-install/ps5"}
-                  className={`inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r px-5 py-3 text-sm font-black text-black shadow-[0_0_24px_rgba(34,211,238,0.35)] transition hover:brightness-110 ${
-                    activeTabMeta.brand === "xbox"
-                      ? "from-green-400 to-emerald-500"
-                      : "from-cyan-400 to-blue-500"
-                  }`}
+                  className={`inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r px-5 py-3 text-sm font-black text-black shadow-[0_0_24px_rgba(34,211,238,0.35)] transition hover:brightness-110 ${activeTabMeta.brand === "xbox"
+                    ? "from-green-400 to-emerald-500"
+                    : "from-cyan-400 to-blue-500"
+                    }`}
                 >
                   مشاهده تعرفه کامل
                   <ChevronLeft className="h-4 w-4" aria-hidden />
@@ -254,11 +256,10 @@ const PriceTable = () => {
                           ...panelTransition,
                           delay: prefersReducedMotion ? 0 : index * 0.06,
                         }}
-                        className={`group relative flex min-h-[210px] flex-col justify-between overflow-hidden rounded-2xl border bg-black/35 p-5 transition-all duration-300 hover:-translate-y-1 sm:min-h-[230px] sm:p-6 ${
-                          isFeatured
-                            ? `${theme.border} shadow-[0_0_30px_rgba(34,211,238,0.12)]`
-                            : "border-white/10 hover:border-white/20"
-                        }`}
+                        className={`group relative flex min-h-[210px] flex-col justify-between overflow-hidden rounded-2xl border bg-black/35 p-5 transition-all duration-300 hover:-translate-y-1 sm:min-h-[230px] sm:p-6 ${isFeatured
+                          ? `${theme.border} shadow-[0_0_30px_rgba(34,211,238,0.12)]`
+                          : "border-white/10 hover:border-white/20"
+                          }`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div
@@ -325,11 +326,10 @@ const PriceTable = () => {
               </p>
               <Link
                 href={activeHref ?? "/services/game-install/ps5"}
-                className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition hover:brightness-110 ${
-                  activeTabMeta.brand === "xbox"
-                    ? "bg-green-500/15 text-green-300 ring-1 ring-green-400/30"
-                    : "bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-400/30"
-                }`}
+                className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition hover:brightness-110 ${activeTabMeta.brand === "xbox"
+                  ? "bg-green-500/15 text-green-300 ring-1 ring-green-400/30"
+                  : "bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-400/30"
+                  }`}
               >
                 شروع سفارش نصب
                 <ChevronLeft className="h-4 w-4" aria-hidden />
