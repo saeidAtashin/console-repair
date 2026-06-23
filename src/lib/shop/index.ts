@@ -1,5 +1,6 @@
 export * from "./api";
 export * from "./categories";
+export * from "./featured";
 export * from "./cart";
 export * from "./format";
 export * from "./meta";

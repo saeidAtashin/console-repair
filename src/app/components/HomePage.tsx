@@ -6,6 +6,7 @@ import ContactCTA from "./sections/ContactCTA";
 import Hero from "./sections/hero/Hero";
 import Services from "./sections/Services";
 import ServicesSection from "./sections/ServicesSection";
+import StoreSection from "./sections/StoreSection";
 import WhyUs from "./sections/WhyUs";
 import GamingBackground from "./ui/GamingBackground";
 import PriceTable from "./sections/PriceTable";
@@ -33,6 +34,7 @@ export default function HomePage() {
       <GamingBackground />
       <Hero />
       <Services />
+      <StoreSection />
       <PriceTable />
       <ContactCTA />
       <ServicesSection />
