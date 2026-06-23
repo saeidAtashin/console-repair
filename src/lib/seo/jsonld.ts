@@ -1,4 +1,5 @@
 import { absoluteUrl, SITE_NAME } from "./site";
+import type { ShopProduct } from "../shop";
 
 export function webPageJsonLd(input: {
   name: string;
@@ -51,5 +52,41 @@ export function collectionPageJsonLd(input: {
     inLanguage: "fa-IR",
     isPartOf: { "@id": `${absoluteUrl("/")}#website` },
     publisher: { "@type": "Organization", name: SITE_NAME },
+  };
+}
+
+export function productOfferJsonLd(input: {
+  product: ShopProduct;
+  path: string;
+}) {
+  const productUrl = absoluteUrl(input.path);
+  const availability = input.product.inStock
+    ? "https://schema.org/InStock"
+    : "https://schema.org/OutOfStock";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: input.product.title,
+    url: productUrl,
+    image: absoluteUrl(input.product.image),
+    description: input.product.highlights?.join(" - "),
+    category: input.product.console,
+    sku: input.product.id,
+    itemCondition:
+      input.product.condition === "new"
+        ? "https://schema.org/NewCondition"
+        : "https://schema.org/UsedCondition",
+    brand: {
+      "@type": "Brand",
+      name: SITE_NAME,
+    },
+    offers: {
+      "@type": "Offer",
+      price: input.product.price,
+      priceCurrency: "IRR",
+      url: productUrl,
+      availability,
+    },
   };
 }

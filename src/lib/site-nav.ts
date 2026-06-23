@@ -5,6 +5,7 @@ import {
   type ConsoleId,
 } from "./console-catalog";
 import { siteBreadcrumbTree } from "./breadcrumb-tree-data";
+import { SHOP_CONSOLE_ORDER, SHOP_CONSOLE_META } from "./shop";
 
 export type SiteNavLeaf = {
   title: string;
@@ -51,10 +52,9 @@ function gameChildren(): SiteNavLeaf[] {
 }
 
 function shopChildren(): SiteNavLeaf[] {
-  return consoleIds.map((id) => ({
-    title: `خرید ${consoleCatalog[id].title}`,
-    // href: `/shop/${id}`,
-    href: "/coming-soon",
+  return SHOP_CONSOLE_ORDER.map((slug) => ({
+    title: `خرید ${SHOP_CONSOLE_META[slug].label}`,
+    href: `/shop/${slug}`,
   }));
 }
 

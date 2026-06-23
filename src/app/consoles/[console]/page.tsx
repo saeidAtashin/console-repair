@@ -46,6 +46,27 @@ export default async function ConsoleHubPage({ params }: Props) {
 
   const repair = getRepairService(config.id);
   const path = `/consoles/${config.id}`;
+  const shopLinks =
+    config.id === "xbox"
+      ? [
+          {
+            title: "فروش Xbox Series",
+            description: "خرید Xbox Series نو و دست دوم تست شده.",
+            href: "/shop/xbox-series",
+          },
+          {
+            title: "فروش Xbox One",
+            description: "خرید Xbox One تست شده با قیمت اقتصادی.",
+            href: "/shop/xbox-one",
+          },
+        ]
+      : [
+          {
+            title: `فروش ${config.title}`,
+            description: "خرید کنسول نو یا دست‌دوم تست‌شده با ضمانت.",
+            href: `/shop/${config.id}`,
+          },
+        ];
 
   const links = [
     {
@@ -57,11 +78,7 @@ export default async function ConsoleHubPage({ params }: Props) {
       title: g.label,
       href: `/services/game-install/${g.slug}`,
     })),
-    {
-      title: `فروش ${config.title}`,
-      description: "خرید کنسول دست‌دوم تست‌شده با ضمانت.",
-      href: `/shop/${config.id}`,
-    },
+    ...shopLinks,
     {
       title: "فروش قطعات",
       description: "قطعات اورجینال و سازگار با این کنسول.",

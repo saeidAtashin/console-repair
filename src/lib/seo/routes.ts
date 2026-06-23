@@ -1,5 +1,6 @@
 import { issues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
+import { SHOP_CONSOLES, getProducts } from "@/lib/shop";
 import { repairSitemapPaths } from "./repair-seo";
 
 export const GAME_INSTALL_CONSOLES = [
@@ -47,5 +48,16 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     path: `/services/game-install/${slug}`,
     changeFrequency: "monthly" as const,
     priority: 0.65,
+  })),
+  { path: "/shop", changeFrequency: "daily", priority: 0.9 },
+  ...SHOP_CONSOLES.map((slug) => ({
+    path: `/shop/${slug}`,
+    changeFrequency: "daily" as const,
+    priority: 0.82,
+  })),
+  ...getProducts().map((product) => ({
+    path: `/shop/${product.console}/${product.slug}`,
+    changeFrequency: "weekly" as const,
+    priority: 0.72,
   })),
 ];

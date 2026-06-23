@@ -8,6 +8,7 @@ import Footer from "./components/layout/Footer";
 import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
+import { ShopCartProvider } from "./context/ShopCartContext";
 import { rootMetadata } from "../lib/seo/metadata";
 
 export const metadata: Metadata = rootMetadata;
@@ -115,13 +116,15 @@ export default function RootLayout({
         className={`${vazirmatn.variable} ${pixel.variable} ${pixel2.variable} ${sorenanormal.variable} ${sorenapixelFont.variable} ${Cristik.variable} ${Mojita.variable} ${WAGHUBold.variable} ${WAGHURegular.variable} ${unixelFont.variable} `}
       >
         <AuthProvider>
-          <LocalBusinessSchema />
-          <Suspense fallback={null}>
-            <RouteLoadingOverlay />
-          </Suspense>
-          <Navbar />
-          {children}
-          <Footer />
+          <ShopCartProvider>
+            <LocalBusinessSchema />
+            <Suspense fallback={null}>
+              <RouteLoadingOverlay />
+            </Suspense>
+            <Navbar />
+            {children}
+            <Footer />
+          </ShopCartProvider>
         </AuthProvider>
       </body>
     </html>

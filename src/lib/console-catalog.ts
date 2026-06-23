@@ -65,6 +65,6 @@ export function resolveConsoleServicePath(
     case "game-install":
       return `/services/game-install/${config.gameInstallSlugs[0].slug}`;
     case "shop":
-      return `/shop/${consoleId}`;
+      return consoleId === "xbox" ? "/shop/xbox-series" : `/shop/${consoleId}`;
   }
 }

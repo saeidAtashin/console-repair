@@ -1,12 +1,19 @@
 "use client";
 
 import { useAuth } from "@/app/context/AuthContext";
+import { useShopCart } from "@/app/context/ShopCartContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { navbarNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
-import { X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
+import {
+  X,
+  ChevronDown,
+  LogOut,
+  LayoutDashboard,
+  ShoppingCart,
+} from "lucide-react";
 
 const CD_SCROLL_FACTOR = 0.35;
 const CD_BURST_MS = 520;
@@ -22,6 +29,7 @@ function getRotationDeg(el: HTMLElement) {
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { itemCount } = useShopCart();
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -152,6 +160,18 @@ export default function Navbar() {
             </button>
 
             <div className="flex md:hidden items-center gap-2">
+              <Link
+                href="/shop/cart"
+                className="relative rounded-lg border border-white/10 bg-zinc-900 p-2 text-zinc-200 hover:border-cyan-500/50"
+                aria-label="سبد خرید"
+              >
+                <ShoppingCart size={18} />
+                {itemCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-black">
+                    {itemCount}
+                  </span>
+                ) : null}
+              </Link>
               {!user ? (
                 <Link
                   href="/login"
@@ -180,6 +200,18 @@ export default function Navbar() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
+              <Link
+                href="/shop/cart"
+                className="relative rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-200 transition hover:border-cyan-500/50"
+                aria-label="سبد خرید"
+              >
+                <ShoppingCart size={18} />
+                {itemCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-black">
+                    {itemCount}
+                  </span>
+                ) : null}
+              </Link>
               {!user ? (
                 <>
                   <Link
@@ -340,6 +372,19 @@ export default function Navbar() {
 
             {/* Mobile Auth Actions */}
             <div className="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
+              <Link
+                href="/shop/cart"
+                onClick={closeMenu}
+                className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-center text-white font-bold hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
+              >
+                <ShoppingCart size={20} className="text-cyan-400" />
+                سبد خرید
+                {itemCount > 0 ? (
+                  <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-cyan-500 px-1 text-xs text-black">
+                    {itemCount}
+                  </span>
+                ) : null}
+              </Link>
               {!user ? (
                 <Link
                   href="/login"

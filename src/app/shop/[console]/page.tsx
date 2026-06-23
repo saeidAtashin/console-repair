@@ -1,24 +1,32 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ShopCatalog from "@/app/components/shop/ShopCatalog";
+import ShopServicesSection from "@/app/components/shop/ShopServicesSection";
 import PageShell from "@/app/components/seo/PageShell";
-import { consoleIds, getConsole } from "../../../lib/console-catalog";
-import { webPageJsonLd } from "../../../lib/seo/jsonld";
-import { createPageMetadata } from "../../../lib/seo/metadata";
+import { createPageMetadata } from "@/lib/seo/metadata";
+import {
+  collectionPageJsonLd,
+  itemListJsonLd,
+  productOfferJsonLd,
+} from "@/lib/seo/jsonld";
+import {
+  SHOP_CONSOLES,
+  SHOP_CONSOLE_META,
+  getProducts,
+  type ShopConsole,
+} from "@/lib/shop";
 
 type Props = {
   params: Promise<{ console: string }>;
 };
 
 export function generateStaticParams() {
-  return consoleIds.map((console) => ({ console }));
+  return SHOP_CONSOLES.map((console) => ({ console }));
 }
 
 export async function generateMetadata({ params }: Props) {
   const { console: consoleSlug } = await params;
-  const config = getConsole(consoleSlug);
-
-  if (!config) {
+  if (!SHOP_CONSOLES.includes(consoleSlug as ShopConsole)) {
     return createPageMetadata({
       title: "صفحه یافت نشد",
       path: `/shop/${consoleSlug}`,
@@ -26,60 +34,61 @@ export async function generateMetadata({ params }: Props) {
     });
   }
 
-  const path = `/shop/${config.id}`;
+  const shopConsole = consoleSlug as ShopConsole;
+  const meta = SHOP_CONSOLE_META[shopConsole];
+  const path = `/shop/${shopConsole}`;
 
   return createPageMetadata({
-    title: `فروش ${config.title}`,
-    description: `خرید ${config.title} دست‌دوم تست‌شده — مشاوره قبل از خرید.`,
+    title: `خرید ${meta.label}`,
+    description: `مدل های نو و دست دوم ${meta.label} با تست سلامت و پشتیبانی فنی.`,
     path,
+    keywords: [`خرید ${meta.label}`, `${meta.label} دست دوم`, `${meta.label} نو`],
   });
 }
 
 export default async function ShopConsolePage({ params }: Props) {
   const { console: consoleSlug } = await params;
-  const config = getConsole(consoleSlug);
+  if (!SHOP_CONSOLES.includes(consoleSlug as ShopConsole)) notFound();
 
-  if (!config) notFound();
+  const shopConsole = consoleSlug as ShopConsole;
+  const meta = SHOP_CONSOLE_META[shopConsole];
+  const products = getProducts({ console: shopConsole });
+  const path = `/shop/${shopConsole}`;
 
-  const path = `/shop/${config.id}`;
+  const title = `خرید ${meta.label}`;
+  const description = `همه مدل های ${meta.label} در فروشگاه، شامل گزینه های نو و دست دوم تست شده.`;
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 text-white">
       <PageShell
         currentPath={path}
-        jsonLd={webPageJsonLd({
-          name: `فروش ${config.title}`,
-          description: `فروش ${config.title}`,
-          path,
-        })}
-        containerClassName="container mx-auto max-w-3xl px-6"
+        jsonLd={[
+          collectionPageJsonLd({
+            name: title,
+            description,
+            path,
+          }),
+          itemListJsonLd({
+            name: title,
+            path,
+            items: products.map((product) => ({
+              name: product.title,
+              url: `/shop/${product.console}/${product.slug}`,
+            })),
+          }),
+          ...products.map((product) =>
+            productOfferJsonLd({
+              product,
+              path: `/shop/${product.console}/${product.slug}`,
+            }),
+          ),
+        ]}
+        containerClassName="container mx-auto px-6"
       >
-        <h1 className="mb-6 text-4xl font-black">فروش {config.title}</h1>
-        <p className="mb-10 text-lg text-zinc-400">
-          برای استعلام موجودی و قیمت {config.title} با ما تماس بگیرید. دستگاه‌ها
-          قبل از تحویل تست کامل می‌شوند.
-        </p>
-
-        <div className="flex flex-wrap gap-4">
-          <Link
-            href="/#contact"
-            className="rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-black transition hover:bg-cyan-400"
-          >
-            استعلام قیمت
-          </Link>
-          <Link
-            href={`/shop/${config.id}/parts`}
-            className="rounded-2xl border border-white/10 px-8 py-4 transition hover:border-cyan-400/30"
-          >
-            فروش قطعات {config.title}
-          </Link>
-          <Link
-            href={`/consoles/${config.id}`}
-            className="rounded-2xl border border-white/10 px-8 py-4 transition hover:border-cyan-400/30"
-          >
-            بازگشت به خدمات {config.title}
-          </Link>
-        </div>
+        <h1 className="text-4xl font-black md:text-5xl">{title}</h1>
+        <p className="mt-4 max-w-3xl text-lg text-zinc-400">{description}</p>
+        <ShopCatalog defaultConsole={shopConsole} />
+        <ShopServicesSection />
       </PageShell>
     </main>
   );
