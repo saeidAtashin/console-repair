@@ -20,7 +20,7 @@ export default function LoginPage() {
 
   const [mode, setMode] = useState<Mode>("password");
 
-  const [username, setUsername] = useState<string>("");
+  const [phone_number, setPhone_number] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
   const [phone, setPhone] = useState<string>("");
@@ -66,7 +66,7 @@ export default function LoginPage() {
   const handlePasswordLogin = async (): Promise<void> => {
     setError("");
     try {
-      const loggedIn = await loginWithPassword(username, password);
+      const loggedIn = await loginWithPassword(phone_number, password);
       if (!loggedIn) {
         setError("نام کاربری یا رمز عبور اشتباه است.");
       }
@@ -195,9 +195,8 @@ export default function LoginPage() {
               setDevOtpHint("");
               setSmsSent(false);
             }}
-            className={`flex-1 py-3 rounded-xl ${
-              mode === "password" ? "bg-cyan-500 text-black" : "bg-white/5"
-            }`}
+            className={`flex-1 py-3 rounded-xl ${mode === "password" ? "bg-cyan-500 text-black" : "bg-white/5"
+              }`}
           >
             رمز عبور
           </button>
@@ -209,9 +208,8 @@ export default function LoginPage() {
               setDevOtpHint("");
               setSmsSent(false);
             }}
-            className={`flex-1 py-3 rounded-xl ${
-              mode === "otp" ? "bg-cyan-500 text-black" : "bg-white/5"
-            }`}
+            className={`flex-1 py-3 rounded-xl ${mode === "otp" ? "bg-cyan-500 text-black" : "bg-white/5"
+              }`}
           >
             OTP
           </button>
@@ -220,9 +218,9 @@ export default function LoginPage() {
         {mode === "password" ? (
           <div className="space-y-4">
             <input
-              value={username}
+              value={phone_number}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setUsername(e.target.value)
+                setPhone_number(e.target.value)
               }
               placeholder="نام کاربری"
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"

@@ -46,7 +46,7 @@ type AuthPayload = {
 type AuthContextType = {
   user: User | null;
   loading: boolean;
-  loginWithPassword: (username: string, password: string) => Promise<User | null>;
+  loginWithPassword: (phone_number: string, password: string) => Promise<User | null>;
   sendOtp: (phone: string) => Promise<SendOtpResult>;
   loginWithOtp: (phone: string, code: string) => Promise<LoginWithOtpResult>;
   register: (name: string) => void;
@@ -86,11 +86,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithPassword = useCallback(
-    async (username: string, password: string): Promise<User | null> => {
+    async (phone_number: string, password: string): Promise<User | null> => {
       const data = await apiRequest<AuthPayload>("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ phone_number, password }),
         auth: false,
       });
 
