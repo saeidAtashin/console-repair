@@ -1,3 +1,4 @@
+import { blogPosts } from "@/app/data/blog";
 import { services } from "@/app/data/services";
 import {
   consoleCatalog,
@@ -155,6 +156,14 @@ export const siteBreadcrumbTree: BranchNode = {
     {
       title: "پیگیری تعمیر",
       href: "/tracking",
+    },
+    {
+      title: "بلاگ",
+      href: "/blog",
+      children: blogPosts.map((post) => ({
+        title: post.title,
+        href: `/blog/${post.slug}`,
+      })),
     },
     {
       title: "درباره ما",

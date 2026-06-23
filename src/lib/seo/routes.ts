@@ -1,3 +1,4 @@
+import { blogPosts } from "@/app/data/blog";
 import { issues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
 import { SHOP_CONSOLES, getProducts } from "@/lib/shop";
@@ -35,6 +36,12 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     priority: path === "/repair" ? 0.85 : 0.8,
   })),
   { path: "/tracking", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/blog", changeFrequency: "weekly", priority: 0.75 },
+  ...blogPosts.map((post) => ({
+    path: `/blog/${post.slug}`,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  })),
   ...services.map((s) => ({
     path: `/services/${s.slug}`,
     changeFrequency: "weekly" as const,

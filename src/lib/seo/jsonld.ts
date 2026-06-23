@@ -55,6 +55,32 @@ export function collectionPageJsonLd(input: {
   };
 }
 
+export function blogPostingJsonLd(input: {
+  title: string;
+  description: string;
+  path: string;
+  coverImage: string;
+  publishedAt: string;
+}) {
+  const imageUrl = input.coverImage.startsWith("http")
+    ? input.coverImage
+    : absoluteUrl(input.coverImage);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: input.title,
+    description: input.description,
+    url: absoluteUrl(input.path),
+    image: imageUrl,
+    datePublished: input.publishedAt,
+    inLanguage: "fa-IR",
+    author: { "@type": "Organization", name: SITE_NAME },
+    publisher: { "@type": "Organization", name: SITE_NAME },
+    isPartOf: { "@id": `${absoluteUrl("/blog")}#blog` },
+  };
+}
+
 export function productOfferJsonLd(input: {
   product: ShopProduct;
   path: string;

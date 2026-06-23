@@ -1,3 +1,4 @@
+import { blogPosts } from "@/app/data/blog";
 import {
   consoleCatalog,
   consoleIds,
@@ -75,7 +76,14 @@ export const navbarNavItems: SiteNavItem[] = [
     href: "/shop",
     children: shopChildren(),
   },
-  { title: "بلاگ", href: "/blog/controller-repair" },
+  {
+    title: "بلاگ",
+    href: "/blog",
+    children: blogPosts.map((post) => ({
+      title: post.title,
+      href: `/blog/${post.slug}`,
+    })),
+  },
   trackingItem(),
 ];
 
