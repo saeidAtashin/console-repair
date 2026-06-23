@@ -1,6 +1,6 @@
 import { getAuthToken } from "@/lib/auth-storage";
 
-const DEFAULT_API_BASE_URL = "https://k3isonfire.ir/easy-front/";
+const DEFAULT_API_BASE_URL = "https://k3isonfire.ir/api/v1/";
 
 function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
