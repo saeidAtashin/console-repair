@@ -1,4 +1,5 @@
-import { GAME_FILTERS, type GameFilterId } from "@/lib/game-filters";
+import type { GameFilterId } from "@/lib/game-filters";
+import { getApiBaseUrl } from "@/lib/api-client";
 
 export type GameInstallConsole = "ps4" | "ps5" | "xbox-one" | "xbox-series";
 
@@ -20,44 +21,17 @@ export type RawgGame = {
   metacritic: number | null;
 };
 
-type RawgGamesResponse = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: {
-    id: number;
-    slug: string;
-    name: string;
-    released: string | null;
-    background_image: string | null;
-    rating: number | null;
-    metacritic: number | null;
-  }[];
-};
-
 export function isGameInstallConsole(value: string): value is GameInstallConsole {
   return value in CONSOLE_PLATFORM_IDS;
 }
 
-function getApiKey(): string {
-  const key = process.env.RAWG_API_KEY;
-  if (!key) {
-    throw new Error("RAWG_API_KEY is not configured");
-  }
-  return key;
-}
-
-function mapGame(item: RawgGamesResponse["results"][number]): RawgGame {
-  return {
-    id: item.id,
-    slug: item.slug,
-    name: item.name,
-    released: item.released,
-    backgroundImage: item.background_image,
-    rating: item.rating,
-    metacritic: item.metacritic,
-  };
-}
+type RemoteGamesResponse = {
+  success?: boolean;
+  message?: string;
+  games?: RawgGame[];
+  count?: number;
+  hasNext?: boolean;
+};
 
 export async function fetchGamesByConsole(
   console: GameInstallConsole,
@@ -77,32 +51,25 @@ export async function fetchGamesByConsole(
   const page = Math.max(1, options?.page ?? 1);
   const pageSize = Math.min(40, Math.max(1, options?.pageSize ?? 24));
   const filter = options?.filter ?? "best";
-  const ordering = GAME_FILTERS[filter].ordering;
-  const platformId = CONSOLE_PLATFORM_IDS[console];
-
-  const url = new URL("https://api.rawg.io/api/games");
-  url.searchParams.set("key", getApiKey());
-  url.searchParams.set("platforms", String(platformId));
+  const url = new URL(`${getApiBaseUrl()}/api/games`);
+  url.searchParams.set("console", console);
   url.searchParams.set("page", String(page));
-  url.searchParams.set("page_size", String(pageSize));
-  url.searchParams.set("ordering", ordering);
+  url.searchParams.set("pageSize", String(pageSize));
+  url.searchParams.set("filter", filter);
 
-  const res = await fetch(url.toString(), {
-    next: { revalidate: 3600 },
-  });
+  const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+  const data = (await res.json()) as RemoteGamesResponse;
 
-  if (!res.ok) {
-    throw new Error(`RAWG API error: ${res.status}`);
+  if (!res.ok || data.success === false) {
+    throw new Error(data.message || `Games API error: ${res.status}`);
   }
 
-  const data = (await res.json()) as RawgGamesResponse;
-
   return {
-    games: data.results.map(mapGame),
-    count: data.count,
+    games: data.games ?? [],
+    count: data.count ?? 0,
     page,
     pageSize,
-    hasNext: Boolean(data.next),
+    hasNext: Boolean(data.hasNext),
     filter,
   };
 }

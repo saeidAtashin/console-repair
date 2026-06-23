@@ -9,6 +9,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import RepairFormClient from "@/app/repair/RepairFormClient";
 import { getRepairStatusLabel } from "@/lib/repair-status";
 import { SITE_PHONE } from "@/lib/seo/site";
+import { apiRequest, ApiError } from "@/lib/api-client";
 
 type Order = {
   trackingCode: string;
@@ -34,13 +35,12 @@ export default function DashboardPage() {
   const loadOrders = useCallback(async () => {
     setOrdersLoading(true);
     try {
-      const res = await fetch("/api/dashboard/orders");
-      if (res.status === 401) {
-        setOrders([]);
-        return;
-      }
-      const data = await res.json();
+      const data = await apiRequest<{ orders?: Order[] }>("/api/dashboard/orders");
       setOrders(data.orders ?? []);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        setOrders([]);
+      }
     } finally {
       setOrdersLoading(false);
     }
@@ -59,14 +59,14 @@ export default function DashboardPage() {
 
     async function fetchOrders() {
       try {
-        const res = await fetch("/api/dashboard/orders");
+        const data = await apiRequest<{ orders?: Order[] }>("/api/dashboard/orders");
         if (cancelled) return;
-        if (res.status === 401) {
-          setOrders([]);
-          return;
-        }
-        const data = await res.json();
         setOrders(data.orders ?? []);
+      } catch (error) {
+        if (cancelled) return;
+        if (error instanceof ApiError && error.status === 401) {
+          setOrders([]);
+        }
       } finally {
         if (!cancelled) setOrdersLoading(false);
       }

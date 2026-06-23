@@ -30,6 +30,7 @@ import {
   getRepairDeviceLabel,
   type RepairPrefill,
 } from "../../lib/repair-links";
+import { apiRequest } from "@/lib/api-client";
 
 const repairSchema = z.object({
   name: z.string().optional(),
@@ -127,16 +128,17 @@ export default function RepairFormClient({
         formData.append("image", selectedFile);
       }
 
-      const res = await fetch("/api/repair", {
+      const result = await apiRequest<{ success?: boolean; trackingCode?: string }>(
+        "/api/repair",
+        {
         method: "POST",
         body: formData,
-      });
+        },
+      );
 
-      const result = await res.json();
-
-      if (res.ok && result.success) {
+      if (result.success) {
         setSuccess(true);
-        setTrackingCode(result.trackingCode);
+        setTrackingCode(result.trackingCode ?? null);
         reset(defaultValues);
         setSelectedFile(null);
         setImagePreview(null);

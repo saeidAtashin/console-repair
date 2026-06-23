@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/app/context/AuthContext";
 import { useEffect, useState } from "react";
+import { apiRequest, ApiError } from "@/lib/api-client";
 
 type Order = {
   trackingCode: string;
@@ -21,14 +22,14 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/orders")
-      .then(async (res) => {
-        if (res.status === 401) {
-          setOrders([]);
-          return;
-        }
-        const data = await res.json();
+    void apiRequest<{ orders?: Order[] }>("/api/admin/orders")
+      .then((data) => {
         setOrders(data.orders || []);
+      })
+      .catch((error) => {
+        if (error instanceof ApiError && error.status === 401) {
+          setOrders([]);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -44,7 +45,7 @@ export default function AdminPage() {
   }
 
   async function updateStatus(code: string, status: string) {
-    await fetch(`/api/admin/orders/${code}`, {
+    await apiRequest(`/api/admin/orders/${code}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

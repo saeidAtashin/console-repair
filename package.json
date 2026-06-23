@@ -3,22 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "prisma generate && next dev --hostname 0.0.0.0",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "postinstall": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@lottiefiles/dotlottie-react": "^0.19.4",
-    "@prisma/adapter-better-sqlite3": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "better-sqlite3": "^12.10.0",
     "clsx": "^2.1.1",
-    "dotenv": "^17.4.2",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
@@ -40,7 +32,6 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
-    "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

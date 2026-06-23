@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckCircle2, Cpu, Wrench, Clock3, Search } from "lucide-react";
+import { apiRequest, ApiError } from "@/lib/api-client";
 
 type RepairStatus = "pending" | "checking" | "repairing" | "completed";
 
@@ -96,17 +97,22 @@ export default function TrackingPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/repair/orders/${trimmed}`);
-      const data = await res.json();
+      const data = await apiRequest<{ success?: boolean; order?: Order; message?: string }>(
+        `/api/repair/orders/${trimmed}`,
+      );
 
-      if (!res.ok || !data.success) {
+      if (!data.success || !data.order) {
         setError(data.message || "سفارش پیدا نشد");
         return;
       }
 
       setOrder(data.order);
-    } catch {
-      setError("خطا در دریافت اطلاعات");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setError(error.message);
+      } else {
+        setError("خطا در دریافت اطلاعات");
+      }
     } finally {
       setLoading(false);
     }

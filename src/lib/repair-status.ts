@@ -1,4 +1,4 @@
-import type { RepairStatus } from "@/lib/db";
+export type RepairStatus = "pending" | "checking" | "repairing" | "completed";
 
 export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
   pending: "در انتظار بررسی",
