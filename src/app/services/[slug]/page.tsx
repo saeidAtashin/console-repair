@@ -8,12 +8,13 @@ import {
   BadgeDollarSign,
 } from "lucide-react";
 
+import FaqSection from "@/app/components/seo/FaqSection";
+import OverviewSection from "@/app/components/seo/OverviewSection";
 import { CtaButtonGroup } from "@/app/components/ui/cta";
 import ServiceCommonIssues from "@/app/components/services/ServiceCommonIssues";
 import ServiceFeaturesGrid from "@/app/components/services/ServiceFeaturesGrid";
 import ServiceRepairSteps from "../../components/services/ServiceRepairSteps";
 import PageShell from "@/app/components/seo/PageShell";
-import FAQSchema from "@/app/components/schema/FAQSchema";
 import ServiceSchema from "@/app/components/schema/ServiceSchema";
 import { services } from "@/app/data/services";
 import { brandThemes } from "../../../lib/brand-theme";
@@ -21,6 +22,7 @@ import {
   buildRepairHref,
   consoleIdFromRepairSlug,
 } from "../../../lib/repair-links";
+import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
 import { webPageJsonLd } from "../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
 
@@ -73,15 +75,22 @@ export default async function ServicePage({ params }: Props) {
         description={service.seoDescription}
         url={servicePath}
       />
-      {service.faqs.length > 0 && <FAQSchema items={service.faqs} />}
 
       <PageShell
         currentPath={servicePath}
-        jsonLd={webPageJsonLd({
-          name: service.seoTitle,
-          description: service.seoDescription,
-          path: servicePath,
-        })}
+        jsonLd={[
+          webPageJsonLd({
+            name: service.seoTitle,
+            description: service.seoDescription,
+            path: servicePath,
+          }),
+          howToJsonLd({
+            name: `مراحل ${service.title}`,
+            description: service.longDescription,
+            path: servicePath,
+            steps: service.repairSteps,
+          }),
+        ]}
         containerClassName="container mx-auto px-6"
       >
         <section className="relative overflow-hidden border-b border-white/10">
@@ -148,6 +157,12 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </section>
 
+        <OverviewSection
+          title={`راهنمای کامل ${service.title}`}
+          paragraphs={service.overview}
+          className="py-16"
+        />
+
         <section className="container mx-auto px-6 py-24">
           <div className="mb-14">
             <h2 className="text-3xl font-black">
@@ -159,7 +174,11 @@ export default async function ServicePage({ params }: Props) {
             </p>
           </div>
 
-          <ServiceFeaturesGrid features={service.features} theme={theme} />
+          <ServiceFeaturesGrid
+            features={service.features}
+            featureDetails={service.featureDetails}
+            theme={theme}
+          />
         </section>
 
         <ServiceCommonIssues issues={service.commonIssues} />
@@ -186,26 +205,7 @@ export default async function ServicePage({ params }: Props) {
           </div>
         </section>
 
-        {service.faqs.length > 0 && (
-          <section className="border-t border-white/10 bg-zinc-950">
-            <div className="container mx-auto px-6 py-24">
-              <h2 className="mb-10 text-3xl font-black">سوالات متداول</h2>
-              <div className="space-y-4">
-                {service.faqs.map((faq, index) => (
-                  <details
-                    key={index}
-                    className="group rounded-2xl border border-white/10 bg-black/40 p-6"
-                  >
-                    <summary className="cursor-pointer font-bold marker:content-none">
-                      {faq.question}
-                    </summary>
-                    <p className="mt-4 leading-8 text-zinc-400">{faq.answer}</p>
-                  </details>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        <FaqSection items={service.faqs} />
 
         <section className="pb-28">
           <div className="container mx-auto px-6">

@@ -1,6 +1,7 @@
 import { issues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
 import { SHOP_CONSOLES, getProducts } from "@/lib/shop";
+import { GAME_FILTER_IDS } from "@/lib/game-filters";
 import { repairSitemapPaths } from "./repair-seo";
 
 export const GAME_INSTALL_CONSOLES = [
@@ -49,6 +50,13 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     changeFrequency: "monthly" as const,
     priority: 0.65,
   })),
+  ...GAME_INSTALL_CONSOLES.flatMap((slug) =>
+    GAME_FILTER_IDS.map((filter) => ({
+      path: `/services/game-install/${slug}/games?filter=${filter}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.55,
+    })),
+  ),
   { path: "/shop", changeFrequency: "daily", priority: 0.9 },
   ...SHOP_CONSOLES.map((slug) => ({
     path: `/shop/${slug}`,

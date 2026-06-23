@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import GameListGrid from "@/app/components/game-install/GameListGrid";
 import GamePagination from "@/app/components/game-install/GamePagination";
+import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
 import { webPageJsonLd } from "../../../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../../../lib/seo/metadata";
@@ -12,8 +13,17 @@ import {
   getGameFilter,
   gameListPath,
   isGameFilter,
+  type GameFilterId,
 } from "@/lib/game-filters";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
+import {
+  gameListBreadcrumbItems,
+  getGameInstallContent,
+} from "@/lib/game-install-content";
+import {
+  buildRepairHref,
+  consoleIdFromGameInstallSlug,
+} from "../../../../../lib/repair-links";
 import {
   fetchGamesByConsole,
   isGameInstallConsole,
@@ -35,9 +45,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params, searchParams }: Props) {
   const { console: consoleSlug } = await params;
-  const { filter: filterParam = "best" } = await searchParams;
+  const { filter: filterParam = "best", page: pageParam } = await searchParams;
   const meta = GAME_INSTALL_CONSOLE_META[consoleSlug];
   const filter = getGameFilter(filterParam) ?? GAME_FILTERS.best;
+  const page = Math.max(1, Number(pageParam ?? "1") || 1);
 
   if (!meta) {
     return createPageMetadata({
@@ -47,13 +58,19 @@ export async function generateMetadata({ params, searchParams }: Props) {
     });
   }
 
-  const path = gameListPath(consoleSlug, filter.id);
+  const path = gameListPath(consoleSlug, filter.id, page);
+  const content = getGameInstallContent(consoleSlug);
+  const filterIntro = content?.filterIntros[filter.id as GameFilterId];
+  const description =
+    filterIntro ??
+    `${filter.description} برای ${meta.label}`;
 
   return createPageMetadata({
     title: `${filter.label} — ${meta.label}`,
-    description: `${filter.description} برای ${meta.label}`,
+    description,
     path,
     keywords: [filter.label, meta.label, "نصب بازی"],
+    noIndex: page > 1,
   });
 }
 
@@ -61,8 +78,9 @@ export default async function GameListPage({ params, searchParams }: Props) {
   const { console: consoleSlug } = await params;
   const sp = await searchParams;
   const meta = GAME_INSTALL_CONSOLE_META[consoleSlug];
+  const content = getGameInstallContent(consoleSlug);
 
-  if (!meta || !isGameInstallConsole(consoleSlug)) notFound();
+  if (!meta || !content || !isGameInstallConsole(consoleSlug)) notFound();
 
   const filterParam = sp.filter ?? "best";
   if (!isGameFilter(filterParam)) notFound();
@@ -72,6 +90,14 @@ export default async function GameListPage({ params, searchParams }: Props) {
   const consoleId = consoleSlug as GameInstallConsole;
   const hubPath = `/services/game-install/${consoleSlug}`;
   const listPath = gameListPath(consoleSlug, filterParam, page);
+  const repairHref = buildRepairHref({
+    consoleId: consoleIdFromGameInstallSlug(consoleSlug),
+  });
+  const filterIntro = content.filterIntros[filterParam] ?? filter.description;
+  const introParagraphs = [
+    ...content.gamesPageIntro,
+    filterIntro,
+  ];
 
   let games: Awaited<ReturnType<typeof fetchGamesByConsole>>["games"] = [];
   let totalCount = 0;
@@ -97,9 +123,15 @@ export default async function GameListPage({ params, searchParams }: Props) {
     <main className="min-h-screen bg-[#050816] pt-24 text-white p-10">
       <PageShell
         currentPath={listPath}
+        breadcrumbs={gameListBreadcrumbItems(
+          consoleSlug,
+          meta.label,
+          filter.label,
+          hubPath,
+        )}
         jsonLd={webPageJsonLd({
           name: `${filter.label} — ${meta.label}`,
-          description: filter.description,
+          description: filterIntro,
           path: listPath,
         })}
         containerClassName="mx-auto max-w-7xl px-6"
@@ -115,7 +147,23 @@ export default async function GameListPage({ params, searchParams }: Props) {
           {filter.label}
           <span className="text-zinc-500"> · {meta.label}</span>
         </h1>
-        <p className="mb-8 max-w-2xl text-zinc-400">{filter.description}</p>
+
+        <OverviewSection paragraphs={introParagraphs} className="border-t-0 py-8" />
+
+        <div className="mb-8 flex flex-wrap gap-3">
+          <Link
+            href={repairHref}
+            className="rounded-2xl bg-cyan-500 px-6 py-3 text-sm font-bold text-black transition hover:bg-cyan-400"
+          >
+            ثبت درخواست نصب
+          </Link>
+          <Link
+            href={hubPath}
+            className="rounded-2xl border border-white/10 px-6 py-3 text-sm font-bold transition hover:border-cyan-400/40"
+          >
+            مشاهده تعرفه
+          </Link>
+        </div>
 
         <nav
           className="mb-10 flex flex-wrap gap-2"

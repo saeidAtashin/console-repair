@@ -33,7 +33,7 @@ export default function GameListGrid({ games, totalCount }: Props) {
               {game.backgroundImage ? (
                 <Image
                   src={game.backgroundImage}
-                  alt=""
+                  alt={game.name}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover transition duration-300 group-hover:scale-105"
@@ -46,9 +46,9 @@ export default function GameListGrid({ games, totalCount }: Props) {
             </div>
 
             <div className="p-4">
-              <h2 className="line-clamp-2 font-bold leading-snug">
+              <h3 className="line-clamp-2 font-bold leading-snug">
                 {game.name}
-              </h2>
+              </h3>
               {game.released ? (
                 <p className="mt-1 text-xs text-zinc-500">
                   {new Date(game.released).toLocaleDateString("fa-IR", {

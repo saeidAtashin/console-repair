@@ -1,8 +1,12 @@
-import { Cpu, Monitor, Gamepad2, Fan, Cable } from "lucide-react";
+import { Cpu, Monitor, Gamepad2, Cable } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { Brand } from "../../lib/brand-theme";
+import {
+  mergeServiceSeoContent,
+  type ServiceSeoContent,
+} from "./service-seo-content";
 
-export interface Service {
+export interface Service extends ServiceSeoContent {
   slug: string;
   brand: Brand;
 
@@ -32,14 +36,10 @@ export interface Service {
   commonIssues: { slug: string; title: string }[];
   repairSteps: string[];
 
-  faqs: {
-    question: string;
-    answer: string;
-  }[];
   layout: string;
 }
 
-export const services: Service[] = [
+const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
   {
     slug: "ps5-repair",
     layout: "A",
@@ -112,32 +112,6 @@ export const services: Service[] = [
       "تست کامل دستگاه",
       "تحویل به مشتری",
     ],
-
-    faqs: [
-      {
-        question: "هزینه تعمیر PS5 چقدر است؟",
-
-        answer: "هزینه تعمیر بسته به نوع خرابی و قطعه مورد نیاز مشخص می‌شود.",
-      },
-
-      {
-        question: "تعمیر HDMI PS5 چقدر زمان می‌برد؟",
-
-        answer: "معمولاً بین 1 تا 3 روز کاری زمان نیاز دارد.",
-      },
-
-      {
-        question: "آیا تعمیرات PS5 ضمانت دارند؟",
-
-        answer: "بله تمامی خدمات همراه با ضمانت تست ارائه می‌شوند.",
-      },
-
-      {
-        question: "آیا از قطعات اصلی استفاده می‌شود؟",
-
-        answer: "بله در تمامی تعمیرات از قطعات اصلی و باکیفیت استفاده می‌شود.",
-      },
-    ],
   },
 
   {
@@ -207,26 +181,6 @@ export const services: Service[] = [
       "تست نهایی",
       "تحویل دستگاه",
     ],
-
-    faqs: [
-      {
-        question: "آیا PS4 Pro هم تعمیر می‌شود؟",
-
-        answer: "بله تمامی مدل‌های PS4 شامل Slim و Pro تعمیر می‌شوند.",
-      },
-
-      {
-        question: "هزینه تعمیر HDMI PS4 چقدر است؟",
-
-        answer: "بسته به میزان خرابی و آسیب برد متفاوت است.",
-      },
-
-      {
-        question: "چقدر زمان برای تعمیر نیاز است؟",
-
-        answer: "بسته به نوع خرابی بین 1 تا 4 روز کاری زمان نیاز است.",
-      },
-    ],
   },
 
   {
@@ -290,26 +244,6 @@ export const services: Service[] = [
       "تست کامل",
       "تحویل دستگاه",
     ],
-
-    faqs: [
-      {
-        question: "آیا تعمیر Xbox ضمانت دارد؟",
-
-        answer: "بله تمامی تعمیرات شامل ضمانت تست هستند.",
-      },
-
-      {
-        question: "Xbox Series X هم تعمیر می‌شود؟",
-
-        answer: "بله تمامی مدل‌های Xbox تعمیر می‌شوند.",
-      },
-
-      {
-        question: "از قطعات اصلی استفاده می‌کنید؟",
-
-        answer: "بله در تمامی تعمیرات از قطعات باکیفیت استفاده می‌شود.",
-      },
-    ],
   },
 
   {
@@ -367,20 +301,6 @@ export const services: Service[] = [
       "تعویض HDMI",
       "تست تصویر",
       "تحویل دستگاه",
-    ],
-
-    faqs: [
-      {
-        question: "آیا HDMI قابل تعمیر است؟",
-
-        answer: "بله در اکثر موارد سوکت HDMI تعویض یا تعمیر می‌شود.",
-      },
-
-      {
-        question: "چقدر زمان برای تعمیر HDMI نیاز است؟",
-
-        answer: "معمولاً بین 1 تا 2 روز کاری زمان نیاز دارد.",
-      },
     ],
   },
 
@@ -448,19 +368,9 @@ export const services: Service[] = [
       "بستن دسته",
       "تست کامل عملکرد",
     ],
-
-    faqs: [
-      {
-        question: "مشکل Drift دسته چیست؟",
-        answer:
-          "Drift زمانی است که آنالوگ بدون لمس شما حرکت می‌کند و معمولاً با تعویض آنالوگ برطرف می‌شود.",
-      },
-
-      {
-        question: "آیا آنالوگ دسته قابل تعویض است؟",
-        answer:
-          "بله آنالوگ دسته PS و Xbox قابل تعویض است و پس از تعویض عملکرد آن مانند حالت اولیه می‌شود.",
-      },
-    ],
   },
 ];
+
+export const services: Service[] = baseServices.map((service) =>
+  mergeServiceSeoContent(service),
+);

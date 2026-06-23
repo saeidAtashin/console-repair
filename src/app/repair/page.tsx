@@ -7,6 +7,9 @@ import {
   resolveRepairSeo,
 } from "../../lib/seo/repair-seo";
 import RepairFormClient from "@/app/repair/RepairFormClient";
+import RepairPageContent, {
+  repairContentJsonLd,
+} from "@/app/repair/RepairPageContent";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -35,12 +38,13 @@ export default async function RepairPage({ searchParams }: Props) {
     <PageShell
       currentPath={seo.canonicalPath}
       breadcrumbs={repairBreadcrumbItems(seo)}
-      jsonLd={repairPageJsonLd(seo)}
+      jsonLd={[...repairPageJsonLd(seo), repairContentJsonLd(seo.consoleId)]}
       className="min-h-screen bg-[#030510] text-white"
-      containerClassName="container mx-auto max-w-3xl px-6"
+      containerClassName="container mx-auto max-w-4xl px-6"
       breadcrumbClassName="mb-6 pt-24"
     >
       <RepairFormClient initialPrefill={initialPrefill} />
+      <RepairPageContent consoleId={seo.consoleId} />
     </PageShell>
   );
 }

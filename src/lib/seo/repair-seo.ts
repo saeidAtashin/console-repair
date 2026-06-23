@@ -11,10 +11,10 @@ import {
 } from "../repair-links";
 import { webPageJsonLd } from "./jsonld";
 import { absoluteUrl, SITE_NAME } from "./site";
+import { REPAIR_DEFAULT_DESCRIPTION } from "./repair-content";
 
 const DEFAULT_TITLE = "ثبت سفارش تعمیر کنسول";
-const DEFAULT_DESCRIPTION =
-  "فرم ثبت سفارش تعمیر کنسول بازی. اطلاعات تماس و شرح مشکل را وارد کنید تا کارشناسان ما با شما تماس بگیرند.";
+const DEFAULT_DESCRIPTION = REPAIR_DEFAULT_DESCRIPTION;
 const DEFAULT_KEYWORDS = [
   "ثبت تعمیر کنسول",
   "سفارش تعمیر ps5",

@@ -49,18 +49,21 @@ const FEATURE_DESCRIPTIONS = [
 
 type ServiceFeatureCardProps = {
   feature: string;
+  description?: string;
   index: number;
   theme: BrandTheme;
 };
 
 function ServiceFeatureCard({
   feature,
+  description,
   index,
   theme,
 }: ServiceFeatureCardProps) {
   const Icon = FEATURE_ICONS[index % FEATURE_ICONS.length];
   const tag = FEATURE_TAGS[index % FEATURE_TAGS.length];
-  const description = FEATURE_DESCRIPTIONS[index % FEATURE_DESCRIPTIONS.length];
+  const featureDescription =
+    description ?? FEATURE_DESCRIPTIONS[index % FEATURE_DESCRIPTIONS.length];
 
   return (
     <div
@@ -141,7 +144,7 @@ function ServiceFeatureCard({
         </h3>
 
         <p className="mt-3 text-sm leading-7 text-zinc-500 transition-colors duration-300 group-hover:text-zinc-400">
-          {description}
+          {featureDescription}
         </p>
 
         <div className="mt-5 flex items-center gap-2">
@@ -165,11 +168,13 @@ function ServiceFeatureCard({
 
 type ServiceFeaturesGridProps = {
   features: string[];
+  featureDetails?: { title: string; description: string }[];
   theme: BrandTheme;
 };
 
 export default function ServiceFeaturesGrid({
   features,
+  featureDetails,
   theme,
 }: ServiceFeaturesGridProps) {
   return (
@@ -180,11 +185,19 @@ export default function ServiceFeaturesGrid({
       />
 
       <div className="relative grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {features.map((feature, index) => (
-          <FadeUp key={`${feature}-${index}`} delay={index * 0.08}>
-            <ServiceFeatureCard feature={feature} index={index} theme={theme} />
-          </FadeUp>
-        ))}
+        {features.map((feature, index) => {
+          const detail = featureDetails?.[index];
+          return (
+            <FadeUp key={`${feature}-${index}`} delay={index * 0.08}>
+              <ServiceFeatureCard
+                feature={detail?.title ?? feature}
+                description={detail?.description}
+                index={index}
+                theme={theme}
+              />
+            </FadeUp>
+          );
+        })}
       </div>
     </div>
   );

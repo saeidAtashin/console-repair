@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import GameCatalogSections from "@/app/components/game-install/GameCatalogSections";
+import FaqSection from "@/app/components/seo/FaqSection";
+import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
+import TrustSignalsBar from "@/app/components/seo/TrustSignalsBar";
+import ServiceSchema from "@/app/components/schema/ServiceSchema";
 import { webPageJsonLd } from "../../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../../lib/seo/metadata";
 import {
@@ -14,6 +19,13 @@ import {
   GAME_INSTALL_PRICE_DATA,
   GAME_INSTALL_SUMMARY_TABLE,
 } from "@/lib/game-install-pricing";
+import { getGameInstallContent } from "@/lib/game-install-content";
+import {
+  fetchGameCatalogSections,
+  isGameInstallConsole,
+  type GameInstallConsole,
+} from "@/lib/rawg";
+import { GAME_CATALOG_FILTER_IDS } from "@/lib/game-filters";
 
 type Props = {
   params: Promise<{ console: string }>;
@@ -28,6 +40,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { console: consoleSlug } = await params;
   const meta = GAME_INSTALL_CONSOLE_META[consoleSlug];
+  const content = getGameInstallContent(consoleSlug);
 
   if (!meta) {
     return createPageMetadata({
@@ -37,9 +50,13 @@ export async function generateMetadata({ params }: Props) {
     });
   }
 
+  const description =
+    content?.overview[0]?.slice(0, 160) ??
+    `لیست کامل هزینه نصب بازی روی ${meta.label} شامل نصب اکانتی، پکیج اقتصادی و خدمات جانبی.`;
+
   return createPageMetadata({
     title: `تعرفه نصب بازی ${meta.label}`,
-    description: `لیست کامل هزینه نصب بازی روی ${meta.label} شامل نصب اکانتی، پکیج اقتصادی، نصب آفلاین کپی خور و خدمات جانبی.`,
+    description,
     path: `/services/game-install/${consoleSlug}`,
     keywords: [
       `تعرفه نصب بازی ${meta.label}`,
@@ -52,24 +69,43 @@ export async function generateMetadata({ params }: Props) {
 export default async function GameInstallPage({ params }: Props) {
   const { console: consoleSlug } = await params;
   const meta = GAME_INSTALL_CONSOLE_META[consoleSlug];
+  const content = getGameInstallContent(consoleSlug);
 
-  if (!meta) notFound();
+  if (!meta || !content) notFound();
 
   const path = `/services/game-install/${consoleSlug}`;
   const repairHref = buildRepairHref({
     consoleId: consoleIdFromGameInstallSlug(consoleSlug),
   });
-  const pricingSections = [
-    GAME_INSTALL_PRICE_DATA.accountCapacityInstallation,
-    GAME_INSTALL_PRICE_DATA.economyPackagesRandomGames,
-    GAME_INSTALL_PRICE_DATA.jailbreakOfflineInstallation,
-    GAME_INSTALL_PRICE_DATA.xboxInstallation,
-    GAME_INSTALL_PRICE_DATA.additionalServices,
-  ];
-  const jsonLdDescription = `تعرفه نصب بازی ${meta.label}: از نصب با اکانت ظرفیتی تا نصب آفلاین کپی خور و خدمات جانبی.`;
+  const pricingSections = content.pricingSectionKeys.map(
+    (key) => GAME_INSTALL_PRICE_DATA[key],
+  );
+  const jsonLdDescription = `تعرفه نصب بازی ${meta.label}: از نصب با اکانت ظرفیتی تا نصب آفلاین و خدمات جانبی.`;
+
+  let catalogSections: Awaited<
+    ReturnType<typeof fetchGameCatalogSections>
+  > = [];
+
+  if (isGameInstallConsole(consoleSlug)) {
+    try {
+      catalogSections = await fetchGameCatalogSections(
+        consoleSlug as GameInstallConsole,
+        GAME_CATALOG_FILTER_IDS,
+        12,
+      );
+    } catch {
+      catalogSections = [];
+    }
+  }
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 text-white">
+      <ServiceSchema
+        title={`نصب بازی ${meta.label}`}
+        description={jsonLdDescription}
+        url={path}
+      />
+
       <PageShell
         currentPath={path}
         jsonLd={webPageJsonLd({
@@ -87,6 +123,11 @@ export default async function GameInstallPage({ params }: Props) {
           هزینه‌ها به نوع نصب، تعداد بازی و وضعیت کنسول بستگی دارد. بازه‌های زیر
           برای {meta.label} ارائه می‌شوند.
         </p>
+
+        <OverviewSection
+          paragraphs={content.overview}
+          className="border-t-0 py-0"
+        />
 
         <section className="mb-10 grid gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 sm:grid-cols-2 xl:grid-cols-5">
           {GAME_INSTALL_SUMMARY_TABLE.map((item) => (
@@ -131,12 +172,55 @@ export default async function GameInstallPage({ params }: Props) {
           ))}
         </section>
 
-        <Link
-          href={repairHref}
-          className="inline-flex rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-black transition hover:bg-cyan-400"
-        >
-          ثبت درخواست نصب بازی
-        </Link>
+        <section className="mb-12" aria-labelledby="install-process-title">
+          <h2 id="install-process-title" className="mb-6 text-2xl font-black">
+            مراحل نصب
+          </h2>
+          <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            {content.processSteps.map((step, index) => (
+              <li
+                key={step}
+                className="rounded-2xl border border-white/10 bg-white/5 p-5"
+              >
+                <span className="mb-2 block font-mono text-sm text-cyan-400">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <p className="text-sm font-semibold leading-7">{step}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {catalogSections.length > 0 ? (
+          <section className="mb-12" aria-labelledby="game-catalog-title">
+            <h2 id="game-catalog-title" className="mb-6 text-2xl font-black">
+              پیشنهاد بازی برای {meta.label}
+            </h2>
+            <GameCatalogSections
+              consoleSlug={consoleSlug}
+              sections={catalogSections}
+            />
+          </section>
+        ) : null}
+
+        <TrustSignalsBar signals={content.trustSignals} className="py-8" />
+
+        <FaqSection items={content.faqs} className="py-12" />
+
+        <div className="flex flex-wrap gap-4">
+          <Link
+            href={repairHref}
+            className="inline-flex rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-black transition hover:bg-cyan-400"
+          >
+            ثبت درخواست نصب بازی
+          </Link>
+          <Link
+            href="/services"
+            className="inline-flex rounded-2xl border border-white/10 px-8 py-4 font-bold transition hover:border-cyan-400/40"
+          >
+            بازگشت به خدمات
+          </Link>
+        </div>
       </PageShell>
     </main>
   );
