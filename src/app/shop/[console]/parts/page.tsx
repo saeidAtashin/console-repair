@@ -53,6 +53,7 @@ export default async function ShopPartsPage({ params }: Props) {
           path,
         })}
         containerClassName="container mx-auto max-w-3xl px-6"
+        className="container mx-auto max-w-3xl px-6 pb-14"
       >
         <h1 className="mb-6 text-4xl font-black">فروش قطعات {config.title}</h1>
         <p className="mb-10 text-lg text-zinc-400">

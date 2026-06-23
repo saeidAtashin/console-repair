@@ -21,6 +21,7 @@ export default function CartPage() {
         currentPath={PATH}
         jsonLd={webPageJsonLd({ name: TITLE, description: DESCRIPTION, path: PATH })}
         containerClassName="container mx-auto px-6"
+        className="container mx-auto px-6 pb-14"
       >
         <h1 className="text-4xl font-black md:text-5xl">سبد خرید</h1>
         <p className="mt-3 mb-10 max-w-2xl text-zinc-400">

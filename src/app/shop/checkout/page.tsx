@@ -14,7 +14,11 @@ export const metadata = createPageMetadata({
 export default function CheckoutPage() {
   return (
     <main className="min-h-screen bg-black pt-24 text-white">
-      <PageShell currentPath={PATH} containerClassName="container mx-auto px-6">
+      <PageShell
+        currentPath={PATH}
+        containerClassName="container mx-auto px-6"
+        className="container mx-auto px-6 pb-14"
+      >
         <h1 className="text-4xl font-black md:text-5xl">تکمیل سفارش</h1>
         <p className="mt-3 mb-10 max-w-2xl text-zinc-400">
           اطلاعات تماس خود را ثبت کنید تا هماهنگی ارسال و تحویل انجام شود.

@@ -90,6 +90,7 @@ export default async function ShopProductDetailPage({ params }: Props) {
           }),
         ]}
         containerClassName="container mx-auto px-6"
+        className="container mx-auto px-6 pb-14"
       >
         <section className="grid gap-8 lg:grid-cols-2">
           <div className="relative h-[360px] overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/40">

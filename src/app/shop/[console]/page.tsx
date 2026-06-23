@@ -84,6 +84,7 @@ export default async function ShopConsolePage({ params }: Props) {
           ),
         ]}
         containerClassName="container mx-auto px-6"
+        className="container mx-auto px-6 pb-14"
       >
         <h1 className="text-4xl font-black md:text-5xl">{title}</h1>
         <p className="mt-4 max-w-3xl text-lg text-zinc-400">{description}</p>
