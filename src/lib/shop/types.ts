@@ -2,12 +2,14 @@ export const SHOP_CONSOLES = ["ps4", "ps5", "xbox-one", "xbox-series"] as const;
 
 export type ShopConsole = (typeof SHOP_CONSOLES)[number];
 export type ProductCondition = "new" | "used";
+export type ProductCategory = "console" | "tools" | "accessories";
 
 export type ShopProduct = {
   id: string;
   slug: string;
   title: string;
   console: ShopConsole;
+  category: ProductCategory;
   condition: ProductCondition;
   price: number;
   compareAtPrice?: number;

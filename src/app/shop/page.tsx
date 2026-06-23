@@ -13,7 +13,7 @@ import { getProducts } from "@/lib/shop";
 const PATH = "/shop";
 const TITLE = "فروشگاه کنسول بازی";
 const DESCRIPTION =
-  "خرید کنسول PS5، PS4، Xbox One و Xbox Series در حالت نو یا دست دوم تست شده با قیمت به روز.";
+  "خرید کنسول PS5، PS4، Xbox One و Xbox Series به‌همراه ابزار، لوازم جانبی و قطعات مرتبط — نو یا دست‌دوم تست‌شده.";
 const products = getProducts();
 
 export const metadata = createPageMetadata({
@@ -26,6 +26,8 @@ export const metadata = createPageMetadata({
     "خرید xbox series",
     "خرید xbox one",
     "کنسول دست دوم",
+    "لوازم جانبی ps5",
+    "دسته بازی xbox",
   ],
 });
 

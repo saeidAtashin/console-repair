@@ -11,6 +11,7 @@ import {
   webPageJsonLd,
 } from "@/lib/seo/jsonld";
 import {
+  PRODUCT_CATEGORY_LABELS,
   SHOP_CONSOLES,
   SHOP_CONSOLE_META,
   formatToman,
@@ -104,7 +105,9 @@ export default async function ShopProductDetailPage({ params }: Props) {
           <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6">
             <h1 className="text-3xl font-black md:text-4xl">{product.title}</h1>
             <p className="mt-4 text-zinc-400">
-              وضعیت دستگاه: {product.condition === "new" ? "نو" : "دست دوم تست شده"}
+              {product.category === "console"
+                ? `وضعیت دستگاه: ${product.condition === "new" ? "نو" : "دست دوم تست شده"}`
+                : `دسته: ${PRODUCT_CATEGORY_LABELS[product.category]}`}
             </p>
             <div className="mt-6">
               {product.compareAtPrice ? (
@@ -120,7 +123,11 @@ export default async function ShopProductDetailPage({ params }: Props) {
               {product.highlights?.map((item) => <li key={item}>- {item}</li>)}
             </ul>
             <div className="mt-7">
-              <AddToCartButton productId={product.id} inStock={product.inStock} />
+              <AddToCartButton
+                productId={product.id}
+                productTitle={product.title}
+                inStock={product.inStock}
+              />
             </div>
             <Link
               href={`/shop/${product.console}`}

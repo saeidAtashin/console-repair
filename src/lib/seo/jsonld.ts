@@ -71,7 +71,7 @@ export function productOfferJsonLd(input: {
     url: productUrl,
     image: absoluteUrl(input.product.image),
     description: input.product.highlights?.join(" - "),
-    category: input.product.console,
+    category: `${input.product.category}:${input.product.console}`,
     sku: input.product.id,
     itemCondition:
       input.product.condition === "new"

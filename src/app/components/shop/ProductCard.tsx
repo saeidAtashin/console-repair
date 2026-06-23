@@ -2,14 +2,22 @@ import Image from "next/image";
 import Link from "next/link";
 
 import AddToCartButton from "./AddToCartButton";
-import { formatToman } from "@/lib/shop";
-import type { ShopProduct } from "@/lib/shop";
+import {
+  PRODUCT_CATEGORY_SHORT_LABELS,
+  formatToman,
+  type ShopProduct,
+} from "@/lib/shop";
 
 type Props = {
   product: ShopProduct;
 };
 
 export default function ProductCard({ product }: Props) {
+  const categoryBadge =
+    product.category !== "console"
+      ? PRODUCT_CATEGORY_SHORT_LABELS[product.category]
+      : null;
+
   return (
     <article className="group overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/60 transition hover:-translate-y-1 hover:border-cyan-400/30">
       <Link href={`/shop/${product.console}/${product.slug}`} className="block">
@@ -21,9 +29,15 @@ export default function ProductCard({ product }: Props) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             className="object-contain p-8 transition duration-500 group-hover:scale-105"
           />
-          <span className="absolute start-3 top-3 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-xs text-zinc-200">
-            {product.condition === "new" ? "نو" : "دست دوم"}
-          </span>
+          {categoryBadge ? (
+            <span className="absolute start-3 top-3 rounded-lg border border-cyan-500/30 bg-cyan-500/15 px-2 py-1 text-xs text-cyan-300">
+              {categoryBadge}
+            </span>
+          ) : (
+            <span className="absolute start-3 top-3 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-xs text-zinc-200">
+              {product.condition === "new" ? "نو" : "دست دوم"}
+            </span>
+          )}
           {!product.inStock ? (
             <span className="absolute bottom-3 end-3 rounded-lg bg-red-500/20 px-2 py-1 text-xs text-red-300">
               ناموجود
@@ -58,7 +72,11 @@ export default function ProductCard({ product }: Props) {
           </data>
         </div>
 
-        <AddToCartButton productId={product.id} inStock={product.inStock} />
+        <AddToCartButton
+          productId={product.id}
+          productTitle={product.title}
+          inStock={product.inStock}
+        />
       </div>
     </article>
   );

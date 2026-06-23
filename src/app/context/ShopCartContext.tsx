@@ -1,28 +1,43 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
+import AddToCartFeedback from "@/app/components/shop/AddToCartFeedback";
 import {
   addOrIncrementCartItem,
   getCartCount,
   getCartSubtotal,
+  getProductById,
   getProducts,
   readCartItems,
   removeCartItem,
   setCartItemQty,
   writeCartItems,
   type CartLineItem,
+  type ShopProduct,
 } from "@/lib/shop";
 
 type ShopCartContextValue = {
   items: CartLineItem[];
   itemCount: number;
   subtotal: number;
-  addToCart: (productId: string) => void;
+  lastAddedProduct: ShopProduct | null;
+  isAddToCartModalOpen: boolean;
+  toastMessage: string | null;
+  addToCart: (productId: string) => ShopProduct | null;
   incrementQty: (productId: string) => void;
   decrementQty: (productId: string) => void;
   removeItem: (productId: string) => void;
   clearCart: () => void;
+  closeAddToCartModal: () => void;
+  dismissAddToCartToast: () => void;
 };
 
 const ShopCartContext = createContext<ShopCartContextValue | null>(null);
@@ -34,6 +49,9 @@ function sanitizeItems(items: CartLineItem[]): CartLineItem[] {
 
 export function ShopCartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartLineItem[]>([]);
+  const [lastAddedProduct, setLastAddedProduct] = useState<ShopProduct | null>(null);
+  const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setItems(sanitizeItems(readCartItems()));
@@ -43,13 +61,35 @@ export function ShopCartProvider({ children }: { children: React.ReactNode }) {
     writeCartItems(items);
   }, [items]);
 
+  const closeAddToCartModal = useCallback(() => {
+    setIsAddToCartModalOpen(false);
+  }, []);
+
+  const dismissAddToCartToast = useCallback(() => {
+    setToastMessage(null);
+  }, []);
+
+  const showAddToCartFeedback = useCallback((product: ShopProduct) => {
+    setLastAddedProduct(product);
+    setToastMessage(`${product.title} به سبد خرید اضافه شد`);
+    setIsAddToCartModalOpen(true);
+  }, []);
+
   const value = useMemo<ShopCartContextValue>(
     () => ({
       items,
       itemCount: getCartCount(items),
       subtotal: getCartSubtotal(items),
+      lastAddedProduct,
+      isAddToCartModalOpen,
+      toastMessage,
       addToCart: (productId) => {
+        const product = getProductById(productId);
+        if (!product || !product.inStock) return null;
+
         setItems((prev) => addOrIncrementCartItem(prev, productId));
+        showAddToCartFeedback(product);
+        return product;
       },
       incrementQty: (productId) => {
         setItems((prev) => addOrIncrementCartItem(prev, productId));
@@ -65,12 +105,25 @@ export function ShopCartProvider({ children }: { children: React.ReactNode }) {
         setItems((prev) => removeCartItem(prev, productId));
       },
       clearCart: () => setItems([]),
+      closeAddToCartModal,
+      dismissAddToCartToast,
     }),
-    [items],
+    [
+      items,
+      lastAddedProduct,
+      isAddToCartModalOpen,
+      toastMessage,
+      closeAddToCartModal,
+      dismissAddToCartToast,
+      showAddToCartFeedback,
+    ],
   );
 
   return (
-    <ShopCartContext.Provider value={value}>{children}</ShopCartContext.Provider>
+    <ShopCartContext.Provider value={value}>
+      {children}
+      <AddToCartFeedback />
+    </ShopCartContext.Provider>
   );
 }
 
