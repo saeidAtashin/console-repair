@@ -3,6 +3,7 @@ export * from "./categories";
 export * from "./cart";
 export * from "./format";
 export * from "./meta";
+export * from "./product-details";
 export * from "./products";
 export * from "./search";
 export * from "./search-aliases";

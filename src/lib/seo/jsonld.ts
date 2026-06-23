@@ -58,6 +58,7 @@ export function collectionPageJsonLd(input: {
 export function productOfferJsonLd(input: {
   product: ShopProduct;
   path: string;
+  description?: string;
 }) {
   const productUrl = absoluteUrl(input.path);
   const availability = input.product.inStock
@@ -70,7 +71,8 @@ export function productOfferJsonLd(input: {
     name: input.product.title,
     url: productUrl,
     image: absoluteUrl(input.product.image),
-    description: input.product.highlights?.join(" - "),
+    description:
+      input.description ?? input.product.highlights?.join(" - "),
     category: `${input.product.category}:${input.product.console}`,
     sku: input.product.id,
     itemCondition:

@@ -37,3 +37,19 @@ export type ShopOrderPayload = {
 export type ShopOrderResponse = {
   orderCode: string;
 };
+
+export type ProductSpec = { label: string; value: string };
+export type ProductFeature = { title: string; description: string };
+export type ProductFaq = { question: string; answer: string };
+
+export type ShopProductDetail = {
+  summary: string;
+  overview: string[];
+  features: ProductFeature[];
+  specifications: ProductSpec[];
+  whatsInBox?: string[];
+  warranty: { title: string; items: string[] };
+  delivery: { title: string; items: string[] };
+  faqs: ProductFaq[];
+  compatibility?: string[];
+};
