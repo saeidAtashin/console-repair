@@ -41,6 +41,9 @@ type AuthPayload = {
   accessToken?: string;
   smsSent?: boolean;
   devCode?: string;
+  data?: {
+    phone_number?: string;
+  };
 };
 
 type AuthContextType = {
@@ -48,7 +51,7 @@ type AuthContextType = {
   loading: boolean;
   loginWithPassword: (phone_number: string, password: string) => Promise<User | null>;
   sendOtp: (phone_number: string) => Promise<SendOtpResult>;
-  loginWithOtp: (phone_number: string, code: string) => Promise<LoginWithOtpResult>;
+  loginWithOtp: (phone_number: string, otp: string) => Promise<LoginWithOtpResult>;
   register: (name: string) => void;
   logout: () => Promise<void>;
 };
@@ -65,6 +68,11 @@ function resolveAuthToken(payload: AuthPayload): string | null {
   }
 
   return null;
+}
+
+/** Remote API often returns 2xx with `{ message, data }` and no `success` flag. */
+function isSuccessfulPayload(payload: AuthPayload): boolean {
+  return payload.success !== false;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -111,17 +119,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const sendOtp = useCallback(async (phone_number: string): Promise<SendOtpResult> => {
     try {
-      const data = await apiRequest<AuthPayload>("/auth/send-otp/", {
+      const payload = await apiRequest<AuthPayload>("/auth/send-otp/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone_number }),
         auth: false,
       });
+      // Remote API returns 2xx with `{ message, data }` and no `success` flag.
       return {
-        success: data.success === true,
-        message: typeof data.message === "string" ? data.message : undefined,
-        smsSent: data.smsSent === true,
-        devCode: typeof data.devCode === "string" ? data.devCode : undefined,
+        success: isSuccessfulPayload(payload),
+        message:
+          typeof payload.message === "string" ? payload.message : undefined,
+        smsSent: payload.smsSent === true,
+        devCode:
+          typeof payload.devCode === "string" ? payload.devCode : undefined,
       };
     } catch (error) {
       if (error instanceof ApiError) {
@@ -135,12 +146,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithOtp = useCallback(
-    async (phone_number: string, code: string): Promise<LoginWithOtpResult> => {
+    async (phone_number: string, otp: string): Promise<LoginWithOtpResult> => {
       try {
-        const data = await apiRequest<AuthPayload>("/api/auth/otp/verify", {
+        const data = await apiRequest<AuthPayload>("/auth/verify-otp/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone_number, code }),
+          body: JSON.stringify({ phone_number, otp }),
           auth: false,
         });
         const userPayload = data.user ?? undefined;

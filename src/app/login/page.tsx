@@ -18,7 +18,7 @@ export default function LoginPage() {
   const { user, loading: authLoading, loginWithPassword, loginWithOtp, sendOtp } =
     useAuth();
 
-  const [mode, setMode] = useState<Mode>("password");
+  const [mode, setMode] = useState<Mode>("otp");
 
   const [phone_number, setPhone_number] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -123,11 +123,13 @@ export default function LoginPage() {
         return;
       }
 
+      setMode("otp");
       setCodeSent(true);
       setCounter(120);
       setOtpDigits(["", "", "", ""]);
       setSmsSent(result.smsSent === true);
       setDevOtpHint(result.smsSent ? "" : (result.devCode ?? ""));
+      setError("");
     } catch {
       setError("خطا در ارسال کد تایید.");
     } finally {
@@ -295,9 +297,9 @@ export default function LoginPage() {
                     : "زمان کد به پایان رسید — دوباره ارسال کنید."}
                 </p>
 
-                {smsSent && (
+                {(smsSent || codeSent) && (
                   <p className="text-sm text-center text-emerald-400/90">
-                    کد تأیید به {phone} پیامک شد.
+                    کد تأیید به {phone} ارسال شد.
                   </p>
                 )}
 
