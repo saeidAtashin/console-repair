@@ -211,6 +211,19 @@ function resolveBlog(pathname: string): BreadcrumbItem[] | null {
   }
 
   const post = blogPosts.find((p) => p.slug === segments[1]);
+
+  if (segments.length >= 3 && post?.kind === "cheats") {
+    const gameSlug = segments[2];
+    const game = post.sections
+      .flatMap((s) => s.games)
+      .find((g) => g.slug === gameSlug);
+    return withHome(
+      link("بلاگ", "/blog"),
+      link(post.title, `/blog/${post.slug}`),
+      current(game?.name ?? gameSlug),
+    );
+  }
+
   return withHome(
     link("بلاگ", "/blog"),
     current(post?.title ?? segments[1]),

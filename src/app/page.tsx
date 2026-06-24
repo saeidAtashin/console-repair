@@ -2,6 +2,7 @@ import HomePage from "./components/HomePage";
 import JsonLd from "./components/seo/JsonLd";
 import { createPageMetadata } from "../lib/seo/metadata";
 import { itemListJsonLd, webPageJsonLd } from "../lib/seo/jsonld";
+import { getFeaturedCheatGames, cheatGamePath } from "../lib/blog-cheats";
 import { getFeaturedProducts } from "../lib/shop";
 
 const HOME_TITLE = "تعمیر تخصصی کنسول بازی | PS5، PS4 و Xbox";
@@ -26,8 +27,12 @@ export const metadata = createPageMetadata({
     "فروشگاه کنسول",
     "کنسول دست دوم",
     "لوازم جانبی ps5",
+    "رمز بازی",
+    "چیت ps5",
   ],
 });
+
+const featuredCheats = getFeaturedCheatGames();
 
 const HOME_SCHEMA = [
   webPageJsonLd({
@@ -41,6 +46,14 @@ const HOME_SCHEMA = [
     items: featuredProducts.map((product) => ({
       name: product.title,
       url: `/shop/${product.console}/${product.slug}`,
+    })),
+  }),
+  itemListJsonLd({
+    name: "رمز و چیت بازی‌های محبوب",
+    path: "/#game-cheats",
+    items: featuredCheats.map((game) => ({
+      name: `چیت ${game.name}`,
+      url: cheatGamePath(game.gameSlug),
     })),
   }),
 ];

@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { Star } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, Star } from "lucide-react";
 
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import type { BlogGame } from "@/app/data/blog";
+import { cheatGamePath, gameInstallHref } from "@/lib/blog-cheats";
 import { cn } from "@/lib/utils";
 
 const CONSOLE_META = {
@@ -21,11 +23,22 @@ const PLATFORM_LABEL = {
 type Props = {
   game: BlogGame;
   index?: number;
+  postSlug?: string;
+  showDetailLink?: boolean;
+  showInstallLink?: boolean;
 };
 
-export default function BlogCheatGameBlock({ game, index = 0 }: Props) {
+export default function BlogCheatGameBlock({
+  game,
+  index = 0,
+  postSlug,
+  showDetailLink = true,
+  showInstallLink = true,
+}: Props) {
   const consoleMeta = CONSOLE_META[game.console];
   const anchorId = game.slug ?? `game-${index}`;
+  const detailHref = game.slug ? cheatGamePath(game.slug) : undefined;
+  const installHref = gameInstallHref(game.console);
 
   return (
     <article
@@ -33,7 +46,7 @@ export default function BlogCheatGameBlock({ game, index = 0 }: Props) {
       className="scroll-mt-28 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02]"
       aria-labelledby={`cheat-game-${anchorId}`}
     >
-      <div className="flex flex-col gap-4 border-b border-white/[0.06] p-5 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-4 border-b border-white/[0.06] p-5 sm:flex-row sm:items-start">
         <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-zinc-900">
           <Image
             src={game.coverImage}
@@ -69,6 +82,25 @@ export default function BlogCheatGameBlock({ game, index = 0 }: Props) {
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
             {game.highlight}
           </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {showDetailLink && detailHref ? (
+              <Link
+                href={detailHref}
+                className="inline-flex items-center gap-1 rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 text-xs font-semibold text-violet-300 transition hover:bg-violet-500/20"
+              >
+                صفحه کامل چیت
+                <ChevronLeft className="h-3 w-3" />
+              </Link>
+            ) : null}
+            {showInstallLink ? (
+              <Link
+                href={installHref}
+                className="inline-flex items-center gap-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-500/20"
+              >
+                نصب روی {consoleMeta.label}
+              </Link>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -138,6 +170,17 @@ export default function BlogCheatGameBlock({ game, index = 0 }: Props) {
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {showDetailLink && detailHref && postSlug ? (
+        <div className="border-t border-white/[0.06] px-5 py-3 text-end">
+          <Link
+            href={detailHref}
+            className="text-xs font-semibold text-cyan-400 transition hover:text-cyan-300"
+          >
+            مشاهده صفحه اختصاصی چیت {game.name} ←
+          </Link>
         </div>
       ) : null}
     </article>

@@ -58,6 +58,10 @@ export const gameCheatsPost: BlogPost = {
           released: "2013-09-17",
           coverImage: `${RAWG}/20a/20aa03a5c782aa7890d9e9efe5ab41bc.jpg`,
           highlight: "پادشاه کدهای تقلب — بیش از ۳۰ چیت از طریق تلفن در حالت Story.",
+          seoTitle: "چیت GTA 5 PS5 و Xbox | کدهای تقلب کامل GTA V",
+          seoDescription:
+            "لیست کامل چیت GTA V برای PS5، PS4 و Xbox — سلامت، اسلحه، ضد گلوله و اسپاون ماشین با ترتیب دقیق دکمه‌ها در حالت Story.",
+          keywords: ["چیت gta 5", "رمز gta v ps5", "کد تقلب gta 5", "چیت gta xbox"],
           cheatActivation:
             "در حالت Story (نه آنلاین): دکمه D-Pad بالا را بزنید تا تلفن باز شود، سپس ترتیب دکمه‌ها را سریع وارد کنید. پس از فعال‌سازی چیت، ذخیره و تروفی غیرفعال می‌شود.",
           cheats: [
@@ -80,6 +84,10 @@ export const gameCheatsPost: BlogPost = {
           released: "2018-10-26",
           coverImage: `${RAWG}/58a/58aa0b177de435483ea9bef45a660cdc.jpg`,
           highlight: "دنیای غربی با چیت‌های کلاسیک از طریق منوی Settings.",
+          seoTitle: "چیت Red Dead Redemption 2 | رمز و کد تقلب RDR2",
+          seoDescription:
+            "کدهای تقلب Red Dead 2 برای PS5 و Xbox — سلامت کامل، مهمات بی‌نهایت، اسب افسانه‌ای و همه اسلحه‌ها از منوی Cheats.",
+          keywords: ["چیت rdr2", "رمز red dead 2", "کد تقلب rdr2 ps5"],
           cheatActivation:
             "منوی Pause → Settings → Cheats → کد را تایپ کنید (حروف باید دقیق باشند). فعال‌سازی چیت، ذخیره و تروفی را غیرفعال می‌کند.",
           cheats: [
@@ -256,6 +264,10 @@ export const gameCheatsPost: BlogPost = {
           released: "2011-11-11",
           coverImage: `${RAWG}/5ec/5ecac5cb026ec26a56efcc546324e348.jpg`,
           highlight: "صدها دستور کنسول — معروف‌ترین RPG با چیت.",
+          seoTitle: "چیت Skyrim PS5 | دستورات کنسول و کد تقلب",
+          seoDescription:
+            "دستورات چیت Skyrim — God Mode، پول، تلپورت و ارتقای مهارت برای PS5، Xbox و PC.",
+          keywords: ["چیت skyrim", "رمز skyrim ps5", "کد تقلب skyrim"],
           cheatActivation:
             "در نسخه کنسول: منوی Pause → Misc → ~ (tilde) در PC. در PS5/Xbox از دستورات Developer Console در برخی نسخه‌ها یا ترفندهای درون‌بازی استفاده کنید. در PC: کلید ~ و تایپ دستور.",
           cheats: [
@@ -391,6 +403,10 @@ export const gameCheatsPost: BlogPost = {
           released: "2014-09-02",
           coverImage: `${RAWG}/713/7133696cb876108f1f974fedd6f86fae.jpg`,
           highlight: "صدها کد تقلب — معروف‌ترین بازی با چیت متنی.",
+          seoTitle: "چیت Sims 4 | کدهای تقلب و رمز کامل",
+          seoDescription:
+            "کدهای تقلب Sims 4 — پول، مهارت، نیازهای Sim و testingcheats برای PS5، Xbox و PC.",
+          keywords: ["چیت sims 4", "رمز sims 4", "کد تقلب sims 4 ps5"],
           cheatActivation:
             "Ctrl+Shift+C (PC) یا L1+L2+R1+R2 (PS) / LB+LT+RB+RT (Xbox) → testingcheats true → سپس کدها را تایپ کنید.",
           cheats: [
@@ -412,6 +428,10 @@ export const gameCheatsPost: BlogPost = {
           released: "2011-11-18",
           coverImage: `${RAWG}/713/7133696cb876108f1f974fedd6f86fae.jpg`,
           highlight: "دستورات /command برای Creative و Survival.",
+          seoTitle: "چیت Minecraft PS5 | دستورات و کدهای تقلب",
+          seoDescription:
+            "دستورات چیت Minecraft — Creative، الماس، تلپورت و پرواز برای PS5، Xbox و Bedrock.",
+          keywords: ["چیت minecraft", "رمز minecraft ps5", "دستور minecraft"],
           cheatActivation:
             "در ایجاد دنیا Cheats را ON کنید → در چت / را بزنید و دستور را تایپ کنید. در Survival ابتدا /gamemode creative نیاز است.",
           cheats: [

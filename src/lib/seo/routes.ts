@@ -1,4 +1,5 @@
 import { blogPosts } from "@/app/data/blog";
+import { getAllCheatGames } from "@/lib/blog-cheats";
 import { issues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
 import { SHOP_CONSOLES, getProducts } from "@/lib/shop";
@@ -41,6 +42,11 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     path: `/blog/${post.slug}`,
     changeFrequency: "monthly" as const,
     priority: 0.7,
+  })),
+  ...getAllCheatGames().map((game) => ({
+    path: `/blog/game-cheats-codes-2026/${game.gameSlug}`,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
   })),
   ...services.map((s) => ({
     path: `/services/${s.slug}`,

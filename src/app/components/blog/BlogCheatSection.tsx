@@ -6,9 +6,10 @@ import BlogCheatGameBlock from "./BlogCheatGameBlock";
 type Props = {
   section: BlogGameSection;
   index: number;
+  postSlug?: string;
 };
 
-export default function BlogCheatSection({ section, index }: Props) {
+export default function BlogCheatSection({ section, index, postSlug }: Props) {
   return (
     <section
       id={section.id}
@@ -33,6 +34,7 @@ export default function BlogCheatSection({ section, index }: Props) {
             key={`${section.id}-${game.slug ?? game.name}`}
             game={game}
             index={gameIndex}
+            postSlug={postSlug}
           />
         ))}
       </div>

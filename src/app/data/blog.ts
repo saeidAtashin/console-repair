@@ -20,6 +20,9 @@ export type BlogGame = {
   cheats?: BlogCheatEntry[];
   secrets?: string[];
   cheatActivation?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  keywords?: string[];
 };
 
 export type BlogGameSection = {

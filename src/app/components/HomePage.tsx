@@ -11,6 +11,7 @@ import StoreSection from "./sections/StoreSection";
 import WhyUs from "./sections/WhyUs";
 import GamingBackground from "./ui/GamingBackground";
 import PriceTable from "./sections/PriceTable";
+import HomeCheatsSection from "./sections/HomeCheatsSection";
 // import Testimonials from "./sections/Testimonials";
 
 export default function HomePage() {
@@ -38,6 +39,7 @@ export default function HomePage() {
       <Services />
       <StoreSection />
       <PriceTable />
+      <HomeCheatsSection />
       <ContactCTA />
       <ServicesSection />
       <WhyUs />

@@ -2,14 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
-import BlogCheatSection from "@/app/components/blog/BlogCheatSection";
+import CheatHubClient from "@/app/components/blog/CheatHubClient";
 import BlogGameSectionBlock from "@/app/components/blog/BlogGameSection";
 import BlogPostHero from "@/app/components/blog/BlogPostHero";
 import FaqSection from "@/app/components/seo/FaqSection";
 import PageShell from "@/app/components/seo/PageShell";
 import { CtaButtonGroup } from "@/app/components/ui/cta";
 import { blogPosts, getBlogPost } from "@/app/data/blog";
-import { blogPostingJsonLd } from "@/lib/seo/jsonld";
+import { cheatGamePath, getAllCheatGames } from "@/lib/blog-cheats";
+import { blogPostingJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { createPageMetadata } from "@/lib/seo/metadata";
 
 type Props = {
@@ -49,20 +50,34 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   const path = `/blog/${post.slug}`;
+  const jsonLd: Record<string, unknown>[] = [
+    blogPostingJsonLd({
+      title: post.seoTitle ?? post.title,
+      description: post.seoDescription ?? post.excerpt,
+      path,
+      coverImage: post.coverImage,
+      publishedAt: post.publishedAt,
+    }),
+  ];
+
+  if (post.kind === "cheats") {
+    jsonLd.push(
+      itemListJsonLd({
+        name: post.title,
+        path,
+        items: getAllCheatGames().map((game) => ({
+          name: `چیت ${game.name}`,
+          url: cheatGamePath(game.gameSlug),
+        })),
+      }),
+    );
+  }
 
   return (
     <main className="min-h-screen bg-zinc-950 pt-24 text-white">
       <PageShell
         currentPath={path}
-        jsonLd={[
-          blogPostingJsonLd({
-            title: post.seoTitle ?? post.title,
-            description: post.seoDescription ?? post.excerpt,
-            path,
-            coverImage: post.coverImage,
-            publishedAt: post.publishedAt,
-          }),
-        ]}
+        jsonLd={jsonLd}
         containerClassName="container mx-auto max-w-6xl px-6"
         className="container mx-auto max-w-6xl px-6 pb-12"
       >
@@ -75,20 +90,22 @@ export default async function BlogPostPage({ params }: Props) {
             ))}
           </div>
 
-          {post.sections.map((section, index) =>
-            post.kind === "cheats" ? (
-              <BlogCheatSection
-                key={section.id}
-                section={section}
-                index={index}
-              />
-            ) : (
+          {post.kind === "cheats" ? (
+            <CheatHubClient
+              sections={post.sections}
+              sectionLinks={post.sections.map((section) => ({
+                id: section.id,
+                title: section.title,
+              }))}
+            />
+          ) : (
+            post.sections.map((section, index) => (
               <BlogGameSectionBlock
                 key={section.id}
                 section={section}
                 index={index}
               />
-            ),
+            ))
           )}
 
           <div className="mt-14 space-y-5 border-t border-white/[0.06] pt-14 text-base leading-relaxed text-zinc-300">
@@ -118,12 +135,43 @@ export default async function BlogPostPage({ params }: Props) {
               بازگشت به بلاگ
             </Link>
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/services/game-install/ps5"
-                className="rounded-xl border border-white/10 px-4 py-2 text-sm text-zinc-300 transition hover:border-cyan-500/40 hover:text-cyan-300"
-              >
-                نصب بازی PS5
-              </Link>
+              {post.kind === "cheats" ? (
+                <>
+                  <Link
+                    href="/services/game-install/ps5"
+                    className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-500/20"
+                  >
+                    نصب بازی PS5
+                  </Link>
+                  <Link
+                    href="/services/game-install/ps4"
+                    className="rounded-xl border border-white/10 px-4 py-2 text-sm text-zinc-300 transition hover:border-cyan-500/40 hover:text-cyan-300"
+                  >
+                    نصب بازی PS4
+                  </Link>
+                  <Link
+                    href="/services/game-install/xbox-series"
+                    className="rounded-xl border border-white/10 px-4 py-2 text-sm text-zinc-300 transition hover:border-cyan-500/40 hover:text-cyan-300"
+                  >
+                    نصب بازی Xbox
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/blog/game-cheats-codes-2026"
+                    className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-300 transition hover:bg-violet-500/20"
+                  >
+                    رمز و چیت بازی‌ها
+                  </Link>
+                  <Link
+                    href="/services/game-install/ps5"
+                    className="rounded-xl border border-white/10 px-4 py-2 text-sm text-zinc-300 transition hover:border-cyan-500/40 hover:text-cyan-300"
+                  >
+                    نصب بازی PS5
+                  </Link>
+                </>
+              )}
               <Link
                 href="/repair"
                 className="rounded-xl border border-white/10 px-4 py-2 text-sm text-zinc-300 transition hover:border-cyan-500/40 hover:text-cyan-300"

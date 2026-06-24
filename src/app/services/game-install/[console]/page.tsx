@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import GameCatalogSections from "@/app/components/game-install/GameCatalogSections";
+import GameInstallCheatsLink from "@/app/components/game-install/GameInstallCheatsLink";
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
@@ -128,6 +129,8 @@ export default async function GameInstallPage({ params }: Props) {
           paragraphs={content.overview}
           className="border-t-0 py-0"
         />
+
+        <GameInstallCheatsLink consoleSlug={consoleSlug} />
 
         <section className="mb-10 grid gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 sm:grid-cols-2 xl:grid-cols-5">
           {GAME_INSTALL_SUMMARY_TABLE.map((item) => (
