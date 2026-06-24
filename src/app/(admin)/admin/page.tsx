@@ -15,13 +15,15 @@ type Order = {
 };
 
 export default function AdminPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [orders, setOrders] = useState<Order[]>([]);
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading || !user || user.role !== "admin") return;
+
     void apiRequest<{ orders?: Order[] }>("/api/admin/orders")
       .then((data) => {
         setOrders(data.orders || []);
@@ -34,7 +36,15 @@ export default function AdminPage() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [authLoading, user]);
+
+  if (authLoading) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-zinc-400">در حال بارگذاری...</p>
+      </main>
+    );
+  }
 
   if (!user || user.role !== "admin") {
     return (

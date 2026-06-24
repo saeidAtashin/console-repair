@@ -13,6 +13,7 @@ import {
   buildUserFromPhone,
   extractAuthTokenData,
   refreshAccessToken,
+  restoreSession,
   type AuthLoginPayload,
   type SessionUser,
 } from "@/lib/auth-api";
@@ -22,6 +23,7 @@ import {
   clearAuthSession,
   setAuthToken,
   setRefreshToken,
+  setSessionPhone,
 } from "@/lib/auth-storage";
 
 type SendOtpResult = {
@@ -67,13 +69,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void apiRequest<AuthPayload>("/api/auth/me")
-      .then((data) => {
-        if (data.user) {
-          setUser(data.user);
-        }
-      })
+    void restoreSession()
+      .then((sessionUser) => setUser(sessionUser))
       .catch(() => {
+        clearAuthSession();
         setUser(null);
       })
       .finally(() => setLoading(false));
@@ -88,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const refreshed = await refreshAccessToken(refreshToken);
         setAuthToken(refreshed.access);
         setRefreshToken(refreshed.refresh ?? refreshToken);
+        setSessionPhone(phone_number);
 
         const sessionUser = buildUserFromPhone(phone_number);
         setUser(sessionUser);

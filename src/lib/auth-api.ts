@@ -1,5 +1,11 @@
 import { apiRequest } from "@/lib/api-client";
 import { resolveRoleForPhone } from "@/lib/auth-shared";
+import {
+  getRefreshToken,
+  getSessionPhone,
+  setAuthToken,
+  setRefreshToken,
+} from "@/lib/auth-storage";
 
 export type AuthTokenData = {
   phone_number?: string;
@@ -95,4 +101,17 @@ export async function refreshAccessToken(refresh: string): Promise<RefreshResult
 
   const rotatedRefresh = extractRefreshToken(response);
   return { access, refresh: rotatedRefresh ?? undefined };
+}
+
+export async function restoreSession(): Promise<SessionUser | null> {
+  const refresh = getRefreshToken();
+  const phone = getSessionPhone();
+  if (!refresh || !phone) {
+    return null;
+  }
+
+  const refreshed = await refreshAccessToken(refresh);
+  setAuthToken(refreshed.access);
+  setRefreshToken(refreshed.refresh ?? refresh);
+  return buildUserFromPhone(phone);
 }
