@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,6 +9,7 @@ import { Wrench } from "lucide-react";
 
 import {
   FormInput,
+  FormSelect,
   FormTextarea,
   ImageUploadField,
 } from "../components/ui/form";
@@ -16,7 +17,6 @@ import RepairDevicePicker from "./RepairDevicePicker";
 import {
   consoleCatalog,
   getRepairService,
-  type ConsoleId,
 } from "../../lib/console-catalog";
 import { neonInputProps } from "../../lib/neon-autofill";
 import {
@@ -27,10 +27,24 @@ import {
 } from "../../lib/phone";
 import {
   consoleRepairIcons,
+  getRepairDeviceDisplayName,
+  getRepairDeviceIcon,
   getRepairDeviceLabel,
   type RepairPrefill,
 } from "../../lib/repair-links";
-import { apiRequest } from "@/lib/api-client";
+import { ApiError } from "@/lib/api-client";
+import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
+import { useAuth } from "@/app/context/AuthContext";
+import { usePhoneVerifiedSubmit, VerificationCancelledError } from "@/app/hooks/usePhoneVerifiedSubmit";
+import {
+  buildRepairRequestPayload,
+  fetchRepairDevices,
+  fetchRepairProblemTypes,
+  matchDeviceForConsole,
+  submitRepairRequest,
+  type RepairDevice,
+  type RepairProblemType,
+} from "@/lib/repair/api";
 
 const repairSchema = z.object({
   name: z.string().optional(),
@@ -41,7 +55,6 @@ const repairSchema = z.object({
       message: IRAN_PHONE_INVALID_MESSAGE,
     })
     .transform((value) => normalizeIranPhone(value)!),
-  issue: z.string().optional(),
   description: z.string().optional(),
 });
 
@@ -54,41 +67,65 @@ type Props = {
   onSuccess?: () => void;
 };
 
+function buildInitialDescription(prefill: RepairPrefill): string {
+  const parts = [prefill.issue, prefill.description].filter(Boolean);
+  return parts.join("\n\n");
+}
+
 export default function RepairFormClient({
   initialPrefill,
   defaultPhone = "",
   onSuccess,
 }: Props) {
+  const { user } = useAuth();
+  const { requestSubmit, verifying, modalProps } = usePhoneVerifiedSubmit();
+
+  const accountPhone = user?.phone_number ?? user?.phone ?? defaultPhone;
   const consoleId = initialPrefill.consoleId;
+  const prefillIssue = initialPrefill.issue;
+  const prefillDescription = initialPrefill.description;
   const consoleConfig = consoleId ? consoleCatalog[consoleId] : null;
   const repairService = consoleId ? getRepairService(consoleId) : null;
 
-  const [selectedConsoleId, setSelectedConsoleId] = useState<ConsoleId | "">(
-    "",
-  );
-  const [deviceError, setDeviceError] = useState<string | null>(null);
+  const [devices, setDevices] = useState<RepairDevice[]>([]);
+  const [problemTypes, setProblemTypes] = useState<RepairProblemType[]>([]);
+  const [deviceTypeId, setDeviceTypeId] = useState<number | "">("");
+  const [problemTypeId, setProblemTypeId] = useState<number | "">("");
+  const [devicesLoading, setDevicesLoading] = useState(true);
+  const [problemTypesLoading, setProblemTypesLoading] = useState(false);
 
-  const deviceLabel = consoleId
-    ? getRepairDeviceLabel(consoleId)
-    : selectedConsoleId
-      ? getRepairDeviceLabel(selectedConsoleId)
+  const selectedDevice = devices.find((device) => device.id === deviceTypeId);
+
+  const deviceLabel =
+    consoleId && deviceTypeId !== ""
+      ? getRepairDeviceLabel(consoleId)
+      : selectedDevice
+        ? getRepairDeviceDisplayName(selectedDevice.name)
+        : null;
+
+  const headerIconSrc = consoleId
+    ? consoleRepairIcons[consoleId]
+    : selectedDevice
+      ? getRepairDeviceIcon(selectedDevice.name)
       : null;
 
   const defaultValues = useMemo<RepairFormInput>(
     () => ({
       name: "",
-      phone: defaultPhone,
-      issue: initialPrefill.issue ?? "",
-      description: initialPrefill.description ?? "",
+      phone: accountPhone,
+      description: buildInitialDescription({
+        consoleId,
+        issue: prefillIssue,
+        description: prefillDescription,
+      }),
     }),
-    [defaultPhone, initialPrefill.issue, initialPrefill.description],
+    [accountPhone, consoleId, prefillIssue, prefillDescription],
   );
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [trackingCode, setTrackingCode] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
     register,
@@ -106,56 +143,99 @@ export default function RepairFormClient({
     reset(defaultValues);
   }, [defaultValues, reset]);
 
-  const onSubmit = async (data: RepairFormData) => {
-    if (!deviceLabel) {
-      setDeviceError("لطفاً نوع دستگاه را انتخاب کنید");
-      return;
-    }
+  const loadProblemTypes = useCallback(async (deviceId: number) => {
+    setProblemTypesLoading(true);
+    setProblemTypeId("");
 
-    setDeviceError(null);
+    try {
+      const results = await fetchRepairProblemTypes(deviceId);
+      setProblemTypes(results);
+      if (results.length === 1) {
+        setProblemTypeId(results[0].id);
+      }
+    } catch (error) {
+      console.error(error);
+      setProblemTypes([]);
+    } finally {
+      setProblemTypesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void fetchRepairDevices()
+      .then((results) => {
+        if (cancelled) return;
+        setDevices(results);
+
+        if (consoleId) {
+          const matched = matchDeviceForConsole(results, consoleId);
+          if (matched) {
+            setDeviceTypeId(matched.id);
+            void loadProblemTypes(matched.id);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        if (!cancelled) setDevicesLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [consoleId, loadProblemTypes]);
+
+  const onSubmit = async (data: RepairFormData) => {
+    setSuccess(false);
+    setSubmitError(null);
     setLoading(true);
 
     try {
-      const formData = new FormData();
+      await requestSubmit(data.phone, async () => {
+        const payload = buildRepairRequestPayload(
+          data,
+          deviceTypeId,
+          problemTypeId,
+          devices,
+          problemTypes,
+        );
 
-      formData.append("name", data.name || "");
-      formData.append("phone", data.phone);
-      formData.append("device", deviceLabel);
-      formData.append("issue", data.issue || "");
-      formData.append("description", data.description || "");
+        await submitRepairRequest(payload);
 
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
-
-      const result = await apiRequest<{ success?: boolean; trackingCode?: string }>(
-        "/api/repair",
-        {
-        method: "POST",
-        body: formData,
-        },
-      );
-
-      if (result.success) {
         setSuccess(true);
-        setTrackingCode(result.trackingCode ?? null);
         reset(defaultValues);
-        setSelectedFile(null);
         setImagePreview(null);
+        setProblemTypeId("");
+        if (!consoleId) {
+          setDeviceTypeId("");
+          setProblemTypes([]);
+        }
         onSuccess?.();
-      }
+      });
     } catch (error) {
-      console.log(error);
+      if (error instanceof VerificationCancelledError) {
+        return;
+      }
+      if (error instanceof ApiError) {
+        setSubmitError(error.message);
+      } else if (error instanceof Error) {
+        setSubmitError(error.message);
+      } else {
+        setSubmitError("خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.");
+      }
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setSelectedFile(file);
     setImagePreview(URL.createObjectURL(file));
   };
 
@@ -170,6 +250,7 @@ export default function RepairFormClient({
 
   return (
     <div className="relative overflow-hidden px-6 py-12 text-white">
+      <PhoneVerificationModal {...modalProps} />
       <div className="pointer-events-none absolute inset-0 bg-[url('/grid.svg')] bg-cover opacity-20" />
 
       <div className="relative mx-auto max-w-3xl">
@@ -189,11 +270,26 @@ export default function RepairFormClient({
             </div>
           )}
 
-          <div className="relative mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 shadow-[0_0_25px_rgba(0,255,255,0.25)] backdrop-blur-xl">
-            {consoleId ? (
+          {!consoleId && selectedDevice && (
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              aria-hidden
+            >
               <Image
-                src={consoleRepairIcons[consoleId]}
-                alt={consoleConfig?.title ?? ""}
+                src={getRepairDeviceIcon(selectedDevice.name)}
+                alt=""
+                width={280}
+                height={280}
+                className="opacity-[0.07] blur-[1px]"
+              />
+            </div>
+          )}
+
+          <div className="relative mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 shadow-[0_0_25px_rgba(0,255,255,0.25)] backdrop-blur-xl">
+            {headerIconSrc ? (
+              <Image
+                src={headerIconSrc}
+                alt={deviceLabel ?? ""}
                 width={56}
                 height={56}
                 className="relative invert z-10 h-24 w-24 object-contain"
@@ -217,12 +313,15 @@ export default function RepairFormClient({
             </p>
           ) : (
             <RepairDevicePicker
-              value={selectedConsoleId}
+              devices={devices}
+              value={deviceTypeId}
+              loading={devicesLoading}
               onChange={(id) => {
-                setSelectedConsoleId(id);
-                setDeviceError(null);
+                setDeviceTypeId(id);
+                setProblemTypeId("");
+                setProblemTypes([]);
+                void loadProblemTypes(id);
               }}
-              error={deviceError}
             />
           )}
         </header>
@@ -234,14 +333,15 @@ export default function RepairFormClient({
               role="status"
             >
               <p className="text-white">درخواست شما با موفقیت ثبت شد.</p>
-              {trackingCode && (
-                <p className="mt-2">
-                  کد رهگیری:{" "}
-                  <span className="font-black tracking-widest text-white">
-                    {trackingCode}
-                  </span>
-                </p>
-              )}
+            </div>
+          )}
+
+          {submitError && (
+            <div
+              className="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-300"
+              role="alert"
+            >
+              <p className="text-white">{submitError}</p>
             </div>
           )}
 
@@ -255,7 +355,6 @@ export default function RepairFormClient({
               placeholder="09 / +98 / 98 / 9..."
               className="placeholder:text-end text-end"
               error={errors.phone?.message}
-              readOnly={Boolean(defaultPhone)}
               {...phoneField}
               onChange={(e) => {
                 e.target.value = sanitizePhoneInput(e.target.value);
@@ -272,16 +371,32 @@ export default function RepairFormClient({
               {...neonInputProps(register("name"))}
             />
 
-            <FormInput
+            <FormSelect
               label="نوع مشکل ( اختیاری )"
-              id="repair-issue"
-              type="text"
-              placeholder="مثلاً خرابی HDMI"
-              {...neonInputProps(register("issue"))}
-            />
+              id="repair-problem-type"
+              value={problemTypeId === "" ? "" : String(problemTypeId)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setProblemTypeId(value ? Number(value) : "");
+              }}
+              disabled={deviceTypeId === "" || problemTypesLoading}
+            >
+              <option value="">
+                {deviceTypeId === ""
+                  ? "ابتدا دستگاه را انتخاب کنید"
+                  : problemTypesLoading
+                    ? "در حال بارگذاری..."
+                    : "نوع مشکل را انتخاب کنید"}
+              </option>
+              {problemTypes.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </FormSelect>
 
             <FormTextarea
-              label="توضیحات بیشتر ( اختیاری )"
+              label="توضیحات ( اختیاری )"
               id="repair-description"
               rows={5}
               placeholder="توضیحات مشکل..."
@@ -290,7 +405,7 @@ export default function RepairFormClient({
             />
 
             <ImageUploadField
-              label="تصویر مشکل ( اختیاری )"
+              label="تصویر مشکل ( اختیاری — فعلاً ارسال نمی‌شود )"
               id="repair-image"
               preview={imagePreview}
               onChange={handleImageChange}
@@ -298,10 +413,10 @@ export default function RepairFormClient({
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || verifying}
               className="h-14 w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 font-bold text-black shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all hover:from-cyan-400 hover:to-blue-400 disabled:opacity-40"
             >
-              {loading ? "در حال ثبت..." : "ثبت درخواست تعمیر"}
+              {loading || verifying ? "در حال ثبت..." : "ثبت درخواست تعمیر"}
             </button>
           </form>
         </div>

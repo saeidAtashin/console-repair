@@ -10,6 +10,7 @@ import RepairFormClient from "@/app/repair/RepairFormClient";
 import { getRepairStatusLabel } from "@/lib/repair-status";
 import { SITE_PHONE } from "@/lib/seo/site";
 import { apiRequest, ApiError } from "@/lib/api-client";
+import type { RepairPrefill } from "@/lib/repair-links";
 
 type Order = {
   trackingCode: string;
@@ -23,6 +24,8 @@ type Order = {
 };
 
 const DISPLAY_PHONE = "09107701704";
+
+const EMPTY_REPAIR_PREFILL: RepairPrefill = {};
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -211,7 +214,7 @@ export default function DashboardPage() {
         {showForm && (
           <section className="rounded-3xl border border-white/10 bg-black/40">
             <RepairFormClient
-              initialPrefill={{}}
+              initialPrefill={EMPTY_REPAIR_PREFILL}
               defaultPhone={user.phone ?? ""}
               onSuccess={() => {
                 void loadOrders();

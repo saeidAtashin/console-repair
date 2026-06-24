@@ -3,6 +3,17 @@
 import { useAuth } from "@/app/context/AuthContext";
 import { useEffect, useState } from "react";
 import { apiRequest, ApiError } from "@/lib/api-client";
+import {
+  buildDeviceNameMap,
+  fetchProblemTypeNameMap,
+  fetchRepairDevices,
+  fetchRepairRequests,
+  mapRepairRequestToAdminOrder,
+} from "@/lib/repair/api";
+import {
+  BACKEND_REPAIR_STATUSES,
+  getRepairStatusLabel,
+} from "@/lib/repair-status";
 
 type Order = {
   trackingCode: string;
@@ -24,18 +35,38 @@ export default function AdminPage() {
   useEffect(() => {
     if (authLoading || !user || user.role !== "admin") return;
 
-    void apiRequest<{ orders?: Order[] }>("/api/admin/orders")
-      .then((data) => {
-        setOrders(data.orders || []);
-      })
-      .catch((error) => {
+    async function loadOrders() {
+      try {
+        const [requests, devices] = await Promise.all([
+          fetchRepairRequests(),
+          fetchRepairDevices(),
+        ]);
+
+        const deviceNames = buildDeviceNameMap(devices);
+        const problemNames = await fetchProblemTypeNameMap(
+          requests.map((request) => request.device_type),
+        );
+
+        setOrders(
+          requests.map((request, index) =>
+            mapRepairRequestToAdminOrder(
+              request,
+              index,
+              deviceNames,
+              problemNames,
+            ),
+          ),
+        );
+      } catch (error) {
         if (error instanceof ApiError && error.status === 401) {
           setOrders([]);
         }
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    }
+
+    void loadOrders();
   }, [authLoading, user]);
 
   if (authLoading) {
@@ -55,21 +86,25 @@ export default function AdminPage() {
   }
 
   async function updateStatus(code: string, status: string) {
-    await apiRequest(`/api/admin/orders/${code}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status,
-      }),
-    });
+    try {
+      await apiRequest(`/api/admin/orders/${code}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status,
+        }),
+      });
 
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.trackingCode === code ? { ...order, status } : order,
-      ),
-    );
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.trackingCode === code ? { ...order, status } : order,
+        ),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -99,7 +134,7 @@ export default function AdminPage() {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-zinc-500 text-sm">کد رهگیری</span>
+                      <span className="text-zinc-500 text-sm">شناسه درخواست</span>
 
                       <h2 className="text-2xl font-black text-cyan-400 tracking-widest">
                         {order.trackingCode}
@@ -145,19 +180,19 @@ export default function AdminPage() {
                       }
                       className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none focus:border-cyan-500"
                     >
-                      <option value="pending">در انتظار بررسی</option>
-
-                      <option value="checking">در حال بررسی</option>
-
-                      <option value="repairing">در حال تعمیر</option>
-
-                      <option value="completed">آماده تحویل</option>
+                      {BACKEND_REPAIR_STATUSES.map((status) => (
+                        <option key={status} value={status}>
+                          {getRepairStatusLabel(status)}
+                        </option>
+                      ))}
                     </select>
 
-                    <div className="mt-4 text-xs text-zinc-500">
-                      ثبت:{" "}
-                      {new Date(order.createdAt).toLocaleDateString("fa-IR")}
-                    </div>
+                    {order.createdAt && (
+                      <div className="mt-4 text-xs text-zinc-500">
+                        ثبت:{" "}
+                        {new Date(order.createdAt).toLocaleDateString("fa-IR")}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -168,6 +203,3 @@ export default function AdminPage() {
     </main>
   );
 }
-
-
-// tets cmnts

@@ -3,31 +3,45 @@
 import Image from "next/image";
 
 import FormField from "../components/ui/form/FormField";
-import { consoleIds, type ConsoleId } from "../../lib/console-catalog";
 import {
-  consoleRepairIcons,
-  getRepairDeviceLabel,
+  getRepairDeviceDisplayName,
+  getRepairDeviceIcon,
 } from "../../lib/repair-links";
+import type { RepairDevice } from "@/lib/repair/api";
 import { cn } from "../../lib/utils";
 
 type Props = {
-  value: ConsoleId | "";
-  onChange: (id: ConsoleId) => void;
+  devices: RepairDevice[];
+  value: number | "";
+  onChange: (id: number) => void;
+  loading?: boolean;
   error?: string | null;
 };
 
-export default function RepairDevicePicker({ value, onChange, error }: Props) {
+export default function RepairDevicePicker({
+  devices,
+  value,
+  onChange,
+  loading = false,
+  error,
+}: Props) {
+  const selected = devices.find((device) => device.id === value);
+
   return (
     <FormField
-      label="نوع دستگاه *"
+      label="نوع دستگاه ( اختیاری )"
       htmlFor="repair-device"
       error={error}
-      className="relative mx-auto mt-5 w-full max-w-lg"
+      className="relative mx-auto mt-5 w-full max-w-2xl"
       labelClassName="text-center text-sm font-medium"
       errorClassName="text-center text-sm"
     >
       <p className="mb-3 text-center text-sm text-zinc-400">
-        {value ? getRepairDeviceLabel(value) : "دستگاه خود را انتخاب کنید"}
+        {loading
+          ? "در حال بارگذاری دستگاه‌ها..."
+          : selected
+            ? getRepairDeviceDisplayName(selected.name)
+            : "دستگاه خود را انتخاب کنید"}
       </p>
       <div
         id="repair-device"
@@ -35,22 +49,24 @@ export default function RepairDevicePicker({ value, onChange, error }: Props) {
         aria-label="نوع دستگاه"
         aria-invalid={!!error}
         aria-describedby={error ? "repair-device-error" : undefined}
-        className="grid grid-cols-3 gap-3"
+        className="grid grid-cols-2 gap-3 sm:grid-cols-4"
       >
-        {consoleIds.map((id) => {
-          const active = value === id;
-          const label = getRepairDeviceLabel(id);
+        {devices.map((device) => {
+          const active = value === device.id;
+          const label = getRepairDeviceDisplayName(device.name);
+          const icon = getRepairDeviceIcon(device.name);
 
           return (
             <button
-              key={id}
+              key={device.id}
               type="button"
               role="radio"
               aria-checked={active}
               aria-label={label}
-              onClick={() => onChange(id)}
+              disabled={loading}
+              onClick={() => onChange(device.id)}
               className={cn(
-                "group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border px-2 py-4 backdrop-blur-md transition-[color,box-shadow,border-color] duration-300",
+                "group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border px-2 py-4 backdrop-blur-md transition-[color,box-shadow,border-color] duration-300 disabled:cursor-not-allowed disabled:opacity-50",
                 active
                   ? "border-cyan-400/50 bg-cyan-500/15 text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.35)]"
                   : "border-white/15 bg-black/40 text-zinc-300 hover:border-cyan-400/35 hover:text-zinc-100 hover:shadow-[0_0_18px_rgba(34,211,238,0.12)]",
@@ -67,12 +83,12 @@ export default function RepairDevicePicker({ value, onChange, error }: Props) {
                 className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.22),transparent_65%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
               <Image
-                src={consoleRepairIcons[id]}
+                src={icon}
                 alt=""
                 width={48}
                 height={48}
                 className={cn(
-                  "relative invert text-white z-10 h-20 w-20 object-contain transition-all duration-300",
+                  "relative z-10 h-16 w-16 object-contain invert transition-all duration-300 sm:h-20 sm:w-20",
                   active
                     ? "drop-shadow-[0_0_12px_rgba(34,211,238,0.45)]"
                     : "opacity-75 group-hover:opacity-95",

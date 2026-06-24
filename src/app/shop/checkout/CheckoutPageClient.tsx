@@ -1,10 +1,13 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import CartLineItem from "@/app/components/shop/CartLineItem";
+import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
+import { useAuth } from "@/app/context/AuthContext";
 import { useShopCart } from "@/app/context/ShopCartContext";
+import { usePhoneVerifiedSubmit, VerificationCancelledError } from "@/app/hooks/usePhoneVerifiedSubmit";
 import { normalizeIranPhone } from "@/lib/phone";
 import {
   formatToman,
@@ -16,6 +19,8 @@ import {
 const productById = new Map(getProducts().map((product) => [product.id, product]));
 
 export default function CheckoutPageClient() {
+  const { user } = useAuth();
+  const { requestSubmit, verifying, modalProps } = usePhoneVerifiedSubmit();
   const { items, subtotal, clearCart } = useShopCart();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -23,6 +28,14 @@ export default function CheckoutPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [orderCode, setOrderCode] = useState<string | null>(null);
+
+  const accountPhone = user?.phone_number ?? user?.phone ?? "";
+
+  useEffect(() => {
+    if (accountPhone) {
+      setPhone(accountPhone);
+    }
+  }, [accountPhone]);
 
   const displayItems = useMemo(
     () =>
@@ -67,10 +80,15 @@ export default function CheckoutPageClient() {
 
     setLoading(true);
     try {
-      const response = await submitShopOrder(payload);
-      setOrderCode(response.orderCode);
-      clearCart();
+      await requestSubmit(normalizedPhone, async () => {
+        const response = await submitShopOrder(payload);
+        setOrderCode(response.orderCode);
+        clearCart();
+      });
     } catch (submitError) {
+      if (submitError instanceof VerificationCancelledError) {
+        return;
+      }
       const message =
         submitError instanceof Error
           ? submitError.message
@@ -107,59 +125,65 @@ export default function CheckoutPageClient() {
   }
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
-      <form
-        onSubmit={onSubmit}
-        className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6"
-      >
-        <h2 className="text-xl font-black text-white">اطلاعات خریدار</h2>
-        <div className="mt-5 grid gap-4">
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="نام و نام خانوادگی"
-            className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
-          />
-          <input
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            placeholder="شماره موبایل"
-            className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
-          />
-          <textarea
-            value={note}
-            onChange={(event) => setNote(event.target.value)}
-            rows={4}
-            placeholder="توضیحات (اختیاری)"
-            className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
-          />
-        </div>
-        {error ? (
-          <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
-            {error}
-          </p>
-        ) : null}
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-cyan-500 px-6 py-3 font-bold text-black transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
+    <>
+      <PhoneVerificationModal {...modalProps} />
+      <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
+        <form
+          onSubmit={onSubmit}
+          className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6"
         >
-          {loading ? "در حال ثبت..." : "ثبت سفارش"}
-        </button>
-      </form>
+          <h2 className="text-xl font-black text-white">اطلاعات خریدار</h2>
+          <div className="mt-5 grid gap-4">
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="نام و نام خانوادگی"
+              className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
+            />
+            <input
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              placeholder="شماره موبایل"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
+            />
+            <textarea
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              rows={4}
+              placeholder="توضیحات (اختیاری)"
+              className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-cyan-400/40"
+            />
+          </div>
+          {error ? (
+            <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
+              {error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={loading || verifying}
+            className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-cyan-500 px-6 py-3 font-bold text-black transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
+          >
+            {loading || verifying ? "در حال ثبت..." : "ثبت سفارش"}
+          </button>
+        </form>
 
-      <aside className="h-fit rounded-3xl border border-white/10 bg-zinc-900/60 p-6">
-        <h2 className="text-xl font-black text-white">خلاصه خرید</h2>
-        <div className="mt-4 space-y-3">
-          {displayItems.map(({ item, product }) => (
-            <CartLineItem key={item.productId} item={item} product={product} />
-          ))}
-        </div>
-        <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
-          <span className="text-sm text-zinc-300">جمع کل</span>
-          <span className="text-lg font-black text-cyan-300">{formatToman(subtotal)}</span>
-        </div>
-      </aside>
-    </section>
+        <aside className="h-fit rounded-3xl border border-white/10 bg-zinc-900/60 p-6">
+          <h2 className="text-xl font-black text-white">خلاصه خرید</h2>
+          <div className="mt-4 space-y-3">
+            {displayItems.map(({ item, product }) => (
+              <CartLineItem key={item.productId} item={item} product={product} />
+            ))}
+          </div>
+          <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
+            <span className="text-sm text-zinc-300">جمع کل</span>
+            <span className="text-lg font-black text-cyan-300">{formatToman(subtotal)}</span>
+          </div>
+        </aside>
+      </section>
+    </>
   );
 }

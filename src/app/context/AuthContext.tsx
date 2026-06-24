@@ -38,6 +38,10 @@ type LoginWithOtpResult = {
   message?: string;
 };
 
+export type LoginSessionOptions = {
+  redirect?: boolean;
+};
+
 type AuthPayload = AuthLoginPayload & {
   user?: SessionUser | null;
   token?: string;
@@ -51,7 +55,11 @@ type AuthContextType = {
   loading: boolean;
   loginWithPassword: (phone_number: string, password: string) => Promise<SessionUser | null>;
   sendOtp: (phone_number: string) => Promise<SendOtpResult>;
-  loginWithOtp: (phone_number: string, otp: string) => Promise<LoginWithOtpResult>;
+  loginWithOtp: (
+    phone_number: string,
+    otp: string,
+    options?: LoginSessionOptions,
+  ) => Promise<LoginWithOtpResult>;
   register: (name: string) => void;
   logout: () => Promise<void>;
 };
@@ -82,7 +90,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (
       phone_number: string,
       refreshToken: string,
+      options: LoginSessionOptions = {},
     ): Promise<SessionUser | null> => {
+      const { redirect = true } = options;
+
       try {
         const refreshed = await refreshAccessToken(refreshToken);
         setAuthToken(refreshed.access);
@@ -91,7 +102,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const sessionUser = buildUserFromPhone(phone_number);
         setUser(sessionUser);
-        router.replace(getPostLoginPath(sessionUser.role));
+
+        if (redirect) {
+          router.replace(getPostLoginPath(sessionUser.role));
+        }
+
         return sessionUser;
       } catch {
         return null;
@@ -152,7 +167,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithOtp = useCallback(
-    async (phone_number: string, otp: string): Promise<LoginWithOtpResult> => {
+    async (
+      phone_number: string,
+      otp: string,
+      options: LoginSessionOptions = {},
+    ): Promise<LoginWithOtpResult> => {
       try {
         const data = await apiRequest<AuthPayload>("/auth/verify-otp/", {
           method: "POST",
@@ -171,7 +190,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         const resolvedPhone = tokenData.phone_number ?? phone_number;
-        const sessionUser = await completeLoginSession(resolvedPhone, tokenData.refresh);
+        const sessionUser = await completeLoginSession(
+          resolvedPhone,
+          tokenData.refresh,
+          options,
+        );
         if (!sessionUser) {
           return { user: null, message: "خطا در تمدید نشست" };
         }

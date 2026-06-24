@@ -11,6 +11,29 @@ export const consoleRepairIcons: Record<ConsoleId, string> = {
   xbox: "/icons/xbox.svg",
 };
 
+/** Map API device `name` (ps5, ps4, xbox1, xboxone, …) to the repair icon asset. */
+export function getRepairDeviceIcon(deviceName: string): string {
+  const key = deviceName.toLowerCase().replace(/[\s_-]+/g, "");
+
+  if (key.includes("ps5")) return consoleRepairIcons.ps5;
+  if (key.includes("ps4")) return consoleRepairIcons.ps4;
+  if (key.includes("xbox")) return consoleRepairIcons.xbox;
+
+  return consoleRepairIcons.xbox;
+}
+
+export function getRepairDeviceDisplayName(deviceName: string): string {
+  const key = deviceName.toLowerCase().replace(/[\s_-]+/g, "");
+
+  if (key === "ps5") return "PS5";
+  if (key === "ps4") return "PS4";
+  if (key === "xbox1" || key === "xboxseries") return "Xbox Series";
+  if (key === "xboxone") return "Xbox One";
+  if (key.includes("xbox")) return "Xbox";
+
+  return deviceName;
+}
+
 export function isConsoleId(value: string): value is ConsoleId {
   return (consoleIds as string[]).includes(value);
 }
