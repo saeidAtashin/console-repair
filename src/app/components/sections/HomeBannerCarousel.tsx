@@ -14,15 +14,17 @@ import {
   ShoppingBag,
   Sparkles,
   Truck,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { cheatHubPath } from "@/lib/blog-cheats";
 import { cn } from "@/lib/utils";
 
-type BannerAlign = "right" | "center";
+type BannerAlign = "right" | "center" | "left";
 
 type BannerSlide = {
   image: string;
@@ -86,6 +88,21 @@ const BANNER_SLIDES: BannerSlide[] = [
     glow: "bg-amber-400/20",
     icon: ShoppingBag,
   },
+  {
+    image: "/images/banner4.png",
+    tag: "راهنمای گیمر",
+    title: "رمز و چیت",
+    highlight: "بازی‌ها",
+    subtitle: "۴۰ بازی برتر PS5 و Xbox — کدهای تقلب و ترفند با راهنمای فارسی",
+    chips: ["GTA V", "Minecraft", "Sims 4"],
+    href: cheatHubPath(),
+    label: "مشاهده چیت‌ها",
+    mobileLabel: "چیت‌ها",
+    align: "right",
+    accent: "from-emerald-300 via-green-400 to-lime-400",
+    glow: "bg-emerald-400/20",
+    icon: Zap,
+  },
 ];
 
 const AUTO_PLAY_MS = 5500;
@@ -141,6 +158,24 @@ function BannerMobileContent({
   );
 }
 
+function alignJustify(align: BannerAlign): string {
+  if (align === "center") return "justify-center";
+  if (align === "left") return "justify-start";
+  return "justify-end";
+}
+
+function alignText(align: BannerAlign): string {
+  if (align === "center") return "text-center";
+  if (align === "left") return "text-left";
+  return "text-right";
+}
+
+function alignEnterX(align: BannerAlign, magnitude: number): number {
+  if (align === "center") return 0;
+  if (align === "left") return -magnitude;
+  return magnitude;
+}
+
 function BannerDesktopContent({
   slide,
   prefersReducedMotion,
@@ -148,14 +183,16 @@ function BannerDesktopContent({
   slide: BannerSlide;
   prefersReducedMotion: boolean | null;
 }) {
-  const isCentered = slide.align === "center";
+  const { align } = slide;
+  const isCentered = align === "center";
   const Icon = slide.icon;
 
   return (
     <div
       className={cn(
         "absolute inset-0 z-10 hidden px-8 md:px-12 lg:px-16 sm:flex",
-        isCentered ? "items-center justify-center" : "items-center justify-end",
+        "items-center",
+        alignJustify(align),
       )}
     >
       <motion.div
@@ -200,7 +237,11 @@ function BannerDesktopContent({
             <motion.div
               variants={makeVariants(
                 prefersReducedMotion,
-                { opacity: 0, x: isCentered ? 0 : 36, y: isCentered ? -16 : 0 },
+                {
+                  opacity: 0,
+                  x: alignEnterX(align, 36),
+                  y: isCentered ? -16 : 0,
+                },
                 { opacity: 1, x: 0, y: 0 },
                 0.08,
               )}
@@ -208,7 +249,7 @@ function BannerDesktopContent({
               animate="visible"
               className={cn(
                 "mb-3 flex items-center gap-2.5",
-                isCentered ? "justify-center" : "justify-end",
+                alignJustify(align),
               )}
             >
               <motion.div
@@ -246,11 +287,15 @@ function BannerDesktopContent({
               </motion.span>
             </motion.div>
 
-            <div className={cn(isCentered ? "text-center" : "text-right")}>
+            <div className={alignText(align)}>
               <motion.h2
                 variants={makeVariants(
                   prefersReducedMotion,
-                  { opacity: 0, x: isCentered ? 0 : 40, filter: "blur(6px)" },
+                  {
+                    opacity: 0,
+                    x: alignEnterX(align, 40),
+                    filter: "blur(6px)",
+                  },
                   { opacity: 1, x: 0, filter: "blur(0px)" },
                   0.22,
                 )}
@@ -301,10 +346,7 @@ function BannerDesktopContent({
               )}
               initial={prefersReducedMotion ? false : "hidden"}
               animate="visible"
-              className={cn(
-                "mt-3 flex flex-wrap gap-1.5",
-                isCentered ? "justify-center" : "justify-end",
-              )}
+              className={cn("mt-3 flex flex-wrap gap-1.5", alignJustify(align))}
             >
               {slide.chips.map((chip, index) => (
                 <motion.span
@@ -334,10 +376,7 @@ function BannerDesktopContent({
               )}
               initial={prefersReducedMotion ? false : "hidden"}
               animate="visible"
-              className={cn(
-                "mt-5",
-                isCentered ? "flex justify-center" : "flex justify-end",
-              )}
+              className={cn("mt-5 flex", alignJustify(align))}
             >
               <motion.div
                 animate={
@@ -410,7 +449,6 @@ export default function HomeBannerCarousel() {
   }, [goNext, isPaused, prefersReducedMotion]);
 
   const slide = BANNER_SLIDES[activeIndex];
-  const isCentered = slide.align === "center";
 
   return (
     <section
@@ -466,9 +504,12 @@ export default function HomeBannerCarousel() {
               className={cn(
                 "absolute inset-0",
                 "bg-gradient-to-t from-black/80 via-black/20 to-transparent sm:from-transparent sm:via-transparent",
-                isCentered
-                  ? "sm:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.6)_0%,rgba(0,0,0,0.28)_55%,transparent_100%)]"
-                  : "sm:bg-gradient-to-l sm:from-black/80 sm:via-black/40 sm:to-transparent",
+                slide.align === "center" &&
+                  "sm:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.6)_0%,rgba(0,0,0,0.28)_55%,transparent_100%)]",
+                slide.align === "right" &&
+                  "sm:bg-gradient-to-l sm:from-black/80 sm:via-black/40 sm:to-transparent",
+                slide.align === "left" &&
+                  "sm:bg-gradient-to-r sm:from-black/80 sm:via-black/40 sm:to-transparent",
               )}
             />
 
