@@ -11,9 +11,26 @@ export const consoleRepairIcons: Record<ConsoleId, string> = {
   xbox: "/icons/xbox.svg",
 };
 
+function normalizeDeviceName(deviceName: string): string {
+  return deviceName.toLowerCase().replace(/[\s_-]+/g, "");
+}
+
+/** Map API device `name` (ps5, ps4, xbox1, xboxone, …) to a console id. */
+export function consoleIdFromDeviceName(
+  deviceName: string,
+): ConsoleId | undefined {
+  const key = normalizeDeviceName(deviceName);
+
+  if (key.includes("ps5")) return "ps5";
+  if (key.includes("ps4")) return "ps4";
+  if (key.includes("xbox")) return "xbox";
+
+  return undefined;
+}
+
 /** Map API device `name` (ps5, ps4, xbox1, xboxone, …) to the repair icon asset. */
 export function getRepairDeviceIcon(deviceName: string): string {
-  const key = deviceName.toLowerCase().replace(/[\s_-]+/g, "");
+  const key = normalizeDeviceName(deviceName);
 
   if (key.includes("ps5")) return consoleRepairIcons.ps5;
   if (key.includes("ps4")) return consoleRepairIcons.ps4;
@@ -23,7 +40,7 @@ export function getRepairDeviceIcon(deviceName: string): string {
 }
 
 export function getRepairDeviceDisplayName(deviceName: string): string {
-  const key = deviceName.toLowerCase().replace(/[\s_-]+/g, "");
+  const key = normalizeDeviceName(deviceName);
 
   if (key === "ps5") return "PS5";
   if (key === "ps4") return "PS4";

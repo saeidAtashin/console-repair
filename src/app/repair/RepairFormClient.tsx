@@ -17,6 +17,7 @@ import RepairDevicePicker from "./RepairDevicePicker";
 import {
   consoleCatalog,
   getRepairService,
+  type ConsoleId,
 } from "../../lib/console-catalog";
 import { neonInputProps } from "../../lib/neon-autofill";
 import {
@@ -27,11 +28,15 @@ import {
 } from "../../lib/phone";
 import {
   consoleRepairIcons,
+  consoleIdFromDeviceName,
   getRepairDeviceDisplayName,
   getRepairDeviceIcon,
   getRepairDeviceLabel,
   type RepairPrefill,
 } from "../../lib/repair-links";
+import type { BrandTheme } from "@/lib/brand-theme";
+import { brandThemes } from "@/lib/brand-theme";
+import { cn } from "@/lib/utils";
 import { ApiError } from "@/lib/api-client";
 import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
 import { useAuth } from "@/app/context/AuthContext";
@@ -65,7 +70,11 @@ type Props = {
   initialPrefill: RepairPrefill;
   defaultPhone?: string;
   onSuccess?: () => void;
+  theme?: BrandTheme;
+  onConsoleChange?: (consoleId: ConsoleId | undefined) => void;
 };
+
+const defaultTheme = brandThemes.gaming;
 
 function buildInitialDescription(prefill: RepairPrefill): string {
   const parts = [prefill.issue, prefill.description].filter(Boolean);
@@ -76,11 +85,20 @@ export default function RepairFormClient({
   initialPrefill,
   defaultPhone = "",
   onSuccess,
+  theme = defaultTheme,
+  onConsoleChange,
 }: Props) {
   const { user } = useAuth();
   const { requestSubmit, verifying, modalProps } = usePhoneVerifiedSubmit();
 
+  const [authHydrated, setAuthHydrated] = useState(false);
+
+  useEffect(() => {
+    setAuthHydrated(true);
+  }, []);
+
   const accountPhone = user?.phone_number ?? user?.phone ?? defaultPhone;
+  const initialPhone = authHydrated ? accountPhone : defaultPhone;
   const consoleId = initialPrefill.consoleId;
   const prefillIssue = initialPrefill.issue;
   const prefillDescription = initialPrefill.description;
@@ -96,12 +114,11 @@ export default function RepairFormClient({
 
   const selectedDevice = devices.find((device) => device.id === deviceTypeId);
 
-  const deviceLabel =
-    consoleId && deviceTypeId !== ""
-      ? getRepairDeviceLabel(consoleId)
-      : selectedDevice
-        ? getRepairDeviceDisplayName(selectedDevice.name)
-        : null;
+  const deviceLabel = consoleId
+    ? getRepairDeviceLabel(consoleId)
+    : selectedDevice
+      ? getRepairDeviceDisplayName(selectedDevice.name)
+      : null;
 
   const headerIconSrc = consoleId
     ? consoleRepairIcons[consoleId]
@@ -112,14 +129,14 @@ export default function RepairFormClient({
   const defaultValues = useMemo<RepairFormInput>(
     () => ({
       name: "",
-      phone: accountPhone,
+      phone: initialPhone,
       description: buildInitialDescription({
         consoleId,
         issue: prefillIssue,
         description: prefillDescription,
       }),
     }),
-    [accountPhone, consoleId, prefillIssue, prefillDescription],
+    [initialPhone, consoleId, prefillIssue, prefillDescription],
   );
 
   const [loading, setLoading] = useState(false);
@@ -213,6 +230,7 @@ export default function RepairFormClient({
         if (!consoleId) {
           setDeviceTypeId("");
           setProblemTypes([]);
+          onConsoleChange?.(undefined);
         }
         onSuccess?.();
       });
@@ -249,9 +267,8 @@ export default function RepairFormClient({
     : "نوع دستگاه را انتخاب کرده و فرم زیر را تکمیل کنید.";
 
   return (
-    <div className="relative overflow-hidden px-6 py-12 text-white">
+    <div className="relative px-6 py-12 text-white">
       <PhoneVerificationModal {...modalProps} />
-      <div className="pointer-events-none absolute inset-0 bg-[url('/grid.svg')] bg-cover opacity-20" />
 
       <div className="relative mx-auto max-w-3xl">
         <header className="relative mb-14 text-center">
@@ -285,21 +302,27 @@ export default function RepairFormClient({
             </div>
           )}
 
-          <div className="relative mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 shadow-[0_0_25px_rgba(0,255,255,0.25)] backdrop-blur-xl">
+          <div
+            className={cn(
+              "relative mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border bg-gradient-to-br to-transparent backdrop-blur-xl",
+              theme.border,
+              theme.bg,
+            )}
+          >
             {headerIconSrc ? (
               <Image
                 src={headerIconSrc}
                 alt={deviceLabel ?? ""}
                 width={56}
                 height={56}
-                className="relative invert z-10 h-24 w-24 object-contain"
+                className="relative z-10 h-24 w-24 object-contain invert"
               />
             ) : (
-              <Wrench className="h-12 w-12 text-cyan-400" aria-hidden />
+              <Wrench className={cn("h-12 w-12", theme.primary)} aria-hidden />
             )}
           </div>
 
-          <h1 className="relative text-4xl font-extrabold leading-snug tracking-tight text-white drop-shadow-[0_0_10px_rgba(0,255,255,0.25)] md:text-5xl">
+          <h1 className="relative text-4xl font-extrabold leading-snug tracking-tight text-white md:text-5xl">
             {headerTitle}
           </h1>
 
@@ -307,26 +330,47 @@ export default function RepairFormClient({
             {headerSubtitle}
           </p>
 
-          {consoleId && deviceLabel ? (
-            <p className="relative mt-5 inline-flex rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 px-6 py-3 font-bold tracking-wide text-cyan-300 shadow-[0_0_15px_rgba(0,200,255,0.15)]">
-              {deviceLabel}
-            </p>
+          {consoleId ? (
+            deviceLabel ? (
+              <p
+                className={cn(
+                  "relative mt-5 inline-flex rounded-2xl border px-6 py-3 font-bold tracking-wide",
+                  theme.border,
+                  theme.bg,
+                  theme.primary,
+                )}
+              >
+                {deviceLabel}
+              </p>
+            ) : null
           ) : (
             <RepairDevicePicker
               devices={devices}
               value={deviceTypeId}
               loading={devicesLoading}
+              theme={theme}
               onChange={(id) => {
                 setDeviceTypeId(id);
                 setProblemTypeId("");
                 setProblemTypes([]);
                 void loadProblemTypes(id);
+                const device = devices.find((item) => item.id === id);
+                onConsoleChange?.(
+                  device
+                    ? consoleIdFromDeviceName(device.name)
+                    : undefined,
+                );
               }}
             />
           )}
         </header>
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-10 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
+        <div
+          className={cn(
+            "rounded-3xl border bg-white/5 p-10 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-2xl transition-[border-color,box-shadow] duration-700",
+            theme.border,
+          )}
+        >
           {success && (
             <div
               className="mb-6 rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-green-300 shadow-[0_0_15px_rgba(0,255,100,0.2)]"
@@ -355,6 +399,7 @@ export default function RepairFormClient({
               placeholder="09 / +98 / 98 / 9..."
               className="placeholder:text-end text-end"
               error={errors.phone?.message}
+              suppressHydrationWarning
               {...phoneField}
               onChange={(e) => {
                 e.target.value = sanitizePhoneInput(e.target.value);
@@ -414,7 +459,10 @@ export default function RepairFormClient({
             <button
               type="submit"
               disabled={loading || verifying}
-              className="h-14 w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 font-bold text-black shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all hover:from-cyan-400 hover:to-blue-400 disabled:opacity-40"
+              className={cn(
+                "h-14 w-full rounded-2xl font-bold text-black transition-all disabled:opacity-40",
+                theme.submit,
+              )}
             >
               {loading || verifying ? "در حال ثبت..." : "ثبت درخواست تعمیر"}
             </button>

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import HeroQuickAccessButton from "./HeroQuickAccessButton";
-import { brandThemes } from "@/lib/brand-theme";
+import { brandThemes, consoleBrands } from "@/lib/brand-theme";
 import {
   consoleIds,
   consoleCatalog,
@@ -53,12 +53,6 @@ const RAIL_WIDTH_SM = 72;
 const MOBILE_CONSOLE_ROW_HEIGHT = 92;
 const GLOW_BASE_SIZE = 320;
 const DEFAULT_CONSOLE: ConsoleId = "ps5";
-
-const consoleBrands = {
-  ps4: "playstation",
-  ps5: "playstation",
-  xbox: "xbox",
-} as const;
 
 function useHeroViewport() {
   const [viewport, setViewport] = useState({

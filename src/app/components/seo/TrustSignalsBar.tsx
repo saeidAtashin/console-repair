@@ -1,5 +1,7 @@
 import { BadgeCheck, Clock3, ShieldCheck, Wrench } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+
 export type TrustSignal = {
   icon?: "clock" | "shield" | "price" | "expert";
   label: string;
@@ -16,9 +18,14 @@ const ICONS = {
 type Props = {
   signals: TrustSignal[];
   className?: string;
+  iconClassName?: string;
 };
 
-export default function TrustSignalsBar({ signals, className = "" }: Props) {
+export default function TrustSignalsBar({
+  signals,
+  className = "",
+  iconClassName = "text-cyan-400",
+}: Props) {
   return (
     <section
       className={`border-t border-white/10 py-16 ${className}`}
@@ -33,7 +40,7 @@ export default function TrustSignalsBar({ signals, className = "" }: Props) {
                 key={index}
                 className="rounded-2xl border border-white/10 bg-zinc-900/60 p-6"
               >
-                <Icon className="mb-3 h-6 w-6 text-cyan-400" />
+                <Icon className={cn("mb-3 h-6 w-6", iconClassName)} />
                 <p className="text-sm text-zinc-400">{signal.label}</p>
                 <p className="mt-1 font-bold leading-7">{signal.value}</p>
               </div>

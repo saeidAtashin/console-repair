@@ -35,6 +35,7 @@ export default function FaqSection({
             <details
               key={index}
               className="group rounded-2xl border border-white/10 bg-black/40 p-6"
+              suppressHydrationWarning
             >
               <summary className="cursor-pointer font-bold marker:content-none">
                 {faq.question}

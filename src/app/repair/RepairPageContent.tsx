@@ -1,21 +1,41 @@
+"use client";
+
 import Link from "next/link";
 import type { ConsoleId } from "@/lib/console-catalog";
+import { cn } from "@/lib/utils";
 
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import TrustSignalsBar from "@/app/components/seo/TrustSignalsBar";
 import { getRepairContent } from "@/lib/seo/repair-content";
-import { howToJsonLd } from "@/lib/seo/howto-jsonld";
+import { useRepairTheme } from "./RepairThemeContext";
 
 type Props = {
   consoleId?: ConsoleId;
 };
 
+const RELATED_LINKS = [
+  { href: "/services", label: "همه خدمات" },
+  { href: "/services/ps5-repair", label: "تعمیر PS5" },
+  { href: "/services/ps4-repair", label: "تعمیر PS4" },
+  { href: "/services/xbox-repair", label: "تعمیر Xbox" },
+  { href: "/tracking", label: "پیگیری تعمیر" },
+  { href: "/contact", label: "تماس با ما" },
+] as const;
+
 export default function RepairPageContent({ consoleId }: Props) {
+  const theme = useRepairTheme();
   const content = getRepairContent(consoleId);
 
   return (
-    <div className="mt-16 border-t border-white/10">
+    <div className={cn("relative mt-16 border-t transition-colors duration-700", theme.border)}>
+      <div
+        className={cn(
+          "pointer-events-none absolute -top-20 left-1/2 h-56 w-[30rem] max-w-[90vw] -translate-x-1/2 rounded-full blur-3xl opacity-20 transition-[background] duration-700",
+          theme.ambient,
+        )}
+        aria-hidden
+      />
       <OverviewSection
         title="راهنمای ثبت سفارش تعمیر"
         paragraphs={content.overview}
@@ -36,7 +56,9 @@ export default function RepairPageContent({ consoleId }: Props) {
                 key={step}
                 className="rounded-2xl border border-white/10 bg-white/5 p-5"
               >
-                <span className="mb-2 block font-mono text-sm text-cyan-400">
+                <span
+                  className={cn("mb-2 block font-mono text-sm", theme.primary)}
+                >
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <p className="text-sm font-semibold leading-7">{step}</p>
@@ -46,61 +68,30 @@ export default function RepairPageContent({ consoleId }: Props) {
         </div>
       </section>
 
-      <TrustSignalsBar signals={content.trustSignals} />
+      <TrustSignalsBar
+        signals={content.trustSignals}
+        iconClassName={theme.primary}
+      />
 
       <FaqSection items={content.faqs} className="py-16" />
 
       <section className="border-t border-white/10 py-12">
         <h2 className="mb-6 text-xl font-black">لینک‌های مفید</h2>
         <nav className="flex flex-wrap gap-3" aria-label="لینک‌های مرتبط">
-          <Link
-            href="/services"
-            className="rounded-full border border-white/10 px-4 py-2 text-sm transition hover:border-cyan-400/40"
-          >
-            همه خدمات
-          </Link>
-          <Link
-            href="/services/ps5-repair"
-            className="rounded-full border border-white/10 px-4 py-2 text-sm transition hover:border-cyan-400/40"
-          >
-            تعمیر PS5
-          </Link>
-          <Link
-            href="/services/ps4-repair"
-            className="rounded-full border border-white/10 px-4 py-2 text-sm transition hover:border-cyan-400/40"
-          >
-            تعمیر PS4
-          </Link>
-          <Link
-            href="/services/xbox-repair"
-            className="rounded-full border border-white/10 px-4 py-2 text-sm transition hover:border-cyan-400/40"
-          >
-            تعمیر Xbox
-          </Link>
-          <Link
-            href="/tracking"
-            className="rounded-full border border-white/10 px-4 py-2 text-sm transition hover:border-cyan-400/40"
-          >
-            پیگیری تعمیر
-          </Link>
-          <Link
-            href="/contact"
-            className="rounded-full border border-white/10 px-4 py-2 text-sm transition hover:border-cyan-400/40"
-          >
-            تماس با ما
-          </Link>
+          {RELATED_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "rounded-full border border-white/10 px-4 py-2 text-sm transition",
+                theme.borderHover,
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
       </section>
     </div>
   );
-}
-
-export function repairContentJsonLd(consoleId?: ConsoleId) {
-  const content = getRepairContent(consoleId);
-  return howToJsonLd({
-    name: "مراحل ثبت و تعمیر کنسول",
-    description: content.overview[0],
-    path: consoleId ? `/repair?console=${consoleId}` : "/repair",
-    steps: content.processSteps,
-  });
 }
