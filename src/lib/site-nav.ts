@@ -53,10 +53,13 @@ function gameChildren(): SiteNavLeaf[] {
 }
 
 function shopChildren(): SiteNavLeaf[] {
-  return SHOP_CONSOLE_ORDER.map((slug) => ({
-    title: `خرید ${SHOP_CONSOLE_META[slug].label}`,
-    href: `/shop/${slug}`,
-  }));
+  return [
+    { title: "همه محصولات", href: "/shop" },
+    ...SHOP_CONSOLE_ORDER.map((slug) => ({
+      title: `خرید ${SHOP_CONSOLE_META[slug].label}`,
+      href: `/shop/${slug}`,
+    })),
+  ];
 }
 
 export const navbarNavItems: SiteNavItem[] = [

@@ -1,7 +1,7 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
-import ShopCatalog from "@/app/components/shop/ShopCatalog";
-import ShopServicesSection from "@/app/components/shop/ShopServicesSection";
+import ShopPageClient from "@/app/shop/ShopPageClient";
 import PageShell from "@/app/components/seo/PageShell";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import {
@@ -88,8 +88,9 @@ export default async function ShopConsolePage({ params }: Props) {
       >
         <h1 className="text-4xl font-black md:text-5xl">{title}</h1>
         <p className="mt-4 max-w-3xl text-lg text-zinc-400">{description}</p>
-        <ShopCatalog defaultConsole={shopConsole} />
-        <ShopServicesSection />
+        <Suspense fallback={null}>
+          <ShopPageClient defaultConsole={shopConsole} />
+        </Suspense>
       </PageShell>
     </main>
   );

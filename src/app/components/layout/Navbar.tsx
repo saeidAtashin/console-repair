@@ -248,13 +248,24 @@ export default function Navbar() {
             {navbarNavItems.map((item) =>
               item.children ? (
                 <div key={item.title} className="relative group px-3 py-2">
-                  <button className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-cyan-400 transition-colors">
-                    {item.title}
-                    <ChevronDown
-                      size={14}
-                      className="group-hover:rotate-180 transition-transform duration-300"
-                    />
-                  </button>
+                  <div className="flex items-center gap-0.5">
+                    <Link
+                      href={item.href}
+                      className="text-sm font-medium text-zinc-400 hover:text-cyan-400 transition-colors"
+                    >
+                      {item.title}
+                    </Link>
+                    <button
+                      type="button"
+                      aria-label={`${item.title} — زیرمنو`}
+                      className="flex items-center text-zinc-400 hover:text-cyan-400 transition-colors p-0.5"
+                    >
+                      <ChevronDown
+                        size={14}
+                        className="group-hover:rotate-180 transition-transform duration-300"
+                      />
+                    </button>
+                  </div>
 
                   <div className="absolute top-full right-0 w-56 pt-4 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
                     <div className="rounded-2xl border border-white/10 bg-zinc-900/90 p-2 backdrop-blur-2xl shadow-2xl">
@@ -330,22 +341,32 @@ export default function Navbar() {
                 <div key={item.title}>
                   {item.children ? (
                     <>
-                      <button
-                        dir="ltr"
-                        data-route-loader-ignore="true"
-                        className="flex justify-between items-center w-full text-xl font-bold text-white"
-                        onClick={() =>
-                          setMobileOpen(
-                            mobileOpen === item.title ? null : item.title,
-                          )
-                        }
-                      >
-                        <ChevronDown
-                          size={18}
-                          className={`text-cyan-500 transition-transform ${mobileOpen === item.title ? "rotate-180" : ""}`}
-                        />
-                        {item.title}
-                      </button>
+                      <div className="flex items-center justify-between w-full">
+                        <Link
+                          href={item.href}
+                          onClick={closeMenu}
+                          className="text-xl font-bold text-white hover:text-cyan-400 transition-colors"
+                        >
+                          {item.title}
+                        </Link>
+                        <button
+                          type="button"
+                          dir="ltr"
+                          data-route-loader-ignore="true"
+                          aria-label={`${item.title} — زیرمنو`}
+                          className="p-1 text-cyan-500 transition-colors"
+                          onClick={() =>
+                            setMobileOpen(
+                              mobileOpen === item.title ? null : item.title,
+                            )
+                          }
+                        >
+                          <ChevronDown
+                            size={18}
+                            className={`transition-transform ${mobileOpen === item.title ? "rotate-180" : ""}`}
+                          />
+                        </button>
+                      </div>
                       <div
                         className={`mt-4 overflow-hidden transition-all duration-300 ${mobileOpen === item.title ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}
                       >

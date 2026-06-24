@@ -145,12 +145,12 @@ export default function ShopSearch({
   return (
     <div
       ref={rootRef}
-      className={`relative ${isPage ? "mt-8 w-full" : "w-full max-w-xs lg:max-w-sm"}`}
+      className={`relative ${isPage ? "mt-4 w-full" : "w-full max-w-xs lg:max-w-sm"}`}
     >
       <div
         className={`flex items-center gap-2 rounded-2xl border bg-zinc-900/70 backdrop-blur-xl transition focus-within:border-cyan-400/40 ${
           isPage
-            ? "border-white/10 px-4 py-3"
+            ? "border-white/10 px-5 py-3.5"
             : "border-zinc-800 px-3 py-2"
         }`}
       >
@@ -183,7 +183,7 @@ export default function ShopSearch({
           aria-autocomplete="list"
           role="combobox"
           className={`w-full bg-transparent text-white outline-none placeholder:text-zinc-500 ${
-            isPage ? "text-base" : "text-sm"
+            isPage ? "text-base md:text-lg" : "text-sm"
           }`}
         />
         {query ? (

@@ -1,23 +1,35 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import ShopCatalog from "@/app/components/shop/ShopCatalog";
+import ShopCatalog, {
+  type ShopConsoleFilter,
+} from "@/app/components/shop/ShopCatalog";
+import ShopConditionFilters, {
+  type ConditionFilterKey,
+} from "@/app/components/shop/ShopConditionFilters";
 import ShopSearch from "@/app/components/shop/ShopSearch";
 import ShopServicesSection from "@/app/components/shop/ShopServicesSection";
 import ShopTrustBar from "@/app/components/shop/ShopTrustBar";
 import { normalizeSearchQuery } from "@/lib/shop";
 
-export default function ShopPageClient() {
+type Props = {
+  defaultConsole?: ShopConsoleFilter;
+};
+
+export default function ShopPageClient({ defaultConsole = "all" }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") ?? "";
+  const [condition, setCondition] = useState<ConditionFilterKey>("all");
 
   const searchQuery = useMemo(
     () => normalizeSearchQuery(initialQuery),
     [initialQuery],
   );
+
+  const isSearchMode = searchQuery.length >= 2;
 
   const handleQueryChange = useCallback(
     (nextQuery: string) => {
@@ -44,9 +56,14 @@ export default function ShopPageClient() {
         onQueryChange={handleQueryChange}
         syncUrl
       />
-      <ShopTrustBar />
+      {!isSearchMode ? (
+        <ShopConditionFilters value={condition} onChange={setCondition} />
+      ) : null}
+      {/* <ShopTrustBar /> */}
       <ShopCatalog
-        searchQuery={searchQuery.length >= 2 ? searchQuery : undefined}
+        defaultConsole={defaultConsole}
+        condition={condition}
+        searchQuery={isSearchMode ? searchQuery : undefined}
       />
       <ShopServicesSection />
     </>

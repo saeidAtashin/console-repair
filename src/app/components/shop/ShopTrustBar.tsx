@@ -8,7 +8,7 @@ const TRUST_ITEMS = [
 
 export default function ShopTrustBar() {
   return (
-    <div className="mt-8 grid gap-3 sm:grid-cols-3">
+    <div className="mt-6 grid gap-3 sm:grid-cols-3">
       {TRUST_ITEMS.map((item) => (
         <div
           key={item.label}
