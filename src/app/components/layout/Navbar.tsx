@@ -6,6 +6,7 @@ import { useShopCart } from "@/app/context/ShopCartContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
+import CartNavLink from "../shop/CartNavLink";
 import { navbarNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
 import ShopSearch from "../shop/ShopSearch";
@@ -32,7 +33,7 @@ function getRotationDeg(el: HTMLElement) {
 export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { itemCount } = useShopCart();
+  const { itemCount, cartBounce } = useShopCart();
   const hideShopSearch = pathname.startsWith("/shop");
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
@@ -164,18 +165,11 @@ export default function Navbar() {
             </button>
 
             <div className="flex md:hidden items-center gap-2">
-              <Link
-                href="/shop/cart"
-                className="relative rounded-lg border border-white/10 bg-zinc-900 p-2 text-zinc-200 hover:border-cyan-500/50"
-                aria-label="سبد خرید"
-              >
-                <ShoppingCart size={18} />
-                {itemCount > 0 ? (
-                  <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-black">
-                    {itemCount}
-                  </span>
-                ) : null}
-              </Link>
+              <CartNavLink
+                itemCount={itemCount}
+                receiving={cartBounce}
+                className="rounded-lg border border-white/10 bg-zinc-900 p-2 text-zinc-200 hover:border-cyan-500/50"
+              />
               {!user ? (
                 <Link
                   href="/login"
@@ -207,18 +201,11 @@ export default function Navbar() {
               {!hideShopSearch ? (
                 <ShopSearch variant="header" onNavigate={closeMenu} />
               ) : null}
-              <Link
-                href="/shop/cart"
-                className="relative rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-200 transition hover:border-cyan-500/50"
-                aria-label="سبد خرید"
-              >
-                <ShoppingCart size={18} />
-                {itemCount > 0 ? (
-                  <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-cyan-500 px-1 text-[10px] font-bold text-black">
-                    {itemCount}
-                  </span>
-                ) : null}
-              </Link>
+              <CartNavLink
+                itemCount={itemCount}
+                receiving={cartBounce}
+                className="rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-200 transition hover:border-cyan-500/50"
+              />
               {!user ? (
                 <>
                   <Link
@@ -408,6 +395,7 @@ export default function Navbar() {
             <div className="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
               <Link
                 href="/shop/cart"
+                data-shop-cart-target
                 onClick={closeMenu}
                 className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-center text-white font-bold hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
               >

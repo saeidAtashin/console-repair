@@ -1,25 +1,40 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 
+import { useShopCart } from "@/app/context/ShopCartContext";
 import AddToCartButton from "./AddToCartButton";
 import {
   PRODUCT_CATEGORY_SHORT_LABELS,
   formatToman,
   type ShopProduct,
 } from "@/lib/shop";
+import { cn } from "@/lib/utils";
 
 type Props = {
   product: ShopProduct;
 };
 
 export default function ProductCard({ product }: Props) {
+  const cardRef = useRef<HTMLElement>(null);
+  const { flyingProductId } = useShopCart();
+  const isFlying = flyingProductId === product.id;
+
   const categoryBadge =
     product.category !== "console"
       ? PRODUCT_CATEGORY_SHORT_LABELS[product.category]
       : null;
 
   return (
-    <article className="group overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/60 transition hover:-translate-y-1 hover:border-cyan-400/30">
+    <article
+      ref={cardRef}
+      className={cn(
+        "group overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/60 transition hover:-translate-y-1 hover:border-cyan-400/30",
+        isFlying && "pointer-events-none opacity-0",
+      )}
+    >
       <Link href={`/shop/${product.console}/${product.slug}`} className="block">
         <div className="relative h-48 overflow-hidden bg-zinc-950">
           <Image
@@ -76,6 +91,8 @@ export default function ProductCard({ product }: Props) {
           productId={product.id}
           productTitle={product.title}
           inStock={product.inStock}
+          animationSourceRef={cardRef}
+          flyVariant="card"
         />
       </div>
     </article>

@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 
 import AddToCartButton from "@/app/components/shop/AddToCartButton";
+import { useShopCart } from "@/app/context/ShopCartContext";
 import {
   PRODUCT_CATEGORY_LABELS,
   SHOP_CONSOLE_META,
@@ -11,6 +15,7 @@ import {
 } from "@/lib/shop";
 import type { Brand } from "@/lib/brand-theme";
 import { brandThemes } from "@/lib/brand-theme";
+import { cn } from "@/lib/utils";
 
 type Props = {
   product: ShopProduct;
@@ -19,13 +24,20 @@ type Props = {
 };
 
 export default function ProductDetailHero({ product, detail, brand }: Props) {
+  const heroImageRef = useRef<HTMLDivElement>(null);
+  const { flyingProductId } = useShopCart();
+  const isFlying = flyingProductId === product.id;
   const theme = brandThemes[brand];
   const meta = SHOP_CONSOLE_META[product.console];
 
   return (
     <section className="grid gap-8 lg:grid-cols-2 lg:items-start">
       <div
-        className={`relative overflow-hidden rounded-3xl border ${theme.border} bg-zinc-900/40`}
+        ref={heroImageRef}
+        className={cn(
+          `relative overflow-hidden rounded-3xl border ${theme.border} bg-zinc-900/40`,
+          isFlying && "pointer-events-none opacity-0",
+        )}
       >
         <div
           className={`pointer-events-none absolute inset-0 bg-linear-to-br ${theme.glow} to-transparent opacity-60`}
@@ -102,6 +114,8 @@ export default function ProductDetailHero({ product, detail, brand }: Props) {
               productId={product.id}
               productTitle={product.title}
               inStock={product.inStock}
+              animationSourceRef={heroImageRef}
+              flyVariant="hero"
             />
           </div>
 

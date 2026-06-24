@@ -6,10 +6,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
 import AddToCartFeedback from "@/app/components/shop/AddToCartFeedback";
+import FlyToCartAnimator from "@/app/components/shop/FlyToCartAnimator";
 import {
   addOrIncrementCartItem,
   getCartCount,
@@ -23,21 +25,40 @@ import {
   type CartLineItem,
   type ShopProduct,
 } from "@/lib/shop";
+import {
+  getVisibleCartRect,
+  prefersReducedMotion,
+  CART_RECEIVE_DURATION_MS,
+  type FlyToCartVariant,
+} from "@/lib/shop/fly-to-cart";
+
+export type FlyAnimationState = {
+  product: ShopProduct;
+  fromRect: DOMRect;
+  variant: FlyToCartVariant;
+};
+
+export type AddToCartOptions = {
+  sourceElement?: HTMLElement | null;
+  variant?: FlyToCartVariant;
+};
 
 type ShopCartContextValue = {
   items: CartLineItem[];
   itemCount: number;
   subtotal: number;
-  lastAddedProduct: ShopProduct | null;
-  isAddToCartModalOpen: boolean;
   toastMessage: string | null;
-  addToCart: (productId: string) => ShopProduct | null;
+  flyAnimation: FlyAnimationState | null;
+  flyingProductId: string | null;
+  cartBounce: boolean;
+  isFlyActive: boolean;
+  addToCart: (productId: string, options?: AddToCartOptions) => ShopProduct | null;
   incrementQty: (productId: string) => void;
   decrementQty: (productId: string) => void;
   removeItem: (productId: string) => void;
   clearCart: () => void;
-  closeAddToCartModal: () => void;
   dismissAddToCartToast: () => void;
+  completeFlyAnimation: () => void;
 };
 
 const ShopCartContext = createContext<ShopCartContextValue | null>(null);
@@ -49,9 +70,11 @@ function sanitizeItems(items: CartLineItem[]): CartLineItem[] {
 
 export function ShopCartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartLineItem[]>([]);
-  const [lastAddedProduct, setLastAddedProduct] = useState<ShopProduct | null>(null);
-  const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [flyAnimation, setFlyAnimation] = useState<FlyAnimationState | null>(null);
+  const [cartBounce, setCartBounce] = useState(false);
+  const bounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flyActiveRef = useRef(false);
 
   useEffect(() => {
     setItems(sanitizeItems(readCartItems()));
@@ -61,34 +84,82 @@ export function ShopCartProvider({ children }: { children: React.ReactNode }) {
     writeCartItems(items);
   }, [items]);
 
-  const closeAddToCartModal = useCallback(() => {
-    setIsAddToCartModalOpen(false);
+  useEffect(() => {
+    flyActiveRef.current = flyAnimation !== null;
+  }, [flyAnimation]);
+
+  useEffect(() => {
+    return () => {
+      if (bounceTimerRef.current) clearTimeout(bounceTimerRef.current);
+    };
   }, []);
 
   const dismissAddToCartToast = useCallback(() => {
     setToastMessage(null);
   }, []);
 
-  const showAddToCartFeedback = useCallback((product: ShopProduct) => {
-    setLastAddedProduct(product);
-    setToastMessage(`${product.title} به سبد خرید اضافه شد`);
-    setIsAddToCartModalOpen(true);
+  const triggerCartBounce = useCallback(() => {
+    setCartBounce(true);
+    if (bounceTimerRef.current) clearTimeout(bounceTimerRef.current);
+    bounceTimerRef.current = setTimeout(() => {
+      setCartBounce(false);
+      bounceTimerRef.current = null;
+    }, CART_RECEIVE_DURATION_MS);
   }, []);
+
+  const completeFlyAnimation = useCallback(() => {
+    flyActiveRef.current = false;
+    setFlyAnimation(null);
+    triggerCartBounce();
+  }, [triggerCartBounce]);
+
+  const showAddToCartFeedback = useCallback(
+    (product: ShopProduct, options?: AddToCartOptions) => {
+      if (prefersReducedMotion()) {
+        setToastMessage(`${product.title} به سبد خرید اضافه شد`);
+        return;
+      }
+
+      const sourceElement = options?.sourceElement;
+      if (!sourceElement) {
+        setToastMessage(`${product.title} به سبد خرید اضافه شد`);
+        return;
+      }
+
+      const cartRect = getVisibleCartRect();
+      if (!cartRect) {
+        setToastMessage(`${product.title} به سبد خرید اضافه شد`);
+        return;
+      }
+
+      setFlyAnimation({
+        product,
+        fromRect: sourceElement.getBoundingClientRect(),
+        variant: options.variant ?? "card",
+      });
+      flyActiveRef.current = true;
+    },
+    [],
+  );
 
   const value = useMemo<ShopCartContextValue>(
     () => ({
       items,
       itemCount: getCartCount(items),
       subtotal: getCartSubtotal(items),
-      lastAddedProduct,
-      isAddToCartModalOpen,
       toastMessage,
-      addToCart: (productId) => {
+      flyAnimation,
+      flyingProductId: flyAnimation?.product.id ?? null,
+      cartBounce,
+      isFlyActive: flyAnimation !== null,
+      addToCart: (productId, options) => {
+        if (flyActiveRef.current) return null;
+
         const product = getProductById(productId);
         if (!product || !product.inStock) return null;
 
         setItems((prev) => addOrIncrementCartItem(prev, productId));
-        showAddToCartFeedback(product);
+        showAddToCartFeedback(product, options);
         return product;
       },
       incrementQty: (productId) => {
@@ -105,16 +176,16 @@ export function ShopCartProvider({ children }: { children: React.ReactNode }) {
         setItems((prev) => removeCartItem(prev, productId));
       },
       clearCart: () => setItems([]),
-      closeAddToCartModal,
       dismissAddToCartToast,
+      completeFlyAnimation,
     }),
     [
       items,
-      lastAddedProduct,
-      isAddToCartModalOpen,
       toastMessage,
-      closeAddToCartModal,
+      flyAnimation,
+      cartBounce,
       dismissAddToCartToast,
+      completeFlyAnimation,
       showAddToCartFeedback,
     ],
   );
@@ -122,6 +193,7 @@ export function ShopCartProvider({ children }: { children: React.ReactNode }) {
   return (
     <ShopCartContext.Provider value={value}>
       {children}
+      <FlyToCartAnimator />
       <AddToCartFeedback />
     </ShopCartContext.Provider>
   );
