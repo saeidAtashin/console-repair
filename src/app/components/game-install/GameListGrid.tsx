@@ -24,12 +24,13 @@ export default function GameListGrid({ games, totalCount }: Props) {
       </p>
 
       <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {games.map((game) => {
+        {games.map((game, index) => {
           const { images } = resolveGameImages({
             slug: game.slug,
             name: game.name,
             fallback: game.backgroundImage,
           });
+          const isPriority = index < 4;
 
           return (
           <li
@@ -44,6 +45,8 @@ export default function GameListGrid({ games, totalCount }: Props) {
                 aspectClass="h-full w-full"
                 className="absolute inset-0"
                 imageClassName="object-cover transition duration-300 group-hover:scale-105"
+                priority={isPriority}
+                fetchPriority={isPriority ? "high" : "auto"}
               />
             </div>
 

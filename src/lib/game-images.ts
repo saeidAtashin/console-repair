@@ -1,5 +1,6 @@
 export const GAME_IMAGE_BASE = "/gameimages";
 
+/** Prefer .webp for new assets — smaller files and faster optimization. */
 const img = (filename: string) => `${GAME_IMAGE_BASE}/${filename}`;
 
 /** Canonical game key → ordered local image paths */
@@ -70,6 +71,24 @@ const GAME_IMAGE_MAP: Record<string, readonly string[]> = {
 };
 
 const SLUG_ALIASES: Record<string, string> = {
+  "gta-v-cheats": "gta-v",
+  "gta-online-secrets": "gta-v",
+  "minecraft-cheats": "minecraft",
+  "sims-4-cheats": "sims-4",
+  "rdr2-cheats": "red-dead-redemption-2",
+  "skyrim-cheats": "skyrim",
+  "lego-harry-potter-cheats": "lego-harry-potter",
+  "mortal-kombat-1-cheats": "mortal-kombat-1",
+  "witcher-3-cheats": "the-witcher-3",
+  "fallout-4-cheats": "fallout-4",
+  "ac-valhalla-cheats": "assassins-creed-valhalla",
+  "far-cry-6-cheats": "far-cry-6",
+  "tekken-8-cheats": "tekken-8",
+  "nba-2k25-secrets": "nba-2k25",
+  "wwe-2k24-cheats": "wwe-2k24",
+  "nfs-unbound-secrets": "need-for-speed-unbound",
+  "re4-remake-secrets": "resident-evil-4-remake",
+  "crash-trilogy-cheats": "crash-bandicoot-trilogy",
   "astros-playroom-secrets": "astros-playroom",
   "baldurs-gate-3-secrets": "baldurs-gate-3",
   "cod-mw3-secrets": "call-of-duty-modern-warfare-iii",

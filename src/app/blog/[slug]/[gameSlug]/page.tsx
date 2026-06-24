@@ -15,7 +15,11 @@ import {
   getCheatGame,
   getCheatGameCoverImage,
 } from "@/lib/blog-cheats";
-import { blogPostingJsonLd } from "@/lib/seo/jsonld";
+import {
+  blogPostingJsonLd,
+  faqPageJsonLd,
+  howToJsonLd,
+} from "@/lib/seo/jsonld";
 import { createPageMetadata } from "@/lib/seo/metadata";
 
 type Props = {
@@ -56,6 +60,8 @@ export async function generateMetadata({ params }: Props) {
     keywords: seo.keywords,
     type: "article",
     ogImage: getCheatGameCoverImage(game),
+    ogImageWidth: 800,
+    ogImageHeight: 1067,
   });
 }
 
@@ -71,20 +77,50 @@ export default async function BlogCheatGamePage({ params }: Props) {
   const path = cheatGamePath(gameSlug);
   const seo = generateGameSeo(game);
   const installHref = gameInstallHref(game.console);
+  const coverImage = getCheatGameCoverImage(game);
+
+  const faqItems =
+    game.cheats?.slice(0, 5).map((cheat) => ({
+      question: `چیت ${cheat.title} در ${game.name} چیست؟`,
+      answer: `${cheat.code} — ${cheat.effect}`,
+    })) ?? [];
+
+  const howToSteps = game.cheatActivation
+    ? [game.cheatActivation]
+    : [
+        `کنسول ${game.console === "ps5" ? "PS5" : game.console === "ps4" ? "PS4" : "Xbox"} را روشن کنید.`,
+        `بازی ${game.name} را اجرا کنید.`,
+        "کدهای چیت را از جدول زیر وارد کنید.",
+      ];
+
+  const jsonLd: Record<string, unknown>[] = [
+    blogPostingJsonLd({
+      title: seo.title,
+      description: seo.description,
+      path,
+      coverImage,
+      publishedAt: post.publishedAt,
+    }),
+  ];
+
+  if (faqItems.length > 0) {
+    jsonLd.push(faqPageJsonLd(faqItems));
+  }
+
+  jsonLd.push(
+    howToJsonLd({
+      name: `نحوه وارد کردن چیت ${game.name}`,
+      description: `راهنمای فعال‌سازی کدهای تقلب ${game.name}`,
+      path,
+      steps: howToSteps,
+    }),
+  );
 
   return (
     <main className="min-h-screen bg-zinc-950 pt-24 text-white">
       <PageShell
         currentPath={path}
-        jsonLd={[
-          blogPostingJsonLd({
-            title: seo.title,
-            description: seo.description,
-            path,
-            coverImage: getCheatGameCoverImage(game),
-            publishedAt: post.publishedAt,
-          }),
-        ]}
+        jsonLd={jsonLd}
         containerClassName="container mx-auto max-w-4xl px-6"
         className="container mx-auto max-w-4xl px-6 pb-12"
       >

@@ -2,7 +2,13 @@ import HomePage from "./components/HomePage";
 import JsonLd from "./components/seo/JsonLd";
 import { createPageMetadata } from "../lib/seo/metadata";
 import { itemListJsonLd, webPageJsonLd } from "../lib/seo/jsonld";
-import { getFeaturedCheatGames, cheatGamePath } from "../lib/blog-cheats";
+import {
+  cheatGamePath,
+  getCheatGameImages,
+  getFeaturedCheatGames,
+  getSampleCheat,
+} from "../lib/blog-cheats";
+import type { FeaturedCheatCardProps } from "./components/sections/HomeCheatsSectionClient";
 import { getFeaturedProducts } from "../lib/shop";
 
 const HOME_TITLE = "تعمیر تخصصی کنسول بازی | PS5، PS4 و Xbox";
@@ -34,6 +40,21 @@ export const metadata = createPageMetadata({
 
 const featuredCheats = getFeaturedCheatGames();
 
+const featuredCheatCards: FeaturedCheatCardProps[] = featuredCheats
+  .map((game) => {
+    const sample = getSampleCheat(game);
+    if (!sample) return null;
+    return {
+      gameSlug: game.gameSlug,
+      name: game.name,
+      console: game.console,
+      images: getCheatGameImages(game),
+      sampleTitle: sample.title,
+      sampleCode: sample.code,
+    };
+  })
+  .filter((card): card is FeaturedCheatCardProps => card !== null);
+
 const HOME_SCHEMA = [
   webPageJsonLd({
     name: HOME_TITLE,
@@ -62,7 +83,7 @@ export default function Home() {
   return (
     <>
       <JsonLd data={HOME_SCHEMA} />
-      <HomePage />
+      <HomePage featuredCheatCards={featuredCheatCards} />
     </>
   );
 }

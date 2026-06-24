@@ -16,6 +16,8 @@ export type PageMetadataInput = {
   keywords?: string[];
   noIndex?: boolean;
   ogImage?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   type?: "website" | "article";
 };
 
@@ -27,6 +29,8 @@ export function createPageMetadata(input: PageMetadataInput): Metadata {
   const ogImageUrl = ogImage.startsWith("http")
     ? ogImage
     : absoluteUrl(ogImage);
+  const ogImageWidth = input.ogImageWidth ?? 1200;
+  const ogImageHeight = input.ogImageHeight ?? 630;
   const fullTitle =
     input.title === SITE_NAME ? input.title : `${input.title} | ${SITE_NAME}`;
 
@@ -72,8 +76,8 @@ export function createPageMetadata(input: PageMetadataInput): Metadata {
       images: [
         {
           url: ogImageUrl,
-          width: 1200,
-          height: 630,
+          width: ogImageWidth,
+          height: ogImageHeight,
           alt: input.title,
         },
       ],

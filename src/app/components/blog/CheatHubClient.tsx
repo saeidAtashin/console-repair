@@ -5,16 +5,15 @@ import { ChevronDown, Filter, Search, X } from "lucide-react";
 
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import type { BlogGameSection } from "@/app/data/blog";
+import { filterCheatSections } from "@/lib/blog-cheats-filters";
 import {
   cheatGamePath,
   CHEAT_POST_SLUG,
-  filterCheatSections,
-  getPopularCheatGames,
   type CheatConsoleFilter,
-} from "@/lib/blog-cheats";
+} from "@/lib/blog-cheats-paths";
 import { cn } from "@/lib/utils";
 
-import BlogCheatSection from "./BlogCheatSection";
+import BlogCheatSectionDeferred from "./BlogCheatSectionDeferred";
 
 const CONSOLE_TABS: {
   id: CheatConsoleFilter;
@@ -29,12 +28,22 @@ const CONSOLE_TABS: {
 
 type SectionLink = { id: string; title: string };
 
+export type PopularCheatGameLink = {
+  gameSlug: string;
+  name: string;
+};
+
 type Props = {
   sections: BlogGameSection[];
   sectionLinks: SectionLink[];
+  popularGames: PopularCheatGameLink[];
 };
 
-export default function CheatHubClient({ sections, sectionLinks }: Props) {
+export default function CheatHubClient({
+  sections,
+  sectionLinks,
+  popularGames,
+}: Props) {
   const [consoleFilter, setConsoleFilter] = useState<CheatConsoleFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -76,8 +85,6 @@ export default function CheatHubClient({ sections, sectionLinks }: Props) {
     (sum, section) => sum + section.games.length,
     0,
   );
-
-  const popularGames = useMemo(() => getPopularCheatGames(), []);
 
   const activeConsoleLabel =
     CONSOLE_TABS.find((tab) => tab.id === consoleFilter)?.label ?? "همه";
@@ -268,7 +275,7 @@ export default function CheatHubClient({ sections, sectionLinks }: Props) {
         </div>
       ) : (
         filteredSections.map((section, index) => (
-          <BlogCheatSection
+          <BlogCheatSectionDeferred
             key={section.id}
             section={section}
             index={index}

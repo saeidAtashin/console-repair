@@ -1,17 +1,23 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
-import CheatHubClient from "@/app/components/blog/CheatHubClient";
+import CheatHubSkeleton from "@/app/components/blog/CheatHubSkeleton";
 import BlogGameSectionBlock from "@/app/components/blog/BlogGameSection";
 import BlogPostHero from "@/app/components/blog/BlogPostHero";
 import FaqSection from "@/app/components/seo/FaqSection";
 import PageShell from "@/app/components/seo/PageShell";
 import { CtaButtonGroup } from "@/app/components/ui/cta";
 import { blogPosts, getBlogPost } from "@/app/data/blog";
-import { cheatGamePath, getAllCheatGames } from "@/lib/blog-cheats";
+import { cheatGamePath, getHubItemListGames, getPopularCheatGames } from "@/lib/blog-cheats";
 import { blogPostingJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { createPageMetadata } from "@/lib/seo/metadata";
+
+const CheatHubClient = dynamic(
+  () => import("@/app/components/blog/CheatHubClient"),
+  { loading: () => <CheatHubSkeleton /> },
+);
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -65,7 +71,7 @@ export default async function BlogPostPage({ params }: Props) {
       itemListJsonLd({
         name: post.title,
         path,
-        items: getAllCheatGames().map((game) => ({
+        items: getHubItemListGames().map((game) => ({
           name: `چیت ${game.name}`,
           url: cheatGamePath(game.gameSlug),
         })),
@@ -96,6 +102,10 @@ export default async function BlogPostPage({ params }: Props) {
               sectionLinks={post.sections.map((section) => ({
                 id: section.id,
                 title: section.title,
+              }))}
+              popularGames={getPopularCheatGames().map((game) => ({
+                gameSlug: game.gameSlug,
+                name: game.name,
               }))}
             />
           ) : (

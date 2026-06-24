@@ -21,7 +21,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { cheatHubPath } from "@/lib/blog-cheats";
+import { cheatHubPath } from "@/lib/blog-cheats-paths";
 import { cn } from "@/lib/utils";
 
 type BannerAlign = "right" | "center" | "left";

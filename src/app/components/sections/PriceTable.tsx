@@ -8,7 +8,7 @@ import {
   type HomeGameInstallTab,
   type PriceRange,
 } from "@/lib/game-install-pricing";
-import { cheatHubPath } from "@/lib/blog-cheats";
+import { cheatHubPath } from "@/lib/blog-cheats-paths";
 import { brandThemes, type Brand } from "@/lib/brand-theme";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {

@@ -1,10 +1,30 @@
+import "server-only";
+
 import { gameCheatsPost } from "@/app/data/blog-cheats-data";
-import type { BlogGame, BlogGameSection, BlogPost } from "@/app/data/blog";
+import type { BlogGame, BlogPost } from "@/app/data/blog";
 import { getGameCoverImage, resolveGameImages } from "@/lib/game-images";
 
-export const CHEAT_POST_SLUG = gameCheatsPost.slug;
+import {
+  FEATURED_CHEAT_SLUGS,
+  POPULAR_CHEAT_SLUGS,
+  type CheatConsoleFilter,
+  resolveGameSlug,
+} from "./blog-cheats-paths";
+import { normalizeCheatSearchQuery } from "./blog-cheats-filters";
 
-export type CheatConsoleFilter = "all" | "ps5" | "ps4" | "xbox";
+export {
+  CHEAT_POST_SLUG,
+  FEATURED_CHEAT_SLUGS,
+  POPULAR_CHEAT_SLUGS,
+  cheatGamePath,
+  cheatHubPath,
+  gameInstallHref,
+  gameInstallSlugFromConsole,
+  resolveGameSlug,
+  type CheatConsoleFilter,
+} from "./blog-cheats-paths";
+
+export { filterCheatSections } from "./blog-cheats-filters";
 
 export type CheatGameEntry = BlogGame & {
   gameSlug: string;
@@ -18,62 +38,14 @@ const CONSOLE_LABELS: Record<BlogGame["console"], string> = {
   xbox: "Xbox",
 };
 
-export const POPULAR_CHEAT_SLUGS = [
-  "gta-v-cheats",
-  "rdr2-cheats",
-  "minecraft-cheats",
-  "sims-4-cheats",
-  "skyrim-cheats",
-  "mortal-kombat-1-cheats",
-] as const;
-
-export const FEATURED_CHEAT_SLUGS = [
-  "gta-v-cheats",
-  "minecraft-cheats",
-  "sims-4-cheats",
-  "rdr2-cheats",
-  "skyrim-cheats",
-  "lego-harry-potter-cheats",
-] as const;
+let cachedAllGames: CheatGameEntry[] | null = null;
 
 export function getCheatPost(): BlogPost {
   return gameCheatsPost;
 }
 
-export function cheatHubPath(): string {
-  return `/blog/${CHEAT_POST_SLUG}`;
-}
-
-export function cheatGamePath(gameSlug: string): string {
-  return `/blog/${CHEAT_POST_SLUG}/${gameSlug}`;
-}
-
-export function gameInstallHref(console: BlogGame["console"]): string {
-  const map: Record<BlogGame["console"], string> = {
-    ps5: "/services/game-install/ps5",
-    ps4: "/services/game-install/ps4",
-    xbox: "/services/game-install/xbox-series",
-  };
-  return map[console];
-}
-
-export function gameInstallSlugFromConsole(
-  console: BlogGame["console"],
-): string {
-  const map: Record<BlogGame["console"], string> = {
-    ps5: "ps5",
-    ps4: "ps4",
-    xbox: "xbox-series",
-  };
-  return map[console];
-}
-
-function resolveGameSlug(game: BlogGame, index: number, sectionId: string): string {
-  return game.slug ?? `${sectionId}-game-${index}`;
-}
-
 export function getAllCheatGames(): CheatGameEntry[] {
-  return gameCheatsPost.sections.flatMap((section) =>
+  cachedAllGames ??= gameCheatsPost.sections.flatMap((section) =>
     section.games.map((game, index) => ({
       ...game,
       gameSlug: resolveGameSlug(game, index, section.id),
@@ -81,6 +53,7 @@ export function getAllCheatGames(): CheatGameEntry[] {
       sectionTitle: section.title,
     })),
   );
+  return cachedAllGames;
 }
 
 export function getCheatGame(gameSlug: string): CheatGameEntry | undefined {
@@ -93,10 +66,6 @@ export function getCheatGamesByConsole(
   const all = getAllCheatGames();
   if (console === "all") return all;
   return all.filter((game) => game.console === console);
-}
-
-export function normalizeCheatSearchQuery(query: string): string {
-  return query.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function gameSearchCorpus(game: CheatGameEntry): string {
@@ -125,24 +94,6 @@ export function filterCheatGames(
   if (!normalized) return byConsole;
 
   return byConsole.filter((game) => gameSearchCorpus(game).includes(normalized));
-}
-
-export function filterCheatSections(
-  sections: BlogGameSection[],
-  console: CheatConsoleFilter,
-  query: string,
-): BlogGameSection[] {
-  const filtered = filterCheatGames(console, query);
-  const slugSet = new Set(filtered.map((g) => g.gameSlug));
-
-  return sections
-    .map((section) => ({
-      ...section,
-      games: section.games.filter((game, index) =>
-        slugSet.has(resolveGameSlug(game, index, section.id)),
-      ),
-    }))
-    .filter((section) => section.games.length > 0);
 }
 
 export function getCheatGamesForInstallConsole(
@@ -205,6 +156,17 @@ export function getFeaturedCheatGames(): CheatGameEntry[] {
   return FEATURED_CHEAT_SLUGS.map(
     (slug) => all.find((g) => g.gameSlug === slug)!,
   ).filter(Boolean);
+}
+
+export function getHubItemListGames(): CheatGameEntry[] {
+  const all = getAllCheatGames();
+  const slugs = new Set<string>([
+    ...POPULAR_CHEAT_SLUGS,
+    ...FEATURED_CHEAT_SLUGS,
+  ]);
+  return [...slugs]
+    .map((slug) => all.find((g) => g.gameSlug === slug))
+    .filter((game): game is CheatGameEntry => Boolean(game));
 }
 
 export function getCheatGameImages(game: CheatGameEntry): string[] {

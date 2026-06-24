@@ -11,10 +11,16 @@ import StoreSection from "./sections/StoreSection";
 import WhyUs from "./sections/WhyUs";
 import GamingBackground from "./ui/GamingBackground";
 import PriceTable from "./sections/PriceTable";
-import HomeCheatsSection from "./sections/HomeCheatsSection";
+import HomeCheatsSectionClient, {
+  type FeaturedCheatCardProps,
+} from "./sections/HomeCheatsSectionClient";
 // import Testimonials from "./sections/Testimonials";
 
-export default function HomePage() {
+type Props = {
+  featuredCheatCards: FeaturedCheatCardProps[];
+};
+
+export default function HomePage({ featuredCheatCards }: Props) {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
 
   const spotlight = useMemo(
@@ -39,7 +45,7 @@ export default function HomePage() {
       <Services />
       <StoreSection />
       <PriceTable />
-      <HomeCheatsSection />
+      <HomeCheatsSectionClient featured={featuredCheatCards} />
       <ContactCTA />
       <ServicesSection />
       <WhyUs />

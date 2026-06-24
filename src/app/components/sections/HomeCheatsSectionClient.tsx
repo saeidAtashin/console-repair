@@ -7,19 +7,23 @@ import { useState } from "react";
 
 import GameImageStrip from "@/app/components/ui/GameImageStrip";
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
-import {
-  cheatGamePath,
-  cheatHubPath,
-  getCheatGameImages,
-  getFeaturedCheatGames,
-  getSampleCheat,
-} from "@/lib/blog-cheats";
+import { cheatGamePath, cheatHubPath } from "@/lib/blog-cheats-paths";
 
 const CONSOLE_META = {
   ps5: { label: "PS5", icon: "/icons/ps5.svg" },
   ps4: { label: "PS4", icon: "/icons/ps4.svg" },
   xbox: { label: "Xbox", icon: "/icons/xbox.svg" },
 } as const;
+
+export type FeaturedCheatCardProps = {
+  gameSlug: string;
+  name: string;
+  console: keyof typeof CONSOLE_META;
+  images: string[];
+  sampleTitle: string;
+  sampleCode: string;
+  priority?: boolean;
+};
 
 function SpoilerCheatCard({
   gameSlug,
@@ -28,14 +32,8 @@ function SpoilerCheatCard({
   images,
   sampleTitle,
   sampleCode,
-}: {
-  gameSlug: string;
-  name: string;
-  console: keyof typeof CONSOLE_META;
-  images: string[];
-  sampleTitle: string;
-  sampleCode: string;
-}) {
+  priority = false,
+}: FeaturedCheatCardProps) {
   const [revealed, setRevealed] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const consoleMeta = CONSOLE_META[gameConsole];
@@ -49,6 +47,8 @@ function SpoilerCheatCard({
           sizes="(max-width: 768px) 100vw, 33vw"
           aspectClass="aspect-[16/10] w-full"
           imageClassName="object-cover transition duration-500 group-hover:scale-105"
+          priority={priority}
+          fetchPriority={priority ? "high" : "auto"}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
         <span className="absolute start-3 top-3 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-[10px] font-bold text-zinc-200 backdrop-blur-sm">
@@ -100,9 +100,11 @@ function SpoilerCheatCard({
   );
 }
 
-export default function HomeCheatsSection() {
-  const featured = getFeaturedCheatGames();
+type Props = {
+  featured: FeaturedCheatCardProps[];
+};
 
+export default function HomeCheatsSectionClient({ featured }: Props) {
   return (
     <section
       id="game-cheats"
@@ -135,21 +137,13 @@ export default function HomeCheatsSection() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((game) => {
-            const sample = getSampleCheat(game);
-            if (!sample) return null;
-            return (
-              <SpoilerCheatCard
-                key={game.gameSlug}
-                gameSlug={game.gameSlug}
-                name={game.name}
-                console={game.console}
-                images={getCheatGameImages(game)}
-                sampleTitle={sample.title}
-                sampleCode={sample.code}
-              />
-            );
-          })}
+          {featured.map((card, index) => (
+            <SpoilerCheatCard
+              key={card.gameSlug}
+              {...card}
+              priority={index === 0}
+            />
+          ))}
         </div>
 
         <div className="mt-10 text-center">

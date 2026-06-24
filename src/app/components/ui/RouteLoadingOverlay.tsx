@@ -144,12 +144,14 @@ export default function RouteLoadingOverlay() {
   if (!visible) return null;
 
   return (
-    <div className="route-loader-overlay" aria-hidden="true">
+    <div className="route-loader-overlay" role="status" aria-live="polite">
+      <span className="sr-only">در حال بارگذاری…</span>
       <svg
         key={runId}
         className="route-loader-svg"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 100 125"
+        aria-hidden="true"
       >
         <title>Loading</title>
         <path

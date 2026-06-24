@@ -4,7 +4,7 @@ import { ChevronLeft, Star } from "lucide-react";
 import GameImageStrip from "@/app/components/ui/GameImageStrip";
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import type { BlogGame } from "@/app/data/blog";
-import { cheatGamePath, gameInstallHref } from "@/lib/blog-cheats";
+import { cheatGamePath, gameInstallHref } from "@/lib/blog-cheats-paths";
 import { resolveGameImages } from "@/lib/game-images";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +50,10 @@ export default function BlogCheatGameBlock({
   return (
     <article
       id={anchorId}
-      className="scroll-mt-28 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02]"
+      className={cn(
+        "scroll-mt-28 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02]",
+        !isDetailPage && "[content-visibility:auto] [contain-intrinsic-size:auto_320px]",
+      )}
       aria-labelledby={`cheat-game-${anchorId}`}
     >
       {isDetailPage ? (
@@ -59,6 +62,8 @@ export default function BlogCheatGameBlock({
           alt={game.name}
           sizes="(max-width: 768px) 100vw, 896px"
           aspectClass="aspect-[16/10] w-full"
+          priority
+          fetchPriority="high"
         />
       ) : null}
 
