@@ -60,9 +60,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Cpu,
 
-    image: "/images/Ps5-Parts-1-scaled.webp",
+    image: "/quick-access/ps5repair.png",
 
-    cover: "/images/Ps5-Parts-1-scaled.webp",
+    cover: "/quick-access/ps5repair.png",
 
     seoTitle: "تعمیر PS5 | تعمیر تخصصی پلی استیشن 5 با ضمانت",
 
@@ -129,9 +129,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Gamepad2,
 
-    image: "/images/PS4-service-center-in-Delhi.webp",
+    image: "/quick-access/ps4repair.png",
 
-    cover: "/images/PS4-service-center-in-Delhi.webp",
+    cover: "/quick-access/ps4repair.png",
 
     seoTitle: "تعمیر PS4 | تعمیر پلی استیشن 4 با ضمانت",
 
@@ -195,9 +195,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Monitor,
 
-    image: "/images/Series_X_Digital_Edition_Layout.jpg",
+    image: "/quick-access/xboxrepair.png",
 
-    cover: "/images/Series_X_Digital_Edition_Layout.jpg",
+    cover: "/quick-access/xboxrepair.png",
 
     seoTitle: "تعمیر Xbox | تعمیر تخصصی ایکس باکس",
 

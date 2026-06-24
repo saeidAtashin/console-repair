@@ -42,7 +42,7 @@ export default function ProductCard({ product }: Props) {
             alt={product.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            className="object-contain p-8 transition duration-500 group-hover:scale-105"
+            className="object-cover transition duration-500 group-hover:scale-105"
           />
           {categoryBadge ? (
             <span className="absolute start-3 top-3 rounded-lg border border-cyan-500/30 bg-cyan-500/15 px-2 py-1 text-xs text-cyan-300">

@@ -20,6 +20,7 @@ import {
   type ConsoleId,
   type ConsoleServiceKind,
 } from "../../../../lib/console-catalog";
+import { quickAccessImages } from "@/lib/quick-access-images";
 import { cn } from "@/lib/utils";
 import "./hero-device-scene.css";
 
@@ -27,27 +28,6 @@ const consoleImages: Record<ConsoleId, string> = {
   ps4: "/obj-console/PS4-service-center-in-Delhi.webp",
   ps5: "/obj-console/ps5-repair.webp",
   xbox: "/obj-console/Series_X_Digital_Edition_Layout.jpg",
-};
-
-const quickAccessImages: Record<
-  ConsoleId,
-  Record<ConsoleServiceKind, string>
-> = {
-  ps4: {
-    "game-install": "/quick-access/ps4game.jpg",
-    repair: "/quick-access/ps4repair.png",
-    shop: "/quick-access/ps4shop.png",
-  },
-  ps5: {
-    "game-install": "/quick-access/ps5game.jpg",
-    repair: "/quick-access/ps5repair.png",
-    shop: "/quick-access/ps5shop.png",
-  },
-  xbox: {
-    "game-install": "/quick-access/xboxgame.png",
-    repair: "/quick-access/xboxrepair.png",
-    shop: "/quick-access/xboxshop.png",
-  },
 };
 
 const quickAccessImageUrls = consoleIds.flatMap((id) =>

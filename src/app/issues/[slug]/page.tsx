@@ -24,6 +24,7 @@ import {
   buildRepairHref,
   consoleIdFromIssueSlug,
 } from "../../../lib/repair-links";
+import { getIssueImage } from "@/lib/quick-access-images";
 import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
 import { absoluteUrl, SITE_NAME } from "../../../lib/seo/site";
@@ -60,12 +61,14 @@ export async function generateMetadata({ params }: Props) {
     });
   }
 
+  const issueImage = getIssueImage(issue.slug, issue.image);
+
   return createPageMetadata({
     title: issue.seoTitle ?? issue.title,
     description: enrichIssueSeoDescription(issue),
     path: `/issues/${issue.slug}`,
     type: "article",
-    ogImage: issue.image,
+    ogImage: issueImage,
   });
 }
 
@@ -75,6 +78,7 @@ export default async function IssuePage({ params }: Props) {
 
   if (!issue) notFound();
 
+  const issueImage = getIssueImage(issue.slug, issue.image);
   const seo = buildIssueSeoExtras(issue);
   const issuePath = `/issues/${issue.slug}`;
   const consoleId = consoleIdFromIssueSlug(issue.slug);
@@ -94,7 +98,7 @@ export default async function IssuePage({ params }: Props) {
     inLanguage: "fa-IR",
     author: { "@type": "Organization", name: SITE_NAME },
     publisher: { "@type": "Organization", name: SITE_NAME },
-    image: issue.image ? absoluteUrl(issue.image) : undefined,
+    image: absoluteUrl(issueImage),
   };
 
   const diagnosticSteps = [
@@ -126,7 +130,7 @@ export default async function IssuePage({ params }: Props) {
         <section className="relative overflow-hidden border-b border-zinc-800">
           <div className="absolute inset-0">
             <Image
-              src={issue.image || "/images/Ps5-Parts-1-scaled.webp"}
+              src={issueImage}
               alt={issue.title}
               fill
               className="object-cover opacity-40"

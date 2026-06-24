@@ -83,7 +83,7 @@ export default function FlyToCartAnimator() {
           alt=""
           fill
           sizes="400px"
-          className={`object-contain ${variant === "hero" ? "p-10" : "p-8"}`}
+          className="object-cover"
         />
       </div>
     </motion.div>,

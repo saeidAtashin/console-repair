@@ -100,7 +100,7 @@ export default function ShopSearchSuggestions({
                   alt=""
                   fill
                   sizes="48px"
-                  className="object-contain p-2"
+                  className="object-cover"
                 />
               </div>
               <div className="min-w-0 flex-1">

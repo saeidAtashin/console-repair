@@ -28,7 +28,7 @@ export default function CartLineItem({
           alt={product.title}
           fill
           sizes="88px"
-          className="object-contain p-3"
+          className="object-cover"
         />
       </Link>
 

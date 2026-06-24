@@ -16,6 +16,7 @@ import {
   SERVICES_INDEX_TRUST_SIGNALS,
 } from "@/app/data/services-index-content";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
+import { getGameInstallImage } from "@/lib/quick-access-images";
 import { collectionPageJsonLd, itemListJsonLd } from "../../lib/seo/jsonld";
 import { createPageMetadata } from "../../lib/seo/metadata";
 
@@ -136,12 +137,26 @@ export default function ServicesIndexPage() {
             می‌شود.
           </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {Object.entries(GAME_INSTALL_CONSOLE_META).map(([slug, meta]) => (
+            {Object.entries(GAME_INSTALL_CONSOLE_META).map(([slug, meta]) => {
+              const imageSrc = getGameInstallImage(slug);
+              return (
               <Link
                 key={slug}
                 href={`/services/game-install/${slug}`}
-                className="rounded-2xl border border-white/10 bg-zinc-900/50 p-6 transition hover:border-cyan-400/30"
+                className="group overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 transition hover:border-cyan-400/30"
               >
+                {imageSrc ? (
+                  <div className="relative h-40 overflow-hidden">
+                    <Image
+                      src={imageSrc}
+                      alt={meta.title}
+                      fill
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                    />
+                  </div>
+                ) : null}
+                <div className="p-6">
                 <h3 className="text-lg font-bold">{meta.title}</h3>
                 <p className="mt-2 text-sm leading-7 text-zinc-400">
                   {meta.description}
@@ -150,8 +165,10 @@ export default function ServicesIndexPage() {
                   مشاهده تعرفه
                   <ChevronLeft className="h-4 w-4" />
                 </span>
+                </div>
               </Link>
-            ))}
+            );
+            })}
           </div>
         </section>
 
