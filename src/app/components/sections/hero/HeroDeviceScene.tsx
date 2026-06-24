@@ -29,6 +29,31 @@ const consoleImages: Record<ConsoleId, string> = {
   xbox: "/obj-console/Series_X_Digital_Edition_Layout.jpg",
 };
 
+const quickAccessImages: Record<
+  ConsoleId,
+  Record<ConsoleServiceKind, string>
+> = {
+  ps4: {
+    "game-install": "/quick-access/ps4game.jpg",
+    repair: "/quick-access/ps4repair.png",
+    shop: "/quick-access/ps4shop.png",
+  },
+  ps5: {
+    "game-install": "/quick-access/ps5game.jpg",
+    repair: "/quick-access/ps5repair.png",
+    shop: "/quick-access/ps5shop.png",
+  },
+  xbox: {
+    "game-install": "/quick-access/xboxgame.png",
+    repair: "/quick-access/xboxrepair.png",
+    shop: "/quick-access/xboxshop.png",
+  },
+};
+
+const quickAccessImageUrls = consoleIds.flatMap((id) =>
+  Object.values(quickAccessImages[id]),
+);
+
 const consoleOptions: { id: ConsoleId; iconSrc: string }[] = [
   { id: "ps5", iconSrc: "/icons/ps5.svg" },
   { id: "ps4", iconSrc: "/icons/ps4.svg" },
@@ -109,23 +134,27 @@ function usePickerPrimed() {
 function useHeroAssetPreload() {
   useEffect(() => {
     const urls = [
-      ...new Set([...Object.values(consoleImages), ...consoleOptions.map((o) => o.iconSrc)]),
+      ...new Set([
+        ...Object.values(consoleImages),
+        ...quickAccessImageUrls,
+        ...consoleOptions.map((o) => o.iconSrc),
+      ]),
     ];
 
     const links: HTMLLinkElement[] = [];
     for (const href of urls) {
       const link = document.createElement("link");
       link.rel = "preload";
-      link.as = href.endsWith(".svg") ? "image" : "image";
+      link.as = "image";
       link.href = href;
       document.head.appendChild(link);
       links.push(link);
     }
 
-    consoleIds.forEach((id) => {
+    [...Object.values(consoleImages), ...quickAccessImageUrls].forEach((src) => {
       const img = new window.Image();
       img.decoding = "async";
-      img.src = consoleImages[id];
+      img.src = src;
     });
 
     return () => {
@@ -285,6 +314,20 @@ export default function HeroDeviceScene() {
       ? `${serviceOptions.find((s) => s.id === selectedService)?.label} ${consoleCatalog[selectedConsole].title}`
       : "";
 
+  const activeImageSrc = useMemo(
+    () =>
+      selectedConsole && selectedService
+        ? quickAccessImages[selectedConsole][selectedService]
+        : consoleImages[visibleConsole],
+    [selectedConsole, selectedService, visibleConsole],
+  );
+
+  const activeImageAlt = useMemo(
+    () =>
+      centerLabel || consoleCatalog[visibleConsole].title,
+    [centerLabel, visibleConsole],
+  );
+
   const togglePicker = useCallback(() => {
     forcePrime();
     setIsPickerOpen((prev) => !prev);
@@ -380,26 +423,14 @@ export default function HeroDeviceScene() {
                   <div className="hero-scene__glow" aria-hidden />
 
                   <div className="absolute inset-0">
-                    {consoleIds.map((id) => (
-                      <NextImage
-                        key={id}
-                        src={consoleImages[id]}
-                        alt={
-                          id === visibleConsole
-                            ? consoleCatalog[id].title
-                            : ""
-                        }
-                        fill
-                        sizes="(max-width: 640px) 100vw, 720px"
-                        priority={id === DEFAULT_CONSOLE}
-                        className={cn(
-                          "hero-scene__photo object-cover",
-                          visibleConsole === id
-                            ? "z-[1] opacity-100"
-                            : "z-0 opacity-0",
-                        )}
-                      />
-                    ))}
+                    <NextImage
+                      src={activeImageSrc}
+                      alt={activeImageAlt}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 720px"
+                      priority={activeImageSrc === consoleImages[DEFAULT_CONSOLE]}
+                      className="hero-scene__photo z-[1] object-cover opacity-100"
+                    />
                   </div>
 
                   <div
