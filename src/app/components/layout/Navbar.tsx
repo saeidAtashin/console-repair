@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { useShopCart } from "@/app/context/ShopCartContext";
 import Image from "next/image";
@@ -29,8 +30,10 @@ function getRotationDeg(el: HTMLElement) {
 }
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { user, logout } = useAuth();
   const { itemCount } = useShopCart();
+  const hideShopSearch = pathname.startsWith("/shop");
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -201,7 +204,9 @@ export default function Navbar() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <ShopSearch variant="header" onNavigate={closeMenu} />
+              {!hideShopSearch ? (
+                <ShopSearch variant="header" onNavigate={closeMenu} />
+              ) : null}
               <Link
                 href="/shop/cart"
                 className="relative rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-200 transition hover:border-cyan-500/50"
@@ -332,9 +337,11 @@ export default function Navbar() {
               </button>
             </div>
 
-            <div className="mb-8 md:hidden">
-              <ShopSearch variant="header" onNavigate={closeMenu} />
-            </div>
+            {!hideShopSearch ? (
+              <div className="mb-8 md:hidden">
+                <ShopSearch variant="header" onNavigate={closeMenu} />
+              </div>
+            ) : null}
 
             <div className="flex flex-col gap-6 text-right">
               {navbarNavItems.map((item) => (

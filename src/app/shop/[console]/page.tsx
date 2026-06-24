@@ -1,23 +1,28 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
-import ShopPageClient from "@/app/shop/ShopPageClient";
+import ShopCatalogGrid from "@/app/components/shop/ShopCatalogGrid";
+import ShopCatalogSkeleton from "@/app/components/shop/ShopCatalogSkeleton";
+import ShopConditionFilters from "@/app/components/shop/ShopConditionFilters";
+import ShopConsoleTabs from "@/app/components/shop/ShopConsoleTabs";
+import ShopPageSearch from "@/app/components/shop/ShopPageSearch";
+import ShopServicesSection from "@/app/components/shop/ShopServicesSection";
 import PageShell from "@/app/components/seo/PageShell";
 import { createPageMetadata } from "@/lib/seo/metadata";
-import {
-  collectionPageJsonLd,
-  itemListJsonLd,
-  productOfferJsonLd,
-} from "@/lib/seo/jsonld";
+import { collectionPageJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import {
   SHOP_CONSOLES,
   SHOP_CONSOLE_META,
   getProducts,
+  getProductsGrouped,
+  getSearchResultProducts,
+  parseShopPageParams,
   type ShopConsole,
 } from "@/lib/shop";
 
 type Props = {
   params: Promise<{ console: string }>;
+  searchParams: Promise<{ q?: string; condition?: string }>;
 };
 
 export function generateStaticParams() {
@@ -46,17 +51,31 @@ export async function generateMetadata({ params }: Props) {
   });
 }
 
-export default async function ShopConsolePage({ params }: Props) {
-  const { console: consoleSlug } = await params;
+export default async function ShopConsolePage({ params, searchParams }: Props) {
+  const [{ console: consoleSlug }, queryParams] = await Promise.all([
+    params,
+    searchParams,
+  ]);
+
   if (!SHOP_CONSOLES.includes(consoleSlug as ShopConsole)) notFound();
 
   const shopConsole = consoleSlug as ShopConsole;
   const meta = SHOP_CONSOLE_META[shopConsole];
   const products = getProducts({ console: shopConsole });
   const path = `/shop/${shopConsole}`;
+  const { searchQuery, isSearchMode, condition } = parseShopPageParams(queryParams);
+  const initialQuery = queryParams.q ?? "";
 
   const title = `خرید ${meta.label}`;
   const description = `همه مدل های ${meta.label} در فروشگاه، شامل گزینه های نو و دست دوم تست شده.`;
+
+  const grouped = getProductsGrouped({
+    console: shopConsole,
+    condition: condition === "all" ? undefined : condition,
+  });
+  const searchResults = isSearchMode
+    ? getSearchResultProducts(searchQuery, { limit: 48 })
+    : [];
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 text-white">
@@ -76,21 +95,43 @@ export default async function ShopConsolePage({ params }: Props) {
               url: `/shop/${product.console}/${product.slug}`,
             })),
           }),
-          ...products.map((product) =>
-            productOfferJsonLd({
-              product,
-              path: `/shop/${product.console}/${product.slug}`,
-            }),
-          ),
         ]}
         containerClassName="container mx-auto px-6"
         className="container mx-auto px-6 pb-14"
       >
         <h1 className="text-4xl font-black md:text-5xl">{title}</h1>
         <p className="mt-4 max-w-3xl text-lg text-zinc-400">{description}</p>
-        <Suspense fallback={null}>
-          <ShopPageClient defaultConsole={shopConsole} />
+
+        <Suspense fallback={<ShopCatalogSkeleton />}>
+          <ShopPageSearch initialQuery={initialQuery} basePath={path} />
         </Suspense>
+
+        {!isSearchMode ? (
+          <Suspense fallback={null}>
+            <ShopConditionFilters value={condition} basePath={path} />
+          </Suspense>
+        ) : null}
+
+        {!isSearchMode ? (
+          <ShopConsoleTabs activeConsole={shopConsole} condition={condition} />
+        ) : null}
+
+        {isSearchMode ? (
+          <ShopCatalogGrid
+            mode="search"
+            searchQuery={searchQuery}
+            searchResults={searchResults}
+          />
+        ) : (
+          <ShopCatalogGrid
+            mode="browse"
+            grouped={grouped}
+            activeConsole={shopConsole}
+            condition={condition}
+          />
+        )}
+
+        <ShopServicesSection />
       </PageShell>
     </main>
   );

@@ -1,17 +1,22 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 
-import ShopSearchSuggestions from "./ShopSearchSuggestions";
 import { normalizeSearchQuery, searchShopProducts } from "@/lib/shop";
+
+const ShopSearchSuggestions = dynamic(() => import("./ShopSearchSuggestions"), {
+  ssr: false,
+});
 
 type Props = {
   variant: "page" | "header";
   initialQuery?: string;
   onQueryChange?: (query: string) => void;
   syncUrl?: boolean;
+  basePath?: string;
   onNavigate?: () => void;
 };
 
@@ -22,6 +27,7 @@ export default function ShopSearch({
   initialQuery = "",
   onQueryChange,
   syncUrl = false,
+  basePath = "/shop",
   onNavigate,
 }: Props) {
   const router = useRouter();
@@ -34,19 +40,30 @@ export default function ShopSearch({
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const onQueryChangeRef = useRef(onQueryChange);
+  const lastSyncedQueryRef = useRef(initialQuery);
+
+  onQueryChangeRef.current = onQueryChange;
 
   useEffect(() => {
     setQuery(initialQuery);
     setDebouncedQuery(initialQuery);
+    lastSyncedQueryRef.current = initialQuery;
   }, [initialQuery]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setDebouncedQuery(query);
-      onQueryChange?.(query);
+
+      const normalizedQuery = normalizeSearchQuery(query);
+      const normalizedLast = normalizeSearchQuery(lastSyncedQueryRef.current);
+      if (normalizedQuery === normalizedLast) return;
+
+      lastSyncedQueryRef.current = query;
+      onQueryChangeRef.current?.(query);
     }, DEBOUNCE_MS);
     return () => window.clearTimeout(timer);
-  }, [query, onQueryChange]);
+  }, [query]);
 
   const results = useMemo(
     () => searchShopProducts(debouncedQuery, { limit: 8 }),
@@ -79,23 +96,30 @@ export default function ShopSearch({
     [onNavigate, router],
   );
 
+  const buildShopUrl = useCallback(
+    (normalized: string) => {
+      if (normalized) {
+        return `${basePath}?q=${encodeURIComponent(normalized)}`;
+      }
+      return basePath;
+    },
+    [basePath],
+  );
+
   const submitSearch = useCallback(
     (value: string) => {
       const normalized = normalizeSearchQuery(value);
       setOpen(false);
       onNavigate?.();
 
-      if (syncUrl || pathname === "/shop") {
-        const next = normalized ? `/shop?q=${encodeURIComponent(normalized)}` : "/shop";
-        router.push(next);
+      if (syncUrl || pathname.startsWith("/shop")) {
+        router.push(buildShopUrl(normalized));
         return;
       }
 
-      router.push(
-        normalized ? `/shop?q=${encodeURIComponent(normalized)}` : "/shop",
-      );
+      router.push(buildShopUrl(normalized));
     },
-    [onNavigate, pathname, router, syncUrl],
+    [buildShopUrl, onNavigate, pathname, router, syncUrl],
   );
 
   const handleSelect = useCallback(
@@ -192,10 +216,8 @@ export default function ShopSearch({
             onClick={() => {
               setQuery("");
               setDebouncedQuery("");
-              onQueryChange?.("");
-              if (syncUrl && pathname === "/shop") {
-                router.push("/shop");
-              }
+              lastSyncedQueryRef.current = "";
+              onQueryChangeRef.current?.("");
               inputRef.current?.focus();
             }}
             className="rounded-lg p-1 text-zinc-400 transition hover:bg-white/5 hover:text-white"

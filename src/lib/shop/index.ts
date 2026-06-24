@@ -8,4 +8,5 @@ export * from "./product-details";
 export * from "./products";
 export * from "./search";
 export * from "./search-aliases";
+export * from "./shop-page-params";
 export * from "./types";

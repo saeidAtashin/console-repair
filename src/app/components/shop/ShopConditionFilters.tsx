@@ -1,6 +1,10 @@
 "use client";
 
+import { useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import type { ProductCondition } from "@/lib/shop";
+import { buildShopPageUrl } from "@/lib/shop";
 
 export type ConditionFilterKey = "all" | ProductCondition;
 
@@ -12,10 +16,32 @@ const CONDITION_FILTERS: { key: ConditionFilterKey; label: string }[] = [
 
 type Props = {
   value: ConditionFilterKey;
-  onChange: (value: ConditionFilterKey) => void;
+  basePath: string;
 };
 
-export default function ShopConditionFilters({ value, onChange }: Props) {
+export default function ShopConditionFilters({ value, basePath }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchParamsKey = searchParams.toString();
+
+  const handleChange = useCallback(
+    (nextCondition: ConditionFilterKey) => {
+      const currentParams = new URLSearchParams(searchParamsKey);
+      const nextUrl = buildShopPageUrl(basePath, {
+        q: currentParams.get("q") ?? undefined,
+        condition: nextCondition,
+      });
+      const currentUrl = searchParamsKey
+        ? `${basePath}?${searchParamsKey}`
+        : basePath;
+
+      if (nextUrl === currentUrl) return;
+
+      router.replace(nextUrl, { scroll: false });
+    },
+    [basePath, router, searchParamsKey],
+  );
+
   return (
     <div className="mt-4 flex flex-wrap items-center gap-3">
       <span className="text-sm font-medium text-zinc-500">وضعیت:</span>
@@ -26,7 +52,7 @@ export default function ShopConditionFilters({ value, onChange }: Props) {
             <button
               key={filter.key}
               type="button"
-              onClick={() => onChange(filter.key)}
+              onClick={() => handleChange(filter.key)}
               className={`rounded-xl px-5 py-2 text-sm font-medium transition ${
                 active
                   ? "bg-cyan-500/15 text-cyan-300 shadow-sm"
