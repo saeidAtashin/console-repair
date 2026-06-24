@@ -44,7 +44,7 @@ type BannerSlide = {
 
 const BANNER_SLIDES: BannerSlide[] = [
   {
-    image: "/images/banner1.png",
+    image: "/images/bannerrepair.png",
     tag: "خدمات تخصصی",
     title: "تعمیرات",
     highlight: "تخصصی",
