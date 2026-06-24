@@ -66,9 +66,6 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     seoTitle: "تعمیر PS5 | تعمیر تخصصی پلی استیشن 5 با ضمانت",
 
-    seoDescription:
-      "تعمیر تخصصی PS5 شامل HDMI، فن، پاور، مادربرد، داغ شدن و روشن نشدن با ضمانت خدمات.",
-
     keywords: [
       "تعمیر ps5",
       "تعمیر پلی استیشن 5",
@@ -138,9 +135,6 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     seoTitle: "تعمیر PS4 | تعمیر پلی استیشن 4 با ضمانت",
 
-    seoDescription:
-      "تعمیر تخصصی PS4 شامل تعمیر HDMI، پاور، فن و رفع مشکل روشن نشدن.",
-
     keywords: [
       "تعمیر ps4",
       "تعمیر پلی استیشن 4",
@@ -207,8 +201,6 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     seoTitle: "تعمیر Xbox | تعمیر تخصصی ایکس باکس",
 
-    seoDescription: "تعمیر Xbox Series و Xbox One با ضمانت خدمات و قطعات اصلی.",
-
     keywords: ["تعمیر xbox", "تعمیر xbox series x", "تعمیر xbox one"],
 
     estimatedTime: "1 تا 5 روز کاری",
@@ -270,8 +262,6 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     seoTitle: "تعمیر HDMI کنسول | تعمیر سوکت HDMI PS5 و Xbox",
 
-    seoDescription: "تعمیر تخصصی HDMI انواع کنسول بازی با تجهیزات حرفه‌ای.",
-
     keywords: ["تعمیر hdmi ps5", "تعمیر hdmi xbox", "تعویض سوکت hdmi"],
 
     estimatedTime: "1 تا 2 روز کاری",
@@ -328,9 +318,6 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
     cover: "/images/controller-repair.jpg",
 
     seoTitle: "تعمیر دسته PS5، PS4 و Xbox",
-
-    seoDescription:
-      "تعمیر تخصصی دسته پلی استیشن و ایکس باکس شامل رفع مشکل آنالوگ، دکمه‌ها و شارژ دسته.",
 
     keywords: [
       "تعمیر دسته ps5",

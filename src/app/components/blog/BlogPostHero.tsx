@@ -33,14 +33,16 @@ export default function BlogPostHero({ post }: Props) {
             transition={{ duration: 0.45 }}
             className="mb-4 flex flex-wrap gap-2"
           >
-            {post.sections.slice(0, 3).map((section) => (
-              <span
-                key={section.id}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300 backdrop-blur-sm"
-              >
-                {section.title.split(" ").slice(0, 2).join(" ")}
-              </span>
-            ))}
+            {(post.kind === "cheats" ? post.sections : post.sections.slice(0, 3)).map(
+              (section) => (
+                <span
+                  key={section.id}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300 backdrop-blur-sm"
+                >
+                  {section.title.split(" ").slice(0, 2).join(" ")}
+                </span>
+              ),
+            )}
           </motion.div>
 
           <motion.h1

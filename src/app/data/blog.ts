@@ -1,3 +1,12 @@
+import { gameCheatsPost } from "./blog-cheats-data";
+
+export type BlogCheatEntry = {
+  title: string;
+  code: string;
+  effect: string;
+  platform?: "ps5" | "ps4" | "xbox" | "all";
+};
+
 export type BlogGame = {
   name: string;
   console: "ps5" | "ps4" | "xbox";
@@ -7,6 +16,10 @@ export type BlogGame = {
   released: string;
   coverImage: string;
   highlight: string;
+  slug?: string;
+  cheats?: BlogCheatEntry[];
+  secrets?: string[];
+  cheatActivation?: string;
 };
 
 export type BlogGameSection = {
@@ -35,6 +48,7 @@ export type BlogPost = {
   sections: BlogGameSection[];
   body: string[];
   faqs?: BlogFaq[];
+  kind?: "guide" | "cheats";
 };
 
 const RAWG = "https://media.rawg.io/media/games";
@@ -551,6 +565,7 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  gameCheatsPost,
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
@@ -558,4 +573,4 @@ export function getBlogPost(slug: string): BlogPost | undefined {
 }
 
 export const BLOG_INDEX_DESCRIPTION =
-  "بلاگ فیکس‌بازی — راهنمای بهترین بازی‌های PS5 و Xbox، نکات نصب بازی و اخبار گیمینگ برای گیمرهای ایرانی.";
+  "بلاگ فیکس‌بازی — راهنمای بهترین بازی‌های PS5 و Xbox، رمز و چیت بازی، نکات نصب بازی و اخبار گیمینگ برای گیمرهای ایرانی.";

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
+import BlogCheatSection from "@/app/components/blog/BlogCheatSection";
 import BlogGameSectionBlock from "@/app/components/blog/BlogGameSection";
 import BlogPostHero from "@/app/components/blog/BlogPostHero";
 import FaqSection from "@/app/components/seo/FaqSection";
@@ -74,13 +75,21 @@ export default async function BlogPostPage({ params }: Props) {
             ))}
           </div>
 
-          {post.sections.map((section, index) => (
-            <BlogGameSectionBlock
-              key={section.id}
-              section={section}
-              index={index}
-            />
-          ))}
+          {post.sections.map((section, index) =>
+            post.kind === "cheats" ? (
+              <BlogCheatSection
+                key={section.id}
+                section={section}
+                index={index}
+              />
+            ) : (
+              <BlogGameSectionBlock
+                key={section.id}
+                section={section}
+                index={index}
+              />
+            ),
+          )}
 
           <div className="mt-14 space-y-5 border-t border-white/[0.06] pt-14 text-base leading-relaxed text-zinc-300">
             {post.body.map((paragraph, index) => (
