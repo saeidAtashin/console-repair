@@ -31,7 +31,6 @@ export type RepairSeoContext = {
   ogImage?: string;
   noIndex: boolean;
   consoleId?: ConsoleId;
-  breadcrumbLabel?: string;
 };
 
 type SearchParamValue = string | string[] | undefined;
@@ -83,8 +82,6 @@ export function resolveRepairSeo(
       ogImage: service?.cover ?? service?.image,
       noIndex: false,
       consoleId: prefill.consoleId,
-      breadcrumbLabel:
-        service?.title ?? `تعمیر ${consoleCatalog[prefill.consoleId].title}`,
     };
   }
 
@@ -95,18 +92,6 @@ export function resolveRepairSeo(
     canonicalPath,
     noIndex: hasIssue || hasDescription,
   };
-}
-
-export function repairBreadcrumbItems(ctx: RepairSeoContext) {
-  if (ctx.consoleId && ctx.breadcrumbLabel) {
-    return [
-      { label: "خانه", href: "/" },
-      { label: "ثبت سفارش تعمیر", href: "/repair" },
-      { label: ctx.breadcrumbLabel },
-    ];
-  }
-
-  return [{ label: "خانه", href: "/" }, { label: "ثبت سفارش تعمیر" }];
 }
 
 function serviceJsonLd(input: {

@@ -17,7 +17,6 @@ import {
 } from "@/lib/game-filters";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
 import {
-  gameListBreadcrumbItems,
   getGameInstallContent,
 } from "@/lib/game-install-content";
 import {
@@ -123,12 +122,6 @@ export default async function GameListPage({ params, searchParams }: Props) {
     <main className="min-h-screen bg-[#050816] pt-24 text-white p-10">
       <PageShell
         currentPath={listPath}
-        breadcrumbs={gameListBreadcrumbItems(
-          consoleSlug,
-          meta.label,
-          filter.label,
-          hubPath,
-        )}
         jsonLd={webPageJsonLd({
           name: `${filter.label} — ${meta.label}`,
           description: filterIntro,

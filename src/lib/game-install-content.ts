@@ -290,17 +290,3 @@ export const gameInstallContent: Record<GameInstallConsoleSlug, GameInstallConte
 export function getGameInstallContent(slug: string): GameInstallContent | undefined {
   return gameInstallContent[slug as GameInstallConsoleSlug];
 }
-
-export function gameListBreadcrumbItems(
-  consoleSlug: string,
-  consoleLabel: string,
-  filterLabel: string,
-  hubPath: string,
-): { label: string; href?: string }[] {
-  return [
-    { label: "خانه", href: "/" },
-    { label: "خدمات", href: "/services" },
-    { label: `نصب بازی ${consoleLabel}`, href: hubPath },
-    { label: filterLabel },
-  ];
-}

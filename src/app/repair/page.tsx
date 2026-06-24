@@ -1,7 +1,6 @@
 import PageShell from "@/app/components/seo/PageShell";
 import { createPageMetadata } from "../../lib/seo/metadata";
 import {
-  repairBreadcrumbItems,
   repairPageJsonLd,
   repairPrefillFromPageSearchParams,
   resolveRepairSeo,
@@ -37,7 +36,6 @@ export default async function RepairPage({ searchParams }: Props) {
   return (
     <PageShell
       currentPath={seo.canonicalPath}
-      breadcrumbs={repairBreadcrumbItems(seo)}
       jsonLd={[...repairPageJsonLd(seo), repairContentJsonLd(seo.consoleId)]}
       className="min-h-screen bg-[#030510] text-white"
       containerClassName="container mx-auto max-w-4xl px-6"
