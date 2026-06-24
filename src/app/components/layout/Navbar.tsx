@@ -30,6 +30,11 @@ function getRotationDeg(el: HTMLElement) {
   return (Math.atan2(b, a) * 180) / Math.PI;
 }
 
+function navLinkActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
@@ -76,6 +81,13 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   const burstCdOnOpen = useCallback(() => {
     const el = cdRef.current;
     if (!el) return;
@@ -121,6 +133,7 @@ export default function Navbar() {
       openTimerRef.current = null;
     }
     setOpen(false);
+    setMobileOpen(null);
     const el = cdRef.current;
     if (el && !isBurstingRef.current) {
       el.style.transform = `rotate(${scrollRotationRef.current}deg)`;
@@ -132,140 +145,153 @@ export default function Navbar() {
     else openMenu();
   }, [open, closeMenu, openMenu]);
 
+  const cartClassName =
+    "rounded-lg border border-zinc-800 bg-zinc-900 p-2.5 text-zinc-200 transition hover:border-cyan-500/50 touch-manipulation";
+
+  const loginClassName =
+    "relative overflow-hidden rounded-lg bg-cyan-500 px-4 py-2 text-sm font-bold text-black shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all hover:scale-105 active:scale-95 sm:px-5 lg:px-6 touch-manipulation";
+
+  const panelClassName =
+    "flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs font-bold text-white transition-all hover:border-cyan-500/50 sm:gap-2 sm:px-5 sm:text-sm touch-manipulation";
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 border-b ${
+        className={`fixed inset-x-0 top-0 z-[100] border-b transition-all duration-500 ${
           scrolled
-            ? "border-white/10 bg-black/80 backdrop-blur-2xl h-16"
-            : "border-transparent bg-transparent h-24"
+            ? "h-16 border-white/10 bg-black/80 backdrop-blur-2xl"
+            : "h-16 border-transparent bg-transparent md:h-20"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-          {/* Actions / Auth (Left Side) */}
-          <div className="flex items-center gap-4 flex-1">
-            <button
-              type="button"
-              onClick={toggleMenu}
-              data-route-loader-ignore="true"
-              className="md:hidden relative h-11 w-11 shrink-0 touch-manipulation"
-              aria-label={open ? "بستن منو" : "باز کردن منو"}
-              aria-expanded={open}
-            >
-              <div ref={cdRef} className="h-11 w-11 will-change-transform">
-                <Image
-                  src="/obj-console/cd.png"
-                  alt=""
-                  width={44}
-                  height={44}
-                  className="h-11 w-11 object-contain drop-shadow-[0_0_12px_rgba(6,182,212,0.35)] filter hue-rotate-331 saturate-200"
-                  priority
-                />
-              </div>
-            </button>
-
-            <div className="flex md:hidden items-center gap-2">
-              <CartNavLink
-                itemCount={itemCount}
-                receiving={cartBounce}
-                className="rounded-lg border border-white/10 bg-zinc-900 p-2 text-zinc-200 hover:border-cyan-500/50"
-              />
+        <div
+          className="
+  mx-auto h-full max-w-7xl
+  flex justify-between items-center
+  sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
+  sm:gap-4
+  px-4 sm:px-6
+"
+        >
+          {/* Actions — end (left in RTL) */}
+          <div className="flex min-w-0 items-center justify-start gap-2 sm:gap-3">
+            <div className="hidden items-center gap-2 lg:flex xl:gap-3">
               {!user ? (
-                <Link
-                  href="/login"
-                  className="px-4 py-2 rounded-lg bg-cyan-500 text-black font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all hover:scale-105 active:scale-95"
-                >
+                <Link href="/login" className={loginClassName}>
                   ورود
                 </Link>
               ) : (
-                <>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={user.role === "admin" ? "/admin" : "/dashboard"}
+                    className={panelClassName}
+                  >
+                    <LayoutDashboard
+                      size={16}
+                      className="shrink-0 text-cyan-400 sm:hidden"
+                    />
+                    <LayoutDashboard
+                      size={18}
+                      className="hidden shrink-0 text-cyan-400 sm:block"
+                    />
+                    <span className="hidden sm:inline">پنل کاربری</span>
+                    <span className="sm:hidden">پنل</span>
+                  </Link>
                   <button
+                    type="button"
                     onClick={logout}
-                    className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                    className="rounded-lg bg-red-500/10 p-2 text-red-400 transition-colors hover:bg-red-500/20 touch-manipulation"
                     aria-label="خروج"
                   >
                     <LogOut size={18} />
                   </button>
-                  <Link
-                    href={user.role === "admin" ? "/admin" : "/dashboard"}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-white font-bold text-xs hover:border-cyan-500/50 transition-all"
-                  >
-                    <LayoutDashboard size={16} className="text-cyan-400 shrink-0" />
-                    پنل
-                  </Link>
-                </>
+                </div>
               )}
-            </div>
 
-            <div className="hidden md:flex items-center gap-3">
-              {!hideShopSearch ? (
-                <ShopSearch variant="header" onNavigate={closeMenu} />
-              ) : null}
               <CartNavLink
                 itemCount={itemCount}
                 receiving={cartBounce}
-                className="rounded-lg border border-zinc-800 bg-zinc-900 p-2 text-zinc-200 transition hover:border-cyan-500/50"
+                className={cartClassName}
               />
-              {!user ? (
-                <>
-                  <Link
-                    href="/login"
-                    className="relative group overflow-hidden px-6 py-2 rounded-lg bg-cyan-500 text-black font-bold text-sm shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all hover:scale-105 active:scale-95"
-                  >
-                    ورود
-                  </Link>
-                </>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={logout}
-                    className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                  >
-                    <LogOut size={18} />
-                  </button>
-                  <Link
-                    href={user.role === "admin" ? "/admin" : "/dashboard"}
-                    className="flex items-center gap-2 px-5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-white font-bold text-sm hover:border-cyan-500/50 transition-all"
-                  >
-                    <LayoutDashboard size={18} className="text-cyan-400" />
-                    پنل کاربری
-                  </Link>
+              {!hideShopSearch ? (
+                <div className="hidden xl:block">
+                  <ShopSearch variant="header" onNavigate={closeMenu} />
                 </div>
-              )}
+              ) : null}
+            </div>
+
+            <div className="flex items-center gap-2 lg:hidden">
+              <button
+                type="button"
+                onClick={toggleMenu}
+                data-route-loader-ignore="true"
+                className="relative h-10 w-10 shrink-0 touch-manipulation sm:h-11 sm:w-11"
+                aria-label={open ? "بستن منو" : "باز کردن منو"}
+                aria-expanded={open}
+              >
+                <div
+                  ref={cdRef}
+                  className="h-10 w-10 will-change-transform sm:h-11 sm:w-11"
+                >
+                  <Image
+                    src="/obj-console/cd.png"
+                    alt=""
+                    width={44}
+                    height={44}
+                    className="h-10 w-10 object-contain drop-shadow-[0_0_12px_rgba(6,182,212,0.35)] filter hue-rotate-331 saturate-200 sm:h-11 sm:w-11"
+                    priority
+                  />
+                </div>
+              </button>
+              <CartNavLink
+                itemCount={itemCount}
+                receiving={cartBounce}
+                className={cartClassName}
+              />
             </div>
           </div>
+          {/* Desktop nav — center */}
+          <nav
+            className="hidden items-center justify-center gap-0.5 lg:flex xl:gap-1"
+            aria-label="منوی اصلی"
+          >
+            {navbarNavItems.map((item) => {
+              const active = navLinkActive(pathname, item.href);
 
-          {/* Desktop Nav (Center) */}
-          <nav className="hidden md:flex items-center gap-1 flex-[2] justify-center">
-            {navbarNavItems.map((item) =>
-              item.children ? (
-                <div key={item.title} className="relative group px-3 py-2">
+              return item.children ? (
+                <div
+                  key={item.title}
+                  className="group relative px-2 py-2 xl:px-3"
+                >
                   <div className="flex items-center gap-0.5">
                     <Link
                       href={item.href}
-                      className="text-sm font-medium text-zinc-400 hover:text-cyan-400 transition-colors"
+                      className={`text-sm font-medium transition-colors ${
+                        active
+                          ? "text-cyan-400"
+                          : "text-zinc-400 hover:text-cyan-400"
+                      }`}
                     >
                       {item.title}
                     </Link>
                     <button
                       type="button"
                       aria-label={`${item.title} — زیرمنو`}
-                      className="flex items-center text-zinc-400 hover:text-cyan-400 transition-colors p-0.5"
+                      className="flex items-center p-0.5 text-zinc-400 transition-colors hover:text-cyan-400"
                     >
                       <ChevronDown
                         size={14}
-                        className="group-hover:rotate-180 transition-transform duration-300"
+                        className="transition-transform duration-300 group-hover:rotate-180"
                       />
                     </button>
                   </div>
 
-                  <div className="absolute top-full right-0 w-56 pt-4 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                    <div className="rounded-2xl border border-white/10 bg-zinc-900/90 p-2 backdrop-blur-2xl shadow-2xl">
+                  <div className="invisible absolute top-full right-0 w-56 translate-y-2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                    <div className="rounded-2xl border border-white/10 bg-zinc-900/90 p-2 shadow-2xl backdrop-blur-2xl">
                       {item.children.map((sub) => (
                         <Link
                           key={sub.href}
                           href={sub.href}
-                          className="block px-4 py-2.5 rounded-xl text-sm text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                          className="block rounded-xl px-4 py-2.5 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
                         >
                           {sub.title}
                         </Link>
@@ -277,167 +303,206 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-cyan-400 transition-colors relative group"
+                  className={`relative px-3 py-2 text-sm font-medium transition-colors xl:px-4 ${
+                    active
+                      ? "text-cyan-400"
+                      : "text-zinc-400 hover:text-cyan-400"
+                  }`}
                 >
                   {item.title}
-                  <span className="absolute bottom-0 left-1/2 w-0 h-[2px] bg-cyan-500 -translate-x-1/2 transition-all group-hover:w-1/2" />
+                  <span
+                    className={`absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 bg-cyan-500 transition-all ${
+                      active ? "w-1/2" : "w-0 group-hover:w-1/2"
+                    }`}
+                  />
                 </Link>
-              ),
-            )}
+              );
+            })}
           </nav>
 
-          {/* Logo (Right Side) */}
-          <div className="flex-1 flex justify-end">
-            <SiteLogo />
+          {/* Logo — start (right in RTL) */}
+          <div className="flex min-w-0 items-center justify-end">
+            <SiteLogo
+              className={scrolled ? "scale-95 transition-transform" : ""}
+            />
           </div>
         </div>
       </header>
 
-      {/* Mobile Sidebar - با استایل Cyberpunk */}
+      {/* Mobile drawer */}
       <div
         className={`fixed inset-0 z-[200] transition-all duration-500 ${open ? "visible opacity-100" : "invisible opacity-0"}`}
+        aria-hidden={!open}
       >
         <div
           className="absolute inset-0 bg-black/80 backdrop-blur-md"
           onClick={closeMenu}
+          aria-hidden
         />
 
         <div
-          className={`absolute right-0 top-0 h-full overflow-y-auto w-80 bg-zinc-950 border-l border-white/10 p-8 transition-transform duration-500 ${open ? "translate-x-0" : "translate-x-full"}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="منوی موبایل"
+          className={`absolute right-0 top-0 flex h-full w-[min(100vw-3rem,20rem)] flex-col overflow-hidden border-l border-white/10 bg-zinc-950 transition-transform duration-500 sm:w-80 ${open ? "translate-x-0" : "translate-x-full"}`}
         >
-          {/* Background Grid inside Mobile Menu */}
           <div className="absolute inset-0 opacity-5 [background-image:linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] [background-size:20px_20px]" />
 
-          <div className="relative z-10">
-            <div className="flex justify-between items-center mb-12">
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+            <div className="flex shrink-0 items-center justify-between border-b border-white/5 px-5 py-5 sm:px-8 sm:py-6">
               <SiteLogo
                 showText={false}
                 imageClassName="h-10 w-10 rounded-lg"
                 className="gap-0"
               />
               <button
+                type="button"
                 onClick={closeMenu}
                 data-route-loader-ignore="true"
-                className="text-zinc-500 hover:text-white transition-colors"
+                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-white/5 hover:text-white touch-manipulation"
+                aria-label="بستن منو"
               >
-                <X size={32} />
+                <X size={28} />
               </button>
             </div>
 
-            {!hideShopSearch ? (
-              <div className="mb-8 md:hidden">
-                <ShopSearch variant="header" onNavigate={closeMenu} />
-              </div>
-            ) : null}
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-8">
+              {!hideShopSearch ? (
+                <div className="mb-6">
+                  <ShopSearch variant="header" onNavigate={closeMenu} />
+                </div>
+              ) : null}
 
-            <div className="flex flex-col gap-6 text-right">
-              {navbarNavItems.map((item) => (
-                <div key={item.title}>
-                  {item.children ? (
-                    <>
-                      <div className="flex items-center justify-between w-full">
+              <nav
+                className="flex flex-col gap-1 text-right"
+                aria-label="منوی موبایل"
+              >
+                {navbarNavItems.map((item) => {
+                  const active = navLinkActive(pathname, item.href);
+
+                  return (
+                    <div key={item.title}>
+                      {item.children ? (
+                        <>
+                          <div className="flex w-full items-center justify-between rounded-xl px-2 py-2">
+                            <Link
+                              href={item.href}
+                              onClick={closeMenu}
+                              className={`text-lg font-bold transition-colors sm:text-xl ${
+                                active
+                                  ? "text-cyan-400"
+                                  : "text-white hover:text-cyan-400"
+                              }`}
+                            >
+                              {item.title}
+                            </Link>
+                            <button
+                              type="button"
+                              dir="ltr"
+                              data-route-loader-ignore="true"
+                              aria-expanded={mobileOpen === item.title}
+                              aria-label={`${item.title} — زیرمنو`}
+                              className="rounded-lg p-2 text-cyan-500 transition-colors hover:bg-white/5 touch-manipulation"
+                              onClick={() =>
+                                setMobileOpen(
+                                  mobileOpen === item.title ? null : item.title,
+                                )
+                              }
+                            >
+                              <ChevronDown
+                                size={18}
+                                className={`transition-transform ${mobileOpen === item.title ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                          </div>
+                          <div
+                            className={`overflow-hidden transition-all duration-300 ${mobileOpen === item.title ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}
+                          >
+                            <div className="mr-2 flex flex-col gap-3 border-r border-cyan-500/20 py-1 pr-4">
+                              {item.children.map((sub) => (
+                                <Link
+                                  key={sub.href}
+                                  href={sub.href}
+                                  onClick={closeMenu}
+                                  className={`text-sm transition-colors sm:text-base ${
+                                    pathname === sub.href
+                                      ? "text-cyan-400"
+                                      : "text-zinc-400 hover:text-cyan-400"
+                                  }`}
+                                >
+                                  {sub.title}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      ) : (
                         <Link
                           href={item.href}
                           onClick={closeMenu}
-                          className="text-xl font-bold text-white hover:text-cyan-400 transition-colors"
+                          className={`block rounded-xl px-2 py-3 text-lg font-bold transition-colors sm:text-xl ${
+                            active
+                              ? "text-cyan-400"
+                              : "text-white hover:text-cyan-400"
+                          }`}
                         >
                           {item.title}
                         </Link>
-                        <button
-                          type="button"
-                          dir="ltr"
-                          data-route-loader-ignore="true"
-                          aria-label={`${item.title} — زیرمنو`}
-                          className="p-1 text-cyan-500 transition-colors"
-                          onClick={() =>
-                            setMobileOpen(
-                              mobileOpen === item.title ? null : item.title,
-                            )
-                          }
-                        >
-                          <ChevronDown
-                            size={18}
-                            className={`transition-transform ${mobileOpen === item.title ? "rotate-180" : ""}`}
-                          />
-                        </button>
-                      </div>
-                      <div
-                        className={`mt-4 overflow-hidden transition-all duration-300 ${mobileOpen === item.title ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}
-                      >
-                        <div className="flex flex-col gap-4 pr-4 border-r border-cyan-500/20 mr-2">
-                          {item.children.map((sub) => (
-                            <Link
-                              key={sub.href}
-                              href={sub.href}
-                              onClick={closeMenu}
-                              className="text-zinc-400 hover:text-cyan-400 transition-colors"
-                            >
-                              {sub.title}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      onClick={closeMenu}
-                      className="text-xl font-bold text-white hover:text-cyan-400 transition-colors"
-                    >
-                      {item.title}
-                    </Link>
-                  )}
-                </div>
-              ))}
+                      )}
+                    </div>
+                  );
+                })}
+              </nav>
             </div>
 
-            {/* Mobile Auth Actions */}
-            <div className="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
-              <Link
-                href="/shop/cart"
-                data-shop-cart-target
-                onClick={closeMenu}
-                className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-center text-white font-bold hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
-              >
-                <ShoppingCart size={20} className="text-cyan-400" />
-                سبد خرید
-                {itemCount > 0 ? (
-                  <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-cyan-500 px-1 text-xs text-black">
-                    {itemCount}
-                  </span>
-                ) : null}
-              </Link>
-              {!user ? (
+            <div className="shrink-0 border-t border-white/5 px-5 py-5 sm:px-8 sm:py-6">
+              <div className="flex flex-col gap-3">
                 <Link
-                  href="/login"
+                  href="/shop/cart"
+                  data-shop-cart-target
                   onClick={closeMenu}
-                  className="w-full py-4 rounded-xl bg-cyan-500 text-center text-black font-bold shadow-lg shadow-cyan-500/20"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 py-3.5 text-center text-sm font-bold text-white transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
                 >
-                  ورود
+                  <ShoppingCart size={20} className="text-cyan-400" />
+                  سبد خرید
+                  {itemCount > 0 ? (
+                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-cyan-500 px-1 text-xs text-black">
+                      {itemCount}
+                    </span>
+                  ) : null}
                 </Link>
-              ) : (
-                <>
+                {!user ? (
                   <Link
-                    href={user.role === "admin" ? "/admin" : "/dashboard"}
+                    href="/login"
                     onClick={closeMenu}
-                    className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-center text-white font-bold hover:border-cyan-500/50 transition-all flex items-center justify-center gap-2"
+                    className="w-full rounded-xl bg-cyan-500 py-3.5 text-center text-sm font-bold text-black shadow-lg shadow-cyan-500/20 sm:py-4 sm:text-base touch-manipulation"
                   >
-                    <LayoutDashboard size={20} className="text-cyan-400" />
-                    پنل کاربری
+                    ورود / ثبت‌نام
                   </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      closeMenu();
-                      logout();
-                    }}
-                    className="w-full py-4 rounded-xl bg-red-500/10 text-red-400 font-bold hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <LogOut size={20} />
-                    خروج
-                  </button>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Link
+                      href={user.role === "admin" ? "/admin" : "/dashboard"}
+                      onClick={closeMenu}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 py-3.5 text-center text-sm font-bold text-white transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
+                    >
+                      <LayoutDashboard size={20} className="text-cyan-400" />
+                      پنل کاربری
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        closeMenu();
+                        logout();
+                      }}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-500/10 py-3.5 text-sm font-bold text-red-400 transition-colors hover:bg-red-500/20 sm:py-4 sm:text-base touch-manipulation"
+                    >
+                      <LogOut size={20} />
+                      خروج
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

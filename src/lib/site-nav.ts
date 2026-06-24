@@ -70,14 +70,15 @@ export const navbarNavItems: SiteNavItem[] = [
     children: repairChildren(),
   },
   {
-    title: "بازی",
-    href: "/services/game-install",
-    children: gameChildren(),
-  },
-  {
     title: "فروشگاه",
     href: "/shop",
     children: shopChildren(),
+  },
+  trackingItem(),
+  {
+    title: "بازی",
+    href: "/services/game-install",
+    children: gameChildren(),
   },
   {
     title: "بلاگ",
@@ -87,7 +88,6 @@ export const navbarNavItems: SiteNavItem[] = [
       href: `/blog/${post.slug}`,
     })),
   },
-  trackingItem(),
 ];
 
 export const headerNavItems: SiteNavLeaf[] = [
