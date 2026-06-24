@@ -1,10 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, Star } from "lucide-react";
 
+import GameImageStrip from "@/app/components/ui/GameImageStrip";
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import type { BlogGame } from "@/app/data/blog";
 import { cheatGamePath, gameInstallHref } from "@/lib/blog-cheats";
+import { resolveGameImages } from "@/lib/game-images";
 import { cn } from "@/lib/utils";
 
 const CONSOLE_META = {
@@ -39,6 +40,12 @@ export default function BlogCheatGameBlock({
   const anchorId = game.slug ?? `game-${index}`;
   const detailHref = game.slug ? cheatGamePath(game.slug) : undefined;
   const installHref = gameInstallHref(game.console);
+  const isDetailPage = !showDetailLink;
+  const { images } = resolveGameImages({
+    slug: game.slug,
+    name: game.name,
+    fallback: game.coverImage,
+  });
 
   return (
     <article
@@ -46,16 +53,27 @@ export default function BlogCheatGameBlock({
       className="scroll-mt-28 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02]"
       aria-labelledby={`cheat-game-${anchorId}`}
     >
+      {isDetailPage ? (
+        <GameImageStrip
+          images={images}
+          alt={game.name}
+          sizes="(max-width: 768px) 100vw, 896px"
+          aspectClass="aspect-[16/10] w-full"
+        />
+      ) : null}
+
       <div className="flex flex-col gap-4 border-b border-white/[0.06] p-5 sm:flex-row sm:items-start">
-        <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-zinc-900">
-          <Image
-            src={game.coverImage}
-            alt={game.name}
-            fill
-            sizes="64px"
-            className="object-cover"
-          />
-        </div>
+        {!isDetailPage ? (
+          <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-zinc-900">
+            <GameImageStrip
+              images={images}
+              alt={game.name}
+              sizes="64px"
+              aspectClass="h-full w-full"
+              className="absolute inset-0"
+            />
+          </div>
+        ) : null}
         <div className="min-w-0 flex-1">
           <h3
             id={`cheat-game-${anchorId}`}

@@ -1,15 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { AlertTriangle, ChevronLeft, Eye } from "lucide-react";
 import { useState } from "react";
 
+import GameImageStrip from "@/app/components/ui/GameImageStrip";
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import {
   cheatGamePath,
   cheatHubPath,
+  getCheatGameImages,
   getFeaturedCheatGames,
   getSampleCheat,
 } from "@/lib/blog-cheats";
@@ -24,14 +25,14 @@ function SpoilerCheatCard({
   gameSlug,
   name,
   console: gameConsole,
-  coverImage,
+  images,
   sampleTitle,
   sampleCode,
 }: {
   gameSlug: string;
   name: string;
   console: keyof typeof CONSOLE_META;
-  coverImage: string;
+  images: string[];
   sampleTitle: string;
   sampleCode: string;
 }) {
@@ -41,13 +42,13 @@ function SpoilerCheatCard({
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/60">
-      <div className="relative aspect-[16/10] overflow-hidden">
-        <Image
-          src={coverImage}
+      <div className="relative overflow-hidden">
+        <GameImageStrip
+          images={images}
           alt={name}
-          fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover transition duration-500 group-hover:scale-105"
+          aspectClass="aspect-[16/10] w-full"
+          imageClassName="object-cover transition duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
         <span className="absolute start-3 top-3 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-[10px] font-bold text-zinc-200 backdrop-blur-sm">
@@ -143,7 +144,7 @@ export default function HomeCheatsSection() {
                 gameSlug={game.gameSlug}
                 name={game.name}
                 console={game.console}
-                coverImage={game.coverImage}
+                images={getCheatGameImages(game)}
                 sampleTitle={sample.title}
                 sampleCode={sample.code}
               />

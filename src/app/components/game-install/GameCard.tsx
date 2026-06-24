@@ -1,7 +1,8 @@
-import Image from "next/image";
 import { Star } from "lucide-react";
 
 import AddToGameListButton from "@/app/components/game-install/AddToGameListButton";
+import GameImageStrip from "@/app/components/ui/GameImageStrip";
+import { resolveGameImages } from "@/lib/game-images";
 import type { RawgGame } from "@/lib/rawg";
 
 type Props = {
@@ -17,24 +18,25 @@ export default function GameCard({
   showAddButton = false,
   className = "",
 }: Props) {
+  const { images } = resolveGameImages({
+    slug: game.slug,
+    name: game.name,
+    fallback: game.backgroundImage,
+  });
+
   return (
     <article
       className={`group/card flex w-[172px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] transition duration-300 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:shadow-[0_12px_40px_-8px_rgba(34,211,238,0.15)] sm:w-[192px] ${className}`}
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900">
-        {game.backgroundImage ? (
-          <Image
-            src={game.backgroundImage}
-            alt=""
-            fill
-            sizes="192px"
-            className="object-cover transition duration-500 group-hover/card:scale-110"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-xs text-zinc-600">
-            بدون تصویر
-          </div>
-        )}
+        <GameImageStrip
+          images={images}
+          alt={game.name}
+          sizes="192px"
+          aspectClass="h-full w-full"
+          className="absolute inset-0"
+          imageClassName="object-cover transition duration-500 group-hover/card:scale-110"
+        />
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816] via-[#050816]/20 to-transparent opacity-90"
           aria-hidden

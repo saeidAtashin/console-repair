@@ -1,5 +1,6 @@
 import { gameCheatsPost } from "@/app/data/blog-cheats-data";
 import type { BlogGame, BlogGameSection, BlogPost } from "@/app/data/blog";
+import { getGameCoverImage, resolveGameImages } from "@/lib/game-images";
 
 export const CHEAT_POST_SLUG = gameCheatsPost.slug;
 
@@ -204,6 +205,24 @@ export function getFeaturedCheatGames(): CheatGameEntry[] {
   return FEATURED_CHEAT_SLUGS.map(
     (slug) => all.find((g) => g.gameSlug === slug)!,
   ).filter(Boolean);
+}
+
+export function getCheatGameImages(game: CheatGameEntry): string[] {
+  return resolveGameImages({
+    slug: game.gameSlug,
+    name: game.name,
+    fallback: game.coverImage,
+  }).images;
+}
+
+export function getCheatGameCoverImage(game: CheatGameEntry): string {
+  return (
+    getGameCoverImage({
+      slug: game.gameSlug,
+      name: game.name,
+      fallback: game.coverImage,
+    }) ?? game.coverImage
+  );
 }
 
 export function getSampleCheat(game: CheatGameEntry): {

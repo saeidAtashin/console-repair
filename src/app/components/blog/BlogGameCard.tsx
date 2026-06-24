@@ -1,12 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useCallback, useRef } from "react";
 
+import GameImageStrip from "@/app/components/ui/GameImageStrip";
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import type { BlogGame } from "@/app/data/blog";
+import { resolveGameImages } from "@/lib/game-images";
 import { cn } from "@/lib/utils";
 
 import "./blog-animations.css";
@@ -45,6 +46,11 @@ export default function BlogGameCard({ game, index = 0, className }: Props) {
   }, []);
 
   const consoleMeta = CONSOLE_META[game.console];
+  const { images } = resolveGameImages({
+    slug: game.slug,
+    name: game.name,
+    fallback: game.coverImage,
+  });
 
   const card = (
     <article
@@ -58,12 +64,13 @@ export default function BlogGameCard({ game, index = 0, className }: Props) {
       style={{ transition: "transform 0.2s ease-out" }}
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900">
-        <Image
-          src={game.coverImage}
+        <GameImageStrip
+          images={images}
           alt={game.name}
-          fill
           sizes="220px"
-          className="object-cover transition duration-500 group-hover/card:scale-110"
+          aspectClass="h-full w-full"
+          className="absolute inset-0"
+          imageClassName="object-cover transition duration-500 group-hover/card:scale-110"
         />
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816] via-[#050816]/25 to-transparent opacity-90"

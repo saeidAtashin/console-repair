@@ -13,6 +13,7 @@ import {
   generateGameSeo,
   getAllCheatGames,
   getCheatGame,
+  getCheatGameCoverImage,
 } from "@/lib/blog-cheats";
 import { blogPostingJsonLd } from "@/lib/seo/jsonld";
 import { createPageMetadata } from "@/lib/seo/metadata";
@@ -54,7 +55,7 @@ export async function generateMetadata({ params }: Props) {
     path: cheatGamePath(gameSlug),
     keywords: seo.keywords,
     type: "article",
-    ogImage: game.coverImage,
+    ogImage: getCheatGameCoverImage(game),
   });
 }
 
@@ -80,7 +81,7 @@ export default async function BlogCheatGamePage({ params }: Props) {
             title: seo.title,
             description: seo.description,
             path,
-            coverImage: game.coverImage,
+            coverImage: getCheatGameCoverImage(game),
             publishedAt: post.publishedAt,
           }),
         ]}

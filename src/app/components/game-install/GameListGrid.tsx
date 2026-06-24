@@ -1,5 +1,5 @@
-import Image from "next/image";
-
+import GameImageStrip from "@/app/components/ui/GameImageStrip";
+import { resolveGameImages } from "@/lib/game-images";
 import type { RawgGame } from "@/lib/rawg";
 
 type Props = {
@@ -24,25 +24,27 @@ export default function GameListGrid({ games, totalCount }: Props) {
       </p>
 
       <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {games.map((game) => (
+        {games.map((game) => {
+          const { images } = resolveGameImages({
+            slug: game.slug,
+            name: game.name,
+            fallback: game.backgroundImage,
+          });
+
+          return (
           <li
             key={game.id}
             className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-cyan-400/30 hover:bg-white/[0.07]"
           >
-            <div className="relative aspect-[16/10] bg-zinc-900">
-              {game.backgroundImage ? (
-                <Image
-                  src={game.backgroundImage}
-                  alt={game.name}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover transition duration-300 group-hover:scale-105"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-zinc-600">
-                  بدون تصویر
-                </div>
-              )}
+            <div className="relative aspect-[16/10] overflow-hidden bg-zinc-900">
+              <GameImageStrip
+                images={images}
+                alt={game.name}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                aspectClass="h-full w-full"
+                className="absolute inset-0"
+                imageClassName="object-cover transition duration-300 group-hover:scale-105"
+              />
             </div>
 
             <div className="p-4">
@@ -70,7 +72,8 @@ export default function GameListGrid({ games, totalCount }: Props) {
               ) : null}
             </div>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </>
   );
