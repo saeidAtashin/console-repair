@@ -70,6 +70,7 @@ export function GameInstallListProvider({
   const bounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flyActiveRef = useRef(false);
   const pendingScrollYRef = useRef<number | null>(null);
+  const hasAutoScrolledForAddRef = useRef(false);
 
   useEffect(() => {
     flyActiveRef.current = flyAnimation !== null;
@@ -125,7 +126,8 @@ export function GameInstallListProvider({
       }
 
       const fromRect = sourceElement.getBoundingClientRect();
-      const needsScroll = !isOrderPanelInViewport();
+      const isFirstAnimatedAdd = !hasAutoScrolledForAddRef.current;
+      const needsScroll = isFirstAnimatedAdd && !isOrderPanelInViewport();
 
       if (needsScroll) {
         pendingScrollYRef.current = window.scrollY;
@@ -133,6 +135,8 @@ export function GameInstallListProvider({
       } else {
         pendingScrollYRef.current = null;
       }
+
+      hasAutoScrolledForAddRef.current = true;
 
       const listRect = getVisibleListTargetRect();
       if (!listRect) {

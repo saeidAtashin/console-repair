@@ -21,47 +21,43 @@ export default function InstallListGameItem({ game, index, onRemove }: Props) {
   const imageSrc = images[0] ?? coverImage;
 
   return (
-    <li className="group relative flex flex-col overflow-hidden rounded-2xl border border-emerald-400/25 bg-emerald-500/10 transition hover:border-emerald-400/40 hover:bg-emerald-500/15">
-      <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900">
+    <li className="group flex items-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-500/10 p-2 transition hover:border-emerald-400/40 hover:bg-emerald-500/15">
+      <div className="relative h-11 w-8 shrink-0 overflow-hidden rounded-md bg-zinc-900">
         {imageSrc ? (
           <Image
             src={imageSrc}
-            alt={game.name}
+            alt=""
             fill
-            sizes="(max-width: 768px) 50vw, 33vw"
-            className="object-cover transition duration-300 group-hover:scale-105"
+            sizes="32px"
+            className="object-cover"
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-zinc-800 to-zinc-950 text-zinc-500">
-            <Gamepad2 className="h-8 w-8 opacity-60" aria-hidden />
-            <span className="text-[10px] font-medium">بازی دلخواه</span>
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 text-zinc-500">
+            <Gamepad2 className="h-3.5 w-3.5 opacity-60" aria-hidden />
           </div>
         )}
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816] via-transparent to-transparent"
-          aria-hidden
-        />
-        <span className="absolute start-2 top-2 flex h-6 w-6 items-center justify-center rounded-lg bg-black/60 text-[11px] font-black text-emerald-300 backdrop-blur-sm">
-          {(index + 1).toLocaleString("fa-IR")}
-        </span>
-        <button
-          type="button"
-          onClick={() => onRemove(game.id)}
-          className="absolute end-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-lg border border-red-400/30 bg-red-500/25 text-red-300 backdrop-blur-sm transition hover:bg-red-500/40 sm:bg-red-500/20 sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100"
-          aria-label={`حذف ${game.name}`}
-        >
-          <Trash2 className="h-3.5 w-3.5" aria-hidden />
-        </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 p-2.5">
-        <p className="line-clamp-2 text-xs font-bold leading-snug text-zinc-100 sm:text-sm">
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 text-[11px] font-bold leading-tight text-zinc-100 sm:text-xs">
+          <span className="me-1 text-emerald-400/80">
+            {(index + 1).toLocaleString("fa-IR")}.
+          </span>
           {game.name}
         </p>
         {game.custom ? (
-          <span className="text-[10px] text-zinc-500">دلخواه</span>
+          <span className="text-[9px] text-zinc-500">دلخواه</span>
         ) : null}
       </div>
+
+      <button
+        type="button"
+        onClick={() => onRemove(game.id)}
+        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-red-400/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/25"
+        aria-label={`حذف ${game.name}`}
+      >
+        <Trash2 className="h-3 w-3" aria-hidden />
+      </button>
     </li>
   );
 }

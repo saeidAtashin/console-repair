@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { ListPlus } from "lucide-react";
 
 import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
@@ -23,6 +24,7 @@ import {
 import { normalizeIranPhone, sanitizePhoneInput } from "@/lib/phone";
 import { consoleIdFromGameInstallSlug } from "@/lib/repair-links";
 import { submitGameInstallRequest } from "@/lib/repair/api";
+import { INSTALL_FAB_DOCKED_EVENT } from "@/lib/game-install/fly-to-list";
 
 type Props = {
   consoleSlug: string;
@@ -49,6 +51,7 @@ export default function GameInstallOrderPanel({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submitHighlight, setSubmitHighlight] = useState(false);
 
   const accountPhone = user?.phone_number ?? user?.phone ?? "";
 
@@ -57,6 +60,15 @@ export default function GameInstallOrderPanel({
       setPhone(accountPhone);
     }
   }, [accountPhone]);
+
+  useEffect(() => {
+    function onFabDocked() {
+      setSubmitHighlight(true);
+      window.setTimeout(() => setSubmitHighlight(false), 550);
+    }
+    window.addEventListener(INSTALL_FAB_DOCKED_EVENT, onFabDocked);
+    return () => window.removeEventListener(INSTALL_FAB_DOCKED_EVENT, onFabDocked);
+  }, []);
 
   const consoleId = consoleIdFromGameInstallSlug(consoleSlug);
 
@@ -217,7 +229,7 @@ export default function GameInstallOrderPanel({
           بزنید یا نام بازی را پایین بنویسید.
         </p>
       ) : (
-        <ol className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <ol className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5">
           {games.map((game, index) => (
             <InstallListGameItem
               key={game.id}
@@ -283,13 +295,27 @@ export default function GameInstallOrderPanel({
           </p>
         ) : null}
 
-        <button
+        <motion.button
           type="submit"
+          data-game-install-submit-target
           disabled={loading || verifying || games.length === 0}
-          className="h-14 w-full rounded-2xl bg-cyan-500 font-bold text-black transition hover:bg-cyan-400 disabled:opacity-40"
+          animate={
+            submitHighlight
+              ? {
+                  scale: [1, 1.02, 1],
+                  boxShadow: [
+                    "0 0 0 rgba(34,211,238,0)",
+                    "0 0 0 8px rgba(34,211,238,0.35)",
+                    "0 0 0 rgba(34,211,238,0)",
+                  ],
+                }
+              : { scale: 1, boxShadow: "0 0 0 rgba(34,211,238,0)" }
+          }
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="h-14 w-full rounded-2xl bg-cyan-500 font-bold text-black transition-colors hover:bg-cyan-400 disabled:opacity-40"
         >
           {loading || verifying ? "در حال ثبت..." : "ثبت سفارش نصب بازی"}
-        </button>
+        </motion.button>
       </form>
 
       <PhoneVerificationModal {...modalProps} />

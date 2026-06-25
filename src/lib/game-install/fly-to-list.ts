@@ -1,7 +1,12 @@
 export const GAME_INSTALL_LIST_TARGET_SELECTOR =
   "[data-game-install-list-target]";
 
+export const GAME_INSTALL_SUBMIT_TARGET_SELECTOR =
+  "[data-game-install-submit-target]";
+
 export const GAME_INSTALL_ORDER_SECTION_ID = "game-install-order";
+
+export const INSTALL_FAB_DOCKED_EVENT = "game-install-fab-docked";
 
 export const SCROLL_TO_TARGET_MS = 500;
 export const SCROLL_BACK_MS = 450;
