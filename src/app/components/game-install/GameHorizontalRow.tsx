@@ -2,10 +2,26 @@ import Link from "next/link";
 import { ArrowLeft, ChevronLeft, Sparkles } from "lucide-react";
 
 import GameCard from "@/app/components/game-install/GameCard";
+import type { InstallCatalogGame } from "@/lib/game-install-catalog";
 import { gameListPath } from "@/lib/game-filters";
 import type { GameFilterId } from "@/lib/game-filters";
 import { GAME_FILTERS } from "@/lib/game-filters";
 import type { RawgGame } from "@/lib/rawg";
+
+function toCatalogGame(game: RawgGame, sectionTitle: string): InstallCatalogGame {
+  return {
+    id: `${game.slug}|unknown`,
+    slug: game.slug,
+    name: game.name,
+    coverImage: game.backgroundImage ?? "",
+    rating: game.rating ?? 0,
+    metacritic: game.metacritic ?? undefined,
+    genre: "",
+    console: "ps5",
+    sectionTitle,
+    source: "blog",
+  };
+}
 
 type Props = {
   title: string;
@@ -83,7 +99,7 @@ export default function GameHorizontalRow({
             {games.map((game) => (
               <GameCard
                 key={game.id}
-                game={game}
+                game={toCatalogGame(game, title)}
                 consoleSlug={consoleSlug}
                 showAddButton
               />

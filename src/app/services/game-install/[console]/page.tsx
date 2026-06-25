@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import GameCatalogSections from "@/app/components/game-install/GameCatalogSections";
+import GameCatalogGrid from "@/app/components/game-install/GameCatalogGrid";
 import GameInstallCheatsLink from "@/app/components/game-install/GameInstallCheatsLink";
+import GameInstallMethodPicker from "@/app/components/game-install/GameInstallMethodPicker";
+import GameInstallOrderFab from "@/app/components/game-install/GameInstallOrderFab";
+import GameInstallOrderPanel from "@/app/components/game-install/GameInstallOrderPanel";
+import GameInstallPriceCalculator from "@/app/components/game-install/GameInstallPriceCalculator";
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
@@ -10,10 +14,6 @@ import TrustSignalsBar from "@/app/components/seo/TrustSignalsBar";
 import ServiceSchema from "@/app/components/schema/ServiceSchema";
 import { webPageJsonLd } from "../../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../../lib/seo/metadata";
-import {
-  buildRepairHref,
-  consoleIdFromGameInstallSlug,
-} from "../../../../lib/repair-links";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
 import {
   formatRangeToman,
@@ -21,12 +21,7 @@ import {
   GAME_INSTALL_SUMMARY_TABLE,
 } from "@/lib/game-install-pricing";
 import { getGameInstallContent } from "@/lib/game-install-content";
-import {
-  fetchGameCatalogSections,
-  isGameInstallConsole,
-  type GameInstallConsole,
-} from "@/lib/rawg";
-import { GAME_CATALOG_FILTER_IDS } from "@/lib/game-filters";
+import { getInstallCatalogGames } from "@/lib/game-install-catalog.server";
 
 type Props = {
   params: Promise<{ console: string }>;
@@ -75,29 +70,11 @@ export default async function GameInstallPage({ params }: Props) {
   if (!meta || !content) notFound();
 
   const path = `/services/game-install/${consoleSlug}`;
-  const repairHref = buildRepairHref({
-    consoleId: consoleIdFromGameInstallSlug(consoleSlug),
-  });
+  const catalogGames = getInstallCatalogGames(consoleSlug);
   const pricingSections = content.pricingSectionKeys.map(
     (key) => GAME_INSTALL_PRICE_DATA[key],
   );
   const jsonLdDescription = `تعرفه نصب بازی ${meta.label}: از نصب با اکانت ظرفیتی تا نصب آفلاین و خدمات جانبی.`;
-
-  let catalogSections: Awaited<
-    ReturnType<typeof fetchGameCatalogSections>
-  > = [];
-
-  if (isGameInstallConsole(consoleSlug)) {
-    try {
-      catalogSections = await fetchGameCatalogSections(
-        consoleSlug as GameInstallConsole,
-        GAME_CATALOG_FILTER_IDS,
-        12,
-      );
-    } catch {
-      catalogSections = [];
-    }
-  }
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 text-white">
@@ -114,16 +91,75 @@ export default async function GameInstallPage({ params }: Props) {
           description: jsonLdDescription,
           path,
         })}
-        containerClassName="relative z-10 mx-auto max-w-5xl px-6"
-        className="relative z-10 mx-auto max-w-5xl px-6 pb-16"
+        containerClassName="relative z-10 mx-auto max-w-5xl px-4 sm:px-6"
+        className="relative z-10 mx-auto max-w-5xl px-4 pb-20 sm:px-6 sm:pb-16"
       >
         <h1 className="mb-6 text-4xl font-black md:text-5xl">
           تعرفه نصب بازی {meta.label}
         </h1>
         <p className="mb-10 max-w-2xl text-lg text-zinc-400">
-          هزینه‌ها به نوع نصب، تعداد بازی و وضعیت کنسول بستگی دارد. بازه‌های زیر
-          برای {meta.label} ارائه می‌شوند.
+          روش نصب را انتخاب کنید، بازی‌ها را به لیست اضافه کنید، برآورد قیمت را
+          ببینید و سفارش را ثبت کنید.
         </p>
+
+        <section
+          id="game-install-games"
+          className="mb-12 scroll-mt-28 overflow-hidden rounded-3xl border-2 border-cyan-400/40 bg-gradient-to-b from-cyan-500/10 to-[#050816] shadow-[0_0_60px_-20px_rgba(34,211,238,0.35)]"
+          aria-labelledby="game-catalog-title"
+        >
+          <div className="border-b border-cyan-400/20 bg-cyan-500/10 px-4 py-5 sm:px-6 md:px-8">
+            <p className="mb-1 text-xs font-bold uppercase tracking-wider text-cyan-300">
+              مرحله ۰
+            </p>
+            <h2 className="mb-4 text-lg font-black text-white">روش نصب</h2>
+            <GameInstallMethodPicker consoleSlug={consoleSlug} />
+          </div>
+
+          <div className="border-b border-cyan-400/20 px-4 py-5 sm:px-6 md:px-8">
+            <p className="mb-1 text-xs font-bold uppercase tracking-wider text-cyan-300">
+              مرحله ۱
+            </p>
+            <h2 id="game-catalog-title" className="text-2xl font-black md:text-3xl">
+              لیست بازی‌ها
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-300">
+              {catalogGames.length.toLocaleString("fa-IR")} بازی از PS5، PS4 و
+              Xbox — برای نصب روی {meta.label} انتخاب کنید و به لیست سفارش
+              اضافه کنید.
+            </p>
+          </div>
+
+          <div className="px-4 py-6 sm:px-6 md:px-8">
+            <GameCatalogGrid
+              consoleSlug={consoleSlug}
+              consoleLabel={meta.label}
+              games={catalogGames}
+            />
+          </div>
+
+          <div className="border-t border-cyan-400/20 px-4 py-6 sm:px-6 md:px-8">
+            <p className="mb-4 text-xs font-bold uppercase tracking-wider text-amber-300">
+              برآورد قیمت
+            </p>
+            <GameInstallPriceCalculator consoleSlug={consoleSlug} />
+          </div>
+
+          <div className="border-t border-cyan-400/20 bg-black/20 px-4 py-2 sm:px-6 md:px-8">
+            <p className="py-3 text-xs font-bold uppercase tracking-wider text-emerald-300">
+              مرحله ۲ — لیست سفارش و ثبت درخواست
+            </p>
+          </div>
+
+          <div className="px-4 pb-4 sm:px-6 md:px-8">
+            <GameInstallOrderPanel
+              consoleSlug={consoleSlug}
+              consoleLabel={meta.label}
+              embedded
+            />
+          </div>
+        </section>
+
+        <GameInstallOrderFab consoleSlug={consoleSlug} />
 
         <OverviewSection
           paragraphs={content.overview}
@@ -194,29 +230,17 @@ export default async function GameInstallPage({ params }: Props) {
           </ol>
         </section>
 
-        {catalogSections.length > 0 ? (
-          <section className="mb-12" aria-labelledby="game-catalog-title">
-            <h2 id="game-catalog-title" className="mb-6 text-2xl font-black">
-              پیشنهاد بازی برای {meta.label}
-            </h2>
-            <GameCatalogSections
-              consoleSlug={consoleSlug}
-              sections={catalogSections}
-            />
-          </section>
-        ) : null}
-
         <TrustSignalsBar signals={content.trustSignals} className="py-8" />
 
         <FaqSection items={content.faqs} className="py-12" />
 
         <div className="flex flex-wrap gap-4">
-          <Link
-            href={repairHref}
+          <a
+            href="#game-install-games"
             className="inline-flex rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-black transition hover:bg-cyan-400"
           >
-            ثبت درخواست نصب بازی
-          </Link>
+            انتخاب و ثبت سفارش نصب
+          </a>
           <Link
             href="/services"
             className="inline-flex rounded-2xl border border-white/10 px-8 py-4 font-bold transition hover:border-cyan-400/40"

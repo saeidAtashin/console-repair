@@ -1,5 +1,10 @@
 import { apiRequest } from "@/lib/api-client";
 import { consoleCatalog, type ConsoleId } from "@/lib/console-catalog";
+import {
+  formatInstallGameListDescription,
+  type InstallListGame,
+} from "@/lib/game-install-list";
+import type { InstallMethodId } from "@/lib/game-install-quote";
 
 export type RepairDevice = { id: number; name: string };
 export type RepairProblemType = { id: number; name: string };
@@ -129,6 +134,49 @@ export async function fetchRepairRequests(
     ApiWrapper<PaginatedResults<RepairRequestItem>>
   >(`/repair/requests/?page=${page}&page_size=100`);
   return unwrapResults(response);
+}
+
+export function matchProblemTypeForGameInstall(
+  types: RepairProblemType[],
+): RepairProblemType | undefined {
+  return types.find((type) => /نصب/i.test(type.name)) ?? types[0];
+}
+
+export async function submitGameInstallRequest(params: {
+  consoleId: ConsoleId;
+  phone: string;
+  name?: string;
+  games: InstallListGame[];
+  consoleLabel: string;
+  installMethodId: InstallMethodId;
+}): Promise<RepairRequestItem> {
+  const devices = await fetchRepairDevices();
+  const device = matchDeviceForConsole(devices, params.consoleId);
+
+  if (!device) {
+    throw new Error("دستگاه مورد نظر یافت نشد.");
+  }
+
+  const problemTypes = await fetchRepairProblemTypes(device.id);
+  const problemType = matchProblemTypeForGameInstall(problemTypes);
+
+  if (!problemType) {
+    throw new Error("نوع مشکل برای ثبت درخواست یافت نشد.");
+  }
+
+  const payload: RepairRequestPayload = {
+    name: params.name?.trim() ? params.name.trim() : API_PLACEHOLDER,
+    phone_number: params.phone,
+    device_type: device.id,
+    problem_type: problemType.id,
+    description: formatInstallGameListDescription(
+      params.games,
+      params.consoleLabel,
+      { installMethodId: params.installMethodId },
+    ),
+  };
+
+  return submitRepairRequest(payload);
 }
 
 export function matchDeviceForConsole(

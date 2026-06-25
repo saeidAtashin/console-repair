@@ -5,14 +5,15 @@ import { useCallback, useEffect, useState } from "react";
 
 import {
   addToInstallGameList,
+  INSTALL_GAME_LIST_CHANGED_EVENT,
   isInInstallGameList,
   removeFromInstallGameList,
   toInstallListGame,
 } from "@/lib/game-install-list";
-import type { RawgGame } from "@/lib/rawg";
+import type { InstallCatalogGame } from "@/lib/game-install-catalog";
 
 type Props = {
-  game: RawgGame;
+  game: InstallCatalogGame;
   consoleSlug: string;
   className?: string;
 };
@@ -34,8 +35,12 @@ export default function AddToGameListButton({
     const onStorage = (e: StorageEvent) => {
       if (e.key === "game-install-list") sync();
     };
+    window.addEventListener(INSTALL_GAME_LIST_CHANGED_EVENT, sync);
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(INSTALL_GAME_LIST_CHANGED_EVENT, sync);
+      window.removeEventListener("storage", onStorage);
+    };
   }, [sync]);
 
   const toggle = () => {

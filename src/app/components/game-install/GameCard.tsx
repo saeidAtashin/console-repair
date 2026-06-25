@@ -2,14 +2,16 @@ import { Star } from "lucide-react";
 
 import AddToGameListButton from "@/app/components/game-install/AddToGameListButton";
 import GameImageStrip from "@/app/components/ui/GameImageStrip";
+import type { InstallCatalogGame } from "@/lib/game-install-catalog";
+import { getInstallCatalogConsoleLabel } from "@/lib/game-install-catalog";
 import { resolveGameImages } from "@/lib/game-images";
-import type { RawgGame } from "@/lib/rawg";
 
 type Props = {
-  game: RawgGame;
+  game: InstallCatalogGame;
   consoleSlug?: string;
   showAddButton?: boolean;
   className?: string;
+  layout?: "carousel" | "grid";
 };
 
 export default function GameCard({
@@ -17,16 +19,22 @@ export default function GameCard({
   consoleSlug,
   showAddButton = false,
   className = "",
+  layout = "carousel",
 }: Props) {
   const { images } = resolveGameImages({
     slug: game.slug,
     name: game.name,
-    fallback: game.backgroundImage,
+    fallback: game.coverImage,
   });
+
+  const layoutClass =
+    layout === "grid"
+      ? "w-full"
+      : "w-[172px] shrink-0 snap-start sm:w-[192px]";
 
   return (
     <article
-      className={`group/card flex w-[172px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] transition duration-300 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:shadow-[0_12px_40px_-8px_rgba(34,211,238,0.15)] sm:w-[192px] ${className}`}
+      className={`group/card flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] transition duration-300 hover:-translate-y-0.5 hover:border-cyan-400/35 hover:shadow-[0_12px_40px_-8px_rgba(34,211,238,0.15)] ${layoutClass} ${className}`}
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900">
         <GameImageStrip
@@ -54,17 +62,13 @@ export default function GameCard({
           {game.name}
         </h3>
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-zinc-500">
-          {game.released ? (
-            <time dateTime={game.released}>
-              {new Date(game.released).toLocaleDateString("fa-IR", {
-                year: "numeric",
-              })}
-            </time>
-          ) : null}
+          <span className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-bold text-cyan-300/90">
+            {getInstallCatalogConsoleLabel(game.console)}
+          </span>
+          <span>{game.genre}</span>
           {game.metacritic != null ? (
             <span className="text-zinc-600">
-              {game.released ? "· " : ""}
-              <span className="text-violet-400/90">{game.metacritic}</span> MC
+              · <span className="text-violet-400/90">{game.metacritic}</span> MC
             </span>
           ) : null}
         </div>
