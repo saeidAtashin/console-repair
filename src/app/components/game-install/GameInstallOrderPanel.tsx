@@ -1,9 +1,11 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { ListPlus, Trash2 } from "lucide-react";
+import { ListPlus } from "lucide-react";
 
 import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
+import GameInstallListCountBadge from "@/app/components/game-install/GameInstallListCountBadge";
+import InstallListGameItem from "@/app/components/game-install/InstallListGameItem";
 import { FormInput } from "@/app/components/ui/form";
 import { useAuth } from "@/app/context/AuthContext";
 import { useInstallMethodId } from "@/app/hooks/useInstallMethod";
@@ -177,9 +179,9 @@ export default function GameInstallOrderPanel({
           >
             لیست بازی‌های من برای {consoleLabel}
             {games.length > 0 ? (
-              <span className="ms-3 inline-flex rounded-full bg-emerald-500/20 px-3 py-1 text-sm font-bold text-emerald-300">
+              <GameInstallListCountBadge className="relative ms-3 inline-flex rounded-full bg-emerald-500/20 px-3 py-1 text-sm font-bold text-emerald-300">
                 {games.length.toLocaleString("fa-IR")} بازی
-              </span>
+              </GameInstallListCountBadge>
             ) : null}
           </h2>
           <p className="mt-2 text-sm leading-7 text-zinc-400">
@@ -192,9 +194,9 @@ export default function GameInstallOrderPanel({
           <h3 className="text-lg font-black text-white">
             بازی‌های انتخاب‌شده
             {games.length > 0 ? (
-              <span className="ms-2 inline-flex rounded-full bg-emerald-500/25 px-2.5 py-0.5 text-sm text-emerald-200">
+              <GameInstallListCountBadge className="relative ms-2 inline-flex rounded-full bg-emerald-500/25 px-2.5 py-0.5 text-sm text-emerald-200">
                 {games.length.toLocaleString("fa-IR")}
-              </span>
+              </GameInstallListCountBadge>
             ) : null}
           </h3>
           {games.length === 0 ? (
@@ -215,33 +217,14 @@ export default function GameInstallOrderPanel({
           بزنید یا نام بازی را پایین بنویسید.
         </p>
       ) : (
-        <ol className="mb-6 space-y-2">
+        <ol className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {games.map((game, index) => (
-            <li
+            <InstallListGameItem
               key={game.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-3"
-            >
-              <span className="flex min-w-0 items-center gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-xs font-black text-emerald-300">
-                  {(index + 1).toLocaleString("fa-IR")}
-                </span>
-                <span className="truncate font-medium text-zinc-100">
-                  {game.name}
-                  {game.custom ? (
-                    <span className="ms-2 text-xs text-zinc-500">(دلخواه)</span>
-                  ) : null}
-                </span>
-              </span>
-              <button
-                type="button"
-                onClick={() => removeFromInstallGameList(game.id)}
-                className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-red-400/20 bg-red-500/10 px-2.5 py-1.5 text-xs font-bold text-red-300 transition hover:bg-red-500/20"
-                aria-label={`حذف ${game.name}`}
-              >
-                <Trash2 className="h-3.5 w-3.5" aria-hidden />
-                حذف
-              </button>
-            </li>
+              game={game}
+              index={index}
+              onRemove={removeFromInstallGameList}
+            />
           ))}
         </ol>
       )}

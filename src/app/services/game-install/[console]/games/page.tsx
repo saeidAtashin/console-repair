@@ -70,8 +70,8 @@ export default async function GameListPage({ params }: Props) {
           description: introParagraphs[0] ?? "",
           path: listPath,
         })}
-        containerClassName="mx-auto max-w-5xl px-4 sm:px-6"
-        className="mx-auto max-w-5xl px-4 pb-8 sm:px-6"
+        containerClassName="mx-auto max-w-7xl px-4 sm:px-6"
+        className="mx-auto max-w-7xl px-4 pb-8 sm:px-6"
       >
         <Link
           href={hubPath}

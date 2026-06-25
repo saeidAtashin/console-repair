@@ -1,14 +1,13 @@
 "use client";
 
 import { Check, ListPlus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type RefObject } from "react";
 
+import { useGameInstallList } from "@/app/context/GameInstallListContext";
 import {
-  addToInstallGameList,
   INSTALL_GAME_LIST_CHANGED_EVENT,
   isInInstallGameList,
   removeFromInstallGameList,
-  toInstallListGame,
 } from "@/lib/game-install-list";
 import type { InstallCatalogGame } from "@/lib/game-install-catalog";
 
@@ -16,15 +15,18 @@ type Props = {
   game: InstallCatalogGame;
   consoleSlug: string;
   className?: string;
+  animationSourceRef?: RefObject<HTMLElement | null>;
 };
 
 export default function AddToGameListButton({
   game,
   consoleSlug,
   className = "",
+  animationSourceRef,
 }: Props) {
+  const { addGameWithAnimation, isFlyActive } = useGameInstallList();
   const [inList, setInList] = useState(false);
-  const [pulse, setPulse] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
 
   const sync = useCallback(() => {
     setInList(isInInstallGameList(game.id));
@@ -43,43 +45,45 @@ export default function AddToGameListButton({
     };
   }, [sync]);
 
-  const toggle = () => {
+  async function handleClick() {
     if (inList) {
       removeFromInstallGameList(game.id);
       setInList(false);
       return;
     }
-    const added = addToInstallGameList(toInstallListGame(game, consoleSlug));
+
+    const added = await addGameWithAnimation(game, consoleSlug, {
+      sourceElement: animationSourceRef?.current,
+    });
     if (added) {
       setInList(true);
-      setPulse(true);
-      window.setTimeout(() => setPulse(false), 600);
+      setJustAdded(true);
+      window.setTimeout(() => setJustAdded(false), 900);
     }
-  };
+  }
 
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={handleClick}
+      disabled={isFlyActive}
       aria-pressed={inList}
-      className={`group/btn relative flex w-full items-center justify-center gap-1.5 overflow-hidden rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-300 ${
+      className={`inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:text-sm ${
         inList
-          ? "border border-emerald-400/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
-          : "border border-cyan-400/25 bg-cyan-500/10 text-cyan-200 hover:border-cyan-400/50 hover:bg-cyan-500/20 hover:text-white"
-      } ${pulse ? "scale-[1.02] ring-2 ring-emerald-400/50" : ""} ${className}`}
+          ? justAdded
+            ? "bg-emerald-400 text-black shadow-[0_0_0_10px_rgba(34,211,238,0)] animate-pulse"
+            : "border border-emerald-400/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
+          : "bg-cyan-500 text-black hover:bg-cyan-400"
+      } ${className}`}
     >
-      {!inList ? (
-        <span
-          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-500 group-hover/btn:translate-x-full"
-          aria-hidden
-        />
-      ) : null}
       {inList ? (
-        <Check className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <Check className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
       ) : (
-        <ListPlus className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <ListPlus className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
       )}
-      <span className="relative">{inList ? "در لیست شما" : "اضافه به لیست بازی‌ها"}</span>
+      <span>
+        {inList ? (justAdded ? "اضافه شد" : "در لیست شما") : "اضافه به لیست بازی‌ها"}
+      </span>
     </button>
   );
 }

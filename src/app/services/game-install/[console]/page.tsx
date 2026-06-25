@@ -91,8 +91,8 @@ export default async function GameInstallPage({ params }: Props) {
           description: jsonLdDescription,
           path,
         })}
-        containerClassName="relative z-10 mx-auto max-w-5xl px-4 sm:px-6"
-        className="relative z-10 mx-auto max-w-5xl px-4 pb-20 sm:px-6 sm:pb-16"
+        containerClassName="relative z-10 mx-auto max-w-7xl px-4 sm:px-6"
+        className="relative z-10 mx-auto max-w-7xl px-4 pb-20 sm:px-6 sm:pb-16"
       >
         <h1 className="mb-6 text-4xl font-black md:text-5xl">
           تعرفه نصب بازی {meta.label}

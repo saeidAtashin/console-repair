@@ -2,14 +2,12 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronUp } from "lucide-react";
 
 import GameCard from "@/app/components/game-install/GameCard";
 import type { InstallCatalogGame } from "@/lib/game-install-catalog";
 
-const GRID_COLS = 2;
 const ROWS_PER_BATCH = 2;
-const GAMES_PER_BATCH = GRID_COLS * ROWS_PER_BATCH;
+const GAMES_PER_BATCH = 10;
 
 type Props = {
   consoleSlug: string;
@@ -86,7 +84,7 @@ export default function GameCatalogGrid({
             {consoleLabel}، «اضافه به لیست بازی‌ها» را بزنید.
           </p>
 
-          <ul className="grid grid-cols-2 gap-3 sm:gap-4">
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
             {visibleGames.map((game) => (
               <li key={game.id}>
                 <GameCard
