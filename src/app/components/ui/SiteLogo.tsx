@@ -31,8 +31,8 @@ export default function SiteLogo({
     >
       {showText && (
         <div className={cn("text-right hidden p-2 sm:block", textClassName)}>
-          <p className="text-[11px] font-mono text-cyan-500 leading-none tracking-tight lowercase">
-            fix bazi
+          <p className="text-[11px] font-mono text-cyan-500 leading-none tracking-tight">
+            FixBazi
           </p>
           <p className="mt-1 text-base font-black text-white leading-none">
             فیکس<span className="text-cyan-500">‌بازی</span>
@@ -45,7 +45,7 @@ export default function SiteLogo({
       >
         <Image
           src={src}
-          alt="fix bazi logo"
+          alt="FixBazi logo"
           fill
           sizes="84px"
           className="object-contain p-2"

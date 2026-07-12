@@ -1,5 +1,11 @@
 import FadeUp from "@/app/components/animations/FadeUp";
-import { SITE_PHONE } from "../../../lib/seo/site";
+import {
+  SITE_ADDRESS,
+  SITE_HOURS,
+  SITE_PHONE,
+  SITE_PHONE_DISPLAY,
+  whatsAppUrl,
+} from "../../../lib/seo/site";
 import {
   Phone,
   MessageCircle,
@@ -51,9 +57,7 @@ export default function ContactConsultation() {
                 <div className="flex items-center justify-end gap-4 group">
                   <div className="text-right">
                     <p className="text-sm text-zinc-500">ساعات کاری</p>
-                    <p className="text-white font-medium">
-                      شنبه تا پنجشنبه - ۱۰ صبح الی ۹ شب
-                    </p>
+                    <p className="text-white font-medium">{SITE_HOURS}</p>
                   </div>
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-cyan-400 group-hover:border-cyan-500/50 transition-colors">
                     <Clock size={24} />
@@ -64,7 +68,7 @@ export default function ContactConsultation() {
                   <div className="text-right">
                     <p className="text-sm text-zinc-500">آدرس مرکز</p>
                     <p className="text-white font-medium">
-                      تهران، مجتمع تجاری پایتخت، طبقه سوم
+                      {SITE_ADDRESS.streetAddress}
                     </p>
                   </div>
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-cyan-400 group-hover:border-cyan-500/50 transition-colors">
@@ -79,7 +83,7 @@ export default function ContactConsultation() {
           <div className="grid gap-4">
             <FadeUp delay={0.2}>
               <a
-                href="tel:09107701704"
+                href={`tel:${SITE_PHONE}`}
                 className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-cyan-500/40 hover:bg-zinc-900/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-cyan-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
@@ -92,14 +96,16 @@ export default function ContactConsultation() {
                   <h4 className="text-2xl font-bold text-white mb-1">
                     تماس مستقیم
                   </h4>
-                  <p className="text-zinc-400">{SITE_PHONE}</p>
+                  <p className="text-zinc-400" dir="ltr">
+                    {SITE_PHONE_DISPLAY}
+                  </p>
                 </div>
               </a>
             </FadeUp>
 
             <FadeUp delay={0.3}>
               <a
-                href="https://wa.me/989107701704"
+                href={whatsAppUrl()}
                 className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-green-500/40 hover:bg-zinc-900/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-green-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />

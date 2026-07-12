@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { footerInfoLinks, footerQuickLinks } from "@/lib/site-nav";
+import {
+  SITE_ADDRESS,
+  SITE_NAME,
+  SITE_PHONE,
+  SITE_PHONE_DISPLAY,
+} from "@/lib/seo/site";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -9,9 +15,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
-            <p className="text-lg font-bold text-white">فیکس بازی</p>
+            <p className="text-lg font-bold text-white">{SITE_NAME}</p>
             <p className="text-sm leading-7 text-zinc-400">
-              مرکز تخصصی تعمیرات پلی استیشن، ایکس باکس و دسته بازی با پشتیبانی
+              مرکز تخصصی تعمیرات پلی‌استیشن، ایکس‌باکس و دسته بازی با پشتیبانی
               سریع.
             </p>
           </div>
@@ -23,7 +29,6 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  // href="/coming-soon"
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
                   {link.title}
@@ -38,8 +43,7 @@ export default function Footer() {
               {footerInfoLinks.map((link) => (
                 <Link
                   key={link.href}
-                  // href={link.href}
-                  href="/coming-soon"
+                  href={link.href}
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
                   {link.title}
@@ -50,9 +54,15 @@ export default function Footer() {
 
           <div className="space-y-3">
             <p className="text-sm font-semibold text-cyan-400">ارتباط</p>
-            <p className="text-sm text-zinc-400">تلفن: ۰۲۱-۱۲۳۴۵۶۷۸</p>
+            <a
+              href={`tel:${SITE_PHONE}`}
+              className="block text-sm text-zinc-400 transition-colors hover:text-cyan-400"
+              dir="ltr"
+            >
+              تلفن: {SITE_PHONE_DISPLAY}
+            </a>
             <p className="text-sm text-zinc-400">
-              آدرس: تهران، خیابان مثال، پلاک ۲۴
+              آدرس: {SITE_ADDRESS.streetAddress}
             </p>
           </div>
         </div>
@@ -72,7 +82,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 border-t border-white/10 pt-4 text-center text-xs text-zinc-500">
-          {`© ${year} Console Repair. All rights reserved.`}
+          {`© ${year} FixBazi. All rights reserved.`}
         </div>
       </div>
     </footer>

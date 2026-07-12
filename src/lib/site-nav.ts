@@ -77,6 +77,7 @@ export const navbarNavItems: SiteNavItem[] = [
   },
   { title: "بلاگ", href: "/blog/controller-repair" },
   trackingItem(),
+  { title: "تماس", href: "/contact" },
 ];
 
 export const headerNavItems: SiteNavLeaf[] = [

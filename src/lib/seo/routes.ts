@@ -33,6 +33,11 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     priority: path === "/repair" ? 0.85 : 0.8,
   })),
   { path: "/tracking", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/about-us", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/contact", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/faq", changeFrequency: "monthly", priority: 0.65 },
+  { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/privacy-policy", changeFrequency: "yearly", priority: 0.3 },
   ...services.map((s) => ({
     path: `/services/${s.slug}`,
     changeFrequency: "weekly" as const,
