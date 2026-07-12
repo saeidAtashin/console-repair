@@ -2,6 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  async redirects() {
+    return [
+      { source: "/shop", destination: "/cases", permanent: true },
+      { source: "/shop/:path*", destination: "/cases", permanent: true },
+      { source: "/repair", destination: "/create", permanent: true },
+      { source: "/services/:path*", destination: "/create", permanent: true },
+      { source: "/blog/:path*", destination: "/", permanent: true },
+    ];
+  },
   // Allow LAN phone access during `next dev` (Next.js 16 blocks cross-origin /_next by default)
   allowedDevOrigins: [
     "192.168.1.101",

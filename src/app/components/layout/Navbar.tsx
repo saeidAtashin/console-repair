@@ -9,7 +9,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import CartNavLink from "../shop/CartNavLink";
 import { navbarNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
-import ShopSearch from "../shop/ShopSearch";
 import {
   X,
   ChevronDown,
@@ -39,7 +38,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { itemCount, cartBounce } = useShopCart();
-  const hideShopSearch = pathname.startsWith("/shop");
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -205,11 +203,6 @@ export default function Navbar() {
                 receiving={cartBounce}
                 className={cartClassName}
               />
-              {!hideShopSearch ? (
-                <div className="hidden xl:block">
-                  <ShopSearch variant="header" onNavigate={closeMenu} />
-                </div>
-              ) : null}
             </div>
 
             <div className="flex items-center gap-2 lg:hidden">
@@ -357,11 +350,6 @@ export default function Navbar() {
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-8">
-              {!hideShopSearch ? (
-                <div className="mb-6">
-                  <ShopSearch variant="header" onNavigate={closeMenu} />
-                </div>
-              ) : null}
 
               <nav
                 className="flex flex-col gap-1 text-right"
@@ -445,7 +433,7 @@ export default function Navbar() {
             <div className="shrink-0 border-t border-white/5 px-5 py-5 sm:px-8 sm:py-6">
               <div className="flex flex-col gap-3">
                 <Link
-                  href="/shop/cart"
+                  href="/cart"
                   data-shop-cart-target
                   onClick={closeMenu}
                   className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 py-3.5 text-center text-sm font-bold text-white transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"

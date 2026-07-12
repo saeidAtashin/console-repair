@@ -25,7 +25,7 @@ export default function CartNavLink({ itemCount, receiving, className, onClick }
       className="inline-flex"
     >
       <Link
-        href="/shop/cart"
+        href="/cart"
         data-shop-cart-target
         onClick={onClick}
         className={`relative ${className ?? ""}`}

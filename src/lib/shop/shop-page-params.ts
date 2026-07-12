@@ -1,6 +1,7 @@
-import type { ConditionFilterKey } from "@/app/components/shop/ShopConditionFilters";
 import { normalizeSearchQuery } from "./search";
 import type { ShopConsole } from "./types";
+
+export type ConditionFilterKey = "all" | "new" | "used";
 
 export function parseConditionParam(value?: string): ConditionFilterKey {
   if (value === "new" || value === "used") return value;

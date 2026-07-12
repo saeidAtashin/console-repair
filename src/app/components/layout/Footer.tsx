@@ -6,13 +6,12 @@ export default function Footer() {
 
   return (
     <footer className="mt-20 border-t border-white/10 bg-black/50 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="mx-auto max-w-7xl px-6 py-10">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
-            <p className="text-lg font-bold text-white">فیکس بازی</p>
+            <p className="text-lg font-bold text-white">قاب‌کده</p>
             <p className="text-sm leading-7 text-zinc-400">
-              مرکز تخصصی تعمیرات پلی استیشن، ایکس باکس و دسته بازی با پشتیبانی
-              سریع.
+              طراحی و فروش قاب موبایل اختصاصی با چاپ با کیفیت و ارسال سریع.
             </p>
           </div>
 
@@ -23,7 +22,6 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  // href="/coming-soon"
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
                   {link.title}
@@ -38,8 +36,7 @@ export default function Footer() {
               {footerInfoLinks.map((link) => (
                 <Link
                   key={link.href}
-                  // href={link.href}
-                  href="/coming-soon"
+                  href={link.href}
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
                   {link.title}
@@ -50,30 +47,14 @@ export default function Footer() {
 
           <div className="space-y-3">
             <p className="text-sm font-semibold text-cyan-400">ارتباط</p>
-            <p className="text-sm text-zinc-400">تلفن: ۰۲۱-۱۲۳۴۵۶۷۸</p>
-            <p className="text-sm text-zinc-400">
-              آدرس: تهران، خیابان مثال، پلاک ۲۴
-            </p>
+            <p className="text-sm text-zinc-400">تلفن: ۰۹۱۰۷۷۰۱۷۰۴</p>
+            <p className="text-sm text-zinc-400">تهران، ایران</p>
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-dashed border-white/15 bg-white/2 p-4">
-          <p className="text-sm font-semibold text-cyan-400">مجوز های ما</p>
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <div
-                key={index}
-                className="flex h-16 items-center justify-center rounded-xl border border-white/10 bg-black/40 text-xs text-zinc-500"
-              >
-                جای لوگو
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8 border-t border-white/10 pt-4 text-center text-xs text-zinc-500">
-          {`© ${year} Console Repair. All rights reserved.`}
-        </div>
+        <p className="mt-8 text-center text-xs text-zinc-600">
+          © {year} قاب‌کده — تمامی حقوق محفوظ است
+        </p>
       </div>
     </footer>
   );

@@ -8,7 +8,6 @@ import Footer from "./components/layout/Footer";
 import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
-import { GameInstallListProvider } from "./context/GameInstallListContext";
 import { ShopCartProvider } from "./context/ShopCartContext";
 import { rootMetadata } from "../lib/seo/metadata";
 
@@ -118,7 +117,6 @@ export default function RootLayout({
       >
         <AuthProvider>
           <ShopCartProvider>
-            <GameInstallListProvider>
               <LocalBusinessSchema />
               <Suspense fallback={null}>
                 <RouteLoadingOverlay />
@@ -126,7 +124,6 @@ export default function RootLayout({
               <Navbar />
               {children}
               <Footer />
-            </GameInstallListProvider>
           </ShopCartProvider>
         </AuthProvider>
       </body>

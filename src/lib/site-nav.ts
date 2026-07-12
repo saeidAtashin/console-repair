@@ -1,12 +1,4 @@
-import { blogPosts } from "@/app/data/blog";
-import {
-  consoleCatalog,
-  consoleIds,
-  getRepairService,
-  type ConsoleId,
-} from "./console-catalog";
-import { siteBreadcrumbTree } from "./breadcrumb-tree-data";
-import { SHOP_CONSOLE_ORDER, SHOP_CONSOLE_META } from "./shop";
+import { PHONE_BRANDS } from "./cases/brands.static";
 
 export type SiteNavLeaf = {
   title: string;
@@ -17,92 +9,36 @@ export type SiteNavItem = SiteNavLeaf & {
   children?: SiteNavLeaf[];
 };
 
-function treeChild(href: string) {
-  return siteBreadcrumbTree.children?.find((node) => node.href === href);
-}
-
-function trackingItem(): SiteNavLeaf {
-  const tracking = treeChild("/tracking");
-  return {
-    title: tracking?.title ?? "پیگیری",
-    href: "/tracking",
-  };
-}
-
-function issueLabel(consoleId: ConsoleId) {
-  return (
-    getRepairService(consoleId)?.title ??
-    `تعمیر ${consoleCatalog[consoleId].title}`
-  );
-}
-
-function repairChildren(): SiteNavLeaf[] {
-  return consoleIds.map((id) => ({
-    title: issueLabel(id),
-    href: `/services/${consoleCatalog[id].repairSlug}`,
-  }));
-}
-
-function gameChildren(): SiteNavLeaf[] {
-  return consoleIds.flatMap((id) =>
-    consoleCatalog[id].gameInstallSlugs.map((game) => ({
-      title: game.label,
-      href: `/services/game-install/${game.slug}`,
-    })),
-  );
-}
-
-function shopChildren(): SiteNavLeaf[] {
-  return [
-    { title: "همه محصولات", href: "/shop" },
-    ...SHOP_CONSOLE_ORDER.map((slug) => ({
-      title: `خرید ${SHOP_CONSOLE_META[slug].label}`,
-      href: `/shop/${slug}`,
-    })),
-  ];
-}
-
 export const navbarNavItems: SiteNavItem[] = [
   { title: "خانه", href: "/" },
   {
-    title: "تعمیرات",
-    href: "/services",
-    children: repairChildren(),
+    title: "قاب‌های آماده",
+    href: "/cases",
   },
   {
-    title: "فروشگاه",
-    href: "/shop",
-    children: shopChildren(),
-  },
-  trackingItem(),
-  {
-    title: "بازی",
-    href: "/services/game-install",
-    children: gameChildren(),
-  },
-  {
-    title: "بلاگ",
-    href: "/blog",
-    children: blogPosts.map((post) => ({
-      title: post.title,
-      href: `/blog/${post.slug}`,
+    title: "طراحی قاب",
+    href: "/create",
+    children: PHONE_BRANDS.map((brand) => ({
+      title: brand.name,
+      href: `/create/${brand.slug}`,
     })),
   },
+  { title: "سبد خرید", href: "/cart" },
+  { title: "پیگیری سفارش", href: "/tracking" },
 ];
 
 export const headerNavItems: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
-  { title: "همه خدمات", href: "/services" },
-  { title: "ثبت سفارش تعمیر", href: "/repair" },
-  { title: "مشکلات رایج", href: "/issues" },
-  trackingItem(),
+  { title: "قاب‌های آماده", href: "/cases" },
+  { title: "طراحی قاب", href: "/create" },
+  { title: "پیگیری سفارش", href: "/tracking" },
 ];
 
 export const footerQuickLinks: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
-  { title: "همه خدمات", href: "/services" },
-  { title: "ثبت سفارش تعمیر", href: "/repair" },
-  trackingItem(),
+  { title: "قاب‌های آماده", href: "/cases" },
+  { title: "طراحی قاب", href: "/create" },
+  { title: "سبد خرید", href: "/cart" },
 ];
 
 export const footerInfoLinks: SiteNavLeaf[] = [

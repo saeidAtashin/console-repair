@@ -3,47 +3,34 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Phone, Search, Wrench } from "lucide-react";
+import { Phone, Search, Palette, ShoppingBag } from "lucide-react";
 
 import { useAuth } from "@/app/context/AuthContext";
-import RepairFormClient from "@/app/repair/RepairFormClient";
-import { getRepairStatusLabel } from "@/lib/repair-status";
 import { SITE_PHONE } from "@/lib/seo/site";
 import { apiRequest, ApiError } from "@/lib/api-client";
-import type { RepairPrefill } from "@/lib/repair-links";
 
 type Order = {
-  trackingCode: string;
-  name: string;
-  phone: string;
-  device: string;
-  issue: string;
-  description: string;
+  orderCode: string;
   status: string;
+  amount: number;
   createdAt: string;
 };
 
 const DISPLAY_PHONE = "09107701704";
 
-const EMPTY_REPAIR_PREFILL: RepairPrefill = {};
-
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
 
   const loadOrders = useCallback(async () => {
     setOrdersLoading(true);
     try {
-      const data = await apiRequest<{ orders?: Order[] }>("/api/dashboard/orders");
+      const data = await apiRequest<{ orders?: Order[] }>("/shop/orders");
       setOrders(data.orders ?? []);
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        setOrders([]);
-      }
+    } catch {
+      setOrders([]);
     } finally {
       setOrdersLoading(false);
     }
@@ -57,34 +44,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (authLoading || !user || user.role !== "user") return;
-
-    let cancelled = false;
-
-    async function fetchOrders() {
-      try {
-        const data = await apiRequest<{ orders?: Order[] }>("/api/dashboard/orders");
-        if (cancelled) return;
-        setOrders(data.orders ?? []);
-      } catch (error) {
-        if (cancelled) return;
-        if (error instanceof ApiError && error.status === 401) {
-          setOrders([]);
-        }
-      } finally {
-        if (!cancelled) setOrdersLoading(false);
-      }
-    }
-
-    void fetchOrders();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [authLoading, user]);
+    void loadOrders();
+  }, [authLoading, user, loadOrders]);
 
   if (authLoading) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-black text-white">
         <p className="text-zinc-400">در حال بارگذاری...</p>
       </main>
     );
@@ -92,63 +57,60 @@ export default function DashboardPage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-black text-white">
         <h1 className="text-3xl text-red-500">شما دسترسی ندارید</h1>
       </main>
     );
   }
 
-  if (user.role === "admin") {
-    return null;
-  }
+  if (user.role === "admin") return null;
 
   return (
-    <main className="min-h-screen bg-[#030510] text-white pt-24 pb-16">
+    <main className="min-h-screen bg-[#030510] pt-24 pb-16 text-white">
       <div className="mx-auto max-w-4xl px-6">
         <header className="mb-10">
           <p className="text-sm text-cyan-400">پنل کاربری</p>
-          <h1 className="mt-2 text-4xl font-black text-white">
-            سلام {user.name}
-          </h1>
-          {user.phone && (
+          <h1 className="mt-2 text-4xl font-black">سلام {user.name}</h1>
+          {user.phone ? (
             <p className="mt-2 text-zinc-400" dir="ltr">
               {user.phone}
             </p>
-          )}
+          ) : null}
         </header>
 
         <div className="mb-10 flex flex-wrap gap-3">
           <a
             href={`tel:${SITE_PHONE}`}
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-3 font-bold text-black shadow-[0_0_20px_rgba(0,255,255,0.25)] transition hover:from-cyan-400 hover:to-blue-400"
+            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-3 font-bold text-black"
           >
             <Phone className="h-5 w-5" />
-            تماس با پشتیبانی ({DISPLAY_PHONE})
+            پشتیبانی ({DISPLAY_PHONE})
           </a>
-
           <Link
             href="/tracking"
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-bold text-white transition hover:border-cyan-500/40 hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-6 py-3 font-bold"
           >
             <Search className="h-5 w-5 text-cyan-400" />
-            پیگیری با کد رهگیری
+            پیگیری سفارش
           </Link>
-
-          <button
-            type="button"
-            onClick={() => setShowForm((prev) => !prev)}
-            className="inline-flex items-center gap-2 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-6 py-3 font-bold text-cyan-300 transition hover:bg-cyan-500/20"
+          <Link
+            href="/dashboard/designs"
+            className="inline-flex items-center gap-2 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-6 py-3 font-bold text-cyan-300"
           >
-            <Wrench className="h-5 w-5" />
-            {showForm ? "بستن فرم" : "ثبت درخواست تعمیر"}
-          </button>
+            <Palette className="h-5 w-5" />
+            طراحی‌های من
+          </Link>
+          <Link
+            href="/create"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 px-6 py-3 font-bold"
+          >
+            <ShoppingBag className="h-5 w-5 text-cyan-400" />
+            طراحی جدید
+          </Link>
         </div>
 
-        <section className="mb-12">
-          <h2 className="mb-6 text-2xl font-bold text-cyan-400">
-            سفارشات تعمیر من
-          </h2>
-
+        <section>
+          <h2 className="mb-6 text-2xl font-bold text-cyan-400">سفارشات من</h2>
           {ordersLoading ? (
             <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-zinc-400">
               در حال دریافت سفارشات...
@@ -156,73 +118,28 @@ export default function DashboardPage() {
           ) : orders.length === 0 ? (
             <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center">
               <p className="text-lg text-zinc-300">سفارشی ثبت نشده است</p>
-              <p className="mt-2 text-sm text-zinc-500">
-                با دکمه «ثبت درخواست تعمیر» اولین درخواست خود را ثبت کنید.
-              </p>
+              <Link href="/cases" className="mt-4 inline-block text-cyan-400">
+                مشاهده قاب‌های آماده
+              </Link>
             </div>
           ) : (
             <div className="grid gap-4">
               {orders.map((order) => (
                 <article
-                  key={order.trackingCode}
-                  className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+                  key={order.orderCode}
+                  className="rounded-3xl border border-white/10 bg-white/5 p-6"
                 >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="space-y-3">
-                      <div>
-                        <span className="text-xs text-zinc-500">کد رهگیری</span>
-                        <p className="text-2xl font-black tracking-widest text-cyan-400">
-                          {order.trackingCode}
-                        </p>
-                      </div>
-
-                      <div className="grid gap-3 text-sm sm:grid-cols-2">
-                        <div>
-                          <span className="text-zinc-500">دستگاه:</span>
-                          <p className="mt-1 text-white">{order.device}</p>
-                        </div>
-                        <div>
-                          <span className="text-zinc-500">مشکل:</span>
-                          <p className="mt-1 text-white">
-                            {order.issue || "—"}
-                          </p>
-                        </div>
-                      </div>
-
-                      {order.description && (
-                        <p className="text-sm text-zinc-400">
-                          {order.description}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="shrink-0 text-left sm:text-right">
-                      <span className="inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-bold text-cyan-300">
-                        {getRepairStatusLabel(order.status)}
-                      </span>
-                      <p className="mt-3 text-xs text-zinc-500">
-                        {new Date(order.createdAt).toLocaleDateString("fa-IR")}
-                      </p>
-                    </div>
-                  </div>
+                  <p className="text-xs text-zinc-500">کد سفارش</p>
+                  <p className="text-xl font-black text-cyan-400">{order.orderCode}</p>
+                  <p className="mt-2 text-sm text-zinc-400">{order.status}</p>
+                  <p className="mt-1 text-xs text-zinc-500">
+                    {new Date(order.createdAt).toLocaleDateString("fa-IR")}
+                  </p>
                 </article>
               ))}
             </div>
           )}
         </section>
-
-        {showForm && (
-          <section className="rounded-3xl border border-white/10 bg-black/40">
-            <RepairFormClient
-              initialPrefill={EMPTY_REPAIR_PREFILL}
-              defaultPhone={user.phone ?? ""}
-              onSuccess={() => {
-                void loadOrders();
-                setShowForm(false);
-              }}
-            />
-          </section>
-        )}
       </div>
     </main>
   );

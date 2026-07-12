@@ -1,10 +1,25 @@
 "use client";
 
+import { useEffect } from "react";
 import { useShopCart } from "@/app/context/ShopCartContext";
-import ShopToast from "./ShopToast";
 
 export default function AddToCartFeedback() {
   const { toastMessage, dismissAddToCartToast } = useShopCart();
 
-  return <ShopToast message={toastMessage} onDismiss={dismissAddToCartToast} />;
+  useEffect(() => {
+    if (!toastMessage) return;
+    const timer = setTimeout(dismissAddToCartToast, 3000);
+    return () => clearTimeout(timer);
+  }, [toastMessage, dismissAddToCartToast]);
+
+  if (!toastMessage) return null;
+
+  return (
+    <div
+      role="status"
+      className="fixed bottom-24 left-1/2 z-[150] -translate-x-1/2 rounded-xl border border-cyan-500/30 bg-zinc-900 px-5 py-3 text-sm font-medium text-white shadow-xl lg:bottom-8"
+    >
+      {toastMessage}
+    </div>
+  );
 }
