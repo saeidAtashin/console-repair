@@ -86,6 +86,7 @@ export default async function BlogPostPage({ params }: Props) {
         jsonLd={jsonLd}
         containerClassName="container mx-auto max-w-6xl px-6"
         className="container mx-auto max-w-6xl px-6 pb-12"
+
       >
         <BlogPostHero post={post} />
 

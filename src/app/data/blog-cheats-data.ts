@@ -5,7 +5,7 @@ const RAWG = "https://media.rawg.io/media/games";
 export const gameCheatsPost: BlogPost = {
   slug: "game-cheats-codes-2026",
   kind: "cheats",
-  title: "رمز و چیت بازی‌های PS5 و Xbox — ۴۰ بازی برتر",
+  title: "رمز و چیت بازی‌های PS5 و Xbox",
   excerpt:
     "مجموعه کامل کدهای تقلب، رمز مخفی و ترفندهای ۴۰ بازی برتر PS5 و Xbox در چهار دسته اکشن، RPG، چندنفره و انحصاری — با دستور فعال‌سازی دقیق.",
   publishedAt: "2026-06-20",

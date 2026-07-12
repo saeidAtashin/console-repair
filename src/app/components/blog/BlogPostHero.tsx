@@ -27,7 +27,7 @@ export default function BlogPostHero({ post }: Props) {
 
       <div className="relative grid gap-8 p-6 md:grid-cols-[1fr_280px] md:p-10 lg:grid-cols-[1fr_320px]">
         <div className="relative z-10 flex flex-col justify-center">
-          <motion.div
+          {/* <motion.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45 }}
@@ -39,11 +39,11 @@ export default function BlogPostHero({ post }: Props) {
                   key={section.id}
                   className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300 backdrop-blur-sm"
                 >
-                  {section.title.split(" ").slice(0, 2).join(" ")}
+                  {section.title.split(" ").slice(0, 5).join(" ")}
                 </span>
               ),
             )}
-          </motion.div>
+          </motion.div> */}
 
           <motion.h1
             initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}

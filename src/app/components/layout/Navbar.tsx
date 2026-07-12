@@ -157,20 +157,13 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-[100] border-b transition-all duration-500 ${
-          scrolled
-            ? "h-16 border-white/10 bg-black/80 backdrop-blur-2xl"
-            : "h-16 border-transparent bg-transparent md:h-20"
-        }`}
+        className={`fixed inset-x-0 top-0 z-[100] border-b transition-all duration-500 ${scrolled
+          ? "h-16 border-white/10 bg-black/80 backdrop-blur-2xl"
+          : "h-16 border-transparent bg-transparent md:h-20"
+          }`}
       >
         <div
-          className="
-  mx-auto h-full max-w-7xl
-  flex justify-between items-center
-  sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
-  sm:gap-4
-  px-4 sm:px-6
-"
+          className="mx-auto h-full max-w-7xl flex justify-between items-center sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-4 px-4 sm:px-6"
         >
           {/* Actions — end (left in RTL) */}
           <div className="flex min-w-0 items-center justify-start gap-2 sm:gap-3">
@@ -265,11 +258,10 @@ export default function Navbar() {
                   <div className="flex items-center gap-0.5">
                     <Link
                       href={item.href}
-                      className={`text-sm font-medium transition-colors ${
-                        active
-                          ? "text-cyan-400"
-                          : "text-zinc-400 hover:text-cyan-400"
-                      }`}
+                      className={`text-sm font-medium transition-colors ${active
+                        ? "text-cyan-400"
+                        : "text-zinc-400 hover:text-cyan-400"
+                        }`}
                     >
                       {item.title}
                     </Link>
@@ -303,17 +295,15 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative px-3 py-2 text-sm font-medium transition-colors xl:px-4 ${
-                    active
-                      ? "text-cyan-400"
-                      : "text-zinc-400 hover:text-cyan-400"
-                  }`}
+                  className={`relative px-3 py-2 text-sm font-medium transition-colors xl:px-4 ${active
+                    ? "text-cyan-400"
+                    : "text-zinc-400 hover:text-cyan-400"
+                    }`}
                 >
                   {item.title}
                   <span
-                    className={`absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 bg-cyan-500 transition-all ${
-                      active ? "w-1/2" : "w-0 group-hover:w-1/2"
-                    }`}
+                    className={`absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 bg-cyan-500 transition-all ${active ? "w-1/2" : "w-0 group-hover:w-1/2"
+                      }`}
                   />
                 </Link>
               );
@@ -388,11 +378,10 @@ export default function Navbar() {
                             <Link
                               href={item.href}
                               onClick={closeMenu}
-                              className={`text-lg font-bold transition-colors sm:text-xl ${
-                                active
-                                  ? "text-cyan-400"
-                                  : "text-white hover:text-cyan-400"
-                              }`}
+                              className={`text-lg font-bold transition-colors sm:text-xl ${active
+                                ? "text-cyan-400"
+                                : "text-white hover:text-cyan-400"
+                                }`}
                             >
                               {item.title}
                             </Link>
@@ -424,11 +413,10 @@ export default function Navbar() {
                                   key={sub.href}
                                   href={sub.href}
                                   onClick={closeMenu}
-                                  className={`text-sm transition-colors sm:text-base ${
-                                    pathname === sub.href
-                                      ? "text-cyan-400"
-                                      : "text-zinc-400 hover:text-cyan-400"
-                                  }`}
+                                  className={`text-sm transition-colors sm:text-base ${pathname === sub.href
+                                    ? "text-cyan-400"
+                                    : "text-zinc-400 hover:text-cyan-400"
+                                    }`}
                                 >
                                   {sub.title}
                                 </Link>
@@ -440,11 +428,10 @@ export default function Navbar() {
                         <Link
                           href={item.href}
                           onClick={closeMenu}
-                          className={`block rounded-xl px-2 py-3 text-lg font-bold transition-colors sm:text-xl ${
-                            active
-                              ? "text-cyan-400"
-                              : "text-white hover:text-cyan-400"
-                          }`}
+                          className={`block rounded-xl px-2 py-3 text-lg font-bold transition-colors sm:text-xl ${active
+                            ? "text-cyan-400"
+                            : "text-white hover:text-cyan-400"
+                            }`}
                         >
                           {item.title}
                         </Link>
