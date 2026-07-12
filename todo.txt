@@ -1,0 +1,39 @@
+user be able to add and remove text and select font and color and size and position and be able to edit text.
+also all these work with keyboard shortcuts too.
+
+also should use back of mobile phone for case design.
+
+also be able to add image sticker and remove image sticker too.
+
+also show items of case in layers and be able to change order of layers and delete too but still show them in its list of items and be able to select it again.
+
+also should have a item that can be able to select from pre designed cases and be able to edit it and save it.
+
+if pre designed case is layered, be able to eddit it like it is users layers and edit it.
+
+add a we can design case for you, send us your image, and describe what you want, and we will design it for you and send you to confirm.
+
+also show a sample of our designs in home page and order page and also show a sample of our designs in case design page.
+
+also add a search for mobile model search, if it not exist, show a message that your phone model is not exactly found, but you can create a case for it. you can create your case, if it need too much change we will double check with you.
+
+can you add all back of phones for case design?
+its important to add all back of phones for case design that user select its brand and model and be able to design case for it with showing its camera position and other positions.
+
+<!-- 
+also like all of these, add print for 
+لیوان 
+ماگ
+موس پد
+کیبورد پد -->
+
+
+
+ you can get data from this link: https://www.shablon.ir/ for other products. also add print for these products. also use its prices too, but add 40% to it for our profit.
+
+
+
+
+also add light and dark mode and also add a theme that user can select its theme but default should be base on device theme.
+
+
