@@ -20,20 +20,16 @@ also add a search for mobile model search, if it not exist, show a message that 
 can you add all back of phones for case design?
 its important to add all back of phones for case design that user select its brand and model and be able to design case for it with showing its camera position and other positions.
 
-<!-- 
+
+also add light and dark mode and also add a theme that user can select its theme but default should be base on device theme.
+
+
 also like all of these, add print for 
 لیوان 
 ماگ
 موس پد
-کیبورد پد -->
-
-
+کیبورد پد 
 
  you can get data from this link: https://www.shablon.ir/ for other products. also add print for these products. also use its prices too, but add 40% to it for our profit.
-
-
-
-
-also add light and dark mode and also add a theme that user can select its theme but default should be base on device theme.
 
 
