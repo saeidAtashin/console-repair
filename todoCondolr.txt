@@ -1,0 +1,244 @@
+in this project:
+this is get api call of devices: /installation/devices/
+response is like this:
+{
+  "message": "Instances listed successfully",
+  "data": {
+    "results": [
+      {
+        "id": 1,
+        "name": "ps4"
+      },
+      {
+        "id": 2,
+        "name": "ps5"
+      }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+this is get api call of games: /installation/games/
+
+this is its response:
+{
+  "message": "Instances listed successfully",
+  "data": {
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+      {
+        "id": 2,
+        "name": "game 2",
+        "size": 1,
+        "price": 20,
+        "image": "https://k3isonfire.ir/media/game-images/Screenshot_from_2026-06-07_01-03-09.png",
+        "device_type": [
+          {
+            "id": 1,
+            "name": "pes4"
+          },
+          {
+            "id": 2,
+            "name": "pes 5"
+          }
+        ],
+        "rates": []
+      },
+      {
+        "id": 1,
+        "name": "game test",
+        "size": 100,
+        "price": 50000,
+        "image": "https://k3isonfire.ir/media/game-images/Screenshot_from_2026-06-28_16-37-50.png",
+        "device_type": [
+          {
+            "id": 1,
+            "name": "pes4"
+          },
+          {
+            "id": 2,
+            "name": "pes 5"
+          }
+        ],
+        "rates": [
+          {
+            "id": 1,
+            "source": "metacritic",
+            "rate": "2.0"
+          },
+          {
+            "id": 2,
+            "source": "gamespot",
+            "rate": "1.0"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+
+also this is get api for devices that 
+
+I want to use these apis for game install:
+post: /installation/requests/items/
+payload: {
+  "game": 0,
+  "guest_uid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "device_type": 0
+}
+
+game should be id of game in installation/games get api call.
+guest_uid should be like this 3fa85f64-5717-4562-b3fc-2c963f66afa6 
+if user is not login, should create like this. and save it in localstorage.
+and if user is login, dont send it.
+
+for device_type that should check response of installation/devices and selected devices with ps4 ps4 xboxs then send its id.
+
+when each one of games is added, should call post, and getting of added games to cart is in https://k3isonfire.ir/api/v1/installation/requests/draft/?page=1&page_size=100
+ get api call that response is:
+{
+  "message": "Instance retrieved successfully",
+  "data": {
+    "id": 7,
+    "guest_uid": null,
+    "device_type": {
+      "id": 1,
+      "name": "pes4"
+    },
+    "total_price": null,
+    "admin_note": null,
+    "clear_guest_uid": null,
+    "items": [
+      {
+        "id": 17,
+        "game": {
+          "id": 1,
+          "name": "game test",
+          "size": 100
+        },
+        "price": 50000
+      },
+      {
+        "id": 18,
+        "game": {
+          "id": 2,
+          "name": "game 2",
+          "size": 1
+        },
+        "price": 20
+      }
+    ],
+    "status": "draft"
+  }
+}
+that if user is guest, should call it like this:
+https://k3isonfire.ir/api/v1/installation/requests/draft/?page=1&page_size=100&guest_uid=3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+
+
+response of /installation/requests/items/ is like this: 
+{
+  "message": "Instance created successfully",
+  "data": {
+    "id": 19,
+    "game": 1,
+    "clear_guest_uid": false
+  }
+}
+
+that if user is not guest, will change it to true,
+
+
+and for remove games from carts or form, should use this delete api: /installation/requests/items/{id}/
+that payload is guest_uid and id.
+
+this is for game install.
+
+
+
+
+this is get api call for province and cities:
+/locations/provinces/
+response:
+{
+  "message": "Instances listed successfully",
+  "data": {
+    "results": [
+      {
+        "id": 1,
+        "name": "تست"
+      },
+      {
+        "id": 2,
+        "name": "تست 2"
+      }
+    ]
+  }
+}
+
+
+
+/locations/provinces/{province__id}/citites/
+
+response is like:
+{
+  "message": "Instances listed successfully",
+  "data": {
+    "results": [
+      {
+        "id": 1,
+        "name": "تست"
+      }
+    ]
+  }
+}
+
+
+
+and this is user profile:
+get and post: /user/address/
+
+payload in post is:
+{
+  "title": "string",
+  "city": 0,
+  "address_detail": "string",
+  "postal_code": "string",
+  "latitude": "string",
+  "longitude": "string"
+}
+
+that shuld fill inputs for them and also select from map and city and province that is selected, for lat and long.
+
+and this is for put: /user/address/{id}/
+and this is for delete: /user/address/{id}/
+
+this is get api of usr profile:
+/user/profile/
+
+response is:
+{
+  "message": "Instance retrieved successfully",
+  "data": {
+    "phone_number": "09368165125",
+    "first_name": "",
+    "last_name": ""
+  }
+  }
+
+  this is post: /user/profile/
+  payload: {
+  "first_name": "string",
+  "last_name": "string"
+}
+
+and this is put: /user/profile/
