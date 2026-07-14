@@ -155,7 +155,7 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-[100] border-b transition-all duration-500 ${scrolled
+        className={`fixed inset-x-0 top-0 z-100 border-b transition-all duration-500 ${scrolled
           ? "h-16 border-white/10 bg-black/80 backdrop-blur-2xl"
           : "h-16 border-transparent bg-transparent md:h-20"
           }`}
