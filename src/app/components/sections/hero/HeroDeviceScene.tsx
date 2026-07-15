@@ -26,7 +26,7 @@ import "./hero-device-scene.css";
 
 const consoleImages: Record<ConsoleId, string> = {
   ps4: "/obj-console/PS4-service-center-in-Delhi.webp",
-  ps5: "/obj-console/ps5-repair.webp",
+  ps5: "/images/5.jfif",
   xbox: "/obj-console/Series_X_Digital_Edition_Layout.jpg",
 };
 
@@ -409,7 +409,7 @@ export default function HeroDeviceScene() {
                       fill
                       sizes="(max-width: 640px) 100vw, 720px"
                       priority={activeImageSrc === consoleImages[DEFAULT_CONSOLE]}
-                      className="hero-scene__photo z-[1] object-cover opacity-100"
+                      className="hero-scene__photo z-1 object-cover opacity-100"
                     />
                   </div>
 
