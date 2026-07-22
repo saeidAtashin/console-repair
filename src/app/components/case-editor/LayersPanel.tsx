@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -7,22 +8,29 @@ import {
   Eye,
   EyeOff,
   Image as ImageIcon,
+  Plus,
   Sticker,
   Trash2,
   Type,
+  X,
 } from "lucide-react";
 
 import { useEditorStore } from "@/lib/design/editor-store";
 import {
   BLEND_MODE_OPTIONS,
-  EFFECT_OPTIONS,
+  EFFECT_TYPE_OPTIONS,
+  effectSupportsIntensity,
+  getEffectTypeLabel,
+  getImageLayerEffects,
 } from "@/lib/design/image-layer-filters";
 import {
+  generateEffectId,
   isLayerVisible,
   type DesignLayer,
   type ImageBlendMode,
-  type ImageEffectPreset,
+  type ImageEffectType,
   type ImageLayer,
+  type ImageLayerEffect,
 } from "@/lib/design/types";
 
 function layerLabel(layer: DesignLayer): string {
@@ -39,6 +47,13 @@ function LayerTypeIcon({ layer }: { layer: DesignLayer }) {
   if (layer.type === "text") return <Type size={14} className="shrink-0" />;
   if (layer.isSticker) return <Sticker size={14} className="shrink-0" />;
   return <ImageIcon size={14} className="shrink-0" />;
+}
+
+function removeEffectFromLayer(
+  layer: ImageLayer,
+  effectId: string,
+): ImageLayerEffect[] {
+  return getImageLayerEffects(layer).filter((effect) => effect.id !== effectId);
 }
 
 export default function LayersPanel() {
@@ -71,10 +86,13 @@ export default function LayersPanel() {
         {layersReversed.map((layer) => {
           const visible = isLayerVisible(layer);
           const isSelected = selectedLayerId === layer.id;
+          const imageEffects =
+            layer.type === "image" ? getImageLayerEffects(layer) : [];
+
           return (
             <li
               key={layer.id}
-              className={`flex items-center gap-2 rounded-lg border px-2 py-2 text-xs transition ${
+              className={`rounded-lg border px-2 py-2 text-xs transition ${
                 isSelected
                   ? "border-cyan-500/50 bg-cyan-500/10 text-foreground"
                   : visible
@@ -82,40 +100,76 @@ export default function LayersPanel() {
                     : "border-border/50 bg-card/30 text-muted/50"
               }`}
             >
-              <button
-                type="button"
-                onClick={() => (visible ? selectLayer(layer.id) : restoreLayer(layer.id))}
-                className="flex min-w-0 flex-1 items-center gap-2 text-right"
-              >
-                <LayerTypeIcon layer={layer} />
-                <span className="truncate">{layerLabel(layer)}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setLayerVisible(layer.id, !visible)}
-                className="shrink-0 p-1 text-muted hover:text-foreground"
-                title={visible ? "مخفی کردن" : "نمایش"}
-              >
-                {visible ? <Eye size={14} /> : <EyeOff size={14} />}
-              </button>
-              {!visible ? (
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => restoreLayer(layer.id)}
-                  className="shrink-0 rounded px-1.5 py-0.5 text-[10px] text-cyan-400"
+                  onClick={() =>
+                    visible ? selectLayer(layer.id) : restoreLayer(layer.id)
+                  }
+                  className="flex min-w-0 flex-1 items-center gap-2 text-right"
                 >
-                  نمایش
+                  <LayerTypeIcon layer={layer} />
+                  <span className="truncate">{layerLabel(layer)}</span>
                 </button>
-              ) : (
                 <button
                   type="button"
-                  onClick={() => setLayerVisible(layer.id, false)}
-                  className="shrink-0 p-1 text-red-400/70 hover:text-red-400"
-                  title="حذف از قاب"
+                  onClick={() => setLayerVisible(layer.id, !visible)}
+                  className="shrink-0 p-1 text-muted hover:text-foreground"
+                  title={visible ? "مخفی کردن" : "نمایش"}
                 >
-                  <Trash2 size={14} />
+                  {visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
-              )}
+                {!visible ? (
+                  <button
+                    type="button"
+                    onClick={() => restoreLayer(layer.id)}
+                    className="shrink-0 rounded px-1.5 py-0.5 text-[10px] text-cyan-400"
+                  >
+                    نمایش
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setLayerVisible(layer.id, false)}
+                    className="shrink-0 p-1 text-red-400/70 hover:text-red-400"
+                    title="حذف از قاب"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
+
+              {imageEffects.length > 0 ? (
+                <div className="mt-1.5 flex flex-wrap gap-1 pe-1">
+                  {imageEffects.map((effect) => (
+                    <span
+                      key={effect.id}
+                      className="inline-flex max-w-full items-center gap-0.5 rounded-md border border-cyan-500/25 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] text-cyan-200/90"
+                    >
+                      <span className="truncate">
+                        {getEffectTypeLabel(effect.type)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateLayer(layer.id, {
+                            effects: removeEffectFromLayer(
+                              layer as ImageLayer,
+                              effect.id,
+                            ),
+                          });
+                        }}
+                        className="shrink-0 rounded p-0.5 text-cyan-300/80 hover:bg-cyan-500/20 hover:text-foreground"
+                        title="حذف افکت"
+                        aria-label={`حذف ${getEffectTypeLabel(effect.type)}`}
+                      >
+                        <X size={10} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </li>
           );
         })}
@@ -174,9 +228,51 @@ function ImageLayerSettings({
   layer: ImageLayer;
   onUpdate: (patch: Partial<ImageLayer>) => void;
 }) {
+  const [pendingEffectType, setPendingEffectType] = useState<ImageEffectType>(
+    "blur",
+  );
+
   const opacityPercent = Math.round((layer.opacity ?? 1) * 100);
-  const effect = layer.effect ?? "none";
-  const effectIntensity = layer.effectIntensity ?? 50;
+  const activeEffects = getImageLayerEffects(layer);
+  const appliedTypes = new Set(activeEffects.map((effect) => effect.type));
+  const availableEffectTypes = EFFECT_TYPE_OPTIONS.filter(
+    (option) => !appliedTypes.has(option.value),
+  );
+
+  useEffect(() => {
+    if (
+      availableEffectTypes.length > 0 &&
+      !availableEffectTypes.some((option) => option.value === pendingEffectType)
+    ) {
+      setPendingEffectType(availableEffectTypes[0].value);
+    }
+  }, [availableEffectTypes, pendingEffectType]);
+
+  const addEffect = () => {
+    if (appliedTypes.has(pendingEffectType)) return;
+    onUpdate({
+      effects: [
+        ...activeEffects,
+        {
+          id: generateEffectId(),
+          type: pendingEffectType,
+          intensity: effectSupportsIntensity(pendingEffectType) ? 50 : undefined,
+        },
+      ],
+    });
+  };
+
+  const removeEffect = (effectId: string) => {
+    onUpdate({ effects: removeEffectFromLayer(layer, effectId) });
+  };
+
+  const updateEffectIntensity = (effectId: string, intensity: number) => {
+    onUpdate({
+      effects: activeEffects.map((effect) =>
+        effect.id === effectId ? { ...effect, intensity } : effect,
+      ),
+    });
+  };
 
   return (
     <div className="space-y-3 border-t border-border pt-3">
@@ -197,7 +293,7 @@ function ImageLayerSettings({
       </label>
 
       <label className="block space-y-1">
-        <span className="text-[10px] text-muted">حالت ترکیب (Blend)</span>
+        <span className="text-[10px] text-muted">حالت ترکیب / Blend Mode</span>
         <select
           value={layer.blendMode ?? "normal"}
           onChange={(e) =>
@@ -213,40 +309,90 @@ function ImageLayerSettings({
         </select>
       </label>
 
-      <label className="block space-y-1">
-        <span className="text-[10px] text-muted">افکت</span>
-        <select
-          value={effect}
-          onChange={(e) =>
-            onUpdate({ effect: e.target.value as ImageEffectPreset })
-          }
-          className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs text-foreground"
-        >
-          {EFFECT_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="space-y-2">
+        <p className="text-[10px] text-muted">افکت‌ها / Effects</p>
 
-      {effect !== "none" && effect !== "grayscale" && effect !== "sepia" ? (
-        <label className="block space-y-1">
-          <span className="text-[10px] text-muted">
-            شدت افکت ({effectIntensity}٪)
-          </span>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={effectIntensity}
-            onChange={(e) =>
-              onUpdate({ effectIntensity: Number(e.target.value) })
-            }
-            className="w-full accent-cyan-500"
-          />
-        </label>
-      ) : null}
+        {activeEffects.length === 0 ? (
+          <p className="text-[10px] text-muted/80">هنوز افکتی اضافه نشده.</p>
+        ) : (
+          <ul className="space-y-2">
+            {activeEffects.map((effect) => {
+              const intensity = effect.intensity ?? 50;
+              return (
+                <li
+                  key={effect.id}
+                  className="rounded-lg border border-border bg-background/60 p-2"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-medium text-foreground">
+                      {getEffectTypeLabel(effect.type)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeEffect(effect.id)}
+                      className="rounded p-1 text-red-400/80 hover:bg-red-500/10 hover:text-red-400"
+                      title="حذف افکت"
+                      aria-label={`حذف ${getEffectTypeLabel(effect.type)}`}
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                  {effectSupportsIntensity(effect.type) ? (
+                    <label className="mt-2 block space-y-1">
+                      <span className="text-[10px] text-muted">
+                        شدت ({intensity}٪)
+                      </span>
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        value={intensity}
+                        onChange={(e) =>
+                          updateEffectIntensity(
+                            effect.id,
+                            Number(e.target.value),
+                          )
+                        }
+                        className="w-full accent-cyan-500"
+                      />
+                    </label>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {availableEffectTypes.length > 0 ? (
+          <div className="flex gap-2">
+            <select
+              value={pendingEffectType}
+              onChange={(e) =>
+                setPendingEffectType(e.target.value as ImageEffectType)
+              }
+              className="min-w-0 flex-1 rounded-lg border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+            >
+              {availableEffectTypes.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={addEffect}
+              className="flex shrink-0 items-center gap-1 rounded-lg border border-cyan-500/40 bg-cyan-500/10 px-2 py-1.5 text-[10px] text-cyan-300 hover:border-cyan-500/60"
+            >
+              <Plus size={12} />
+              افزودن
+            </button>
+          </div>
+        ) : (
+          <p className="text-[10px] text-muted/80">
+            همه افکت‌ها اعمال شده‌اند.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import type Konva from "konva";
 import {
   applyImageLayerFilters,
   blendModeToKonva,
+  serializeImageLayerEffects,
 } from "@/lib/design/image-layer-filters";
 import type { ImageLayer } from "@/lib/design/types";
 
@@ -19,6 +20,7 @@ type Props = {
 export default function DesignImageLayerNode({ layer, handlers }: Props) {
   const [image] = useImage(layer.src, "anonymous");
   const imageRef = useRef<Konva.Image>(null);
+  const effectsKey = serializeImageLayerEffects(layer);
 
   useEffect(() => {
     const node = imageRef.current;
@@ -26,16 +28,7 @@ export default function DesignImageLayerNode({ layer, handlers }: Props) {
 
     applyImageLayerFilters(node, layer);
     node.getLayer()?.batchDraw();
-  }, [
-    image,
-    layer.src,
-    layer.width,
-    layer.height,
-    layer.effect,
-    layer.effectIntensity,
-    layer.scaleX,
-    layer.scaleY,
-  ]);
+  }, [image, layer, effectsKey, layer.src, layer.width, layer.height, layer.scaleX, layer.scaleY]);
 
   return (
     <KonvaImage

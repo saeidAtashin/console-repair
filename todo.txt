@@ -3,14 +3,6 @@
 
 
 
-
-add blend mode for images when there is condititons for blend, also if its possible add effect or ai effect for images,
-
-
-also add a part or suggestion part for remove bg of image, select persion, or its face, crop it, cutout it.
-
-
-
 also like all of these, add print for 
 لیوان 
 ماگ

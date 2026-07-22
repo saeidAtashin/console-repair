@@ -30,13 +30,19 @@ export type ImageBlendMode =
   | "darken"
   | "lighten";
 
-export type ImageEffectPreset =
-  | "none"
+export type ImageEffectType =
   | "grayscale"
   | "blur"
   | "brighten"
   | "contrast"
   | "sepia";
+
+export type ImageLayerEffect = {
+  id: string;
+  type: ImageEffectType;
+  /** 0–100, default 50; used for blur / brighten / contrast */
+  intensity?: number;
+};
 
 export type ImageLayer = DesignLayerBase & {
   type: "image";
@@ -47,8 +53,10 @@ export type ImageLayer = DesignLayerBase & {
   /** 0–1, default 1 */
   opacity?: number;
   blendMode?: ImageBlendMode;
-  effect?: ImageEffectPreset;
-  /** 0–100, default 50 */
+  effects?: ImageLayerEffect[];
+  /** @deprecated — migrated on read via getImageLayerEffects */
+  effect?: "none" | ImageEffectType;
+  /** @deprecated — migrated on read via getImageLayerEffects */
   effectIntensity?: number;
 };
 
@@ -96,6 +104,10 @@ export function createEmptyDesign(input: {
 
 export function generateLayerId(): string {
   return `layer-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+export function generateEffectId(): string {
+  return `effect-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export function generateShareToken(): string {
