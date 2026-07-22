@@ -60,9 +60,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Cpu,
 
-    image: "/quick-access/ps5repair.png",
+    image: "/ps5repair/ps5-repair1.jpg",
 
-    cover: "/quick-access/ps5repair.png",
+    cover: "/ps5repair/ps5-repair1.jpg",
 
     seoTitle: "تعمیر PS5 | تعمیر تخصصی پلی استیشن 5 با ضمانت",
 
@@ -129,9 +129,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Gamepad2,
 
-    image: "/quick-access/ps4repair.png",
+    image: "/ps4repair/fan1.png",
 
-    cover: "/quick-access/ps4repair.png",
+    cover: "/ps4repair/fan1.png",
 
     seoTitle: "تعمیر PS4 | تعمیر پلی استیشن 4 با ضمانت",
 
@@ -195,9 +195,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Monitor,
 
-    image: "/quick-access/xboxrepair.png",
+    image: "/xboxrepair/xboxfanrepair.png",
 
-    cover: "/quick-access/xboxrepair.png",
+    cover: "/xboxrepair/xboxfanrepair.png",
 
     seoTitle: "تعمیر Xbox | تعمیر تخصصی ایکس باکس",
 
@@ -256,9 +256,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Cable,
 
-    image: "/obj-console/s-l1600.webp",
+    image: "/hdmi/hdmi1.avif",
 
-    cover: "/obj-console/s-l1600.webp",
+    cover: "/hdmi/hdmi1.avif",
 
     seoTitle: "تعمیر HDMI کنسول | تعمیر سوکت HDMI PS5 و Xbox",
 
@@ -313,9 +313,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Gamepad2,
 
-    image: "/images/controller-repair.jpg",
+    image: "/controller/controller1.webp",
 
-    cover: "/images/controller-repair.jpg",
+    cover: "/controller/controller1.webp",
 
     seoTitle: "تعمیر دسته PS5، PS4 و Xbox",
 

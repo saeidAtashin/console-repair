@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Phone, Search, Wrench } from "lucide-react";
 
 import { useAuth } from "@/app/context/AuthContext";
+import ProfileForm from "@/app/components/dashboard/ProfileForm";
+import AddressManager from "@/app/components/dashboard/AddressManager";
 import RepairFormClient from "@/app/repair/RepairFormClient";
 import { getRepairStatusLabel } from "@/lib/repair-status";
 import { SITE_PHONE } from "@/lib/seo/site";
@@ -142,6 +144,11 @@ export default function DashboardPage() {
             <Wrench className="h-5 w-5" />
             {showForm ? "بستن فرم" : "ثبت درخواست تعمیر"}
           </button>
+        </div>
+
+        <div className="mb-12 space-y-8">
+          <ProfileForm />
+          <AddressManager />
         </div>
 
         <section className="mb-12">

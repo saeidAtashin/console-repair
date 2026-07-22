@@ -1,5 +1,6 @@
 import type { ConsoleId } from "@/lib/console-catalog";
 import { consoleIdFromIssueSlug } from "@/lib/repair-links";
+import { getServiceIssueImage } from "@/lib/service-galleries";
 import type { ShopConsole, ShopProduct } from "@/lib/shop/types";
 
 export type QuickAccessServiceKind = "game-install" | "repair" | "shop";
@@ -10,17 +11,17 @@ export const quickAccessImages: Record<
 > = {
   ps4: {
     "game-install": "/quick-access/ps4game.jpg",
-    repair: "/quick-access/ps4repair.png",
+    repair: "/ps4repair/fan1.png",
     shop: "/quick-access/ps4shop.png",
   },
   ps5: {
     "game-install": "/quick-access/ps5game.jpg",
-    repair: "/quick-access/ps5repair.png",
+    repair: "/ps5repair/ps5-repair1.jpg",
     shop: "/quick-access/ps5shop.png",
   },
   xbox: {
     "game-install": "/quick-access/xboxgame.png",
-    repair: "/quick-access/xboxrepair.png",
+    repair: "/xboxrepair/xboxfanrepair.png",
     shop: "/quick-access/xboxshop.png",
   },
 };
@@ -48,6 +49,9 @@ export function getGameInstallImage(consoleSlug: string): string | undefined {
 
 export function getIssueImage(slug: string, explicitImage?: string): string {
   if (explicitImage) return explicitImage;
+
+  const mapped = getServiceIssueImage(slug);
+  if (mapped) return mapped;
 
   const consoleId = consoleIdFromIssueSlug(slug);
   if (consoleId) {

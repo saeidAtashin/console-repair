@@ -1,14 +1,9 @@
 "use client";
 
 import { Check, ListPlus } from "lucide-react";
-import { useCallback, useEffect, useState, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 
 import { useGameInstallList } from "@/app/context/GameInstallListContext";
-import {
-  INSTALL_GAME_LIST_CHANGED_EVENT,
-  isInInstallGameList,
-  removeFromInstallGameList,
-} from "@/lib/game-install-list";
 import type { InstallCatalogGame } from "@/lib/game-install-catalog";
 
 type Props = {
@@ -24,66 +19,61 @@ export default function AddToGameListButton({
   className = "",
   animationSourceRef,
 }: Props) {
-  const { addGameWithAnimation, isFlyActive } = useGameInstallList();
+  const { addGameWithAnimation, removeGame, isInList, isFlyActive } =
+    useGameInstallList();
   const [inList, setInList] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
-
-  const sync = useCallback(() => {
-    setInList(isInInstallGameList(game.id));
-  }, [game.id]);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    sync();
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "game-install-list") sync();
-    };
-    window.addEventListener(INSTALL_GAME_LIST_CHANGED_EVENT, sync);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener(INSTALL_GAME_LIST_CHANGED_EVENT, sync);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, [sync]);
+    setInList(isInList(game.id, consoleSlug));
+  }, [isInList, game.id, consoleSlug]);
 
   async function handleClick() {
-    if (inList) {
-      removeFromInstallGameList(game.id);
-      setInList(false);
-      return;
-    }
+    if (busy || isFlyActive) return;
+    setBusy(true);
+    try {
+      if (inList) {
+        await removeGame(game.id, consoleSlug);
+        setInList(false);
+        return;
+      }
 
-    const added = await addGameWithAnimation(game, consoleSlug, {
-      sourceElement: animationSourceRef?.current,
-    });
-    if (added) {
-      setInList(true);
-      setJustAdded(true);
-      window.setTimeout(() => setJustAdded(false), 900);
+      const added = await addGameWithAnimation(game, consoleSlug, {
+        sourceElement: animationSourceRef?.current,
+      });
+      if (added) {
+        setInList(true);
+        setJustAdded(true);
+        window.setTimeout(() => setJustAdded(false), 1200);
+      }
+    } finally {
+      setBusy(false);
     }
   }
 
   return (
     <button
       type="button"
-      onClick={handleClick}
-      disabled={isFlyActive}
-      aria-pressed={inList}
-      className={`inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:text-sm ${
+      onClick={() => void handleClick()}
+      disabled={busy || isFlyActive}
+      className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border text-xs font-bold transition disabled:opacity-50 ${
         inList
-          ? justAdded
-            ? "bg-emerald-400 text-black shadow-[0_0_0_10px_rgba(34,211,238,0)] animate-pulse"
-            : "border border-emerald-400/40 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
-          : "bg-cyan-500 text-black hover:bg-cyan-400"
+          ? "border-emerald-400/40 bg-emerald-500/15 text-emerald-200 hover:bg-emerald-500/25"
+          : "border-cyan-400/30 bg-cyan-500/10 text-cyan-200 hover:border-cyan-400/50 hover:bg-cyan-500/20"
       } ${className}`}
     >
-      {inList ? (
-        <Check className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
+      {inList || justAdded ? (
+        <>
+          <Check className="h-3.5 w-3.5" aria-hidden />
+          {justAdded ? "اضافه شد" : "در لیست"}
+        </>
       ) : (
-        <ListPlus className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
+        <>
+          <ListPlus className="h-3.5 w-3.5" aria-hidden />
+          {busy ? "در حال افزودن..." : "اضافه به لیست"}
+        </>
       )}
-      <span>
-        {inList ? (justAdded ? "اضافه شد" : "در لیست شما") : "اضافه به لیست بازی‌ها"}
-      </span>
     </button>
   );
 }

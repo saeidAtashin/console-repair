@@ -37,10 +37,14 @@ function issueLabel(consoleId: ConsoleId) {
 }
 
 function repairChildren(): SiteNavLeaf[] {
-  return consoleIds.map((id) => ({
-    title: issueLabel(id),
-    href: `/services/${consoleCatalog[id].repairSlug}`,
-  }));
+  return [
+    ...consoleIds.map((id) => ({
+      title: issueLabel(id),
+      href: `/services/${consoleCatalog[id].repairSlug}`,
+    })),
+    { title: "تعمیر HDMI", href: "/services/hdmi-repair" },
+    { title: "تعمیر دسته", href: "/services/controller-repair" },
+  ];
 }
 
 function gameChildren(): SiteNavLeaf[] {

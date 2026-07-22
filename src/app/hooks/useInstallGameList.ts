@@ -1,34 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMemo } from "react";
 
-import {
-  filterInstallGameList,
-  INSTALL_GAME_LIST_CHANGED_EVENT,
-  type InstallListGame,
-} from "@/lib/game-install-list";
+import { useGameInstallList } from "@/app/context/GameInstallListContext";
+import type { InstallListGame } from "@/lib/game-install-list";
 
 export function useInstallGameList(consoleSlug: string): InstallListGame[] {
-  const readForConsole = useCallback(
-    () => filterInstallGameList(consoleSlug),
-    [consoleSlug],
-  );
+  const { itemsByConsole } = useGameInstallList();
 
-  const [games, setGames] = useState<InstallListGame[]>([]);
+  return useMemo(() => {
+    const exact = itemsByConsole[consoleSlug];
+    if (exact?.length) return exact;
 
-  useEffect(() => {
-    setGames(readForConsole());
+    // Draft may be keyed under a sibling xbox slug.
+    if (consoleSlug === "xbox-one" || consoleSlug === "xbox-series") {
+      return (
+        itemsByConsole["xbox-series"] ??
+        itemsByConsole["xbox-one"] ??
+        []
+      );
+    }
 
-    const sync = () => setGames(readForConsole());
-
-    window.addEventListener(INSTALL_GAME_LIST_CHANGED_EVENT, sync);
-    window.addEventListener("storage", sync);
-
-    return () => {
-      window.removeEventListener(INSTALL_GAME_LIST_CHANGED_EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, [readForConsole]);
-
-  return games;
+    return exact ?? [];
+  }, [itemsByConsole, consoleSlug]);
 }

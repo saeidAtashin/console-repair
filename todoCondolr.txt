@@ -243,3 +243,22 @@ response is:
 }
 
 and this is put: /user/profile/
+
+
+
+also add other for consoles and orders and repair request. also add it and controller repair to navbar too.
+
+=====
+also for UI in services/hdmi-repair I want to add these images to its blog too:
+
+hdmi1.avif / hdmi2.jpg / hdmi3.jpg / hdmi4.jpg
+
+
+also use controller folder images for contorler repair images and its issues.
+also user controller-kit.webp for تعمیر یا تعویض دکمه‌ها 
+also user xboxrepair folder for xbox repair.
+
+also set these for مشکلات رایج part too.
+also user ps4repair folder for ps4 repair.
+also use ps5repair folder for ps5 repair.
+

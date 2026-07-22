@@ -13,6 +13,7 @@ import OverviewSection from "@/app/components/seo/OverviewSection";
 import { CtaButtonGroup } from "@/app/components/ui/cta";
 import ServiceCommonIssues from "@/app/components/services/ServiceCommonIssues";
 import ServiceFeaturesGrid from "@/app/components/services/ServiceFeaturesGrid";
+import ServiceImageGallery from "@/app/components/services/ServiceImageGallery";
 import ServiceRepairSteps from "../../components/services/ServiceRepairSteps";
 import PageShell from "@/app/components/seo/PageShell";
 import ServiceSchema from "@/app/components/schema/ServiceSchema";
@@ -22,6 +23,7 @@ import {
   buildRepairHref,
   consoleIdFromRepairSlug,
 } from "../../../lib/repair-links";
+import { getServiceGallery } from "@/lib/service-galleries";
 import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
 import { webPageJsonLd } from "../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
@@ -67,6 +69,7 @@ export default async function ServicePage({ params }: Props) {
   const servicePath = `/services/${service.slug}`;
   const consoleId = consoleIdFromRepairSlug(service.slug);
   const repairHref = buildRepairHref(consoleId ? { consoleId } : undefined);
+  const gallery = getServiceGallery(service.slug);
 
   return (
     <main className="min-h-screen bg-black pt-24 text-white">
@@ -162,6 +165,8 @@ export default async function ServicePage({ params }: Props) {
           paragraphs={service.overview}
           className="py-16"
         />
+
+        <ServiceImageGallery images={gallery} title={service.title} />
 
         <section className="container mx-auto px-6 py-24">
           <div className="mb-14">

@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
         hostname: "media.rawg.io",
         pathname: "/media/**",
       },
+      {
+        protocol: "https",
+        hostname: "k3isonfire.ir",
+        pathname: "/media/**",
+      },
     ],
   },
 };

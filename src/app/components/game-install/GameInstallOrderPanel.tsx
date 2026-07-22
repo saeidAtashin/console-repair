@@ -2,13 +2,13 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ListPlus } from "lucide-react";
 
 import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
 import GameInstallListCountBadge from "@/app/components/game-install/GameInstallListCountBadge";
 import InstallListGameItem from "@/app/components/game-install/InstallListGameItem";
 import { FormInput } from "@/app/components/ui/form";
 import { useAuth } from "@/app/context/AuthContext";
+import { useGameInstallList } from "@/app/context/GameInstallListContext";
 import { useInstallMethodId } from "@/app/hooks/useInstallMethod";
 import { useInstallGameList } from "@/app/hooks/useInstallGameList";
 import {
@@ -16,11 +16,6 @@ import {
   VerificationCancelledError,
 } from "@/app/hooks/usePhoneVerifiedSubmit";
 import { ApiError } from "@/lib/api-client";
-import {
-  addCustomGameToInstallList,
-  clearInstallGameListForConsole,
-  removeFromInstallGameList,
-} from "@/lib/game-install-list";
 import { normalizeIranPhone, sanitizePhoneInput } from "@/lib/phone";
 import { consoleIdFromGameInstallSlug } from "@/lib/repair-links";
 import { submitGameInstallRequest } from "@/lib/repair/api";
@@ -42,10 +37,9 @@ export default function GameInstallOrderPanel({
   const { user } = useAuth();
   const { requestSubmit, verifying, modalProps } = usePhoneVerifiedSubmit();
   const games = useInstallGameList(consoleSlug);
+  const { removeGame, clearConsoleList } = useGameInstallList();
   const installMethodId = useInstallMethodId(consoleSlug);
 
-  const [customName, setCustomName] = useState("");
-  const [customError, setCustomError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -72,21 +66,14 @@ export default function GameInstallOrderPanel({
 
   const consoleId = consoleIdFromGameInstallSlug(consoleSlug);
 
-  function handleAddCustom(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setCustomError(null);
-
-    const added = addCustomGameToInstallList(customName, consoleSlug);
-    if (!added) {
-      setCustomError(
-        customName.trim()
-          ? "این بازی قبلاً در لیست است یا نام نامعتبر است."
-          : "نام بازی را وارد کنید.",
+  async function handleRemove(gameId: string) {
+    try {
+      await removeGame(gameId, consoleSlug);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "حذف بازی ناموفق بود.",
       );
-      return;
     }
-
-    setCustomName("");
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -120,7 +107,7 @@ export default function GameInstallOrderPanel({
           consoleLabel,
           installMethodId,
         });
-        clearInstallGameListForConsole(consoleSlug);
+        await clearConsoleList(consoleSlug);
         setSuccess(true);
         setName("");
       });
@@ -197,8 +184,7 @@ export default function GameInstallOrderPanel({
             ) : null}
           </h2>
           <p className="mt-2 text-sm leading-7 text-zinc-400">
-            از کاتالوگ بازی اضافه کنید یا نام بازی دلخواه را بنویسید، سپس
-            درخواست نصب را ثبت کنید.
+            از کاتالوگ بازی اضافه کنید، سپس درخواست نصب را ثبت کنید.
           </p>
         </div>
       ) : embedded ? (
@@ -225,44 +211,20 @@ export default function GameInstallOrderPanel({
 
       {games.length === 0 ? (
         <p className="mb-6 rounded-xl border border-dashed border-white/20 bg-black/30 px-4 py-8 text-center text-sm text-zinc-400">
-          هنوز بازی‌ای انتخاب نکرده‌اید. از لیست بالا «اضافه به لیست بازی‌ها» را
-          بزنید یا نام بازی را پایین بنویسید.
+          هنوز بازی‌ای انتخاب نکرده‌اید. از لیست بالا «اضافه به لیست» را بزنید.
         </p>
       ) : (
         <ol className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5">
           {games.map((game, index) => (
             <InstallListGameItem
-              key={game.id}
+              key={game.itemId ?? game.id}
               game={game}
               index={index}
-              onRemove={removeFromInstallGameList}
+              onRemove={(id) => void handleRemove(id)}
             />
           ))}
         </ol>
       )}
-
-      <form
-        onSubmit={handleAddCustom}
-        className="mb-6 flex flex-col gap-3 sm:flex-row"
-      >
-        <FormInput
-          label="افزودن بازی دلخواه"
-          id={`custom-game-${consoleSlug}`}
-          type="text"
-          value={customName}
-          onChange={(e) => setCustomName(e.target.value)}
-          placeholder="مثلاً Red Dead Redemption 2"
-          fieldClassName="flex-1"
-          error={customError}
-        />
-        <button
-          type="submit"
-          className="inline-flex h-14 shrink-0 items-center justify-center gap-2 self-end rounded-2xl border border-cyan-400/30 bg-cyan-500/20 px-6 text-sm font-bold text-cyan-100 transition hover:bg-cyan-500/30 sm:self-auto"
-        >
-          <ListPlus className="h-4 w-4" aria-hidden />
-          افزودن
-        </button>
-      </form>
 
       <form onSubmit={handleSubmit} className="space-y-4 border-t border-white/10 pt-6">
         <FormInput

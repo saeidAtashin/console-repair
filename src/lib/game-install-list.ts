@@ -1,4 +1,5 @@
 import type { InstallCatalogGame } from "@/lib/game-install-catalog";
+import type { InstallationDraftItem } from "@/lib/installation/api";
 import {
   calculateInstallQuote,
   formatQuoteSummary,
@@ -7,120 +8,79 @@ import {
 
 export type InstallListGame = {
   id: string;
+  /** Draft line-item id used for DELETE `/installation/requests/items/{id}/`. */
+  itemId?: number;
   slug: string;
   name: string;
   backgroundImage: string | null;
   consoleSlug: string;
   custom?: boolean;
+  price?: number;
 };
 
 export const INSTALL_GAME_LIST_CHANGED_EVENT = "game-install-list-changed";
+export const INSTALL_DEVICE_TYPE_STORAGE_PREFIX = "install-device-type:";
 
-const STORAGE_KEY = "game-install-list";
-
-function normalizeGameName(name: string): string {
-  return name.trim().toLowerCase();
-}
-
-function dispatchListChanged(): void {
+export function dispatchInstallListChanged(): void {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(INSTALL_GAME_LIST_CHANGED_EVENT));
-}
-
-function isValidListGame(value: unknown): value is InstallListGame {
-  if (!value || typeof value !== "object") return false;
-  const item = value as Partial<InstallListGame>;
-  return (
-    typeof item.id === "string" &&
-    typeof item.name === "string" &&
-    typeof item.consoleSlug === "string"
-  );
 }
 
 export function toInstallListGame(
   game: InstallCatalogGame,
   consoleSlug: string,
+  itemId?: number,
 ): InstallListGame {
   return {
     id: game.id,
+    itemId,
     slug: game.slug,
     name: game.name,
-    backgroundImage: game.coverImage,
+    backgroundImage: game.coverImage || null,
     consoleSlug,
+    price: game.price,
   };
 }
 
-export function readInstallGameList(): InstallListGame[] {
-  if (typeof window === "undefined") return [];
+export function draftItemToInstallListGame(
+  item: InstallationDraftItem,
+  consoleSlug: string,
+): InstallListGame {
+  return {
+    id: String(item.game.id),
+    itemId: item.id,
+    slug: `api-${item.game.id}`,
+    name: item.game.name,
+    backgroundImage: null,
+    consoleSlug,
+    price: item.price,
+  };
+}
+
+export function cacheDeviceTypeId(consoleSlug: string, deviceTypeId: number): void {
+  if (typeof window === "undefined") return;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(isValidListGame);
+    sessionStorage.setItem(
+      `${INSTALL_DEVICE_TYPE_STORAGE_PREFIX}${consoleSlug}`,
+      String(deviceTypeId),
+    );
   } catch {
-    return [];
+    /* ignore */
   }
 }
 
-export function writeInstallGameList(games: InstallListGame[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(games));
-  dispatchListChanged();
-}
-
-export function filterInstallGameList(consoleSlug: string): InstallListGame[] {
-  return readInstallGameList().filter((g) => g.consoleSlug === consoleSlug);
-}
-
-export function isInInstallGameList(gameId: string): boolean {
-  return readInstallGameList().some((g) => g.id === gameId);
-}
-
-export function addToInstallGameList(entry: InstallListGame): boolean {
-  const list = readInstallGameList();
-  if (list.some((g) => g.id === entry.id)) return false;
-  writeInstallGameList([...list, entry]);
-  return true;
-}
-
-export function addCustomGameToInstallList(
-  name: string,
-  consoleSlug: string,
-): boolean {
-  const trimmed = name.trim();
-  if (!trimmed) return false;
-
-  const list = readInstallGameList();
-  const normalized = normalizeGameName(trimmed);
-  const duplicate = list.some(
-    (g) =>
-      g.consoleSlug === consoleSlug &&
-      normalizeGameName(g.name) === normalized,
-  );
-  if (duplicate) return false;
-
-  writeInstallGameList([
-    ...list,
-    {
-      id: `custom-${Date.now()}`,
-      slug: "",
-      name: trimmed,
-      backgroundImage: null,
-      consoleSlug,
-      custom: true,
-    },
-  ]);
-  return true;
-}
-
-export function removeFromInstallGameList(gameId: string): void {
-  writeInstallGameList(readInstallGameList().filter((g) => g.id !== gameId));
-}
-
-export function clearInstallGameListForConsole(consoleSlug: string): void {
-  writeInstallGameList(
-    readInstallGameList().filter((g) => g.consoleSlug !== consoleSlug),
-  );
+export function readCachedDeviceTypeId(consoleSlug: string): number | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(
+      `${INSTALL_DEVICE_TYPE_STORAGE_PREFIX}${consoleSlug}`,
+    );
+    if (!raw) return null;
+    const n = Number.parseInt(raw, 10);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
 }
 
 export function formatInstallGameListDescription(

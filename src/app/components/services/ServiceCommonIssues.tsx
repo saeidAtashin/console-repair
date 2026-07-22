@@ -1,8 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
+
+import { getServiceIssueImage } from "@/lib/service-galleries";
 
 import "./rdr-common-issues.css";
 
@@ -56,6 +59,8 @@ function RdrDivider() {
 }
 
 function IssueCard({ issue, index }: { issue: Issue; index: number }) {
+  const image = getServiceIssueImage(issue.slug);
+
   return (
     <motion.div variants={itemVariants}>
       <Link
@@ -85,17 +90,29 @@ function IssueCard({ issue, index }: { issue: Issue; index: number }) {
         </div>
 
         <div className="relative z-10 flex items-start gap-5">
-          <div className="mt-1 flex shrink-0 flex-col items-center gap-2">
-            <span
-              aria-hidden
-              className="flex h-8 w-8 items-center justify-center border border-[#b33a3a]/30 bg-[#b33a3a]/10 shadow-[inset_0_0_12px_rgba(179,58,58,0.12)] transition-colors duration-500 group-hover:border-[#b33a3a]/55 group-hover:bg-[#b33a3a]/18"
-            >
-              <span className="h-2 w-2 rotate-45 bg-[#b33a3a] shadow-[0_0_8px_rgba(179,58,58,0.6)]" />
-            </span>
-            <span className="font-mono text-[10px] tracking-[0.18em] text-[#c9a227]/45">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-          </div>
+          {image ? (
+            <div className="relative mt-1 h-16 w-16 shrink-0 overflow-hidden rounded-md border border-[#c9a227]/20 bg-black/40">
+              <Image
+                src={image}
+                alt=""
+                fill
+                sizes="64px"
+                className="object-cover transition duration-500 group-hover:scale-105"
+              />
+            </div>
+          ) : (
+            <div className="mt-1 flex shrink-0 flex-col items-center gap-2">
+              <span
+                aria-hidden
+                className="flex h-8 w-8 items-center justify-center border border-[#b33a3a]/30 bg-[#b33a3a]/10 shadow-[inset_0_0_12px_rgba(179,58,58,0.12)] transition-colors duration-500 group-hover:border-[#b33a3a]/55 group-hover:bg-[#b33a3a]/18"
+              >
+                <span className="h-2 w-2 rotate-45 bg-[#b33a3a] shadow-[0_0_8px_rgba(179,58,58,0.6)]" />
+              </span>
+              <span className="font-mono text-[10px] tracking-[0.18em] text-[#c9a227]/45">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
+          )}
 
           <div className="min-w-0 flex-1">
             <span className="mb-2 block text-[10px] uppercase tracking-[0.28em] text-[#8b6914]/80">

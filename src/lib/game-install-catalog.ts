@@ -2,6 +2,8 @@ import type { BlogGame } from "@/app/data/blog";
 
 export type InstallCatalogGame = {
   id: string;
+  /** Numeric game id from `/installation/games/` when source is api. */
+  apiId?: number;
   slug: string;
   name: string;
   coverImage: string;
@@ -10,7 +12,9 @@ export type InstallCatalogGame = {
   genre: string;
   console: BlogGame["console"];
   sectionTitle: string;
-  source: "cheats" | "blog";
+  source: "cheats" | "blog" | "api";
+  size?: number;
+  price?: number;
 };
 
 /** Section titles hidden from catalog and category filters. */

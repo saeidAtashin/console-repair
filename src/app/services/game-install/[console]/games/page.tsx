@@ -58,7 +58,7 @@ export default async function GameListPage({ params }: Props) {
 
   const hubPath = `/services/game-install/${consoleSlug}`;
   const listPath = `${hubPath}/games`;
-  const catalogGames = getInstallCatalogGames(consoleSlug);
+  const catalogGames = await getInstallCatalogGames(consoleSlug);
   const introParagraphs = content.gamesPageIntro;
 
   return (

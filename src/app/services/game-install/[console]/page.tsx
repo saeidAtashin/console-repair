@@ -70,7 +70,7 @@ export default async function GameInstallPage({ params }: Props) {
   if (!meta || !content) notFound();
 
   const path = `/services/game-install/${consoleSlug}`;
-  const catalogGames = getInstallCatalogGames(consoleSlug);
+  const catalogGames = await getInstallCatalogGames(consoleSlug);
   const pricingSections = content.pricingSectionKeys.map(
     (key) => GAME_INSTALL_PRICE_DATA[key],
   );
@@ -123,9 +123,8 @@ export default async function GameInstallPage({ params }: Props) {
               لیست بازی‌ها
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-300">
-              {catalogGames.length.toLocaleString("fa-IR")} بازی از PS5، PS4 و
-              Xbox — برای نصب روی {meta.label} انتخاب کنید و به لیست سفارش
-              اضافه کنید.
+              {catalogGames.length.toLocaleString("fa-IR")} بازی برای نصب روی{" "}
+              {meta.label} — انتخاب کنید و به لیست سفارش اضافه کنید.
             </p>
           </div>
 
