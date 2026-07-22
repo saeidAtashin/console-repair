@@ -17,6 +17,7 @@ import {
   type ImageLayer,
   type TextLayer,
 } from "./types";
+import { resolveReferenceCanvas, scaleLayersToCanvas } from "./template-scale";
 
 const MAX_HISTORY = 20;
 
@@ -312,7 +313,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   loadTemplate: (template, replace = false) => {
-    const cloned = cloneLayersWithNewIds(template.layers);
+    const meta = get().meta;
+    const from = resolveReferenceCanvas(template);
+    const to = meta
+      ? { width: meta.canvasWidth, height: meta.canvasHeight }
+      : from;
+    const scaled = scaleLayersToCanvas(template.layers, from, to, "cover");
+    const cloned = cloneLayersWithNewIds(scaled);
     set((state) => {
       const next = updateDoc(state, (doc) => ({
         ...doc,

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Palette, Sparkles, Truck, Shield, Smartphone } from "lucide-react";
+import DesignSamplesSection from "@/app/components/designs/DesignSamplesSection";
 import ReadyCaseCard from "@/app/components/cases/ReadyCaseCard";
 import { PhoneBackSvg } from "@/app/components/case-wizard/PhoneBackSvg";
+import { getFeaturedTemplates } from "@/lib/cases/templates.static";
 import { getModelBySlug } from "@/lib/cases/brands.static";
 import { getReadyCases, getModelsWithReadyCases } from "@/lib/cases/ready.static";
 
@@ -35,6 +37,7 @@ function getPopularModels() {
 
 export default function HomeCasePage() {
   const featured = getReadyCases().slice(0, 4);
+  const featuredTemplates = getFeaturedTemplates(4);
   const popularModels = getPopularModels();
 
   return (
@@ -122,6 +125,12 @@ export default function HomeCasePage() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <DesignSamplesSection templates={featuredTemplates} limit={4} />
         </div>
       </section>
 

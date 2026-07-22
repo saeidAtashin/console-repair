@@ -80,14 +80,16 @@ export function generateShareToken(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
+export const DEFAULT_REFERENCE_CANVAS = { width: 280, height: 560 } as const;
+
 export type CaseTemplate = {
   id: string;
   slug: string;
   title: string;
+  description: string;
   thumbnail: string;
-  brandSlug?: string;
-  modelSlug?: string;
-  caseTypeSlug?: string;
+  tags: string[];
+  referenceCanvas: { width: number; height: number };
   layers: DesignLayer[];
 };
 

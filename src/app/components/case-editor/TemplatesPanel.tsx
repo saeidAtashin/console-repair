@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import {
   getAllTemplates,
-  getTemplatesForModel,
 } from "@/lib/cases/templates.static";
 import { useEditorStore } from "@/lib/design/editor-store";
 import type { CaseTemplate } from "@/lib/design/types";
@@ -16,12 +15,11 @@ type Props = {
   caseTypeSlug: string;
 };
 
-export default function TemplatesPanel({ brandSlug, modelSlug, caseTypeSlug }: Props) {
+export default function TemplatesPanel({ brandSlug: _brandSlug, modelSlug: _modelSlug, caseTypeSlug: _caseTypeSlug }: Props) {
   const { document, loadTemplate } = useEditorStore();
   const [confirmTemplate, setConfirmTemplate] = useState<CaseTemplate | null>(null);
 
-  const matched = getTemplatesForModel(brandSlug, modelSlug, caseTypeSlug);
-  const displayTemplates = matched.length > 0 ? matched : getAllTemplates();
+  const displayTemplates = getAllTemplates();
 
   function applyTemplate(template: CaseTemplate, replace: boolean) {
     loadTemplate(template, replace);

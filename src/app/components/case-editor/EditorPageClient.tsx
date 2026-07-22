@@ -165,7 +165,13 @@ export default function EditorPageClient({
                 id: readyCase.id,
                 slug: readyCase.slug,
                 title: readyCase.title,
+                description: readyCase.description,
                 thumbnail: readyCase.image,
+                tags: readyCase.tags,
+                referenceCanvas: {
+                  width: model.canvasWidth,
+                  height: model.canvasHeight,
+                },
                 layers: readyCase.template.layers,
               },
               true,

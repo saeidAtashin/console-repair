@@ -1,11 +1,5 @@
 
 
-also show a sample of our designs in home page and order page and also show a sample of our designs in case design page.
-
-
-
-make pre designed cases without phone model, and if select them, then be able to select brand and model and set it in it as full size and then be able to edit it.
-
 
 
 
