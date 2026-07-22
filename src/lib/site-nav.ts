@@ -1,4 +1,5 @@
 import { blogPosts } from "@/app/data/blog";
+import { ISSUES_INDEX_CATEGORIES } from "@/app/data/issues-index-content";
 import {
   consoleCatalog,
   consoleIds,
@@ -66,12 +67,31 @@ function shopChildren(): SiteNavLeaf[] {
   ];
 }
 
+function issuesChildren(): SiteNavLeaf[] {
+  return ISSUES_INDEX_CATEGORIES.map((category) => {
+    const consoleIdsSet = new Set<string>(consoleIds);
+    const href = consoleIdsSet.has(category.id)
+      ? `/consoles/${category.id}/issues`
+      : `/issues#category-${category.id}`;
+
+    return {
+      title: category.title,
+      href,
+    };
+  });
+}
+
 export const navbarNavItems: SiteNavItem[] = [
   { title: "خانه", href: "/" },
   {
     title: "تعمیرات",
     href: "/services",
     children: repairChildren(),
+  },
+  {
+    title: "مشکلات رایج",
+    href: "/issues",
+    children: issuesChildren(),
   },
   {
     title: "فروشگاه",
@@ -106,6 +126,7 @@ export const footerQuickLinks: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
   { title: "همه خدمات", href: "/services" },
   { title: "ثبت سفارش تعمیر", href: "/repair" },
+  { title: "مشکلات رایج", href: "/issues" },
   trackingItem(),
 ];
 
