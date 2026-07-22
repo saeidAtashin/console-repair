@@ -5,7 +5,10 @@ import type {
   ImageEffectType,
   ImageLayer,
   ImageLayerEffect,
+  PendingEffectPreview,
 } from "./types";
+
+export type { PendingEffectPreview };
 
 export function blendModeToKonva(
   mode?: ImageBlendMode,
@@ -70,13 +73,32 @@ export function getImageLayerEffects(layer: ImageLayer): ImageLayerEffect[] {
   return [];
 }
 
+export function getEffectiveImageLayerEffects(
+  layer: ImageLayer,
+  pendingPreview: PendingEffectPreview | null,
+): ImageLayerEffect[] {
+  const active = getImageLayerEffects(layer);
+  if (!pendingPreview || pendingPreview.layerId !== layer.id) {
+    return active;
+  }
+  if (active.some((effect) => effect.type === pendingPreview.type)) {
+    return active;
+  }
+  return [
+    ...active,
+    {
+      id: "__preview__",
+      type: pendingPreview.type,
+      intensity: pendingPreview.intensity,
+    },
+  ];
+}
+
 function effectIntensityValue(effect: ImageLayerEffect): number {
   return (effect.intensity ?? 50) / 100;
 }
 
-export function applyImageLayerFilters(node: Konva.Image, layer: ImageLayer): void {
-  const effects = getImageLayerEffects(layer);
-
+function applyEffectsToNode(node: Konva.Image, effects: ImageLayerEffect[]): void {
   if (effects.length === 0) {
     node.clearCache();
     node.filters([]);
@@ -122,6 +144,18 @@ export function applyImageLayerFilters(node: Konva.Image, layer: ImageLayer): vo
   node.cache();
 }
 
-export function serializeImageLayerEffects(layer: ImageLayer): string {
-  return JSON.stringify(getImageLayerEffects(layer));
+export function applyImageLayerFilters(
+  node: Konva.Image,
+  layer: ImageLayer,
+  pendingPreview: PendingEffectPreview | null = null,
+): void {
+  const effects = getEffectiveImageLayerEffects(layer, pendingPreview);
+  applyEffectsToNode(node, effects);
+}
+
+export function serializeImageLayerEffects(
+  layer: ImageLayer,
+  pendingPreview: PendingEffectPreview | null = null,
+): string {
+  return JSON.stringify(getEffectiveImageLayerEffects(layer, pendingPreview));
 }

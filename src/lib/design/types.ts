@@ -44,6 +44,12 @@ export type ImageLayerEffect = {
   intensity?: number;
 };
 
+export type PendingEffectPreview = {
+  layerId: string;
+  type: ImageEffectType;
+  intensity: number;
+};
+
 export type ImageLayer = DesignLayerBase & {
   type: "image";
   src: string;

@@ -4,13 +4,22 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Upload } from "lucide-react";
 import { uploadImage } from "@/lib/cases/api";
+import ImageToolsPanel from "@/app/components/case-editor/ImageToolsPanel";
 import { useEditorStore } from "@/lib/design/editor-store";
+import type { ImageLayer } from "@/lib/design/types";
 
 export default function UploadPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { addImageLayer, uploadedAssets } = useEditorStore();
+  const { addImageLayer, uploadedAssets, selectedLayerId, document } =
+    useEditorStore();
+
+  const selectedImageLayer = selectedLayerId
+    ? (document.layers.find(
+        (l) => l.id === selectedLayerId && l.type === "image",
+      ) as ImageLayer | undefined)
+    : undefined;
 
   async function handleFile(file: File) {
     if (!file.type.startsWith("image/")) {
@@ -59,6 +68,20 @@ export default function UploadPanel() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3">
+        <p className="text-xs font-semibold text-foreground">
+          ویرایش تصویر / Image Editing
+        </p>
+        <p className="mt-1 text-[10px] leading-relaxed text-muted">
+          پس از افزودن تصویر، از تب لایه‌ها ابزار حذف پس‌زمینه، برش شخص، برش
+          چهره و برش تصویر را انتخاب کنید.
+        </p>
+      </div>
+
+      {selectedImageLayer ? (
+        <ImageToolsPanel layer={selectedImageLayer} compact />
+      ) : null}
+
       <input
         ref={inputRef}
         type="file"

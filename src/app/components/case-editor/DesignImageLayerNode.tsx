@@ -10,6 +10,7 @@ import {
   blendModeToKonva,
   serializeImageLayerEffects,
 } from "@/lib/design/image-layer-filters";
+import { useEditorStore } from "@/lib/design/editor-store";
 import type { ImageLayer } from "@/lib/design/types";
 
 type Props = {
@@ -20,15 +21,26 @@ type Props = {
 export default function DesignImageLayerNode({ layer, handlers }: Props) {
   const [image] = useImage(layer.src, "anonymous");
   const imageRef = useRef<Konva.Image>(null);
-  const effectsKey = serializeImageLayerEffects(layer);
+  const pendingEffectPreview = useEditorStore((s) => s.pendingEffectPreview);
+  const effectsKey = serializeImageLayerEffects(layer, pendingEffectPreview);
 
   useEffect(() => {
     const node = imageRef.current;
     if (!node || !image) return;
 
-    applyImageLayerFilters(node, layer);
+    applyImageLayerFilters(node, layer, pendingEffectPreview);
     node.getLayer()?.batchDraw();
-  }, [image, layer, effectsKey, layer.src, layer.width, layer.height, layer.scaleX, layer.scaleY]);
+  }, [
+    image,
+    layer,
+    pendingEffectPreview,
+    effectsKey,
+    layer.src,
+    layer.width,
+    layer.height,
+    layer.scaleX,
+    layer.scaleY,
+  ]);
 
   return (
     <KonvaImage

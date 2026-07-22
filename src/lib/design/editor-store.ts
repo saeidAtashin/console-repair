@@ -15,6 +15,7 @@ import {
   type DesignDocument,
   type DesignLayer,
   type ImageLayer,
+  type PendingEffectPreview,
   type TextLayer,
 } from "./types";
 import { resolveReferenceCanvas, scaleLayersToCanvas } from "./template-scale";
@@ -36,6 +37,7 @@ type EditorState = {
   meta: EditorMeta | null;
   selectedLayerId: string | null;
   previewMode: boolean;
+  pendingEffectPreview: PendingEffectPreview | null;
   history: DesignDocument[];
   historyIndex: number;
   uploadedAssets: string[];
@@ -45,6 +47,7 @@ type EditorState = {
   setName: (name: string) => void;
   selectLayer: (id: string | null) => void;
   setPreviewMode: (preview: boolean) => void;
+  setPendingEffectPreview: (preview: PendingEffectPreview | null) => void;
   addTextLayer: (text?: string) => void;
   addImageLayer: (src: string, width: number, height: number, isSticker?: boolean, name?: string) => void;
   updateLayer: (id: string, patch: Partial<DesignLayer>) => void;
@@ -94,6 +97,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   meta: null,
   selectedLayerId: null,
   previewMode: false,
+  pendingEffectPreview: null,
   history: [],
   historyIndex: -1,
   uploadedAssets: [],
@@ -111,6 +115,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       document: doc,
       selectedLayerId: null,
       previewMode: false,
+      pendingEffectPreview: null,
       uploadedAssets: [],
       history: [structuredClone(doc)],
       historyIndex: 0,
@@ -126,6 +131,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       document: structuredClone(doc),
       selectedLayerId: null,
       previewMode: false,
+      pendingEffectPreview: null,
       uploadedAssets: [...new Set(uploadedAssets)],
       history: [structuredClone(doc)],
       historyIndex: 0,
@@ -147,10 +153,22 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         get().setLayerVisible(id, true);
       }
     }
-    set({ selectedLayerId: id });
+    const preview = get().pendingEffectPreview;
+    const clearPreview = !id || preview?.layerId !== id;
+    set({
+      selectedLayerId: id,
+      pendingEffectPreview: clearPreview ? null : preview,
+    });
   },
 
-  setPreviewMode: (preview) => set({ previewMode: preview, selectedLayerId: preview ? null : get().selectedLayerId }),
+  setPreviewMode: (preview) =>
+    set({
+      previewMode: preview,
+      selectedLayerId: preview ? null : get().selectedLayerId,
+      pendingEffectPreview: preview ? null : get().pendingEffectPreview,
+    }),
+
+  setPendingEffectPreview: (preview) => set({ pendingEffectPreview: preview }),
 
   addTextLayer: (text = "متن شما") => {
     const { meta, document } = get();
@@ -346,6 +364,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       historyIndex: newIndex,
       document: structuredClone(history[newIndex]),
       selectedLayerId: null,
+      pendingEffectPreview: null,
     });
   },
 
@@ -357,6 +376,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       historyIndex: newIndex,
       document: structuredClone(history[newIndex]),
       selectedLayerId: null,
+      pendingEffectPreview: null,
     });
   },
 
