@@ -4,6 +4,10 @@ import { create } from "zustand";
 
 import type { CaseType, PhoneModel } from "@/lib/cases/types";
 import {
+  DEFAULT_EDITOR_FONT,
+  getDefaultTextBoxWidth,
+} from "./editor-fonts";
+import {
   cloneLayersWithNewIds,
   createEmptyDesign,
   generateLayerId,
@@ -151,14 +155,16 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const { meta, document } = get();
     if (!meta) return;
     const textCount = countTextLayers(document.layers) + 1;
+    const boxWidth = getDefaultTextBoxWidth(meta.canvasWidth);
     const layer: TextLayer = {
       id: generateLayerId(),
       type: "text",
       text,
-      fontFamily: "Vazirmatn",
+      fontFamily: DEFAULT_EDITOR_FONT,
       fontSize: 28,
       fill: "#ffffff",
       align: "center",
+      width: boxWidth,
       name: `متن ${textCount}`,
       visible: true,
       x: meta.canvasWidth / 2,

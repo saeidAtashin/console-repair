@@ -12,7 +12,12 @@ import {
   mapGeometryToCanvas,
 } from "@/lib/cases/phone-back";
 import { useEditorStore } from "@/lib/design/editor-store";
-import { isLayerVisible, type DesignLayer, type ImageLayer } from "@/lib/design/types";
+import {
+  getDefaultTextBoxWidth,
+  getTextOffsetX,
+  normalizeFontFamily,
+} from "@/lib/design/editor-fonts";
+import { isLayerVisible, type DesignLayer, type ImageLayer, type TextLayer } from "@/lib/design/types";
 
 type Props = {
   caseColor: string;
@@ -218,20 +223,24 @@ export default function CaseCanvas({
               };
 
               if (layer.type === "text") {
+                const textLayer = layer as TextLayer;
+                const boxWidth = textLayer.width ?? getDefaultTextBoxWidth(width);
                 return (
                   <Text
-                    key={layer.id}
-                    id={layer.id}
-                    text={layer.text}
-                    x={layer.x}
-                    y={layer.y}
-                    fontSize={layer.fontSize}
-                    fontFamily={layer.fontFamily}
-                    fill={layer.fill}
-                    align={layer.align}
-                    rotation={layer.rotation}
-                    scaleX={layer.scaleX}
-                    scaleY={layer.scaleY}
+                    key={`${textLayer.id}-${textLayer.text}-${textLayer.fontFamily}-${textLayer.fontSize}-${textLayer.align}`}
+                    id={textLayer.id}
+                    text={textLayer.text}
+                    x={textLayer.x}
+                    y={textLayer.y}
+                    width={boxWidth}
+                    offsetX={getTextOffsetX(textLayer.align, boxWidth)}
+                    fontSize={textLayer.fontSize}
+                    fontFamily={normalizeFontFamily(textLayer.fontFamily)}
+                    fill={textLayer.fill}
+                    align={textLayer.align}
+                    rotation={textLayer.rotation}
+                    scaleX={textLayer.scaleX}
+                    scaleY={textLayer.scaleY}
                     {...commonHandlers}
                   />
                 );

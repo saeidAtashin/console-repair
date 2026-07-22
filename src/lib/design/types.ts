@@ -18,6 +18,8 @@ export type TextLayer = DesignLayerBase & {
   fontSize: number;
   fill: string;
   align: "left" | "center" | "right";
+  /** Text box width for Konva alignment */
+  width?: number;
 };
 
 export type ImageLayer = DesignLayerBase & {

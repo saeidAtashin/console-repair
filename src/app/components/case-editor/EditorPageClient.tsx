@@ -50,6 +50,7 @@ import {
   SHORTCUT_HELP,
   useEditorShortcuts,
 } from "@/lib/design/use-editor-shortcuts";
+import { loadEditorFonts } from "@/lib/design/editor-fonts";
 import { formatToman } from "@/lib/shop/format";
 
 const CaseCanvas = dynamic(() => import("@/app/components/case-editor/CaseCanvas"), {
@@ -107,6 +108,10 @@ export default function EditorPageClient({
   } = useEditorStore();
 
   useEditorShortcuts();
+
+  useEffect(() => {
+    void loadEditorFonts();
+  }, []);
 
   const [activeTab, setActiveTab] = useState<EditorTab>(initialTab ?? "text");
   const [showPreview, setShowPreview] = useState(false);

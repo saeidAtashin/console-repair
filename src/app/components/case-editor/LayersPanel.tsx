@@ -32,22 +32,20 @@ function LayerTypeIcon({ layer }: { layer: DesignLayer }) {
 }
 
 export default function LayersPanel() {
-  const {
-    document,
-    selectedLayerId,
-    selectLayer,
-    setLayerVisible,
-    restoreLayer,
-    moveLayer,
-    duplicateLayer,
-  } = useEditorStore();
+  const layers = useEditorStore((s) => s.document.layers);
+  const selectedLayerId = useEditorStore((s) => s.selectedLayerId);
+  const selectLayer = useEditorStore((s) => s.selectLayer);
+  const setLayerVisible = useEditorStore((s) => s.setLayerVisible);
+  const restoreLayer = useEditorStore((s) => s.restoreLayer);
+  const moveLayer = useEditorStore((s) => s.moveLayer);
+  const duplicateLayer = useEditorStore((s) => s.duplicateLayer);
 
-  const layers = [...document.layers].reverse();
+  const layersReversed = [...layers].reverse();
   const selected = selectedLayerId
-    ? document.layers.find((l) => l.id === selectedLayerId)
+    ? layers.find((l) => l.id === selectedLayerId)
     : null;
 
-  if (document.layers.length === 0) {
+  if (layers.length === 0) {
     return (
       <p className="text-center text-xs text-muted">
         هنوز لایه‌ای اضافه نشده. از تب متن، استیکر یا تصویر استفاده کنید.
@@ -59,7 +57,7 @@ export default function LayersPanel() {
     <div className="space-y-3">
       <p className="text-xs text-muted">بالا = جلوتر روی قاب</p>
       <ul className="space-y-1">
-        {layers.map((layer) => {
+        {layersReversed.map((layer) => {
           const visible = isLayerVisible(layer);
           const isSelected = selectedLayerId === layer.id;
           return (

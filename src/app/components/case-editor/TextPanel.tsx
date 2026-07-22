@@ -2,14 +2,8 @@
 
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react";
 import { useEditorStore } from "@/lib/design/editor-store";
-import type { TextLayer } from "@/lib/design/types";
-
-const FONT_OPTIONS = [
-  { value: "Vazirmatn", label: "وزیرمتن" },
-  { value: "var(--font-Sorena-Normal)", label: "سورنا" },
-  { value: "var(--font-pixel)", label: "پیکسل" },
-  { value: "var(--Cristik)", label: "کریستیک" },
-];
+import { EDITOR_FONT_OPTIONS, normalizeFontFamily } from "@/lib/design/editor-fonts";
+import type { DesignLayer, TextLayer } from "@/lib/design/types";
 
 const COLOR_OPTIONS = [
   "#ffffff",
@@ -21,12 +15,26 @@ const COLOR_OPTIONS = [
   "#000000",
 ];
 
+function selectTextLayer(state: {
+  selectedLayerId: string | null;
+  document: { layers: DesignLayer[] };
+}): TextLayer | undefined {
+  if (!state.selectedLayerId) return undefined;
+  const layer = state.document.layers.find((l) => l.id === state.selectedLayerId);
+  return layer?.type === "text" ? layer : undefined;
+}
+
 export default function TextPanel() {
-  const { addTextLayer, getSelectedLayer, updateLayer, meta } = useEditorStore();
-  const selected = getSelectedLayer();
-  const textLayer = selected?.type === "text" ? (selected as TextLayer) : null;
+  const textLayer = useEditorStore(selectTextLayer);
+  const updateLayer = useEditorStore((s) => s.updateLayer);
+  const addTextLayer = useEditorStore((s) => s.addTextLayer);
+  const meta = useEditorStore((s) => s.meta);
   const canvasW = meta?.canvasWidth ?? 280;
   const canvasH = meta?.canvasHeight ?? 560;
+
+  const displayFont = textLayer
+    ? normalizeFontFamily(textLayer.fontFamily)
+    : undefined;
 
   return (
     <div className="space-y-4">
@@ -53,12 +61,12 @@ export default function TextPanel() {
           <label className="block space-y-1">
             <span className="text-xs text-muted">فونت</span>
             <select
-              value={textLayer.fontFamily}
+              value={displayFont}
               onChange={(e) => updateLayer(textLayer.id, { fontFamily: e.target.value })}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
             >
-              {FONT_OPTIONS.map((f) => (
-                <option key={f.value} value={f.value}>
+              {EDITOR_FONT_OPTIONS.map((f) => (
+                <option key={f.family} value={f.family}>
                   {f.label}
                 </option>
               ))}
