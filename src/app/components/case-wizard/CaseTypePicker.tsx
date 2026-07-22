@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { formatToman } from "@/lib/shop/format";
+import { getModelBySlug } from "@/lib/cases/brands.static";
 import type { CaseType } from "@/lib/cases/types";
 import PhoneMockupPreview from "./PhoneMockupPreview";
 
@@ -23,16 +24,16 @@ export default function CaseTypePicker({
   onSelect,
   showDesignLink = true,
 }: Props) {
+  const model = getModelBySlug(brandSlug, modelSlug);
+  const selectedCase = caseTypes.find((c) => c.slug === selectedSlug) ?? caseTypes[0];
+
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-zinc-900/40 p-8">
         <PhoneMockupPreview
-          caseColor={
-            caseTypes.find((c) => c.slug === selectedSlug)?.color ?? caseTypes[0]?.color
-          }
-          caseMaterial={
-            caseTypes.find((c) => c.slug === selectedSlug)?.material ?? caseTypes[0]?.material
-          }
+          model={model}
+          caseColor={selectedCase?.color}
+          caseMaterial={selectedCase?.material}
         />
       </div>
 

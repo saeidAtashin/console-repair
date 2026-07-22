@@ -1,6 +1,10 @@
 "use client";
 
+import type { PhoneModel } from "@/lib/cases/types";
+import { PhoneBackSvg } from "./PhoneBackSvg";
+
 type Props = {
+  model?: PhoneModel;
   caseColor?: string;
   caseMaterial?: string;
   children?: React.ReactNode;
@@ -8,6 +12,7 @@ type Props = {
 };
 
 export default function PhoneMockupPreview({
+  model,
   caseColor = "#2a2a2e",
   caseMaterial = "matte",
   children,
@@ -15,6 +20,7 @@ export default function PhoneMockupPreview({
 }: Props) {
   const isClear = caseMaterial === "clear";
   const isGlass = caseMaterial === "glass";
+  const bodyFill = isClear ? "rgba(26,26,34,0.7)" : caseColor;
 
   return (
     <div className={`relative ${className}`}>
@@ -29,25 +35,26 @@ export default function PhoneMockupPreview({
             : "0 20px 60px rgba(0,0,0,0.5)",
         }}
       >
-        <div className="absolute left-1/2 top-4 z-20 h-2 w-12 -translate-x-1/2 rounded-full bg-black/60" />
         <div
           className="relative overflow-hidden rounded-[1.5rem]"
-          style={{
-            aspectRatio: "1/2",
-            background: "linear-gradient(180deg, #0a0a0f 0%, #12121a 100%)",
-          }}
+          style={{ aspectRatio: model ? `${model.canvasWidth}/${model.canvasHeight}` : "1/2" }}
         >
-          <div className="absolute inset-x-3 top-8 bottom-4 overflow-hidden rounded-xl">
-            {children ?? (
-              <div className="flex h-full items-center justify-center text-xs text-zinc-600">
-                ناحیه طراحی
-              </div>
-            )}
-          </div>
+          {model ? (
+            <PhoneBackSvg model={model} className="h-full w-full" bodyFill={bodyFill} />
+          ) : (
+            <div
+              className="flex h-full items-center justify-center text-xs text-zinc-600"
+              style={{
+                background: "linear-gradient(180deg, #0a0a0f 0%, #12121a 100%)",
+              }}
+            >
+              ناحیه طراحی
+            </div>
+          )}
+          {children ? (
+            <div className="absolute inset-0 flex items-center justify-center">{children}</div>
+          ) : null}
         </div>
-        <div className="absolute -right-1 top-24 h-16 w-1 rounded-full bg-zinc-700/80" />
-        <div className="absolute -right-1 top-36 h-10 w-1 rounded-full bg-zinc-700/80" />
-        <div className="absolute -left-1 top-28 h-14 w-1 rounded-full bg-zinc-700/80" />
       </div>
     </div>
   );

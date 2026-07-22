@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Stage, Layer, Text, Image as KonvaImage, Transformer, Rect, Line } from "react-konva";
+import { Stage, Layer, Text, Image as KonvaImage, Transformer, Group, Rect } from "react-konva";
 import useImage from "use-image";
 import type Konva from "konva";
 
+import { PhoneBackKonvaLayers } from "@/app/components/case-wizard/PhoneBackKonva";
+import {
+  createCaseDesignClipFunc,
+  createFallbackCaseDesignClipFunc,
+  mapGeometryToCanvas,
+} from "@/lib/cases/phone-back";
 import { useEditorStore } from "@/lib/design/editor-store";
 import type { DesignLayer, ImageLayer } from "@/lib/design/types";
 
@@ -36,6 +42,10 @@ export default function CaseCanvas({
   const height = meta?.canvasHeight ?? document.canvas.height;
   const scale = Math.min(280 / width, 480 / height);
   const isClear = caseMaterial === "clear";
+  const model = meta?.model;
+  const designClipFunc = model
+    ? createCaseDesignClipFunc(mapGeometryToCanvas(model))
+    : createFallbackCaseDesignClipFunc(width, height);
 
   useEffect(() => {
     if (stageRef.current) onStageRef?.(stageRef.current);
@@ -65,6 +75,8 @@ export default function CaseCanvas({
     }
   };
 
+  const bodyFill = isClear ? "rgba(10,10,15,0.85)" : "#0a0a0f";
+
   return (
     <div
       className="mx-auto rounded-[2rem] p-3 shadow-2xl"
@@ -83,88 +95,95 @@ export default function CaseCanvas({
         onTap={handleStageClick}
       >
         <Layer>
-          <Rect
-            x={0}
-            y={0}
-            width={width}
-            height={height}
-            fill="#0a0a0f"
-            cornerRadius={16}
-          />
-          {!previewMode ? (
-            <>
-              <Line
-                points={[width / 2, 0, width / 2, height]}
-                stroke="rgba(6,182,212,0.2)"
-                dash={[4, 4]}
-                listening={false}
-              />
-              <Line
-                points={[0, height / 2, width, height / 2]}
-                stroke="rgba(6,182,212,0.2)"
-                dash={[4, 4]}
-                listening={false}
-              />
-              <Rect
-                x={width * 0.08}
-                y={height * 0.05}
-                width={width * 0.84}
-                height={height * 0.9}
-                stroke="rgba(6,182,212,0.35)"
-                strokeWidth={1}
-                dash={[6, 4]}
-                listening={false}
-              />
-            </>
-          ) : null}
-          {document.layers.map((layer: DesignLayer) => {
-            const commonHandlers = {
-              onClick: () => !readOnly && !previewMode && selectLayer(layer.id),
-              onTap: () => !readOnly && !previewMode && selectLayer(layer.id),
-              onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
-                updateLayer(layer.id, { x: e.target.x(), y: e.target.y() });
-              },
-              onTransformEnd: (e: Konva.KonvaEventObject<Event>) => {
-                const node = e.target;
-                updateLayer(layer.id, {
-                  x: node.x(),
-                  y: node.y(),
-                  rotation: node.rotation(),
-                  scaleX: node.scaleX(),
-                  scaleY: node.scaleY(),
-                });
-              },
-              draggable: !readOnly && !previewMode,
-            };
+          {model ? (
+            <PhoneBackKonvaLayers
+              model={model}
+              bodyFill={bodyFill}
+              showGuides={false}
+              showCamera={false}
+            />
+          ) : (
+            <Rect
+              x={0}
+              y={0}
+              width={width}
+              height={height}
+              fill={bodyFill}
+              cornerRadius={16}
+            />
+          )}
 
-            if (layer.type === "text") {
+          <Group clipFunc={designClipFunc}>
+            {document.layers.map((layer: DesignLayer) => {
+              const commonHandlers = {
+                onClick: () => !readOnly && !previewMode && selectLayer(layer.id),
+                onTap: () => !readOnly && !previewMode && selectLayer(layer.id),
+                onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
+                  updateLayer(layer.id, { x: e.target.x(), y: e.target.y() });
+                },
+                onTransformEnd: (e: Konva.KonvaEventObject<Event>) => {
+                  const node = e.target;
+                  updateLayer(layer.id, {
+                    x: node.x(),
+                    y: node.y(),
+                    rotation: node.rotation(),
+                    scaleX: node.scaleX(),
+                    scaleY: node.scaleY(),
+                  });
+                },
+                draggable: !readOnly && !previewMode,
+              };
+
+              if (layer.type === "text") {
+                return (
+                  <Text
+                    key={layer.id}
+                    id={layer.id}
+                    text={layer.text}
+                    x={layer.x}
+                    y={layer.y}
+                    fontSize={layer.fontSize}
+                    fontFamily={layer.fontFamily}
+                    fill={layer.fill}
+                    align={layer.align}
+                    rotation={layer.rotation}
+                    scaleX={layer.scaleX}
+                    scaleY={layer.scaleY}
+                    {...commonHandlers}
+                  />
+                );
+              }
+
               return (
-                <Text
+                <DesignImageLayer
                   key={layer.id}
-                  id={layer.id}
-                  text={layer.text}
-                  x={layer.x}
-                  y={layer.y}
-                  fontSize={layer.fontSize}
-                  fontFamily={layer.fontFamily}
-                  fill={layer.fill}
-                  align={layer.align}
-                  rotation={layer.rotation}
-                  scaleX={layer.scaleX}
-                  scaleY={layer.scaleY}
-                  {...commonHandlers}
+                  layer={layer}
+                  handlers={commonHandlers}
                 />
               );
-            }
+            })}
+          </Group>
 
-            return (
-              <DesignImageLayer
-                key={layer.id}
-                layer={layer}
-                handlers={commonHandlers}
-              />
-            );
-          })}
+          {!previewMode && !readOnly && model ? (
+            <PhoneBackKonvaLayers
+              model={model}
+              showBody={false}
+              showLogo={false}
+              showCamera={false}
+              showGuides
+            />
+          ) : null}
+
+          {model ? (
+            <PhoneBackKonvaLayers
+              model={model}
+              showBody={false}
+              showLogo={false}
+              showGuides={false}
+              showCamera
+            />
+          ) : null}
+
           {!readOnly && !previewMode ? (
             <Transformer
               ref={transformerRef}

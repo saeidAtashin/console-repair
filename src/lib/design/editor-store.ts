@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 
-import type { CaseType } from "@/lib/cases/types";
+import type { CaseType, PhoneModel } from "@/lib/cases/types";
 import {
   createEmptyDesign,
   generateLayerId,
@@ -19,6 +19,7 @@ type EditorMeta = {
   modelSlug: string;
   caseTypeSlug: string;
   caseType: CaseType;
+  model: PhoneModel;
   canvasWidth: number;
   canvasHeight: number;
 };

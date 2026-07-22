@@ -5,6 +5,38 @@ export type PhoneBrand = {
   logo: string;
 };
 
+export type MmRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  cornerRadius?: number;
+};
+
+export type MmCircle = {
+  cx: number;
+  cy: number;
+  r: number;
+};
+
+export type PhoneBackGeometry = {
+  cornerRadiusMm: number;
+  camera: {
+    module: MmRect;
+    lenses: MmCircle[];
+    flash?: MmRect;
+    lidar?: MmCircle;
+  };
+  logo?: MmCircle;
+  printSafeInsetMm: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  chassisTemplate: string;
+};
+
 export type PhoneModel = {
   slug: string;
   brandSlug: string;
@@ -15,6 +47,7 @@ export type PhoneModel = {
   canvasHeight: number;
   widthMm: number;
   heightMm: number;
+  back?: PhoneBackGeometry;
 };
 
 export type CaseType = {

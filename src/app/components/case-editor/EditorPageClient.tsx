@@ -84,6 +84,7 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
       modelSlug,
       caseTypeSlug,
       caseType,
+      model,
       canvasWidth: model.canvasWidth,
       canvasHeight: model.canvasHeight,
     });

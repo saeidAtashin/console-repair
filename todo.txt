@@ -17,9 +17,10 @@ also show a sample of our designs in home page and order page and also show a sa
 
 also add a search for mobile model search, if it not exist, show a message that your phone model is not exactly found, but you can create a case for it. you can create your case, if it need too much change we will double check with you.
 
-can you add all back of phones for case design?
-its important to add all back of phones for case design that user select its brand and model and be able to design case for it with showing its camera position and other positions.
+//can you add all back of phones for case design?
+//its important to add all back of phones for case design that user select its brand and model and be able to design case for it with showing its camera position and other positions.
 
+//generate all back of phone mockup that camera is seprated and radius is applyed and size is exactly.
 
 also add light and dark mode and also add a theme that user can select its theme but default should be base on device theme.
 

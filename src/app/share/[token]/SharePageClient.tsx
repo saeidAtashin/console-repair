@@ -33,6 +33,7 @@ export default function SharePageClient({ design }: Props) {
       modelSlug: design.modelSlug,
       caseTypeSlug: design.caseTypeSlug,
       caseType,
+      model,
       canvasWidth: model.canvasWidth,
       canvasHeight: model.canvasHeight,
     });
