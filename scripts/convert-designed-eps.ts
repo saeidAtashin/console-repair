@@ -18,6 +18,7 @@ const STICKERS_OUT = join(ROOT, "src", "lib", "cases", "designed.stickers.genera
 const REF_CANVAS = { width: 280, height: 560 } as const;
 const SVG_SIZE_LIMIT_BYTES = 2 * 1024 * 1024;
 const DEFAULT_STICKER_SIZE = 240;
+const MAX_EXPORT_EDGE = 2048;
 
 type DesignedMetaEntry = {
   title?: string;
@@ -44,6 +45,10 @@ type ToolPaths = {
   magick?: string;
   ghostscriptBin?: string;
 };
+
+function hasFlag(name: string): boolean {
+  return process.argv.includes(`--${name}`);
+}
 
 function getArg(name: string): string | undefined {
   const prefix = `--${name}=`;
@@ -119,8 +124,19 @@ function resolveTools(): ToolPaths {
     getArg("ghostscript-path"),
     process.platform === "win32"
       ? (() => {
-          const roots = ["C:\\Program Files\\gs", "C:\\Program Files (x86)\\gs"];
           const found: string[] = [];
+          const scoopPath = join(
+            process.env.USERPROFILE ?? "",
+            "scoop",
+            "apps",
+            "ghostscript",
+            "current",
+            "bin",
+            "gswin64c.exe",
+          );
+          if (existsSync(scoopPath)) found.push(scoopPath);
+
+          const roots = ["C:\\Program Files\\gs", "C:\\Program Files (x86)\\gs"];
           for (const root of roots) {
             if (!existsSync(root)) continue;
             for (const dir of readdirSync(root)) {
@@ -167,6 +183,25 @@ function parseEpsBoundingBox(epsPath: string): { width: number; height: number }
   const height = Number(match[4]) - Number(match[2]);
   if (width <= 0 || height <= 0) return null;
   return { width, height };
+}
+
+function computeExportSize(
+  bbox: { width: number; height: number } | null,
+): { width: number; height: number } {
+  if (!bbox) {
+    return { width: MAX_EXPORT_EDGE, height: MAX_EXPORT_EDGE };
+  }
+
+  const longest = Math.max(bbox.width, bbox.height);
+  if (longest <= MAX_EXPORT_EDGE) {
+    return { width: Math.round(bbox.width), height: Math.round(bbox.height) };
+  }
+
+  const scale = MAX_EXPORT_EDGE / longest;
+  return {
+    width: Math.round(bbox.width * scale),
+    height: Math.round(bbox.height * scale),
+  };
 }
 
 function parseSvgDimensions(svgPath: string): { width: number; height: number } {
@@ -241,6 +276,7 @@ function tryInkscapeExport(
   inputPath: string,
   outputPath: string,
   type: "svg" | "png",
+  exportSize: { width: number; height: number },
 ): boolean {
   if (!tools.inkscape) return false;
 
@@ -251,7 +287,8 @@ function tryInkscapeExport(
           inputPath,
           "--export-type=png",
           `--export-filename=${outputPath}`,
-          `--export-width=${REF_CANVAS.width * 4}`,
+          `--export-width=${exportSize.width}`,
+          `--export-height=${exportSize.height}`,
         ];
 
   const result = runWithPath(tools.inkscape, args, tools.ghostscriptBin);
@@ -262,12 +299,22 @@ function tryMagickExport(
   tools: ToolPaths,
   inputPath: string,
   outputPath: string,
+  exportSize: { width: number; height: number },
 ): boolean {
   if (!tools.magick) return false;
 
   const result = runWithPath(
     tools.magick,
-    [inputPath, "-density", "300", "-background", "none", outputPath],
+    [
+      "-density",
+      "300",
+      inputPath,
+      "-background",
+      "none",
+      "-resize",
+      `${exportSize.width}x${exportSize.height}`,
+      outputPath,
+    ],
     tools.ghostscriptBin,
   );
   return result.ok && existsSync(outputPath);
@@ -286,8 +333,9 @@ function convertEpsFile(
   const svgPath = join(DESIGNED_DIR, `${slug}.svg`);
   const pngPath = join(DESIGNED_DIR, `${slug}.png`);
   const bbox = parseEpsBoundingBox(inputPath);
+  const exportSize = computeExportSize(bbox);
 
-  if (tryInkscapeExport(tools, inputPath, svgPath, "svg")) {
+  if (tryInkscapeExport(tools, inputPath, svgPath, "svg", exportSize)) {
     const svgSize = statSync(svgPath).size;
     if (svgSize <= SVG_SIZE_LIMIT_BYTES) {
       return {
@@ -304,7 +352,7 @@ function convertEpsFile(
     console.log("  Inkscape SVG export unavailable or failed.");
   }
 
-  if (tryInkscapeExport(tools, inputPath, pngPath, "png")) {
+  if (tryInkscapeExport(tools, inputPath, pngPath, "png", exportSize)) {
     return {
       outputFormat: "png",
       outputPath: pngPath,
@@ -313,7 +361,7 @@ function convertEpsFile(
     };
   }
 
-  if (tryMagickExport(tools, inputPath, pngPath)) {
+  if (tryMagickExport(tools, inputPath, pngPath, exportSize)) {
     return {
       outputFormat: "png",
       outputPath: pngPath,
@@ -322,18 +370,28 @@ function convertEpsFile(
     };
   }
 
-  console.log("  Falling back to embedded XMP preview from Illustrator EPS...");
+  if (!hasFlag("allow-preview-fallback")) {
+    throw new Error(
+      `Could not convert ${basename(inputPath)} at full quality. Ghostscript is required for EPS.\n` +
+        `Run: npm run setup:ghostscript && npm run convert:designed\n` +
+        `Or pass --allow-preview-fallback to use low-quality embedded previews (not recommended).`,
+    );
+  }
+
+  console.warn(
+    "  LOW QUALITY: using embedded XMP preview — install Ghostscript for full export.",
+  );
   const preview = extractXmpPreview(inputPath, slug);
   if (!preview) {
     throw new Error(
-      `Could not convert ${basename(inputPath)}. Install Ghostscript (https://ghostscript.com) so Inkscape/ImageMagick can read EPS, or use Illustrator EPS files with embedded XMP previews.`,
+      `Could not convert ${basename(inputPath)}. Install Ghostscript (https://ghostscript.com) or run npm run setup:ghostscript.`,
     );
   }
 
   return {
     outputFormat: preview.outputPath.endsWith(".jpg") ? "jpg" : "png",
     outputPath: preview.outputPath,
-    dimensions: bbox ?? preview.dimensions,
+    dimensions: preview.dimensions,
     conversionMethod: "xmp-preview",
   };
 }

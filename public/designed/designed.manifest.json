@@ -3,12 +3,12 @@
     {
       "slug": "palm-tree-leaves",
       "sourceEps": "palm-tree-leaves.eps",
-      "outputFormat": "jpg",
-      "outputPath": "designed/palm-tree-leaves.jpg",
-      "width": 3164,
-      "height": 3164,
-      "convertedAt": "2026-07-22T10:17:14.046Z",
-      "conversionMethod": "xmp-preview"
+      "outputFormat": "png",
+      "outputPath": "designed/palm-tree-leaves.png",
+      "width": 2048,
+      "height": 2048,
+      "convertedAt": "2026-07-22T11:11:41.437Z",
+      "conversionMethod": "imagemagick"
     }
   ]
 }

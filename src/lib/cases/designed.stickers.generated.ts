@@ -9,7 +9,7 @@ export const DESIGNED_STICKER_PACK: StickerPack = {
     {
       id: "designed-palm-tree-leaves",
       name: "برگ نخل",
-      src: "/designed/palm-tree-leaves.jpg",
+      src: "/designed/palm-tree-leaves.png",
       width: 240,
       height: 240,
     }
