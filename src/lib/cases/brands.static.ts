@@ -1,4 +1,5 @@
 import { APPLE_PHONE_MODELS } from "./apple/models";
+import { GENERIC_CUSTOM_MODEL, OTHER_BRAND } from "./generic-model";
 import { HUAWEI_PHONE_MODELS } from "./huawei/models";
 import { SAMSUNG_PHONE_MODELS } from "./samsung/models";
 import { XIAOMI_PHONE_MODELS } from "./xiaomi/models";
@@ -29,6 +30,7 @@ export const PHONE_BRANDS: PhoneBrand[] = [
     nameEn: "Huawei",
     logo: "/cases/brands/huawei.svg",
   },
+  OTHER_BRAND,
 ];
 
 export const PHONE_MODELS: PhoneModel[] = [
@@ -36,6 +38,7 @@ export const PHONE_MODELS: PhoneModel[] = [
   ...SAMSUNG_PHONE_MODELS,
   ...XIAOMI_PHONE_MODELS,
   ...HUAWEI_PHONE_MODELS,
+  GENERIC_CUSTOM_MODEL,
 ];
 
 export const CASE_TYPES: CaseType[] = [

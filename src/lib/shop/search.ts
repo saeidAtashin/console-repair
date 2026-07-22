@@ -1,3 +1,4 @@
+import { normalizeSearchQuery, tokenizeSearchQuery } from "@/lib/search/normalize";
 import { PRODUCT_CATEGORY_LABELS } from "./categories";
 import { STATIC_SHOP_PRODUCTS } from "./products.static";
 import {
@@ -14,29 +15,10 @@ export type ShopSearchResult = {
   matchedText: string;
 };
 
-const PERSIAN_CHAR_MAP: Record<string, string> = {
-  ي: "ی",
-  ك: "ک",
-  ة: "ه",
-  أ: "ا",
-  إ: "ا",
-  آ: "ا",
-};
-
-export function normalizeSearchQuery(query: string): string {
-  let normalized = query.trim().toLowerCase();
-
-  for (const [from, to] of Object.entries(PERSIAN_CHAR_MAP)) {
-    normalized = normalized.replaceAll(from, to);
-  }
-
-  return normalized.replace(/\s+/g, " ");
-}
+export { normalizeSearchQuery };
 
 function tokenize(value: string): string[] {
-  return normalizeSearchQuery(value)
-    .split(/[\s,/|+]+/)
-    .filter(Boolean);
+  return tokenizeSearchQuery(value);
 }
 
 export function getProductSearchCorpus(product: ShopProduct): string[] {

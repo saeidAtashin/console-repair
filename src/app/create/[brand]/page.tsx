@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import ModelGrid from "@/app/components/case-wizard/ModelGrid";
+import ModelSearch from "@/app/components/case-wizard/ModelSearch";
 import WizardBreadcrumb from "@/app/components/case-wizard/WizardBreadcrumb";
 import { getBrandBySlug, getModelsByBrandAndSeries } from "@/lib/cases/brands.static";
 import { getSeriesBySlug } from "@/lib/cases/series";
@@ -65,6 +66,12 @@ export default async function BrandModelsPage({ params, searchParams }: Props) {
             ← نمایش همه مدل‌های {brand.name}
           </Link>
         ) : null}
+        <div className="mt-6">
+          <ModelSearch
+            brandSlug={brandSlug}
+            placeholder={`جستجو در مدل‌های ${brand.name}…`}
+          />
+        </div>
         <div className="mt-8">
           <ModelGrid brandSlug={brandSlug} models={models} seriesSlug={seriesSlug} />
         </div>

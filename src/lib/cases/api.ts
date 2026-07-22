@@ -8,6 +8,10 @@ import {
   getModelsByBrand,
   PHONE_BRANDS,
 } from "./brands.static";
+import {
+  hasStrongModelMatch,
+  searchPhoneModels,
+} from "./model-search";
 import { getReadyCaseBySlug, getReadyCases } from "./ready.static";
 import { getStickerPacks } from "./stickers.static";
 import type { PhoneBrand, PhoneModel, ReadyCase, StickerPack } from "./types";
@@ -85,6 +89,8 @@ export {
   getReadyCaseBySlug,
   getReadyCases,
   getStickerPacks,
+  hasStrongModelMatch,
+  searchPhoneModels,
   PHONE_BRANDS,
   CASE_TYPES,
 };
