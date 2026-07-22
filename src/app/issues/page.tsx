@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, Wrench } from "lucide-react";
 
+import IssueListCard from "@/app/components/issues/IssueListCard";
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
@@ -102,19 +103,7 @@ export default function IssuesIndexPage() {
               <ul className="space-y-4">
                 {categoryIssues.map((issue) => (
                   <li key={issue.slug}>
-                    <Link
-                      href={`/issues/${issue.slug}`}
-                      className="block rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 transition hover:border-cyan-500/50"
-                    >
-                      <h3 className="text-xl font-bold">{issue.title}</h3>
-                      <p className="mt-2 line-clamp-2 text-sm text-zinc-400">
-                        {issue.description}
-                      </p>
-                      <span className="mt-4 inline-flex items-center gap-1 text-sm text-cyan-400">
-                        مطالعه راهنما
-                        <ChevronLeft className="h-4 w-4" />
-                      </span>
-                    </Link>
+                    <IssueListCard issue={issue} />
                   </li>
                 ))}
               </ul>

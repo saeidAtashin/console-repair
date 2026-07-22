@@ -15,6 +15,7 @@ import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
 import JsonLd from "@/app/components/seo/JsonLd";
+import IssueListCard from "@/app/components/issues/IssueListCard";
 import { issues } from "@/app/data/issues";
 import {
   buildIssueSeoExtras,
@@ -281,20 +282,11 @@ export default async function IssuePage({ params }: Props) {
               <h2 id="related-title" className="mb-8 text-2xl font-bold">
                 مشکلات مرتبط
               </h2>
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2">
                 {related.map(
                   (item) =>
                     item && (
-                      <Link
-                        key={item.slug}
-                        href={`/issues/${item.slug}`}
-                        className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-blue-500"
-                      >
-                        <h3 className="mb-2 font-bold">{item.title}</h3>
-                        <p className="line-clamp-2 text-sm text-zinc-400">
-                          {item.description}
-                        </p>
-                      </Link>
+                      <IssueListCard key={item.slug} issue={item} />
                     ),
                 )}
               </div>

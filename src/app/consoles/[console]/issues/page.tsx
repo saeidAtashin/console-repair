@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 
+import IssueListCard from "@/app/components/issues/IssueListCard";
 import PageShell from "@/app/components/seo/PageShell";
+import { issues as allIssues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
 import { consoleIds, getConsole } from "../../../../lib/console-catalog";
 import { webPageJsonLd } from "../../../../lib/seo/jsonld";
@@ -44,8 +45,19 @@ export default async function ConsoleIssuesPage({ params }: Props) {
   if (!config) notFound();
 
   const repair = services.find((s) => s.slug === config.repairSlug);
-  const issues = repair?.commonIssues ?? [];
+  const commonIssues = repair?.commonIssues ?? [];
   const path = `/consoles/${config.id}/issues`;
+
+  const resolvedIssues = commonIssues.map((item) => {
+    const full = allIssues.find((issue) => issue.slug === item.slug);
+    return (
+      full ?? {
+        slug: item.slug,
+        title: item.title,
+        description: `راهنمای عیب‌یابی و تعمیر ${item.title}`,
+      }
+    );
+  });
 
   return (
     <main className="min-h-screen bg-zinc-950 pt-24 text-white">
@@ -63,21 +75,10 @@ export default async function ConsoleIssuesPage({ params }: Props) {
           رایج‌ترین خرابی‌های {config.title} و لینک راهنمای تعمیر هر مورد.
         </p>
 
-        <ul className="space-y-3">
-          {issues.map((issue) => (
+        <ul className="space-y-4">
+          {resolvedIssues.map((issue) => (
             <li key={issue.slug}>
-              <Link
-                href={`/issues/${issue.slug}`}
-                className="group flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/50 px-5 py-4 transition hover:border-cyan-500/30"
-              >
-                <span className="font-medium group-hover:text-cyan-200">
-                  {issue.title}
-                </span>
-                <ChevronLeft
-                  size={18}
-                  className="text-zinc-500 group-hover:text-cyan-400"
-                />
-              </Link>
+              <IssueListCard issue={issue} />
             </li>
           ))}
         </ul>
