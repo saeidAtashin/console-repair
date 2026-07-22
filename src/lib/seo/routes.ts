@@ -58,6 +58,7 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     changeFrequency: "monthly" as const,
     priority: 0.75,
   })),
+  { path: "/services/game-install", changeFrequency: "weekly", priority: 0.7 },
   ...GAME_INSTALL_CONSOLES.map((slug) => ({
     path: `/services/game-install/${slug}`,
     changeFrequency: "monthly" as const,

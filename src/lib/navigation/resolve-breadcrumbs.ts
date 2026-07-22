@@ -80,9 +80,21 @@ function resolveServices(pathname: string, search: string): BreadcrumbItem[] | n
   }
 
   if (segments[1] === "game-install") {
+    if (segments.length === 2) {
+      return withHome(
+        link("همه خدمات", "/services"),
+        current("نصب بازی"),
+      );
+    }
+
     const consoleSlug = segments[2];
     const meta = consoleSlug ? GAME_INSTALL_CONSOLE_META[consoleSlug] : undefined;
-    if (!meta) return withHome(link("همه خدمات", "/services"));
+    if (!meta) {
+      return withHome(
+        link("همه خدمات", "/services"),
+        link("نصب بازی", "/services/game-install"),
+      );
+    }
 
     const hubPath = `/services/game-install/${consoleSlug}`;
     const hubLabel = `نصب بازی ${meta.label}`;
@@ -92,6 +104,7 @@ function resolveServices(pathname: string, search: string): BreadcrumbItem[] | n
       const filter = getGameFilter(params.get("filter") ?? "best");
       return withHome(
         link("همه خدمات", "/services"),
+        link("نصب بازی", "/services/game-install"),
         link(hubLabel, hubPath),
         current(filter?.label ?? "لیست بازی‌ها"),
       );
@@ -99,6 +112,7 @@ function resolveServices(pathname: string, search: string): BreadcrumbItem[] | n
 
     return withHome(
       link("همه خدمات", "/services"),
+      link("نصب بازی", "/services/game-install"),
       current(hubLabel),
     );
   }

@@ -1,7 +1,10 @@
 import "server-only";
 
 import type { InstallCatalogGame } from "@/lib/game-install-catalog";
-import { getInstallationCatalogForConsole } from "@/lib/installation/catalog";
+import {
+  getAllInstallationCatalogGames,
+  getInstallationCatalogForConsole,
+} from "@/lib/installation/catalog";
 
 /** Installable games from `/installation/games/` filtered by console device. */
 export async function getInstallCatalogGames(
@@ -25,5 +28,17 @@ export async function getInstallDeviceTypeId(
     return deviceTypeId;
   } catch {
     return null;
+  }
+}
+
+/** All installable games, optionally filtered by console slug. */
+export async function getAllInstallCatalogGames(
+  consoleSlug?: string,
+): Promise<InstallCatalogGame[]> {
+  try {
+    const { games } = await getAllInstallationCatalogGames(consoleSlug);
+    return games;
+  } catch {
+    return [];
   }
 }

@@ -129,6 +129,29 @@ export async function fetchInstallationGames(params?: {
   return unwrapResults(response);
 }
 
+/** Fetch every page from `/installation/games/`. */
+export async function fetchAllInstallationGames(
+  pageSize = 100,
+): Promise<InstallationGame[]> {
+  const games: InstallationGame[] = [];
+  let page = 1;
+  let hasNext = true;
+
+  while (hasNext) {
+    const response = await apiRequest<
+      ApiWrapper<PaginatedResults<InstallationGame>>
+    >(`/installation/games/?page=${page}&page_size=${pageSize}`, {
+      auth: false,
+    });
+    const data = unwrapData(response);
+    games.push(...(data.results ?? []));
+    hasNext = Boolean(data.next);
+    page += 1;
+  }
+
+  return games;
+}
+
 export function filterGamesForDevice(
   games: InstallationGame[],
   deviceId: number,
