@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Palette, Sparkles, Truck, Shield, Smartphone } from "lucide-react";
 import DesignSamplesSection from "@/app/components/designs/DesignSamplesSection";
 import ReadyCaseCard from "@/app/components/cases/ReadyCaseCard";
+import HomeHero from "@/app/components/home/hero/HomeHero";
 import { PhoneBackSvg } from "@/app/components/case-wizard/PhoneBackSvg";
-import { getFeaturedTemplates } from "@/lib/cases/templates.static";
+import { getHeroTemplates } from "@/app/components/home/hero/hero.constants";
 import { getModelBySlug } from "@/lib/cases/brands.static";
 import { getReadyCases, getModelsWithReadyCases } from "@/lib/cases/ready.static";
 
@@ -37,41 +38,12 @@ function getPopularModels() {
 
 export default function HomeCasePage() {
   const featured = getReadyCases().slice(0, 4);
-  const featuredTemplates = getFeaturedTemplates(4);
+  const heroTemplates = getHeroTemplates();
   const popularModels = getPopularModels();
 
   return (
-    <main className="min-h-screen bg-background pt-20">
-      <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,182,212,0.15),transparent_60%)]" />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <p className="mb-4 text-sm font-semibold text-cyan-400">قاب‌کده — طراحی اختصاصی</p>
-          <h1 className="text-3xl font-black leading-tight text-foreground sm:text-5xl">
-            قاب موبایل خودت را
-            <span className="block text-cyan-400">طراحی کن</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-muted sm:text-lg">
-            برند و مدل گوشی‌ات را انتخاب کن، متن و استیکر اضافه کن، پیش‌نمایش ببین و سفارش بده.
-            قاب‌های آماده هم داریم!
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/create"
-              className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-8 py-3.5 text-sm font-bold text-black shadow-lg shadow-cyan-500/25 transition hover:bg-cyan-400"
-            >
-              <Palette size={18} />
-              شروع طراحی
-            </Link>
-            <Link
-              href="/cases"
-              className="inline-flex items-center gap-2 rounded-xl border border-border px-8 py-3.5 text-sm font-bold text-foreground transition hover:border-cyan-500/50"
-            >
-              <Sparkles size={18} />
-              قاب‌های آماده
-            </Link>
-          </div>
-        </div>
-      </section>
+    <main className="min-h-screen bg-background">
+      <HomeHero templates={heroTemplates} />
 
       <section className="border-y border-border bg-background/50 px-4 py-8 sm:px-6">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
@@ -130,7 +102,7 @@ export default function HomeCasePage() {
 
       <section className="px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
-          <DesignSamplesSection templates={featuredTemplates} limit={4} />
+          <DesignSamplesSection templates={heroTemplates.slice(0, 4)} limit={4} />
         </div>
       </section>
 
