@@ -3,7 +3,8 @@ import {
   getModelBySlug,
   CASE_TYPES,
 } from "@/lib/cases/brands.static";
-import type { PhoneBrand, PhoneModel, ReadyCase } from "@/lib/cases/types";
+import type { PhoneBrand, PhoneModel } from "@/lib/cases/types";
+import type { CaseTemplate } from "@/lib/design/types";
 import { breadcrumbJsonLd } from "./breadcrumbs";
 import { faqPageJsonLd, itemListJsonLd, webPageJsonLd } from "./jsonld";
 import { DEFAULT_OG_IMAGE } from "./site";
@@ -78,7 +79,7 @@ const MODEL_FAQ = [
 
 export function modelPageJsonLd(
   ctx: ModelSeoContext,
-  readyCases: ReadyCase[],
+  templates: CaseTemplate[],
 ): Record<string, unknown>[] {
   const schemas: Record<string, unknown>[] = [
     webPageJsonLd({
@@ -98,14 +99,14 @@ export function modelPageJsonLd(
     faqPageJsonLd(MODEL_FAQ),
   ];
 
-  if (readyCases.length > 0) {
+  if (templates.length > 0) {
     schemas.push(
       itemListJsonLd({
-        name: `قاب‌های آماده ${ctx.model.name}`,
+        name: `طراحی‌های آماده ${ctx.model.name}`,
         path: ctx.canonicalPath,
-        items: readyCases.map((c) => ({
-          name: c.title,
-          url: `/cases/${c.slug}`,
+        items: templates.map((t) => ({
+          name: t.title,
+          url: `/designs/${t.slug}`,
         })),
       }),
     );

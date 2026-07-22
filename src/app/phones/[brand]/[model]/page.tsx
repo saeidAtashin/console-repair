@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import JsonLd from "@/app/components/seo/JsonLd";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import {
@@ -11,7 +12,7 @@ import {
   getModelBySlug,
   PHONE_MODELS,
 } from "@/lib/cases/brands.static";
-import { getReadyCasesByModel } from "@/lib/cases/ready.static";
+import { getAllTemplates } from "@/lib/cases/templates.static";
 import ModelCaseHubClient from "./ModelCaseHubClient";
 
 type Props = { params: Promise<{ brand: string; model: string }> };
@@ -44,17 +45,19 @@ export default async function ModelCaseHubPage({ params }: Props) {
   if (!brand || !model) notFound();
 
   const seo = resolveModelSeo(brandSlug, modelSlug)!;
-  const readyCases = getReadyCasesByModel(brandSlug, modelSlug);
+  const templates = getAllTemplates();
 
   return (
     <>
-      <JsonLd data={modelPageJsonLd(seo, readyCases)} />
-      <ModelCaseHubClient
-        brand={brand}
-        model={model}
-        caseTypes={CASE_TYPES}
-        readyCases={readyCases}
-      />
+      <JsonLd data={modelPageJsonLd(seo, templates)} />
+      <Suspense fallback={null}>
+        <ModelCaseHubClient
+          brand={brand}
+          model={model}
+          caseTypes={CASE_TYPES}
+          templates={templates}
+        />
+      </Suspense>
     </>
   );
 }
