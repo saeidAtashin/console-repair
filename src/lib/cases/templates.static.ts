@@ -1,8 +1,11 @@
 import { DEFAULT_REFERENCE_CANVAS, type CaseTemplate } from "@/lib/design/types";
 
+import { DESIGNED_TEMPLATES } from "./designed.templates.generated";
+
 const REF = DEFAULT_REFERENCE_CANVAS;
 
 export const CASE_TEMPLATES: CaseTemplate[] = [
+  ...DESIGNED_TEMPLATES,
   {
     id: "tpl-minimal-text",
     slug: "minimal-text",
