@@ -104,6 +104,9 @@ export default function DashboardPage() {
     return null;
   }
 
+
+  console.log("user", user)
+
   return (
     <main className="min-h-screen bg-[#030510] text-white pt-24 pb-16">
       <div className="mx-auto max-w-4xl px-6">
@@ -112,11 +115,11 @@ export default function DashboardPage() {
           <h1 className="mt-2 text-4xl font-black text-white">
             سلام {user.name}
           </h1>
-          {user.phone && (
+          {/* {user.phone && (
             <p className="mt-2 text-zinc-400" dir="ltr">
               {user.phone}
             </p>
-          )}
+          )} */}
         </header>
 
         <div className="mb-10 flex flex-wrap gap-3">
