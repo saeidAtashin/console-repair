@@ -2,18 +2,20 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { APPLE_PHONE_MODELS } from "../src/lib/cases/apple/models";
+import { SAMSUNG_PHONE_MODELS } from "../src/lib/cases/samsung/models";
 import {
   generatePhoneBackSvgString,
   validateModelGeometry,
 } from "../src/lib/cases/phone-back";
 
 const outputDir = join(process.cwd(), "public", "cases", "models");
+const ALL_MODELS = [...APPLE_PHONE_MODELS, ...SAMSUNG_PHONE_MODELS];
 
 mkdirSync(outputDir, { recursive: true });
 
 let errorCount = 0;
 
-for (const model of APPLE_PHONE_MODELS) {
+for (const model of ALL_MODELS) {
   const errors = validateModelGeometry(model);
   if (errors.length > 0) {
     console.error(`Validation failed for ${model.slug}:`);
@@ -33,4 +35,4 @@ if (errorCount > 0) {
   process.exit(1);
 }
 
-console.log(`Successfully generated ${APPLE_PHONE_MODELS.length} Apple phone back SVGs.`);
+console.log(`Successfully generated ${ALL_MODELS.length} phone back SVGs.`);

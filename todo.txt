@@ -22,6 +22,11 @@ also add a search for mobile model search, if it not exist, show a message that 
 
 //generate all back of phone mockup that camera is seprated and radius is applyed and size is exactly.
 
+
+also refactor and fix and make each model of phones seprate seo and page, that when go to its page it have page of pre designed items of model and create case both, and select and continue.
+also add a nested grouped nav item to select phone brand model 
+
+
 also add light and dark mode and also add a theme that user can select its theme but default should be base on device theme.
 
 

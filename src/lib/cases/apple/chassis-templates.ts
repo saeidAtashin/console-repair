@@ -229,6 +229,32 @@ export const CHASSIS_TEMPLATES: Record<string, ChassisTemplate> = {
     logo: { cx: 0.5, cy: 0.52, r: 0.038 },
     printSafeInsetRatio: { top: 0.05, right: 0.04, bottom: 0.06, left: 0.04 },
   },
+  "iphone-air-single": {
+    slug: "iphone-air-single",
+    cornerRadiusRatio: 0.155,
+    camera: {
+      module: { x: 0.36, y: 0.04, width: 0.28, height: 0.11, cornerRadius: 0.04 },
+      lenses: [{ cx: 0.5, cy: 0.072, r: 0.032 }],
+    },
+    logo: { cx: 0.5, cy: 0.52, r: 0.038 },
+    printSafeInsetRatio: { top: 0.05, right: 0.04, bottom: 0.06, left: 0.04 },
+  },
+  "iphone-17-pro-triple": {
+    slug: "iphone-17-pro-triple",
+    cornerRadiusRatio: 0.155,
+    camera: {
+      module: { x: 0.04, y: 0.025, width: 0.48, height: 0.36, cornerRadius: 0.08 },
+      lenses: [
+        { cx: 0.13, cy: 0.075, r: 0.044 },
+        { cx: 0.32, cy: 0.075, r: 0.044 },
+        { cx: 0.225, cy: 0.155, r: 0.044 },
+      ],
+      flash: { x: 0.42, y: 0.13, width: 0.038, height: 0.038 },
+      lidar: { cx: 0.13, cy: 0.155, r: 0.024 },
+    },
+    logo: { cx: 0.5, cy: 0.52, r: 0.038 },
+    printSafeInsetRatio: { top: 0.05, right: 0.04, bottom: 0.06, left: 0.04 },
+  },
 };
 
 export function getChassisTemplate(slug: string): ChassisTemplate {

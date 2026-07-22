@@ -1,4 +1,5 @@
 import { APPLE_PHONE_MODELS } from "./apple/models";
+import { SAMSUNG_PHONE_MODELS } from "./samsung/models";
 import { computeCanvasSize } from "./phone-back";
 import type { CaseType, PhoneBrand, PhoneModel } from "./types";
 
@@ -31,36 +32,7 @@ export const PHONE_BRANDS: PhoneBrand[] = [
 
 export const PHONE_MODELS: PhoneModel[] = [
   ...APPLE_PHONE_MODELS,
-  {
-    slug: "galaxy-s24-ultra",
-    brandSlug: "samsung",
-    name: "گلکسی S24 Ultra",
-    nameEn: "Galaxy S24 Ultra",
-    image: "/cases/models/galaxy-s24-ultra.svg",
-    ...computeCanvasSize(79.0, 162.3, 290),
-    widthMm: 79.0,
-    heightMm: 162.3,
-  },
-  {
-    slug: "galaxy-s24",
-    brandSlug: "samsung",
-    name: "گلکسی S24",
-    nameEn: "Galaxy S24",
-    image: "/cases/models/galaxy-s24.svg",
-    ...computeCanvasSize(70.6, 147.0),
-    widthMm: 70.6,
-    heightMm: 147.0,
-  },
-  {
-    slug: "galaxy-a54",
-    brandSlug: "samsung",
-    name: "گلکسی A54",
-    nameEn: "Galaxy A54",
-    image: "/cases/models/galaxy-a54.svg",
-    ...computeCanvasSize(76.7, 158.2, 275),
-    widthMm: 76.7,
-    heightMm: 158.2,
-  },
+  ...SAMSUNG_PHONE_MODELS,
   {
     slug: "redmi-note-13-pro",
     brandSlug: "xiaomi",

@@ -23,6 +23,12 @@ function appleModel(
 }
 
 export const APPLE_PHONE_MODELS: PhoneModel[] = [
+  // iPhone 17
+  appleModel("iphone-17-pro-max", "آیفون ۱۷ پرو مکس", "iPhone 17 Pro Max", 78.0, 163.4, "iphone-17-pro-triple"),
+  appleModel("iphone-17-pro", "آیفون ۱۷ پرو", "iPhone 17 Pro", 71.9, 150.0, "iphone-17-pro-triple"),
+  appleModel("iphone-air", "آیفون ایر", "iPhone Air", 74.7, 156.2, "iphone-air-single"),
+  appleModel("iphone-17", "آیفون ۱۷", "iPhone 17", 71.5, 149.6, "iphone-16-dual"),
+
   // iPhone 16
   appleModel("iphone-16-pro-max", "آیفون ۱۶ پرو مکس", "iPhone 16 Pro Max", 77.6, 163.0, "iphone-16-pro-triple"),
   appleModel("iphone-16-pro", "آیفون ۱۶ پرو", "iPhone 16 Pro", 71.5, 149.6, "iphone-16-pro-triple"),
