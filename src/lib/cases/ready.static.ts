@@ -93,3 +93,29 @@ export function getReadyCaseBySlug(slug: string): ReadyCase | undefined {
 export function getReadyCaseById(id: string): ReadyCase | undefined {
   return READY_CASES.find((c) => c.id === id);
 }
+
+export function getReadyCasesByModel(
+  brandSlug: string,
+  modelSlug: string,
+): ReadyCase[] {
+  return READY_CASES.filter(
+    (c) => c.brandSlug === brandSlug && c.modelSlug === modelSlug,
+  );
+}
+
+export function getModelsWithReadyCases(): {
+  brandSlug: string;
+  modelSlug: string;
+}[] {
+  const seen = new Set<string>();
+  const result: { brandSlug: string; modelSlug: string }[] = [];
+
+  for (const c of READY_CASES) {
+    const key = `${c.brandSlug}/${c.modelSlug}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push({ brandSlug: c.brandSlug, modelSlug: c.modelSlug });
+  }
+
+  return result;
+}

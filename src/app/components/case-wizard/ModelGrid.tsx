@@ -15,7 +15,7 @@ function ModelCards({ brandSlug, models }: { brandSlug: string; models: PhoneMod
       {models.map((model) => (
         <Link
           key={model.slug}
-          href={`/create/${brandSlug}/${model.slug}`}
+          href={`/phones/${brandSlug}/${model.slug}`}
           className="group rounded-2xl border border-border bg-card/60 p-4 transition hover:border-cyan-500/50 hover:bg-card"
         >
           <div className="relative mx-auto flex h-36 w-20 items-center justify-center">

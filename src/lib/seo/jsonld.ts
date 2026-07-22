@@ -1,4 +1,5 @@
 import { absoluteUrl, SITE_NAME } from "./site";
+import type { ReadyCase } from "../cases/types";
 import type { ShopProduct } from "../shop";
 
 export function webPageJsonLd(input: {
@@ -114,6 +115,45 @@ export function howToJsonLd(input: {
       position: index + 1,
       text,
     })),
+  };
+}
+
+export function readyCaseJsonLd(input: {
+  product: ReadyCase;
+  path: string;
+  brandName?: string;
+  modelName?: string;
+}) {
+  const productUrl = absoluteUrl(input.path);
+  const availability = input.product.inStock
+    ? "https://schema.org/InStock"
+    : "https://schema.org/OutOfStock";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: input.product.title,
+    url: productUrl,
+    image: absoluteUrl(input.product.image),
+    description: input.product.description,
+    sku: input.product.id,
+    itemCondition: "https://schema.org/NewCondition",
+    brand: {
+      "@type": "Brand",
+      name: input.brandName ?? SITE_NAME,
+    },
+    ...(input.modelName
+      ? {
+          model: input.modelName,
+        }
+      : {}),
+    offers: {
+      "@type": "Offer",
+      price: input.product.price,
+      priceCurrency: "IRR",
+      url: productUrl,
+      availability,
+    },
   };
 }
 

@@ -162,7 +162,7 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
           crumbs={[
             { label: "برند", href: "/create" },
             { label: brand.name, href: `/create/${brandSlug}` },
-            { label: model.name, href: `/create/${brandSlug}/${modelSlug}` },
+            { label: model.name, href: `/phones/${brandSlug}/${modelSlug}` },
             { label: caseType.name },
             { label: "طراحی" },
           ]}

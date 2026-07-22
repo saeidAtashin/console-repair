@@ -1,20 +1,16 @@
-import { notFound } from "next/navigation";
-import CaseTypePageClient from "./CaseTypePageClient";
-import { getBrandBySlug, getModelBySlug, CASE_TYPES } from "@/lib/cases/brands.static";
+import { redirect } from "next/navigation";
+import { getBrandBySlug, getModelBySlug } from "@/lib/cases/brands.static";
+import { buildModelCanonicalPath } from "@/lib/seo/case-model-seo";
 
 type Props = { params: Promise<{ brand: string; model: string }> };
 
-export default async function CaseTypePage({ params }: Props) {
+export default async function CaseTypeRedirectPage({ params }: Props) {
   const { brand: brandSlug, model: modelSlug } = await params;
   const brand = getBrandBySlug(brandSlug);
   const model = getModelBySlug(brandSlug, modelSlug);
-  if (!brand || !model) notFound();
+  if (!brand || !model) {
+    redirect("/create");
+  }
 
-  return (
-    <CaseTypePageClient
-      brand={brand}
-      model={model}
-      caseTypes={CASE_TYPES}
-    />
-  );
+  redirect(buildModelCanonicalPath(brandSlug, modelSlug));
 }

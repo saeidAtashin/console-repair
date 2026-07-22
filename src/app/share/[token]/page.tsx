@@ -12,6 +12,7 @@ export async function generateMetadata({ params }: Props) {
     title: design?.name ?? "طراحی قاب",
     description: design?.description ?? "مشاهده طراحی قاب موبایل",
     path: `/share/${token}`,
+    noIndex: true,
   });
 }
 

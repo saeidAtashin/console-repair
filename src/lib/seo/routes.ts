@@ -1,5 +1,5 @@
 import { getReadyCases } from "@/lib/cases/ready.static";
-import { PHONE_BRANDS } from "@/lib/cases/brands.static";
+import { PHONE_BRANDS, PHONE_MODELS } from "@/lib/cases/brands.static";
 
 export type SitemapEntry = {
   path: string;
@@ -18,6 +18,16 @@ export type SitemapEntry = {
 export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   { path: "/create", changeFrequency: "weekly", priority: 0.95 },
+  ...PHONE_BRANDS.filter((b) => b.slug !== "other").map((brand) => ({
+    path: `/phones/${brand.slug}`,
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
+  })),
+  ...PHONE_MODELS.filter((m) => m.brandSlug !== "other").map((model) => ({
+    path: `/phones/${model.brandSlug}/${model.slug}`,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  })),
   ...PHONE_BRANDS.map((brand) => ({
     path: `/create/${brand.slug}`,
     changeFrequency: "weekly" as const,

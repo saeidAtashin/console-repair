@@ -17,6 +17,10 @@ import {
 } from "@/lib/shop";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumbs";
 import {
+  getBrandBySlug,
+  getModelBySlug,
+} from "@/lib/cases/brands.static";
+import {
   normalizePath,
   pathForBreadcrumbMatch,
 } from "@/lib/breadcrumb-tree-utils";
@@ -31,6 +35,8 @@ const STATIC_PAGES: Record<string, string> = {
   "/faq": "سوالات متداول",
   "/terms": "قوانین و شرایط",
   "/privacy-policy": "حریم خصوصی",
+  "/create": "طراحی قاب",
+  "/cases": "قاب‌های آماده",
 };
 
 function withHome(...segments: BreadcrumbItem[]): BreadcrumbItem[] {
@@ -230,6 +236,35 @@ function resolveBlog(pathname: string): BreadcrumbItem[] | null {
   );
 }
 
+function resolvePhones(pathname: string): BreadcrumbItem[] | null {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments[0] !== "phones") return null;
+
+  if (segments.length === 2) {
+    const brand = getBrandBySlug(segments[1]!);
+    if (!brand) return withHome(link("طراحی قاب", "/create"), current("قاب موبایل"));
+    return withHome(
+      link("طراحی قاب", "/create"),
+      current(`قاب ${brand.name}`),
+    );
+  }
+
+  if (segments.length === 3) {
+    const brand = getBrandBySlug(segments[1]!);
+    const model = getModelBySlug(segments[1]!, segments[2]!);
+    if (!brand || !model) {
+      return withHome(link("طراحی قاب", "/create"), current("قاب موبایل"));
+    }
+    return withHome(
+      link("طراحی قاب", "/create"),
+      link(`قاب ${brand.name}`, `/phones/${brand.slug}`),
+      current(model.name),
+    );
+  }
+
+  return null;
+}
+
 /** Resolve breadcrumb trail from path. Returns empty array on home. */
 export function resolveBreadcrumbs(
   path: string,
@@ -247,6 +282,7 @@ export function resolveBreadcrumbs(
   }
 
   const resolvers = [
+    () => resolvePhones(pathname),
     () => resolveServices(pathname, search),
     () => resolveShop(pathname),
     () => resolveConsoles(pathname),

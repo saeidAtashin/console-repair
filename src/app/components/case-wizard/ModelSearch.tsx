@@ -63,7 +63,7 @@ export default function ModelSearch({
     (result: ModelSearchResult) => {
       setOpen(false);
       setQuery("");
-      router.push(`/create/${result.model.brandSlug}/${result.model.slug}`);
+      router.push(`/phones/${result.model.brandSlug}/${result.model.slug}`);
     },
     [router],
   );
@@ -124,7 +124,7 @@ export default function ModelSearch({
           {results.map((result) => (
             <li key={`${result.model.brandSlug}-${result.model.slug}`} role="option">
               <Link
-                href={`/create/${result.model.brandSlug}/${result.model.slug}`}
+                href={`/phones/${result.model.brandSlug}/${result.model.slug}`}
                 onClick={() => {
                   setOpen(false);
                   setQuery("");

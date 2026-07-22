@@ -13,9 +13,15 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
   const { brand, model, caseType } = await params;
+  const phoneModel = getModelBySlug(brand, model);
+  const caseTypeInfo = getCaseTypeBySlug(caseType);
+
   return createPageMetadata({
-    title: "طراحی قاب",
+    title: phoneModel
+      ? `طراحی قاب ${phoneModel.name}${caseTypeInfo ? ` — ${caseTypeInfo.name}` : ""}`
+      : "طراحی قاب",
     path: `/design/${brand}/${model}/${caseType}`,
+    noIndex: true,
   });
 }
 

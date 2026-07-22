@@ -6,9 +6,13 @@ also be able to add image sticker and remove image sticker too.
 
 also show items of case in layers and be able to change order of layers and delete too but still show them in its list of items and be able to select it again.
 
+
+
 also should have a item that can be able to select from pre designed cases and be able to edit it and save it.
 I will add pre designed cases later.
 if pre designed case is layered, be able to eddit it like it is users layers and edit it.
+
+
 
 add a we can design case for you, send us your image, and describe what you want, and we will design it for you and send you to confirm.
 

@@ -27,6 +27,14 @@ export default function ReadyCaseDetail({ product }: Props) {
       <WizardBreadcrumb
         crumbs={[
           { label: "قاب‌های آماده", href: "/cases" },
+          ...(model
+            ? [
+                {
+                  label: model.name,
+                  href: `/phones/${product.brandSlug}/${product.modelSlug}`,
+                },
+              ]
+            : []),
           { label: product.title },
         ]}
       />
@@ -101,7 +109,7 @@ export default function ReadyCaseDetail({ product }: Props) {
               افزودن به سبد
             </button>
             <Link
-              href={`/create/${product.brandSlug}/${product.modelSlug}`}
+              href={`/phones/${product.brandSlug}/${product.modelSlug}`}
               className="flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-bold text-foreground transition hover:border-cyan-500/50"
             >
               <Palette size={18} />

@@ -1,10 +1,41 @@
 import Link from "next/link";
-import { Palette, Sparkles, Truck, Shield } from "lucide-react";
+import { Palette, Sparkles, Truck, Shield, Smartphone } from "lucide-react";
 import ReadyCaseCard from "@/app/components/cases/ReadyCaseCard";
-import { getReadyCases } from "@/lib/cases/ready.static";
+import { PhoneBackSvg } from "@/app/components/case-wizard/PhoneBackSvg";
+import { getModelBySlug } from "@/lib/cases/brands.static";
+import { getReadyCases, getModelsWithReadyCases } from "@/lib/cases/ready.static";
+
+const EXTRA_POPULAR_MODELS = [
+  { brandSlug: "apple", modelSlug: "iphone-16-pro" },
+  { brandSlug: "apple", modelSlug: "iphone-14-pro" },
+  { brandSlug: "samsung", modelSlug: "galaxy-s25-ultra" },
+  { brandSlug: "samsung", modelSlug: "galaxy-a55" },
+  { brandSlug: "xiaomi", modelSlug: "redmi-note-14-pro" },
+  { brandSlug: "huawei", modelSlug: "pura-70-pro" },
+] as const;
+
+function getPopularModels() {
+  const seen = new Set<string>();
+  const entries = [
+    ...getModelsWithReadyCases(),
+    ...EXTRA_POPULAR_MODELS,
+  ];
+
+  const models = [];
+  for (const { brandSlug, modelSlug } of entries) {
+    const key = `${brandSlug}/${modelSlug}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const model = getModelBySlug(brandSlug, modelSlug);
+    if (model) models.push(model);
+  }
+
+  return models.slice(0, 12);
+}
 
 export default function HomeCasePage() {
   const featured = getReadyCases().slice(0, 4);
+  const popularModels = getPopularModels();
 
   return (
     <main className="min-h-screen bg-background pt-20">
@@ -54,6 +85,43 @@ export default function HomeCasePage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <h2 className="flex items-center gap-2 text-2xl font-black text-foreground">
+                <Smartphone size={24} className="text-cyan-400" />
+                محبوب‌ترین مدل‌ها
+              </h2>
+              <p className="mt-1 text-sm text-muted">قاب آماده یا طراحی اختصاصی</p>
+            </div>
+            <Link href="/create" className="text-sm text-cyan-400 hover:underline">
+              همه برندها
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {popularModels.map((model) => (
+              <Link
+                key={`${model.brandSlug}-${model.slug}`}
+                href={`/phones/${model.brandSlug}/${model.slug}`}
+                className="group rounded-2xl border border-border bg-card/60 p-4 transition hover:border-cyan-500/50 hover:bg-card"
+              >
+                <div className="relative mx-auto flex h-32 w-16 items-center justify-center">
+                  <PhoneBackSvg
+                    model={model}
+                    className="h-full w-auto max-w-full drop-shadow-lg transition group-hover:scale-105"
+                  />
+                </div>
+                <div className="mt-3 text-center">
+                  <p className="text-sm font-bold text-foreground">{model.name}</p>
+                  <p className="text-xs text-muted">{model.nameEn}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
