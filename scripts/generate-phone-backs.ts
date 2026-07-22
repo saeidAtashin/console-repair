@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { APPLE_PHONE_MODELS } from "../src/lib/cases/apple/models";
+import { HUAWEI_PHONE_MODELS } from "../src/lib/cases/huawei/models";
 import { SAMSUNG_PHONE_MODELS } from "../src/lib/cases/samsung/models";
 import { XIAOMI_PHONE_MODELS } from "../src/lib/cases/xiaomi/models";
 import {
@@ -10,7 +11,12 @@ import {
 } from "../src/lib/cases/phone-back";
 
 const outputDir = join(process.cwd(), "public", "cases", "models");
-const ALL_MODELS = [...APPLE_PHONE_MODELS, ...SAMSUNG_PHONE_MODELS, ...XIAOMI_PHONE_MODELS];
+const ALL_MODELS = [
+  ...APPLE_PHONE_MODELS,
+  ...SAMSUNG_PHONE_MODELS,
+  ...XIAOMI_PHONE_MODELS,
+  ...HUAWEI_PHONE_MODELS,
+];
 
 mkdirSync(outputDir, { recursive: true });
 

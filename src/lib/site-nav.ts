@@ -14,7 +14,7 @@ export type SiteNavItem = SiteNavLeaf & {
   children?: SiteNavBranch[];
 };
 
-const BRANDS_WITH_SERIES = new Set(["apple", "samsung", "xiaomi"]);
+const BRANDS_WITH_SERIES = new Set(["apple", "samsung", "xiaomi", "huawei"]);
 
 function buildCaseDesignNavChildren(): SiteNavBranch[] {
   return PHONE_BRANDS.map((brand) => {

@@ -26,10 +26,19 @@ const XIAOMI_SERIES: PhoneSeries[] = [
   { slug: "poco", name: "POCO", nameEn: "POCO", sortOrder: 4 },
 ];
 
+const HUAWEI_SERIES: PhoneSeries[] = [
+  { slug: "pura", name: "پورا", nameEn: "Pura", sortOrder: 1 },
+  { slug: "mate", name: "میت", nameEn: "Mate", sortOrder: 2 },
+  { slug: "p-series", name: "سری P", nameEn: "P Series", sortOrder: 3 },
+  { slug: "nova", name: "نوا", nameEn: "nova", sortOrder: 4 },
+  { slug: "enjoy", name: "انجوی", nameEn: "Enjoy", sortOrder: 5 },
+];
+
 const SERIES_BY_BRAND: Record<string, PhoneSeries[]> = {
   samsung: SAMSUNG_SERIES,
   apple: APPLE_SERIES,
   xiaomi: XIAOMI_SERIES,
+  huawei: HUAWEI_SERIES,
 };
 
 export type SeriesGroup = {

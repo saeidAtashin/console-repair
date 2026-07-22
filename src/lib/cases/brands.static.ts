@@ -1,7 +1,7 @@
 import { APPLE_PHONE_MODELS } from "./apple/models";
+import { HUAWEI_PHONE_MODELS } from "./huawei/models";
 import { SAMSUNG_PHONE_MODELS } from "./samsung/models";
 import { XIAOMI_PHONE_MODELS } from "./xiaomi/models";
-import { computeCanvasSize } from "./phone-back";
 import type { CaseType, PhoneBrand, PhoneModel } from "./types";
 
 export const PHONE_BRANDS: PhoneBrand[] = [
@@ -35,17 +35,7 @@ export const PHONE_MODELS: PhoneModel[] = [
   ...APPLE_PHONE_MODELS,
   ...SAMSUNG_PHONE_MODELS,
   ...XIAOMI_PHONE_MODELS,
-  {
-    slug: "p60-pro",
-    brandSlug: "huawei",
-    seriesSlug: "huawei-p",
-    name: "P60 Pro",
-    nameEn: "P60 Pro",
-    image: "/cases/models/p60-pro.svg",
-    ...computeCanvasSize(74.8, 161.0),
-    widthMm: 74.8,
-    heightMm: 161.0,
-  },
+  ...HUAWEI_PHONE_MODELS,
 ];
 
 export const CASE_TYPES: CaseType[] = [
