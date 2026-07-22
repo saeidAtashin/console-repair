@@ -15,7 +15,6 @@ add a we can design case for you, send us your image, and describe what you want
 also show a sample of our designs in home page and order page and also show a sample of our designs in case design page.
 
 
-also refactor and fix and make each model of phones seprate seo and page, that when go to its page it have page of pre designed items of model and create case both, and select and continue.
 
 
 

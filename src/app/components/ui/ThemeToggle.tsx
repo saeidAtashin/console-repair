@@ -18,7 +18,17 @@ const OPTIONS: ThemeOption[] = [
   { value: "dark", label: "تاریک", Icon: Moon },
 ];
 
-export default function ThemeToggle({ className }: { className?: string }) {
+export default function ThemeToggle({
+  className,
+  menuPlacement = "bottom",
+  menuAlign = "start",
+}: {
+  className?: string;
+  /** Open above or below the trigger */
+  menuPlacement?: "top" | "bottom";
+  /** Align menu to inline-start or inline-end of trigger (keeps menu on-screen in RTL) */
+  menuAlign?: "start" | "end";
+}) {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -95,7 +105,11 @@ export default function ThemeToggle({ className }: { className?: string }) {
         <div
           role="listbox"
           aria-label="گزینه‌های تم"
-          className="absolute end-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl border border-border bg-card py-1 shadow-lg"
+          className={cn(
+            "absolute z-50 min-w-[9rem] overflow-hidden rounded-xl border border-border bg-card py-1 shadow-lg",
+            menuPlacement === "bottom" ? "top-full mt-2" : "bottom-full mb-2",
+            menuAlign === "start" ? "start-0" : "end-0",
+          )}
         >
           {OPTIONS.map(({ value, label, Icon }) => {
             const isActive = active === value;

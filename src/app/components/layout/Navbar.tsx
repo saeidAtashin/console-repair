@@ -522,7 +522,7 @@ export default function Navbar() {
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm font-semibold text-muted">تم</span>
-                  <ThemeToggle />
+                  <ThemeToggle menuPlacement="top" menuAlign="end" />
                 </div>
                 <Link
                   href="/cart"
