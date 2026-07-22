@@ -1,13 +1,40 @@
 import { PHONE_BRANDS } from "./cases/brands.static";
+import { brandSeriesHref, getSeriesForBrand } from "./cases/series";
 
 export type SiteNavLeaf = {
   title: string;
   href: string;
 };
 
-export type SiteNavItem = SiteNavLeaf & {
+export type SiteNavBranch = SiteNavLeaf & {
   children?: SiteNavLeaf[];
 };
+
+export type SiteNavItem = SiteNavLeaf & {
+  children?: SiteNavBranch[];
+};
+
+const BRANDS_WITH_SERIES = new Set(["apple", "samsung", "xiaomi"]);
+
+function buildCaseDesignNavChildren(): SiteNavBranch[] {
+  return PHONE_BRANDS.map((brand) => {
+    if (!BRANDS_WITH_SERIES.has(brand.slug)) {
+      return {
+        title: brand.name,
+        href: `/create/${brand.slug}`,
+      };
+    }
+
+    return {
+      title: brand.name,
+      href: `/create/${brand.slug}`,
+      children: getSeriesForBrand(brand.slug).map((series) => ({
+        title: series.name,
+        href: brandSeriesHref(brand.slug, series.slug),
+      })),
+    };
+  });
+}
 
 export const navbarNavItems: SiteNavItem[] = [
   { title: "خانه", href: "/" },
@@ -18,10 +45,7 @@ export const navbarNavItems: SiteNavItem[] = [
   {
     title: "طراحی قاب",
     href: "/create",
-    children: PHONE_BRANDS.map((brand) => ({
-      title: brand.name,
-      href: `/create/${brand.slug}`,
-    })),
+    children: buildCaseDesignNavChildren(),
   },
   { title: "سبد خرید", href: "/cart" },
   { title: "پیگیری سفارش", href: "/tracking" },

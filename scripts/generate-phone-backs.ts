@@ -3,13 +3,14 @@ import { join } from "node:path";
 
 import { APPLE_PHONE_MODELS } from "../src/lib/cases/apple/models";
 import { SAMSUNG_PHONE_MODELS } from "../src/lib/cases/samsung/models";
+import { XIAOMI_PHONE_MODELS } from "../src/lib/cases/xiaomi/models";
 import {
   generatePhoneBackSvgString,
   validateModelGeometry,
 } from "../src/lib/cases/phone-back";
 
 const outputDir = join(process.cwd(), "public", "cases", "models");
-const ALL_MODELS = [...APPLE_PHONE_MODELS, ...SAMSUNG_PHONE_MODELS];
+const ALL_MODELS = [...APPLE_PHONE_MODELS, ...SAMSUNG_PHONE_MODELS, ...XIAOMI_PHONE_MODELS];
 
 mkdirSync(outputDir, { recursive: true });
 

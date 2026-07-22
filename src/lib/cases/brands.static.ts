@@ -1,5 +1,6 @@
 import { APPLE_PHONE_MODELS } from "./apple/models";
 import { SAMSUNG_PHONE_MODELS } from "./samsung/models";
+import { XIAOMI_PHONE_MODELS } from "./xiaomi/models";
 import { computeCanvasSize } from "./phone-back";
 import type { CaseType, PhoneBrand, PhoneModel } from "./types";
 
@@ -33,29 +34,11 @@ export const PHONE_BRANDS: PhoneBrand[] = [
 export const PHONE_MODELS: PhoneModel[] = [
   ...APPLE_PHONE_MODELS,
   ...SAMSUNG_PHONE_MODELS,
-  {
-    slug: "redmi-note-13-pro",
-    brandSlug: "xiaomi",
-    name: "ردمی نوت ۱۳ پرو",
-    nameEn: "Redmi Note 13 Pro",
-    image: "/cases/models/redmi-note-13-pro.svg",
-    ...computeCanvasSize(74.2, 161.1),
-    widthMm: 74.2,
-    heightMm: 161.1,
-  },
-  {
-    slug: "poco-x6-pro",
-    brandSlug: "xiaomi",
-    name: "Poco X6 Pro",
-    nameEn: "Poco X6 Pro",
-    image: "/cases/models/poco-x6-pro.svg",
-    ...computeCanvasSize(74.3, 160.5),
-    widthMm: 74.3,
-    heightMm: 160.5,
-  },
+  ...XIAOMI_PHONE_MODELS,
   {
     slug: "p60-pro",
     brandSlug: "huawei",
+    seriesSlug: "huawei-p",
     name: "P60 Pro",
     nameEn: "P60 Pro",
     image: "/cases/models/p60-pro.svg",
@@ -119,6 +102,12 @@ export function getBrandBySlug(slug: string): PhoneBrand | undefined {
 
 export function getModelsByBrand(brandSlug: string): PhoneModel[] {
   return PHONE_MODELS.filter((m) => m.brandSlug === brandSlug);
+}
+
+export function getModelsByBrandAndSeries(brandSlug: string, seriesSlug?: string): PhoneModel[] {
+  const models = getModelsByBrand(brandSlug);
+  if (!seriesSlug) return models;
+  return models.filter((m) => m.seriesSlug === seriesSlug);
 }
 
 export function getModelBySlug(brandSlug: string, modelSlug: string): PhoneModel | undefined {

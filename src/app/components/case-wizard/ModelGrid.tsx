@@ -1,13 +1,15 @@
 import Link from "next/link";
 import type { PhoneModel } from "@/lib/cases/types";
+import { getSeriesBySlug, groupModelsBySeries } from "@/lib/cases/series";
 import { PhoneBackSvg } from "./PhoneBackSvg";
 
 type Props = {
   brandSlug: string;
   models: PhoneModel[];
+  seriesSlug?: string;
 };
 
-export default function ModelGrid({ brandSlug, models }: Props) {
+function ModelCards({ brandSlug, models }: { brandSlug: string; models: PhoneModel[] }) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {models.map((model) => (
@@ -27,6 +29,49 @@ export default function ModelGrid({ brandSlug, models }: Props) {
             <p className="text-xs text-zinc-500">{model.nameEn}</p>
           </div>
         </Link>
+      ))}
+    </div>
+  );
+}
+
+export default function ModelGrid({ brandSlug, models, seriesSlug }: Props) {
+  if (seriesSlug) {
+    const series = getSeriesBySlug(brandSlug, seriesSlug);
+    const filtered = models.filter((m) => m.seriesSlug === seriesSlug);
+
+    return (
+      <div className="space-y-6">
+        {series ? (
+          <div>
+            <h2 className="text-lg font-bold text-white">{series.name}</h2>
+            <p className="text-sm text-zinc-500">{series.nameEn}</p>
+          </div>
+        ) : null}
+        <ModelCards brandSlug={brandSlug} models={filtered} />
+      </div>
+    );
+  }
+
+  const groups = groupModelsBySeries(models, brandSlug);
+
+  return (
+    <div className="space-y-12">
+      {groups.map(({ series, models: groupModels }) => (
+        <section key={series.slug} id={series.slug} className="scroll-mt-28">
+          <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/10 pb-3">
+            <div>
+              <h2 className="text-lg font-bold text-white">{series.name}</h2>
+              <p className="text-sm text-zinc-500">{series.nameEn}</p>
+            </div>
+            <Link
+              href={`/create/${brandSlug}?series=${series.slug}`}
+              className="shrink-0 text-xs text-cyan-400 transition hover:text-cyan-300"
+            >
+              فقط این سری
+            </Link>
+          </div>
+          <ModelCards brandSlug={brandSlug} models={groupModels} />
+        </section>
       ))}
     </div>
   );

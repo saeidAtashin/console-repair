@@ -215,6 +215,7 @@ export function createFallbackCaseDesignClipFunc(
 export function buildPhoneModel(input: {
   slug: string;
   brandSlug: string;
+  seriesSlug: string;
   name: string;
   nameEn: string;
   widthMm: number;
@@ -230,6 +231,7 @@ export function buildPhoneModel(input: {
   return {
     slug: input.slug,
     brandSlug: input.brandSlug,
+    seriesSlug: input.seriesSlug,
     name: input.name,
     nameEn: input.nameEn,
     widthMm: input.widthMm,

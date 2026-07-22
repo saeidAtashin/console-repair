@@ -2,26 +2,44 @@ import { notFound } from "next/navigation";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import ModelGrid from "@/app/components/case-wizard/ModelGrid";
 import WizardBreadcrumb from "@/app/components/case-wizard/WizardBreadcrumb";
-import { getBrandBySlug, getModelsByBrand } from "@/lib/cases/brands.static";
+import { getBrandBySlug, getModelsByBrandAndSeries } from "@/lib/cases/brands.static";
+import { getSeriesBySlug } from "@/lib/cases/series";
+import Link from "next/link";
 
-type Props = { params: Promise<{ brand: string }> };
+type Props = {
+  params: Promise<{ brand: string }>;
+  searchParams: Promise<{ series?: string }>;
+};
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const { brand: brandSlug } = await params;
+  const { series: seriesSlug } = await searchParams;
   const brand = getBrandBySlug(brandSlug);
   if (!brand) return {};
+
+  const series = seriesSlug ? getSeriesBySlug(brandSlug, seriesSlug) : undefined;
+  const title = series
+    ? `انتخاب مدل ${series.name} — ${brand.name}`
+    : `انتخاب مدل ${brand.name}`;
+
   return createPageMetadata({
-    title: `انتخاب مدل ${brand.name}`,
-    path: `/create/${brandSlug}`,
+    title,
+    path: seriesSlug ? `/create/${brandSlug}?series=${seriesSlug}` : `/create/${brandSlug}`,
   });
 }
 
-export default async function BrandModelsPage({ params }: Props) {
+export default async function BrandModelsPage({ params, searchParams }: Props) {
   const { brand: brandSlug } = await params;
+  const { series: seriesSlug } = await searchParams;
   const brand = getBrandBySlug(brandSlug);
   if (!brand) notFound();
 
-  const models = getModelsByBrand(brandSlug);
+  if (seriesSlug && !getSeriesBySlug(brandSlug, seriesSlug)) {
+    notFound();
+  }
+
+  const models = getModelsByBrandAndSeries(brandSlug, seriesSlug);
+  const series = seriesSlug ? getSeriesBySlug(brandSlug, seriesSlug) : undefined;
 
   return (
     <div className="min-h-screen bg-black pt-24 pb-16 px-4 sm:px-6">
@@ -29,15 +47,26 @@ export default async function BrandModelsPage({ params }: Props) {
         <WizardBreadcrumb
           crumbs={[
             { label: "برند", href: "/create" },
-            { label: brand.name },
+            { label: brand.name, href: `/create/${brandSlug}` },
+            ...(series ? [{ label: series.name }] : []),
           ]}
         />
         <h1 className="mt-6 text-2xl font-black text-white sm:text-3xl">
-          مدل {brand.name} خود را انتخاب کنید
+          {series
+            ? `مدل ${series.name} خود را انتخاب کنید`
+            : `مدل ${brand.name} خود را انتخاب کنید`}
         </h1>
         <p className="mt-2 text-zinc-400">مرحله ۲ از ۳ — مدل</p>
+        {series ? (
+          <Link
+            href={`/create/${brandSlug}`}
+            className="mt-3 inline-block text-sm text-cyan-400 transition hover:text-cyan-300"
+          >
+            ← نمایش همه مدل‌های {brand.name}
+          </Link>
+        ) : null}
         <div className="mt-8">
-          <ModelGrid brandSlug={brandSlug} models={models} />
+          <ModelGrid brandSlug={brandSlug} models={models} seriesSlug={seriesSlug} />
         </div>
       </div>
     </div>

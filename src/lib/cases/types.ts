@@ -5,6 +5,13 @@ export type PhoneBrand = {
   logo: string;
 };
 
+export type PhoneSeries = {
+  slug: string;
+  name: string;
+  nameEn: string;
+  sortOrder: number;
+};
+
 export type MmRect = {
   x: number;
   y: number;
@@ -40,6 +47,7 @@ export type PhoneBackGeometry = {
 export type PhoneModel = {
   slug: string;
   brandSlug: string;
+  seriesSlug: string;
   name: string;
   nameEn: string;
   image: string;

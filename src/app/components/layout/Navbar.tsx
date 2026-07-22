@@ -40,6 +40,7 @@ export default function Navbar() {
   const { itemCount, cartBounce } = useShopCart();
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
+  const [mobileBrandOpen, setMobileBrandOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const cdRef = useRef<HTMLDivElement>(null);
   const burstRafRef = useRef<number | null>(null);
@@ -272,15 +273,46 @@ export default function Navbar() {
 
                   <div className="invisible absolute top-full right-0 w-56 translate-y-2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                     <div className="rounded-2xl border border-white/10 bg-zinc-900/90 p-2 shadow-2xl backdrop-blur-2xl">
-                      {item.children.map((sub) => (
-                        <Link
-                          key={sub.href}
-                          href={sub.href}
-                          className="block rounded-xl px-4 py-2.5 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
-                        >
-                          {sub.title}
-                        </Link>
-                      ))}
+                      {item.children.map((sub) =>
+                        sub.children ? (
+                          <div
+                            key={sub.href}
+                            className="group/brand relative"
+                          >
+                            <Link
+                              href={sub.href}
+                              className="flex items-center justify-between rounded-xl px-4 py-2.5 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
+                            >
+                              <span>{sub.title}</span>
+                              <ChevronDown
+                                size={12}
+                                className="-rotate-90 opacity-50 transition-transform group-hover/brand:opacity-100"
+                              />
+                            </Link>
+                            <div className="invisible absolute top-0 right-full mr-1 w-48 translate-x-2 opacity-0 transition-all duration-200 group-hover/brand:visible group-hover/brand:translate-x-0 group-hover/brand:opacity-100">
+                              <div className="rounded-2xl border border-white/10 bg-zinc-900/95 p-2 shadow-2xl backdrop-blur-2xl">
+                                {sub.children.map((series) => (
+                                  <Link
+                                    key={series.href}
+                                    href={series.href}
+                                    className="block rounded-xl px-3 py-2 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
+                                  >
+                                    {series.title}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <Link
+                            key={sub.href}
+                            href={sub.href}
+                            className="block rounded-xl px-4 py-2.5 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
+                          >
+                            {sub.title}
+                          </Link>
+                        ),
+                      )}
                     </div>
                   </div>
                 </div>
@@ -393,22 +425,75 @@ export default function Navbar() {
                             </button>
                           </div>
                           <div
-                            className={`overflow-hidden transition-all duration-300 ${mobileOpen === item.title ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}
+                            className={`overflow-hidden transition-all duration-300 ${mobileOpen === item.title ? "max-h-[min(70vh,32rem)] opacity-100" : "max-h-0 opacity-0"}`}
                           >
-                            <div className="mr-2 flex flex-col gap-3 border-r border-cyan-500/20 py-1 pr-4">
-                              {item.children.map((sub) => (
-                                <Link
-                                  key={sub.href}
-                                  href={sub.href}
-                                  onClick={closeMenu}
-                                  className={`text-sm transition-colors sm:text-base ${pathname === sub.href
-                                    ? "text-cyan-400"
-                                    : "text-zinc-400 hover:text-cyan-400"
-                                    }`}
-                                >
-                                  {sub.title}
-                                </Link>
-                              ))}
+                            <div className="mr-2 flex flex-col gap-2 border-r border-cyan-500/20 py-1 pr-4">
+                              {item.children.map((sub) =>
+                                sub.children ? (
+                                  <div key={sub.href}>
+                                    <div className="flex w-full items-center justify-between rounded-lg px-1 py-1">
+                                      <Link
+                                        href={sub.href}
+                                        onClick={closeMenu}
+                                        className={`text-sm transition-colors sm:text-base ${pathname === sub.href || pathname.startsWith(`${sub.href}/`)
+                                          ? "text-cyan-400"
+                                          : "text-zinc-400 hover:text-cyan-400"
+                                          }`}
+                                      >
+                                        {sub.title}
+                                      </Link>
+                                      <button
+                                        type="button"
+                                        data-route-loader-ignore="true"
+                                        aria-expanded={mobileBrandOpen === sub.href}
+                                        aria-label={`${sub.title} — سری‌ها`}
+                                        className="rounded-lg p-1.5 text-cyan-500 transition-colors hover:bg-white/5 touch-manipulation"
+                                        onClick={() =>
+                                          setMobileBrandOpen(
+                                            mobileBrandOpen === sub.href ? null : sub.href,
+                                          )
+                                        }
+                                      >
+                                        <ChevronDown
+                                          size={14}
+                                          className={`transition-transform ${mobileBrandOpen === sub.href ? "rotate-180" : ""}`}
+                                        />
+                                      </button>
+                                    </div>
+                                    <div
+                                      className={`overflow-hidden transition-all duration-300 ${mobileBrandOpen === sub.href ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+                                    >
+                                      <div className="mr-3 flex flex-col gap-2 border-r border-white/10 py-1 pr-3">
+                                        {sub.children.map((series) => (
+                                          <Link
+                                            key={series.href}
+                                            href={series.href}
+                                            onClick={closeMenu}
+                                            className={`text-xs transition-colors sm:text-sm ${pathname === series.href.split("?")[0]
+                                              ? "text-cyan-400"
+                                              : "text-zinc-500 hover:text-cyan-400"
+                                              }`}
+                                          >
+                                            {series.title}
+                                          </Link>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <Link
+                                    key={sub.href}
+                                    href={sub.href}
+                                    onClick={closeMenu}
+                                    className={`text-sm transition-colors sm:text-base ${pathname === sub.href
+                                      ? "text-cyan-400"
+                                      : "text-zinc-400 hover:text-cyan-400"
+                                      }`}
+                                  >
+                                    {sub.title}
+                                  </Link>
+                                ),
+                              )}
                             </div>
                           </div>
                         </>
