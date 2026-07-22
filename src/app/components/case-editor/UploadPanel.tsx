@@ -1,18 +1,16 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Upload, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { Upload } from "lucide-react";
 import { uploadImage } from "@/lib/cases/api";
 import { useEditorStore } from "@/lib/design/editor-store";
-import type { ImageLayer } from "@/lib/design/types";
 
 export default function UploadPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { addImageLayer, getSelectedLayer, removeLayer } = useEditorStore();
-  const selected = getSelectedLayer();
-  const imageLayer = selected?.type === "image" && !selected.isSticker ? selected as ImageLayer : null;
+  const { addImageLayer, uploadedAssets } = useEditorStore();
 
   async function handleFile(file: File) {
     if (!file.type.startsWith("image/")) {
@@ -45,6 +43,20 @@ export default function UploadPanel() {
     }
   }
 
+  async function reAddAsset(src: string) {
+    const img = new window.Image();
+    img.src = src;
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject();
+    });
+    const maxW = 200;
+    const ratio = img.width / img.height;
+    const w = Math.min(img.width, maxW);
+    const h = w / ratio;
+    addImageLayer(src, w, h, false);
+  }
+
   return (
     <div className="space-y-4">
       <input
@@ -70,16 +82,22 @@ export default function UploadPanel() {
       {error ? <p className="text-xs text-red-400">{error}</p> : null}
       <p className="text-xs text-muted">JPG, PNG, WebP — حداکثر ۵MB</p>
 
-      {imageLayer ? (
-        <div className="flex items-center justify-between rounded-lg border border-border bg-card/60 p-3">
-          <span className="text-xs text-muted">تصویر انتخاب‌شده</span>
-          <button
-            type="button"
-            onClick={() => removeLayer(imageLayer.id)}
-            className="text-red-400"
-          >
-            <Trash2 size={14} />
-          </button>
+      {uploadedAssets.length > 0 ? (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-muted">تصاویر قبلی</p>
+          <div className="grid grid-cols-4 gap-2">
+            {uploadedAssets.map((src) => (
+              <button
+                key={src}
+                type="button"
+                onClick={() => void reAddAsset(src)}
+                className="relative aspect-square overflow-hidden rounded-lg border border-border bg-card/60 transition hover:border-cyan-500/50"
+                title="افزودن مجدد"
+              >
+                <Image src={src} alt="" fill className="object-cover" unoptimized />
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
     </div>

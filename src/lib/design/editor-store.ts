@@ -4,8 +4,10 @@ import { create } from "zustand";
 
 import type { CaseType, PhoneModel } from "@/lib/cases/types";
 import {
+  cloneLayersWithNewIds,
   createEmptyDesign,
   generateLayerId,
+  type CaseTemplate,
   type DesignDocument,
   type DesignLayer,
   type ImageLayer,
@@ -31,6 +33,7 @@ type EditorState = {
   previewMode: boolean;
   history: DesignDocument[];
   historyIndex: number;
+  uploadedAssets: string[];
   init: (meta: EditorMeta) => void;
   loadDocument: (doc: DesignDocument, meta: EditorMeta) => void;
   setDescription: (description: string) => void;
@@ -38,10 +41,17 @@ type EditorState = {
   selectLayer: (id: string | null) => void;
   setPreviewMode: (preview: boolean) => void;
   addTextLayer: (text?: string) => void;
-  addImageLayer: (src: string, width: number, height: number, isSticker?: boolean) => void;
+  addImageLayer: (src: string, width: number, height: number, isSticker?: boolean, name?: string) => void;
   updateLayer: (id: string, patch: Partial<DesignLayer>) => void;
   removeLayer: (id: string) => void;
+  setLayerVisible: (id: string, visible: boolean) => void;
+  restoreLayer: (id: string) => void;
   moveLayer: (id: string, direction: "up" | "down") => void;
+  moveLayerToIndex: (id: string, index: number) => void;
+  duplicateLayer: (id: string) => void;
+  nudgeLayer: (id: string, dx: number, dy: number) => void;
+  loadTemplate: (template: CaseTemplate, replace?: boolean) => void;
+  trackUploadedAsset: (src: string) => void;
   undo: () => void;
   redo: () => void;
   getSelectedLayer: () => DesignLayer | null;
@@ -64,6 +74,10 @@ function updateDoc(state: EditorState, updater: (doc: DesignDocument) => DesignD
   return pushHistory(state, nextDoc);
 }
 
+function countTextLayers(layers: DesignLayer[]): number {
+  return layers.filter((l) => l.type === "text").length;
+}
+
 export const useEditorStore = create<EditorState>((set, get) => ({
   document: createEmptyDesign({
     brandSlug: "",
@@ -77,6 +91,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   previewMode: false,
   history: [],
   historyIndex: -1,
+  uploadedAssets: [],
 
   init: (meta) => {
     const doc = createEmptyDesign({
@@ -91,17 +106,22 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       document: doc,
       selectedLayerId: null,
       previewMode: false,
+      uploadedAssets: [],
       history: [structuredClone(doc)],
       historyIndex: 0,
     });
   },
 
   loadDocument: (doc, meta) => {
+    const uploadedAssets = doc.layers
+      .filter((l): l is ImageLayer => l.type === "image" && !l.isSticker)
+      .map((l) => l.src);
     set({
       meta,
       document: structuredClone(doc),
       selectedLayerId: null,
       previewMode: false,
+      uploadedAssets: [...new Set(uploadedAssets)],
       history: [structuredClone(doc)],
       historyIndex: 0,
     });
@@ -115,13 +135,22 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set((state) => updateDoc(state, (doc) => ({ ...doc, name })));
   },
 
-  selectLayer: (id) => set({ selectedLayerId: id }),
+  selectLayer: (id) => {
+    if (id) {
+      const layer = get().document.layers.find((l) => l.id === id);
+      if (layer && layer.visible === false) {
+        get().setLayerVisible(id, true);
+      }
+    }
+    set({ selectedLayerId: id });
+  },
 
   setPreviewMode: (preview) => set({ previewMode: preview, selectedLayerId: preview ? null : get().selectedLayerId }),
 
   addTextLayer: (text = "متن شما") => {
-    const { meta } = get();
+    const { meta, document } = get();
     if (!meta) return;
+    const textCount = countTextLayers(document.layers) + 1;
     const layer: TextLayer = {
       id: generateLayerId(),
       type: "text",
@@ -130,6 +159,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       fontSize: 28,
       fill: "#ffffff",
       align: "center",
+      name: `متن ${textCount}`,
+      visible: true,
       x: meta.canvasWidth / 2,
       y: meta.canvasHeight / 2,
       rotation: 0,
@@ -145,9 +176,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
 
-  addImageLayer: (src, width, height, isSticker = false) => {
-    const { meta } = get();
+  addImageLayer: (src, width, height, isSticker = false, name) => {
+    const { meta, document } = get();
     if (!meta) return;
+    const imageCount = document.layers.filter((l) => l.type === "image").length + 1;
     const layer: ImageLayer = {
       id: generateLayerId(),
       type: "image",
@@ -155,6 +187,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       width,
       height,
       isSticker,
+      name: name ?? (isSticker ? `استیکر ${imageCount}` : `تصویر ${imageCount}`),
+      visible: true,
       x: meta.canvasWidth / 2 - width / 2,
       y: meta.canvasHeight / 2 - height / 2,
       rotation: 0,
@@ -166,7 +200,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         ...doc,
         layers: [...doc.layers, layer],
       }));
-      return { ...next, selectedLayerId: layer.id };
+      const assets = isSticker ? state.uploadedAssets : [...new Set([...state.uploadedAssets, src])];
+      return { ...next, selectedLayerId: layer.id, uploadedAssets: assets };
     });
   },
 
@@ -194,6 +229,27 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
 
+  setLayerVisible: (id, visible) => {
+    set((state) => {
+      const next = updateDoc(state, (doc) => ({
+        ...doc,
+        layers: doc.layers.map((layer) =>
+          layer.id === id ? ({ ...layer, visible } as DesignLayer) : layer,
+        ),
+      }));
+      return {
+        ...next,
+        selectedLayerId:
+          !visible && state.selectedLayerId === id ? null : state.selectedLayerId,
+      };
+    });
+  },
+
+  restoreLayer: (id) => {
+    get().setLayerVisible(id, true);
+    set({ selectedLayerId: id });
+  },
+
   moveLayer: (id, direction) => {
     set((state) =>
       updateDoc(state, (doc) => {
@@ -206,6 +262,67 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         return { ...doc, layers: next };
       }),
     );
+  },
+
+  moveLayerToIndex: (id, index) => {
+    set((state) =>
+      updateDoc(state, (doc) => {
+        const idx = doc.layers.findIndex((l) => l.id === id);
+        if (idx === -1) return doc;
+        const next = [...doc.layers];
+        const [item] = next.splice(idx, 1);
+        const clamped = Math.max(0, Math.min(index, next.length));
+        next.splice(clamped, 0, item);
+        return { ...doc, layers: next };
+      }),
+    );
+  },
+
+  duplicateLayer: (id) => {
+    const layer = get().document.layers.find((l) => l.id === id);
+    if (!layer) return;
+    const copy = {
+      ...structuredClone(layer),
+      id: generateLayerId(),
+      x: layer.x + 10,
+      y: layer.y + 10,
+      visible: true,
+    };
+    set((state) => {
+      const idx = state.document.layers.findIndex((l) => l.id === id);
+      const next = updateDoc(state, (doc) => {
+        const layers = [...doc.layers];
+        layers.splice(idx + 1, 0, copy);
+        return { ...doc, layers };
+      });
+      return { ...next, selectedLayerId: copy.id };
+    });
+  },
+
+  nudgeLayer: (id, dx, dy) => {
+    const layer = get().document.layers.find((l) => l.id === id);
+    if (!layer || layer.visible === false) return;
+    get().updateLayer(id, { x: layer.x + dx, y: layer.y + dy });
+  },
+
+  loadTemplate: (template, replace = false) => {
+    const cloned = cloneLayersWithNewIds(template.layers);
+    set((state) => {
+      const next = updateDoc(state, (doc) => ({
+        ...doc,
+        layers: replace ? cloned : [...doc.layers, ...cloned],
+      }));
+      const firstId = cloned[0]?.id ?? null;
+      return { ...next, selectedLayerId: firstId };
+    });
+  },
+
+  trackUploadedAsset: (src) => {
+    set((state) => ({
+      uploadedAssets: state.uploadedAssets.includes(src)
+        ? state.uploadedAssets
+        : [...state.uploadedAssets, src],
+    }));
   },
 
   undo: () => {

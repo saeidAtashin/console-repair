@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { createPageMetadata } from "@/lib/seo/metadata";
-import EditorPageClient from "@/app/components/case-editor/EditorPageClient";
+import EditorPageClient, {
+  type EditorTab,
+} from "@/app/components/case-editor/EditorPageClient";
 import {
   getBrandBySlug,
   getCaseTypeBySlug,
@@ -9,7 +11,23 @@ import {
 
 type Props = {
   params: Promise<{ brand: string; model: string; caseType: string }>;
+  searchParams: Promise<{
+    design?: string;
+    share?: string;
+    template?: string;
+    tab?: string;
+  }>;
 };
+
+const VALID_TABS = new Set<EditorTab>([
+  "layers",
+  "text",
+  "stickers",
+  "upload",
+  "templates",
+  "design-for-you",
+  "description",
+]);
 
 export async function generateMetadata({ params }: Props) {
   const { brand, model, caseType } = await params;
@@ -25,8 +43,9 @@ export async function generateMetadata({ params }: Props) {
   });
 }
 
-export default async function DesignEditorPage({ params }: Props) {
+export default async function DesignEditorPage({ params, searchParams }: Props) {
   const { brand, model, caseType } = await params;
+  const query = await searchParams;
 
   if (
     !getBrandBySlug(brand) ||
@@ -36,11 +55,20 @@ export default async function DesignEditorPage({ params }: Props) {
     notFound();
   }
 
+  const initialTab =
+    query.tab && VALID_TABS.has(query.tab as EditorTab)
+      ? (query.tab as EditorTab)
+      : undefined;
+
   return (
     <EditorPageClient
       brandSlug={brand}
       modelSlug={model}
       caseTypeSlug={caseType}
+      initialDesignId={query.design}
+      initialShareToken={query.share}
+      initialTemplateSlug={query.template}
+      initialTab={initialTab}
     />
   );
 }

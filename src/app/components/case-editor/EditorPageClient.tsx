@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import {
   Undo2,
@@ -15,6 +14,10 @@ import {
   Sticker,
   Upload,
   FileText,
+  Layers,
+  LayoutTemplate,
+  Sparkles,
+  HelpCircle,
 } from "lucide-react";
 import type Konva from "konva";
 
@@ -23,6 +26,9 @@ import TextPanel from "@/app/components/case-editor/TextPanel";
 import StickerPanel from "@/app/components/case-editor/StickerPanel";
 import UploadPanel from "@/app/components/case-editor/UploadPanel";
 import DescriptionPanel from "@/app/components/case-editor/DescriptionPanel";
+import LayersPanel from "@/app/components/case-editor/LayersPanel";
+import TemplatesPanel from "@/app/components/case-editor/TemplatesPanel";
+import DesignForYouPanel from "@/app/components/case-editor/DesignForYouPanel";
 import PreviewModal from "@/app/components/case-editor/PreviewModal";
 import { useAuth } from "@/app/context/AuthContext";
 import { useShopCart } from "@/app/context/ShopCartContext";
@@ -33,25 +39,51 @@ import {
   getModelBySlug,
   getStickerPacks,
 } from "@/lib/cases";
+import { getCaseTemplateBySlug } from "@/lib/cases/templates.static";
+import { getReadyCaseBySlug } from "@/lib/cases/ready.static";
 import type { CaseType } from "@/lib/cases/types";
+import { getDesign, getDesignByShareToken } from "@/lib/design/api";
 import { useEditorStore } from "@/lib/design/editor-store";
 import { saveDesign } from "@/lib/design/api";
 import { exportAndDownload } from "@/lib/design/export";
+import {
+  SHORTCUT_HELP,
+  useEditorShortcuts,
+} from "@/lib/design/use-editor-shortcuts";
 import { formatToman } from "@/lib/shop/format";
 
 const CaseCanvas = dynamic(() => import("@/app/components/case-editor/CaseCanvas"), {
   ssr: false,
 });
 
-type Tab = "text" | "stickers" | "upload" | "description";
+export type EditorTab =
+  | "layers"
+  | "text"
+  | "stickers"
+  | "upload"
+  | "templates"
+  | "design-for-you"
+  | "description";
 
 type Props = {
   brandSlug: string;
   modelSlug: string;
   caseTypeSlug: string;
+  initialDesignId?: string;
+  initialShareToken?: string;
+  initialTemplateSlug?: string;
+  initialTab?: EditorTab;
 };
 
-export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }: Props) {
+export default function EditorPageClient({
+  brandSlug,
+  modelSlug,
+  caseTypeSlug,
+  initialDesignId,
+  initialShareToken,
+  initialTemplateSlug,
+  initialTab,
+}: Props) {
   const brand = getBrandBySlug(brandSlug)!;
   const model = getModelBySlug(brandSlug, modelSlug)!;
   const caseType = getCaseTypeBySlug(caseTypeSlug)!;
@@ -60,35 +92,98 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
   const { user } = useAuth();
   const { addCustomCase } = useShopCart();
   const stageRef = useRef<Konva.Stage | null>(null);
+  const loadedRef = useRef(false);
 
   const {
     init,
+    loadDocument,
+    loadTemplate,
     document,
     undo,
     redo,
     canUndo,
     canRedo,
     setPreviewMode,
-    previewMode,
   } = useEditorStore();
 
-  const [activeTab, setActiveTab] = useState<Tab>("text");
+  useEditorShortcuts();
+
+  const [activeTab, setActiveTab] = useState<EditorTab>(initialTab ?? "text");
   const [showPreview, setShowPreview] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    init({
-      brandSlug,
-      modelSlug,
-      caseTypeSlug,
-      caseType,
-      model,
-      canvasWidth: model.canvasWidth,
-      canvasHeight: model.canvasHeight,
-    });
-  }, [brandSlug, modelSlug, caseTypeSlug, caseType, model, init]);
+    if (loadedRef.current) return;
+
+    async function bootstrap() {
+      const meta = {
+        brandSlug,
+        modelSlug,
+        caseTypeSlug,
+        caseType,
+        model,
+        canvasWidth: model.canvasWidth,
+        canvasHeight: model.canvasHeight,
+      };
+
+      if (initialDesignId) {
+        const saved = await getDesign(initialDesignId);
+        if (saved) {
+          loadDocument(saved, meta);
+          loadedRef.current = true;
+          return;
+        }
+      }
+      if (initialShareToken) {
+        const shared = await getDesignByShareToken(initialShareToken);
+        if (shared) {
+          loadDocument(shared, meta);
+          loadedRef.current = true;
+          return;
+        }
+      }
+      init(meta);
+      loadedRef.current = true;
+
+      if (initialTemplateSlug) {
+        const template = getCaseTemplateBySlug(initialTemplateSlug);
+        if (template) {
+          loadTemplate(template, true);
+        } else {
+          const readyCase = getReadyCaseBySlug(initialTemplateSlug);
+          if (readyCase?.template) {
+            loadTemplate(
+              {
+                id: readyCase.id,
+                slug: readyCase.slug,
+                title: readyCase.title,
+                thumbnail: readyCase.image,
+                layers: readyCase.template.layers,
+              },
+              true,
+            );
+          }
+        }
+      }
+    }
+
+    void bootstrap();
+  }, [
+    brandSlug,
+    modelSlug,
+    caseTypeSlug,
+    initialDesignId,
+    initialShareToken,
+    initialTemplateSlug,
+    init,
+    loadDocument,
+    loadTemplate,
+    caseType,
+    model,
+  ]);
 
   const handleSave = useCallback(async () => {
     if (!user) {
@@ -148,10 +243,13 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
     setMessage("به سبد خرید اضافه شد.");
   }, [document, caseType, model, addCustomCase, brandSlug, modelSlug, caseTypeSlug]);
 
-  const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  const tabs: { id: EditorTab; label: string; icon: React.ReactNode }[] = [
+    { id: "layers", label: "لایه‌ها", icon: <Layers size={16} /> },
     { id: "text", label: "متن", icon: <Type size={16} /> },
     { id: "stickers", label: "استیکر", icon: <Sticker size={16} /> },
     { id: "upload", label: "تصویر", icon: <Upload size={16} /> },
+    { id: "templates", label: "قالب", icon: <LayoutTemplate size={16} /> },
+    { id: "design-for-you", label: "طراحی برای شما", icon: <Sparkles size={16} /> },
     { id: "description", label: "توضیحات", icon: <FileText size={16} /> },
   ];
 
@@ -182,6 +280,28 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
           <ToolbarButton onClick={handleSave} disabled={saving} icon={<Save size={16} />} label="ذخیره" />
           <ToolbarButton onClick={handleShare} icon={<Share2 size={16} />} label="اشتراک" />
           <ToolbarButton onClick={handleDownload} icon={<Download size={16} />} label="دانلود" />
+          <div className="relative">
+            <ToolbarButton
+              onClick={() => setShowShortcuts((v) => !v)}
+              icon={<HelpCircle size={16} />}
+              label="?"
+            />
+            {showShortcuts ? (
+              <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-border bg-card p-3 shadow-xl">
+                <p className="mb-2 text-xs font-bold text-foreground">میانبرهای صفحه‌کلید</p>
+                <ul className="space-y-1">
+                  {SHORTCUT_HELP.map((item) => (
+                    <li key={item.keys} className="flex justify-between gap-2 text-[10px]">
+                      <span className="text-muted">{item.action}</span>
+                      <kbd className="shrink-0 rounded bg-background px-1.5 py-0.5 font-mono text-foreground">
+                        {item.keys}
+                      </kbd>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
           <button
             type="button"
             onClick={handleBuy}
@@ -218,19 +338,23 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
               activeTab={activeTab}
               onTabChange={setActiveTab}
               stickerPacks={stickerPacks}
+              brandSlug={brandSlug}
+              modelSlug={modelSlug}
+              caseTypeSlug={caseTypeSlug}
+              modelName={model.name}
             />
           </div>
         </div>
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur-xl lg:hidden">
-        <div className="flex border-b border-border">
+        <div className="flex overflow-x-auto border-b border-border">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-1 flex-col items-center gap-1 py-3 text-xs ${
+              className={`flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-3 text-[10px] ${
                 activeTab === tab.id ? "text-cyan-400" : "text-muted"
               }`}
             >
@@ -245,6 +369,10 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
             activeTab={activeTab}
             onTabChange={setActiveTab}
             stickerPacks={stickerPacks}
+            brandSlug={brandSlug}
+            modelSlug={modelSlug}
+            caseTypeSlug={caseTypeSlug}
+            modelName={model.name}
             compact
           />
         </div>
@@ -292,31 +420,42 @@ function EditorSidePanel({
   activeTab,
   onTabChange,
   stickerPacks,
+  brandSlug,
+  modelSlug,
+  caseTypeSlug,
+  modelName,
   compact,
 }: {
-  tabs: { id: Tab; label: string; icon: React.ReactNode }[];
-  activeTab: Tab;
-  onTabChange: (tab: Tab) => void;
+  tabs: { id: EditorTab; label: string; icon: React.ReactNode }[];
+  activeTab: EditorTab;
+  onTabChange: (tab: EditorTab) => void;
   stickerPacks: ReturnType<typeof getStickerPacks>;
+  brandSlug: string;
+  modelSlug: string;
+  caseTypeSlug: string;
+  modelName: string;
   compact?: boolean;
 }) {
-  const tabLabels: { id: Tab; label: string }[] = [
+  const tabLabels: { id: EditorTab; label: string }[] = [
+    { id: "layers", label: "لایه‌ها" },
     { id: "text", label: "متن" },
     { id: "stickers", label: "استیکر" },
     { id: "upload", label: "تصویر" },
+    { id: "templates", label: "قالب" },
+    { id: "design-for-you", label: "طراحی برای شما" },
     { id: "description", label: "توضیحات" },
   ];
 
   return (
     <div className={compact ? "" : "rounded-2xl border border-border bg-card/60 p-4"}>
       {!compact ? (
-        <div className="mb-4 flex gap-1 border-b border-border pb-3">
+        <div className="mb-4 flex flex-wrap gap-1 border-b border-border pb-3">
           {tabLabels.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className={`rounded-lg px-3 py-1.5 text-xs transition ${
+              className={`rounded-lg px-2 py-1.5 text-[10px] transition ${
                 activeTab === tab.id ? "bg-cyan-500/20 text-cyan-400" : "text-muted hover:text-foreground"
               }`}
             >
@@ -325,9 +464,25 @@ function EditorSidePanel({
           ))}
         </div>
       ) : null}
+      {activeTab === "layers" ? <LayersPanel /> : null}
       {activeTab === "text" ? <TextPanel /> : null}
       {activeTab === "stickers" ? <StickerPanel packs={stickerPacks} /> : null}
       {activeTab === "upload" ? <UploadPanel /> : null}
+      {activeTab === "templates" ? (
+        <TemplatesPanel
+          brandSlug={brandSlug}
+          modelSlug={modelSlug}
+          caseTypeSlug={caseTypeSlug}
+        />
+      ) : null}
+      {activeTab === "design-for-you" ? (
+        <DesignForYouPanel
+          brandSlug={brandSlug}
+          modelSlug={modelSlug}
+          caseTypeSlug={caseTypeSlug}
+          modelName={modelName}
+        />
+      ) : null}
       {activeTab === "description" ? <DescriptionPanel /> : null}
     </div>
   );

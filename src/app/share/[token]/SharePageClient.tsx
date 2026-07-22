@@ -64,7 +64,7 @@ export default function SharePageClient({ design }: Props) {
           {formatToman(getCaseTotalPrice(caseType, true))}
         </p>
         <Link
-          href={`/design/${design.brandSlug}/${design.modelSlug}/${design.caseTypeSlug}`}
+          href={`/design/${design.brandSlug}/${design.modelSlug}/${design.caseTypeSlug}?share=${design.shareToken}`}
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-8 py-3 text-sm font-bold text-black"
         >
           <ShoppingCart size={18} />

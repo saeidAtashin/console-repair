@@ -5,6 +5,10 @@ export type DesignLayerBase = {
   rotation: number;
   scaleX: number;
   scaleY: number;
+  /** Default true; false = soft-deleted/hidden on canvas */
+  visible?: boolean;
+  /** Optional label for layers panel */
+  name?: string;
 };
 
 export type TextLayer = DesignLayerBase & {
@@ -72,4 +76,27 @@ export function generateLayerId(): string {
 
 export function generateShareToken(): string {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+export type CaseTemplate = {
+  id: string;
+  slug: string;
+  title: string;
+  thumbnail: string;
+  brandSlug?: string;
+  modelSlug?: string;
+  caseTypeSlug?: string;
+  layers: DesignLayer[];
+};
+
+export function isLayerVisible(layer: DesignLayer): boolean {
+  return layer.visible !== false;
+}
+
+export function cloneLayersWithNewIds(layers: DesignLayer[]): DesignLayer[] {
+  return layers.map((layer) => ({
+    ...structuredClone(layer),
+    id: generateLayerId(),
+    visible: layer.visible !== false,
+  }));
 }

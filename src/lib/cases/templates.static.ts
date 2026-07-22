@@ -1,0 +1,178 @@
+import type { CaseTemplate } from "@/lib/design/types";
+
+export const CASE_TEMPLATES: CaseTemplate[] = [
+  {
+    id: "tpl-minimal-text",
+    slug: "minimal-text",
+    title: "متن مینیمال",
+    thumbnail: "/cases/stickers/circle.svg",
+    layers: [
+      {
+        id: "tpl-layer-1",
+        type: "text",
+        text: "YOUR NAME",
+        fontFamily: "Vazirmatn",
+        fontSize: 36,
+        fill: "#ffffff",
+        align: "center",
+        name: "نام",
+        visible: true,
+        x: 140,
+        y: 280,
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+      },
+      {
+        id: "tpl-layer-2",
+        type: "image",
+        src: "/cases/stickers/circle.svg",
+        width: 80,
+        height: 80,
+        isSticker: true,
+        name: "دایره",
+        visible: true,
+        x: 100,
+        y: 400,
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+      },
+    ],
+  },
+  {
+    id: "tpl-neon-gaming",
+    slug: "neon-gaming",
+    title: "گیمینگ نئون",
+    thumbnail: "/cases/stickers/bolt.svg",
+    brandSlug: "samsung",
+    modelSlug: "galaxy-s24",
+    caseTypeSlug: "matte",
+    layers: [
+      {
+        id: "tpl-layer-3",
+        type: "text",
+        text: "GAME ON",
+        fontFamily: "var(--font-pixel)",
+        fontSize: 32,
+        fill: "#06b6d4",
+        align: "center",
+        name: "عنوان",
+        visible: true,
+        x: 140,
+        y: 200,
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+      },
+      {
+        id: "tpl-layer-4",
+        type: "image",
+        src: "/cases/stickers/bolt.svg",
+        width: 64,
+        height: 64,
+        isSticker: true,
+        name: "رعد",
+        visible: true,
+        x: 108,
+        y: 320,
+        rotation: -15,
+        scaleX: 1.2,
+        scaleY: 1.2,
+      },
+      {
+        id: "tpl-layer-5",
+        type: "image",
+        src: "/cases/stickers/fire.svg",
+        width: 64,
+        height: 64,
+        isSticker: true,
+        name: "آتش",
+        visible: true,
+        x: 160,
+        y: 380,
+        rotation: 10,
+        scaleX: 1,
+        scaleY: 1,
+      },
+    ],
+  },
+  {
+    id: "tpl-floral",
+    slug: "floral-bloom",
+    title: "شکوفه گل",
+    thumbnail: "/cases/stickers/flower.svg",
+    brandSlug: "apple",
+    modelSlug: "iphone-15",
+    caseTypeSlug: "silicone",
+    layers: [
+      {
+        id: "tpl-layer-6",
+        type: "image",
+        src: "/cases/stickers/flower.svg",
+        width: 96,
+        height: 96,
+        isSticker: true,
+        name: "گل",
+        visible: true,
+        x: 92,
+        y: 220,
+        rotation: 0,
+        scaleX: 1.5,
+        scaleY: 1.5,
+      },
+      {
+        id: "tpl-layer-7",
+        type: "image",
+        src: "/cases/stickers/leaf.svg",
+        width: 72,
+        height: 72,
+        isSticker: true,
+        name: "برگ",
+        visible: true,
+        x: 50,
+        y: 350,
+        rotation: -30,
+        scaleX: 1,
+        scaleY: 1,
+      },
+      {
+        id: "tpl-layer-8",
+        type: "text",
+        text: "زیبایی",
+        fontFamily: "var(--Cristik)",
+        fontSize: 40,
+        fill: "#f472b6",
+        align: "center",
+        name: "متن",
+        visible: true,
+        x: 140,
+        y: 420,
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+      },
+    ],
+  },
+];
+
+export function getCaseTemplateBySlug(slug: string): CaseTemplate | undefined {
+  return CASE_TEMPLATES.find((t) => t.slug === slug);
+}
+
+export function getTemplatesForModel(
+  brandSlug: string,
+  modelSlug: string,
+  caseTypeSlug: string,
+): CaseTemplate[] {
+  return CASE_TEMPLATES.filter(
+    (t) =>
+      (!t.brandSlug || t.brandSlug === brandSlug) &&
+      (!t.modelSlug || t.modelSlug === modelSlug) &&
+      (!t.caseTypeSlug || t.caseTypeSlug === caseTypeSlug),
+  );
+}
+
+export function getAllTemplates(): CaseTemplate[] {
+  return CASE_TEMPLATES;
+}

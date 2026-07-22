@@ -108,6 +108,15 @@ export default function ReadyCaseDetail({ product }: Props) {
               <ShoppingCart size={18} />
               افزودن به سبد
             </button>
+            {product.template ? (
+              <Link
+                href={`/design/${product.brandSlug}/${product.modelSlug}/${product.caseTypeSlug}?template=${product.slug}`}
+                className="flex items-center gap-2 rounded-xl border border-cyan-500/50 bg-cyan-500/10 px-6 py-3 text-sm font-bold text-cyan-400 transition hover:bg-cyan-500/20"
+              >
+                <Palette size={18} />
+                ویرایش در ادیتور
+              </Link>
+            ) : null}
             <Link
               href={`/phones/${product.brandSlug}/${product.modelSlug}`}
               className="flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-bold text-foreground transition hover:border-cyan-500/50"

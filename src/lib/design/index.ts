@@ -2,3 +2,4 @@ export * from "./types";
 export * from "./editor-store";
 export * from "./export";
 export * from "./api";
+export * from "./design-request-api";

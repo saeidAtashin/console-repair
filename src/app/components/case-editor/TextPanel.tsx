@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { AlignCenter, AlignLeft, AlignRight } from "lucide-react";
 import { useEditorStore } from "@/lib/design/editor-store";
 import type { TextLayer } from "@/lib/design/types";
 
@@ -22,10 +22,11 @@ const COLOR_OPTIONS = [
 ];
 
 export default function TextPanel() {
-  const { addTextLayer, getSelectedLayer, updateLayer, removeLayer, moveLayer } =
-    useEditorStore();
+  const { addTextLayer, getSelectedLayer, updateLayer, meta } = useEditorStore();
   const selected = getSelectedLayer();
   const textLayer = selected?.type === "text" ? (selected as TextLayer) : null;
+  const canvasW = meta?.canvasWidth ?? 280;
+  const canvasH = meta?.canvasHeight ?? 560;
 
   return (
     <div className="space-y-4">
@@ -79,6 +80,32 @@ export default function TextPanel() {
           </label>
 
           <div className="space-y-1">
+            <span className="text-xs text-muted">تراز</span>
+            <div className="flex gap-1">
+              {(
+                [
+                  { value: "right" as const, icon: AlignRight },
+                  { value: "center" as const, icon: AlignCenter },
+                  { value: "left" as const, icon: AlignLeft },
+                ] as const
+              ).map(({ value, icon: Icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => updateLayer(textLayer.id, { align: value })}
+                  className={`flex flex-1 items-center justify-center rounded-lg border py-2 ${
+                    textLayer.align === value
+                      ? "border-cyan-500/50 bg-cyan-500/10 text-cyan-400"
+                      : "border-border text-muted"
+                  }`}
+                >
+                  <Icon size={16} />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
             <span className="text-xs text-muted">رنگ</span>
             <div className="flex flex-wrap gap-2">
               {COLOR_OPTIONS.map((color) => (
@@ -92,31 +119,43 @@ export default function TextPanel() {
                   style={{ backgroundColor: color }}
                 />
               ))}
+              <input
+                type="color"
+                value={textLayer.fill}
+                onChange={(e) => updateLayer(textLayer.id, { fill: e.target.value })}
+                className="h-7 w-7 cursor-pointer rounded border border-border bg-transparent"
+                title="رنگ دلخواه"
+              />
             </div>
           </div>
 
-          <div className="flex gap-2 pt-2">
-            <button
-              type="button"
-              onClick={() => moveLayer(textLayer.id, "up")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-border py-2 text-xs text-muted"
-            >
-              <ArrowUp size={14} /> جلو
-            </button>
-            <button
-              type="button"
-              onClick={() => moveLayer(textLayer.id, "down")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-border py-2 text-xs text-muted"
-            >
-              <ArrowDown size={14} /> عقب
-            </button>
-            <button
-              type="button"
-              onClick={() => removeLayer(textLayer.id)}
-              className="rounded-lg border border-red-500/30 p-2 text-red-400"
-            >
-              <Trash2 size={14} />
-            </button>
+          <div className="grid grid-cols-2 gap-2">
+            <label className="block space-y-1">
+              <span className="text-xs text-muted">X</span>
+              <input
+                type="number"
+                min={0}
+                max={canvasW}
+                value={Math.round(textLayer.x)}
+                onChange={(e) =>
+                  updateLayer(textLayer.id, { x: Number(e.target.value) })
+                }
+                className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+              />
+            </label>
+            <label className="block space-y-1">
+              <span className="text-xs text-muted">Y</span>
+              <input
+                type="number"
+                min={0}
+                max={canvasH}
+                value={Math.round(textLayer.y)}
+                onChange={(e) =>
+                  updateLayer(textLayer.id, { y: Number(e.target.value) })
+                }
+                className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+              />
+            </label>
           </div>
         </div>
       ) : (

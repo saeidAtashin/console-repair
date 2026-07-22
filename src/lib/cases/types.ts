@@ -1,3 +1,5 @@
+import type { DesignLayer } from "@/lib/design/types";
+
 export type PhoneBrand = {
   slug: string;
   name: string;
@@ -81,6 +83,7 @@ export type ReadyCase = {
   image: string;
   tags: string[];
   inStock: boolean;
+  template?: { layers: DesignLayer[] };
 };
 
 export type StickerPack = {

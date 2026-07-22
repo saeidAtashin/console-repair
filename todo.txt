@@ -1,26 +1,10 @@
-user be able to add and remove text and select font and color and size and position and be able to edit text.
-also all these work with keyboard shortcuts too and with multi fingers in phones.
 
-
-also be able to add image sticker and remove image sticker too.
-
-also show items of case in layers and be able to change order of layers and delete too but still show them in its list of items and be able to select it again.
-
-
-
-also should have a item that can be able to select from pre designed cases and be able to edit it and save it.
-I will add pre designed cases later.
-if pre designed case is layered, be able to eddit it like it is users layers and edit it.
-
-
-
-add a we can design case for you, send us your image, and describe what you want, and we will design it for you and send you to confirm.
 
 also show a sample of our designs in home page and order page and also show a sample of our designs in case design page.
 
 
 
-
+make pre designed cases without phone model, and if select them, then be able to select brand and model and set it in it as full size and then be able to edit it.
 
 
 also like all of these, add print for 

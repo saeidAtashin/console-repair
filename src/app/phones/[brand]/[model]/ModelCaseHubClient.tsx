@@ -100,6 +100,20 @@ export default function ModelCaseHubClient({
             selectedSlug={selectedCase}
             onSelect={setSelectedCase}
           />
+
+          <div className="mt-8 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
+            <h3 className="text-lg font-bold text-foreground">طراحی قاب برای شما</h3>
+            <p className="mt-2 text-sm leading-7 text-muted">
+              تصویر و توضیحات خود را بفرستید — ما قاب را طراحی می‌کنیم و برای
+              تأیید به شما ارسال می‌کنیم.
+            </p>
+            <Link
+              href={`/design/${brand.slug}/${model.slug}/${selectedCase}?tab=design-for-you`}
+              className="mt-4 inline-flex rounded-xl bg-cyan-500 px-6 py-2.5 text-sm font-bold text-black transition hover:bg-cyan-400"
+            >
+              ارسال درخواست طراحی
+            </Link>
+          </div>
         </section>
       </div>
     </div>
