@@ -4,6 +4,7 @@ export async function exportStageToPng(
   stage: Konva.Stage,
   pixelRatio = 2,
 ): Promise<string> {
+  stage.batchDraw();
   return stage.toDataURL({ pixelRatio, mimeType: "image/png" });
 }
 

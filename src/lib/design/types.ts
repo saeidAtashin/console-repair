@@ -22,12 +22,34 @@ export type TextLayer = DesignLayerBase & {
   width?: number;
 };
 
+export type ImageBlendMode =
+  | "normal"
+  | "multiply"
+  | "screen"
+  | "overlay"
+  | "darken"
+  | "lighten";
+
+export type ImageEffectPreset =
+  | "none"
+  | "grayscale"
+  | "blur"
+  | "brighten"
+  | "contrast"
+  | "sepia";
+
 export type ImageLayer = DesignLayerBase & {
   type: "image";
   src: string;
   width: number;
   height: number;
   isSticker?: boolean;
+  /** 0–1, default 1 */
+  opacity?: number;
+  blendMode?: ImageBlendMode;
+  effect?: ImageEffectPreset;
+  /** 0–100, default 50 */
+  effectIntensity?: number;
 };
 
 export type DesignLayer = TextLayer | ImageLayer;

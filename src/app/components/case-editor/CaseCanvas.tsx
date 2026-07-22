@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { Stage, Layer, Text, Image as KonvaImage, Transformer, Group, Rect } from "react-konva";
-import useImage from "use-image";
+import { Stage, Layer, Text, Transformer, Group, Rect } from "react-konva";
 import type Konva from "konva";
 
 import { PhoneBackKonvaLayers } from "@/app/components/case-wizard/PhoneBackKonva";
@@ -17,7 +16,8 @@ import {
   getTextOffsetX,
   normalizeFontFamily,
 } from "@/lib/design/editor-fonts";
-import { isLayerVisible, type DesignLayer, type ImageLayer, type TextLayer } from "@/lib/design/types";
+import { isLayerVisible, type DesignLayer, type TextLayer } from "@/lib/design/types";
+import DesignImageLayerNode from "@/app/components/case-editor/DesignImageLayerNode";
 
 type Props = {
   caseColor: string;
@@ -247,7 +247,7 @@ export default function CaseCanvas({
               }
 
               return (
-                <DesignImageLayer
+                <DesignImageLayerNode
                   key={layer.id}
                   layer={layer}
                   handlers={commonHandlers}
@@ -298,29 +298,5 @@ export default function CaseCanvas({
         </Layer>
       </Stage>
     </div>
-  );
-}
-
-function DesignImageLayer({
-  layer,
-  handlers,
-}: {
-  layer: ImageLayer;
-  handlers: Record<string, unknown>;
-}) {
-  const [image] = useImage(layer.src, "anonymous");
-  return (
-    <KonvaImage
-      id={layer.id}
-      image={image}
-      x={layer.x}
-      y={layer.y}
-      width={layer.width}
-      height={layer.height}
-      rotation={layer.rotation}
-      scaleX={layer.scaleX}
-      scaleY={layer.scaleY}
-      {...handlers}
-    />
   );
 }

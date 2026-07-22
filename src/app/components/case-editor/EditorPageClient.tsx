@@ -18,6 +18,7 @@ import {
   LayoutTemplate,
   Sparkles,
   HelpCircle,
+  AlertTriangle,
 } from "lucide-react";
 import type Konva from "konva";
 
@@ -45,7 +46,7 @@ import type { CaseType } from "@/lib/cases/types";
 import { getDesign, getDesignByShareToken } from "@/lib/design/api";
 import { useEditorStore } from "@/lib/design/editor-store";
 import { saveDesign } from "@/lib/design/api";
-import { exportAndDownload } from "@/lib/design/export";
+import { exportAndDownload, exportStageToPng } from "@/lib/design/export";
 import {
   SHORTCUT_HELP,
   useEditorShortcuts,
@@ -238,7 +239,7 @@ export default function EditorPageClient({
     const saved = await saveDesign(document);
     let previewUrl = saved.previewUrl ?? "";
     if (stageRef.current && !previewUrl) {
-      previewUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+      previewUrl = await exportStageToPng(stageRef.current, 2);
     }
     const price = getCaseTotalPrice(caseType, true);
     addCustomCase({
@@ -276,6 +277,14 @@ export default function EditorPageClient({
             { label: "طراحی" },
           ]}
         />
+
+        <div className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" aria-hidden />
+          <p className="text-sm leading-relaxed text-amber-100/90">
+            تفاوت طراحی و قاب اصلی را چشم‌پوشی کنید. قبل از طراحی و ارسال، هماهنگی
+            بابت تایید طراحی با شما انجام خواهد شد.
+          </p>
+        </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <ToolbarButton onClick={undo} disabled={!canUndo()} icon={<Undo2 size={16} />} label="بازگشت" />

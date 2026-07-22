@@ -13,7 +13,17 @@ import {
 } from "lucide-react";
 
 import { useEditorStore } from "@/lib/design/editor-store";
-import { isLayerVisible, type DesignLayer } from "@/lib/design/types";
+import {
+  BLEND_MODE_OPTIONS,
+  EFFECT_OPTIONS,
+} from "@/lib/design/image-layer-filters";
+import {
+  isLayerVisible,
+  type DesignLayer,
+  type ImageBlendMode,
+  type ImageEffectPreset,
+  type ImageLayer,
+} from "@/lib/design/types";
 
 function layerLabel(layer: DesignLayer): string {
   if (layer.name) return layer.name;
@@ -39,6 +49,7 @@ export default function LayersPanel() {
   const restoreLayer = useEditorStore((s) => s.restoreLayer);
   const moveLayer = useEditorStore((s) => s.moveLayer);
   const duplicateLayer = useEditorStore((s) => s.duplicateLayer);
+  const updateLayer = useEditorStore((s) => s.updateLayer);
 
   const layersReversed = [...layers].reverse();
   const selected = selectedLayerId
@@ -144,7 +155,97 @@ export default function LayersPanel() {
               />
             )}
           </div>
+          {selected.type === "image" ? (
+            <ImageLayerSettings
+              layer={selected}
+              onUpdate={(patch) => updateLayer(selected.id, patch)}
+            />
+          ) : null}
         </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ImageLayerSettings({
+  layer,
+  onUpdate,
+}: {
+  layer: ImageLayer;
+  onUpdate: (patch: Partial<ImageLayer>) => void;
+}) {
+  const opacityPercent = Math.round((layer.opacity ?? 1) * 100);
+  const effect = layer.effect ?? "none";
+  const effectIntensity = layer.effectIntensity ?? 50;
+
+  return (
+    <div className="space-y-3 border-t border-border pt-3">
+      <p className="text-xs font-semibold text-muted">تنظیمات تصویر</p>
+
+      <label className="block space-y-1">
+        <span className="text-[10px] text-muted">شفافیت ({opacityPercent}٪)</span>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={opacityPercent}
+          onChange={(e) =>
+            onUpdate({ opacity: Number(e.target.value) / 100 })
+          }
+          className="w-full accent-cyan-500"
+        />
+      </label>
+
+      <label className="block space-y-1">
+        <span className="text-[10px] text-muted">حالت ترکیب (Blend)</span>
+        <select
+          value={layer.blendMode ?? "normal"}
+          onChange={(e) =>
+            onUpdate({ blendMode: e.target.value as ImageBlendMode })
+          }
+          className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+        >
+          {BLEND_MODE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="block space-y-1">
+        <span className="text-[10px] text-muted">افکت</span>
+        <select
+          value={effect}
+          onChange={(e) =>
+            onUpdate({ effect: e.target.value as ImageEffectPreset })
+          }
+          className="w-full rounded-lg border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+        >
+          {EFFECT_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {effect !== "none" && effect !== "grayscale" && effect !== "sepia" ? (
+        <label className="block space-y-1">
+          <span className="text-[10px] text-muted">
+            شدت افکت ({effectIntensity}٪)
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={effectIntensity}
+            onChange={(e) =>
+              onUpdate({ effectIntensity: Number(e.target.value) })
+            }
+            className="w-full accent-cyan-500"
+          />
+        </label>
       ) : null}
     </div>
   );

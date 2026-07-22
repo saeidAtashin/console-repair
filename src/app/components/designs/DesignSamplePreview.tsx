@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { Group, Image as KonvaImage, Layer, Rect, Stage, Text } from "react-konva";
-import useImage from "use-image";
+import { Group, Layer, Rect, Stage, Text } from "react-konva";
 
+import DesignImageLayerNode from "@/app/components/case-editor/DesignImageLayerNode";
 import {
   getDefaultTextBoxWidth,
   getTextOffsetX,
@@ -18,22 +18,6 @@ type Props = {
   className?: string;
   maxHeight?: number;
 };
-
-function PreviewImageLayer({ layer }: { layer: ImageLayer }) {
-  const [image] = useImage(layer.src, "anonymous");
-  return (
-    <KonvaImage
-      image={image}
-      x={layer.x}
-      y={layer.y}
-      width={layer.width}
-      height={layer.height}
-      rotation={layer.rotation}
-      scaleX={layer.scaleX}
-      scaleY={layer.scaleY}
-    />
-  );
-}
 
 export default function DesignSamplePreview({
   template,
@@ -103,7 +87,7 @@ export default function DesignSamplePreview({
                 );
               }
 
-              return <PreviewImageLayer key={layer.id} layer={layer as ImageLayer} />;
+              return <DesignImageLayerNode key={layer.id} layer={layer as ImageLayer} />;
             })}
           </Group>
         </Layer>
