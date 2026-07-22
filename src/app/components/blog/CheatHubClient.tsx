@@ -98,8 +98,8 @@ export default function CheatHubClient({
 
       <div
         className={cn(
-          "sticky top-20 z-30 -mx-2 mb-8 rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur-md transition-shadow duration-300 sm:-mx-0",
-          isStuck && "shadow-[0_8px_32px_-8px_rgba(0,0,0,0.6)] ring-1 ring-white/[0.06]",
+          "sticky top-20 z-30 -mx-2 mb-8 rounded-2xl border border-border bg-background/95 backdrop-blur-md transition-shadow duration-300 sm:-mx-0",
+          isStuck && "shadow-[0_8px_32px_-8px_rgba(0,0,0,0.6)] ring-1 ring-border",
         )}
       >
         <button
@@ -114,8 +114,8 @@ export default function CheatHubClient({
               <Filter className="h-4 w-4 text-cyan-400" aria-hidden />
             </span>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-zinc-100">فیلتر و جستجو</p>
-              <p className="truncate text-xs text-zinc-500">
+              <p className="text-sm font-bold text-foreground">فیلتر و جستجو</p>
+              <p className="truncate text-xs text-muted">
                 {activeConsoleLabel}
                 {debouncedQuery ? ` · «${debouncedQuery}»` : ""}
                 {" · "}
@@ -125,7 +125,7 @@ export default function CheatHubClient({
           </div>
           <ChevronDown
             className={cn(
-              "h-5 w-5 shrink-0 text-zinc-400 transition-transform duration-300",
+              "h-5 w-5 shrink-0 text-muted transition-transform duration-300",
               isExpanded && "rotate-180",
             )}
             aria-hidden
@@ -133,7 +133,7 @@ export default function CheatHubClient({
         </button>
 
         {!isExpanded ? (
-          <div className="flex gap-2 overflow-x-auto border-t border-white/[0.06] px-4 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex gap-2 overflow-x-auto border-t border-border px-4 py-2.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {CONSOLE_TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -143,7 +143,7 @@ export default function CheatHubClient({
                   "inline-flex shrink-0 items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition",
                   consoleFilter === tab.id
                     ? "border-cyan-500/50 bg-cyan-500/15 text-cyan-300"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-zinc-200",
+                    : "border-border bg-surface text-muted hover:text-foreground",
                 )}
               >
                 {tab.icon ? (
@@ -163,7 +163,7 @@ export default function CheatHubClient({
           )}
         >
           <div className="overflow-hidden">
-            <div className="space-y-4 border-t border-white/[0.06] px-4 pb-4 pt-3">
+            <div className="space-y-4 border-t border-border px-4 pb-4 pt-3">
               <div className="flex flex-wrap gap-2">
                 {CONSOLE_TABS.map((tab) => (
                   <button
@@ -174,7 +174,7 @@ export default function CheatHubClient({
                       "inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-semibold transition",
                       consoleFilter === tab.id
                         ? "border-cyan-500/50 bg-cyan-500/15 text-cyan-300"
-                        : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200",
+                        : "border-border bg-surface text-muted hover:border-border hover:text-foreground",
                     )}
                   >
                     {tab.icon ? (
@@ -187,7 +187,7 @@ export default function CheatHubClient({
 
               <div className="relative">
                 <Search
-                  className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"
+                  className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
                   aria-hidden
                 />
                 <input
@@ -195,14 +195,14 @@ export default function CheatHubClient({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="جستجوی بازی، ژانر یا کد چیت..."
-                  className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pe-10 ps-10 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/30"
+                  className="w-full rounded-xl border border-border bg-surface py-2.5 pe-10 ps-10 text-sm text-foreground placeholder:text-muted focus:border-cyan-500/40 focus:outline-none focus:ring-1 focus:ring-cyan-500/30"
                   aria-label="جستجو در چیت‌ها"
                 />
                 {searchQuery ? (
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="absolute end-3 top-1/2 -translate-y-1/2 text-zinc-500 transition hover:text-zinc-300"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-muted transition hover:text-muted"
                     aria-label="پاک کردن جستجو"
                   >
                     <X className="h-4 w-4" />
@@ -211,7 +211,7 @@ export default function CheatHubClient({
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-zinc-500">
+                <p className="text-xs font-semibold text-muted">
                   دسترسی سریع — بخش‌ها
                 </p>
                 <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -219,7 +219,7 @@ export default function CheatHubClient({
                     <a
                       key={section.id}
                       href={`#${section.id}`}
-                      className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-violet-500/40 hover:text-violet-300"
+                      className="shrink-0 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted transition hover:border-violet-500/40 hover:text-violet-300"
                     >
                       {section.title.replace("رمز و چیت ", "")}
                     </a>
@@ -228,7 +228,7 @@ export default function CheatHubClient({
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-zinc-500">
+                <p className="text-xs font-semibold text-muted">
                   بازی‌های محبوب
                 </p>
                 <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -245,7 +245,7 @@ export default function CheatHubClient({
               </div>
 
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-muted">
                   {totalGames} بازی نمایش داده می‌شود
                 </p>
                 {hasActiveFilters ? (
@@ -267,9 +267,9 @@ export default function CheatHubClient({
       </div>
 
       {filteredSections.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-16 text-center">
-          <p className="text-lg font-semibold text-zinc-300">نتیجه‌ای یافت نشد</p>
-          <p className="mt-2 text-sm text-zinc-500">
+        <div className="rounded-2xl border border-border bg-surface px-6 py-16 text-center">
+          <p className="text-lg font-semibold text-muted">نتیجه‌ای یافت نشد</p>
+          <p className="mt-2 text-sm text-muted">
             فیلتر یا عبارت جستجو را تغییر دهید.
           </p>
         </div>

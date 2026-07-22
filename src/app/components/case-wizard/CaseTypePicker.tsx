@@ -29,7 +29,7 @@ export default function CaseTypePicker({
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
-      <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-zinc-900/40 p-8">
+      <div className="flex items-center justify-center rounded-2xl border border-border bg-card/40 p-8">
         <PhoneMockupPreview
           model={model}
           caseColor={selectedCase?.color}
@@ -48,22 +48,22 @@ export default function CaseTypePicker({
               className={`flex w-full items-start gap-4 rounded-2xl border p-4 text-right transition ${
                 selected
                   ? "border-cyan-500/60 bg-cyan-500/10"
-                  : "border-white/10 bg-zinc-900/60 hover:border-white/20"
+                  : "border-border bg-card/60 hover:border-border"
               }`}
             >
               <div
-                className="mt-1 h-10 w-10 shrink-0 rounded-lg border border-white/10"
+                className="mt-1 h-10 w-10 shrink-0 rounded-lg border border-border"
                 style={{ backgroundColor: caseType.color }}
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-bold text-white">{caseType.name}</p>
+                  <p className="font-bold text-foreground">{caseType.name}</p>
                   {selected ? <Check size={18} className="shrink-0 text-cyan-400" /> : null}
                 </div>
-                <p className="mt-1 text-sm text-zinc-400">{caseType.description}</p>
+                <p className="mt-1 text-sm text-muted">{caseType.description}</p>
                 <p className="mt-2 text-sm font-semibold text-cyan-400">
                   {formatToman(caseType.price)}
-                  <span className="mr-2 text-xs font-normal text-zinc-500">
+                  <span className="mr-2 text-xs font-normal text-muted">
                     + {formatToman(caseType.customizationFee)} طراحی
                   </span>
                 </p>

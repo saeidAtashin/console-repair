@@ -14,7 +14,7 @@ export default function HeroQuickAccessGuide({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 z-30 flex items-end justify-center bg-black/50 px-3 pb-3 backdrop-blur-[2px] sm:items-center sm:px-6 sm:pb-0"
+      className="absolute inset-0 z-30 flex items-end justify-center bg-card/50 px-3 pb-3 backdrop-blur-[2px] sm:items-center sm:px-6 sm:pb-0"
       onClick={onDismiss}
     >
       <div

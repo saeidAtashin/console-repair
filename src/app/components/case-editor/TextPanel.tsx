@@ -38,23 +38,23 @@ export default function TextPanel() {
       </button>
 
       {textLayer ? (
-        <div className="space-y-3 rounded-xl border border-white/10 bg-zinc-900/60 p-4">
+        <div className="space-y-3 rounded-xl border border-border bg-card/60 p-4">
           <label className="block space-y-1">
-            <span className="text-xs text-zinc-400">متن</span>
+            <span className="text-xs text-muted">متن</span>
             <textarea
               value={textLayer.text}
               onChange={(e) => updateLayer(textLayer.id, { text: e.target.value })}
               rows={2}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </label>
 
           <label className="block space-y-1">
-            <span className="text-xs text-zinc-400">فونت</span>
+            <span className="text-xs text-muted">فونت</span>
             <select
               value={textLayer.fontFamily}
               onChange={(e) => updateLayer(textLayer.id, { fontFamily: e.target.value })}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground"
             >
               {FONT_OPTIONS.map((f) => (
                 <option key={f.value} value={f.value}>
@@ -65,7 +65,7 @@ export default function TextPanel() {
           </label>
 
           <label className="block space-y-1">
-            <span className="text-xs text-zinc-400">اندازه: {textLayer.fontSize}px</span>
+            <span className="text-xs text-muted">اندازه: {textLayer.fontSize}px</span>
             <input
               type="range"
               min={12}
@@ -79,7 +79,7 @@ export default function TextPanel() {
           </label>
 
           <div className="space-y-1">
-            <span className="text-xs text-zinc-400">رنگ</span>
+            <span className="text-xs text-muted">رنگ</span>
             <div className="flex flex-wrap gap-2">
               {COLOR_OPTIONS.map((color) => (
                 <button
@@ -99,14 +99,14 @@ export default function TextPanel() {
             <button
               type="button"
               onClick={() => moveLayer(textLayer.id, "up")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-zinc-700 py-2 text-xs text-zinc-300"
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-border py-2 text-xs text-muted"
             >
               <ArrowUp size={14} /> جلو
             </button>
             <button
               type="button"
               onClick={() => moveLayer(textLayer.id, "down")}
-              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-zinc-700 py-2 text-xs text-zinc-300"
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-border py-2 text-xs text-muted"
             >
               <ArrowDown size={14} /> عقب
             </button>
@@ -120,7 +120,7 @@ export default function TextPanel() {
           </div>
         </div>
       ) : (
-        <p className="text-center text-xs text-zinc-500">
+        <p className="text-center text-xs text-muted">
           یک متن را انتخاب کنید یا متن جدید اضافه کنید
         </p>
       )}

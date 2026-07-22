@@ -32,9 +32,9 @@ export default function ReadyCaseDetail({ product }: Props) {
       />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
-        <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-zinc-900/40 p-12">
+        <div className="flex items-center justify-center rounded-2xl border border-border bg-card/40 p-12">
           <div
-            className="h-64 w-32 rounded-[2rem] border-2 border-white/20 shadow-2xl"
+            className="h-64 w-32 rounded-[2rem] border-2 border-border shadow-2xl"
             style={{
               backgroundColor: caseType?.color ?? "#2a2a2e",
               backgroundImage: "linear-gradient(135deg, rgba(6,182,212,0.3) 0%, rgba(139,92,246,0.3) 100%)",
@@ -54,25 +54,25 @@ export default function ReadyCaseDetail({ product }: Props) {
                 </span>
               ))}
             </div>
-            <h1 className="text-2xl font-black text-white sm:text-3xl">{product.title}</h1>
-            <p className="mt-3 leading-7 text-zinc-400">{product.description}</p>
+            <h1 className="text-2xl font-black text-foreground sm:text-3xl">{product.title}</h1>
+            <p className="mt-3 leading-7 text-muted">{product.description}</p>
           </div>
 
           <dl className="grid grid-cols-2 gap-3 text-sm">
-            <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-3">
-              <dt className="text-zinc-500">برند</dt>
-              <dd className="font-medium text-white">{brand?.name}</dd>
+            <div className="rounded-xl border border-border bg-card/60 p-3">
+              <dt className="text-muted">برند</dt>
+              <dd className="font-medium text-foreground">{brand?.name}</dd>
             </div>
-            <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-3">
-              <dt className="text-zinc-500">مدل</dt>
-              <dd className="font-medium text-white">{model?.name}</dd>
+            <div className="rounded-xl border border-border bg-card/60 p-3">
+              <dt className="text-muted">مدل</dt>
+              <dd className="font-medium text-foreground">{model?.name}</dd>
             </div>
-            <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-3">
-              <dt className="text-zinc-500">نوع قاب</dt>
-              <dd className="font-medium text-white">{caseType?.name}</dd>
+            <div className="rounded-xl border border-border bg-card/60 p-3">
+              <dt className="text-muted">نوع قاب</dt>
+              <dd className="font-medium text-foreground">{caseType?.name}</dd>
             </div>
-            <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-3">
-              <dt className="text-zinc-500">موجودی</dt>
+            <div className="rounded-xl border border-border bg-card/60 p-3">
+              <dt className="text-muted">موجودی</dt>
               <dd className="font-medium text-emerald-400">
                 {product.inStock ? "موجود" : "ناموجود"}
               </dd>
@@ -84,7 +84,7 @@ export default function ReadyCaseDetail({ product }: Props) {
               {formatToman(product.price)}
             </span>
             {product.compareAtPrice ? (
-              <span className="text-sm text-zinc-600 line-through">
+              <span className="text-sm text-muted line-through">
                 {formatToman(product.compareAtPrice)}
               </span>
             ) : null}
@@ -102,7 +102,7 @@ export default function ReadyCaseDetail({ product }: Props) {
             </button>
             <Link
               href={`/create/${product.brandSlug}/${product.modelSlug}`}
-              className="flex items-center gap-2 rounded-xl border border-zinc-700 px-6 py-3 text-sm font-bold text-white transition hover:border-cyan-500/50"
+              className="flex items-center gap-2 rounded-xl border border-border px-6 py-3 text-sm font-bold text-foreground transition hover:border-cyan-500/50"
             >
               <Palette size={18} />
               طراحی مشابه

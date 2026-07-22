@@ -34,7 +34,7 @@ export default function ContactConsultation() {
                 </span>
               </div>
 
-              <h2 className="mb-8 text-5xl font-black text-white leading-[1.2]">
+              <h2 className="mb-8 text-5xl font-black text-foreground leading-[1.2]">
                 نیاز به{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-l from-cyan-400 to-blue-500">
                   مشاوره فنی
@@ -42,7 +42,7 @@ export default function ContactConsultation() {
                 دارید؟
               </h2>
 
-              <p className="mb-10 text-lg text-zinc-400 leading-relaxed max-w-xl">
+              <p className="mb-10 text-lg text-muted leading-relaxed max-w-xl">
                 اگر در مورد هزینه تعمیر، مدت زمان تحویل یا نوع قطعات سوالی
                 دارید، متخصصین ما آماده راهنمایی رایگان شما هستند.
               </p>
@@ -50,24 +50,24 @@ export default function ContactConsultation() {
               <div className="space-y-6">
                 <div className="flex items-center justify-end gap-4 group">
                   <div className="text-right">
-                    <p className="text-sm text-zinc-500">ساعات کاری</p>
-                    <p className="text-white font-medium">
+                    <p className="text-sm text-muted">ساعات کاری</p>
+                    <p className="text-foreground font-medium">
                       شنبه تا پنجشنبه - ۱۰ صبح الی ۹ شب
                     </p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-cyan-400 group-hover:border-cyan-500/50 transition-colors">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-card border border-border text-cyan-400 group-hover:border-cyan-500/50 transition-colors">
                     <Clock size={24} />
                   </div>
                 </div>
 
                 <div className="flex items-center justify-end gap-4 group">
                   <div className="text-right">
-                    <p className="text-sm text-zinc-500">آدرس مرکز</p>
-                    <p className="text-white font-medium">
+                    <p className="text-sm text-muted">آدرس مرکز</p>
+                    <p className="text-foreground font-medium">
                       تهران، مجتمع تجاری پایتخت، طبقه سوم
                     </p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-cyan-400 group-hover:border-cyan-500/50 transition-colors">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-card border border-border text-cyan-400 group-hover:border-cyan-500/50 transition-colors">
                     <MapPin size={24} />
                   </div>
                 </div>
@@ -80,7 +80,7 @@ export default function ContactConsultation() {
             <FadeUp delay={0.2}>
               <a
                 href="tel:09107701704"
-                className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-cyan-500/40 hover:bg-zinc-900/60"
+                className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-border bg-card/40 p-8 backdrop-blur-xl transition-all hover:border-cyan-500/40 hover:bg-card/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-cyan-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
 
@@ -89,10 +89,10 @@ export default function ContactConsultation() {
                 </div>
 
                 <div className="text-right">
-                  <h4 className="text-2xl font-bold text-white mb-1">
+                  <h4 className="text-2xl font-bold text-foreground mb-1">
                     تماس مستقیم
                   </h4>
-                  <p className="text-zinc-400">{SITE_PHONE}</p>
+                  <p className="text-muted">{SITE_PHONE}</p>
                 </div>
               </a>
             </FadeUp>
@@ -100,7 +100,7 @@ export default function ContactConsultation() {
             <FadeUp delay={0.3}>
               <a
                 href="https://wa.me/989107701704"
-                className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-green-500/40 hover:bg-zinc-900/60"
+                className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-border bg-card/40 p-8 backdrop-blur-xl transition-all hover:border-green-500/40 hover:bg-card/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-green-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
 
@@ -109,10 +109,10 @@ export default function ContactConsultation() {
                 </div>
 
                 <div className="text-right">
-                  <h4 className="text-2xl font-bold text-white mb-1">
+                  <h4 className="text-2xl font-bold text-foreground mb-1">
                     ارسال پیام در واتساپ
                   </h4>
-                  <p className="text-zinc-400">
+                  <p className="text-muted">
                     مشاوره آنلاین و ارسال عکس دستگاه
                   </p>
                 </div>
@@ -120,8 +120,8 @@ export default function ContactConsultation() {
             </FadeUp>
 
             <FadeUp delay={0.4}>
-              <div className="rounded-2xl border border-dashed border-zinc-800 p-6 text-center">
-                <p className="text-sm text-zinc-500">
+              <div className="rounded-2xl border border-dashed border-border p-6 text-center">
+                <p className="text-sm text-muted">
                   <HeadphonesIcon
                     size={16}
                     className="inline ml-2 text-cyan-500"

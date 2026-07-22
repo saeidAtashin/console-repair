@@ -52,13 +52,13 @@ export default function ServicesSection() {
           <span className="mb-4 inline-block rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-xs font-bold text-cyan-400 uppercase tracking-widest">
             Tech Station / خدمات ما
           </span>
-          <h2 className="mb-6 text-5xl font-black text-white leading-tight">
+          <h2 className="mb-6 text-5xl font-black text-foreground leading-tight">
             لیست کامل{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-l from-cyan-400 to-blue-600">
               خدمات فنی
             </span>
           </h2>
-          <p className="max-w-2xl text-zinc-500 text-lg">
+          <p className="max-w-2xl text-muted text-lg">
             تمامی قطعات استفاده شده اورجینال بوده و شامل ضمانت‌نامه کتبی مجموعه
             می‌باشند.
           </p>
@@ -68,24 +68,24 @@ export default function ServicesSection() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => (
             <FadeUp key={index} delay={index * 0.1}>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-md transition-all duration-500 hover:border-cyan-500/50">
+              <div className="group relative h-full overflow-hidden rounded-2xl border border-border bg-card/40 p-8 backdrop-blur-md transition-all duration-500 hover:border-cyan-500/50">
                 {/* Glow Effect on Hover */}
                 <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-cyan-500/10 blur-[80px] transition-opacity opacity-0 group-hover:opacity-100" />
 
                 <div className="relative z-10">
-                  <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-white/5 border border-white/10 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                  <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-surface border border-border shadow-inner group-hover:scale-110 transition-transform duration-500">
                     {service.icon}
                   </div>
 
-                  <div className="mb-2 text-xs font-mono text-zinc-500 uppercase tracking-tighter">
+                  <div className="mb-2 text-xs font-mono text-muted uppercase tracking-tighter">
                     {service.tag}
                   </div>
 
-                  <h3 className="mb-4 text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">
+                  <h3 className="mb-4 text-xl font-bold text-foreground group-hover:text-cyan-400 transition-colors">
                     {service.title}
                   </h3>
 
-                  <p className="text-zinc-400 leading-relaxed text-sm">
+                  <p className="text-muted leading-relaxed text-sm">
                     {service.desc}
                   </p>
                 </div>

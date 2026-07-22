@@ -15,7 +15,7 @@ export default function GameCatalogSections({
 
   if (visible.length === 0) {
     return (
-      <p className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-zinc-400">
+      <p className="rounded-2xl border border-border bg-surface px-6 py-10 text-center text-muted">
         بازی‌ای برای نمایش یافت نشد.
       </p>
     );

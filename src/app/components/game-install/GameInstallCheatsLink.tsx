@@ -36,7 +36,7 @@ export default function GameInstallCheatsLink({ consoleSlug }: Props) {
         </Link>
       </div>
 
-      <p className="mb-4 text-sm text-zinc-400">
+      <p className="mb-4 text-sm text-muted">
         کدهای تقلب و ترفندهای مخفی محبوب‌ترین بازی‌های {meta.label} — قبل یا
         بعد از نصب، از این راهنما استفاده کنید.
       </p>
@@ -46,10 +46,10 @@ export default function GameInstallCheatsLink({ consoleSlug }: Props) {
           <li key={game.gameSlug}>
             <Link
               href={cheatGamePath(game.gameSlug)}
-              className="flex items-center justify-between rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-zinc-200 transition hover:border-violet-500/40 hover:text-violet-200"
+              className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 text-sm text-foreground transition hover:border-violet-500/40 hover:text-violet-200"
             >
               <span>{game.name}</span>
-              <ChevronLeft className="h-4 w-4 shrink-0 text-zinc-500" />
+              <ChevronLeft className="h-4 w-4 shrink-0 text-muted" />
             </Link>
           </li>
         ))}

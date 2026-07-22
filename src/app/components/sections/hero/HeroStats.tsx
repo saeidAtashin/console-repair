@@ -10,10 +10,10 @@ export default function HeroStats() {
       {stats.map((stat, i) => (
         <div
           key={i}
-          className="rounded-3xl border border-white/10 bg-white/[0.045] p-5 backdrop-blur-2xl"
+          className="rounded-3xl border border-border bg-white/[0.045] p-5 backdrop-blur-2xl"
         >
-          <div className="text-3xl font-black text-white">{stat.value}</div>
-          <div className="mt-2 text-sm text-zinc-400">{stat.label}</div>
+          <div className="text-3xl font-black text-foreground">{stat.value}</div>
+          <div className="mt-2 text-sm text-muted">{stat.label}</div>
         </div>
       ))}
     </div>

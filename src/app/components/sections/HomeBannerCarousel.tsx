@@ -132,7 +132,7 @@ function BannerMobileContent({
   prefersReducedMotion: boolean | null;
 }) {
   return (
-    <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/95 via-black/70 to-transparent px-3 pb-2.5 pt-10 sm:hidden">
+    <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-background/95 via-background/70 to-transparent px-3 pb-2.5 pt-10 sm:hidden">
       <motion.div
         key={slide.image}
         initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
@@ -140,7 +140,7 @@ function BannerMobileContent({
         transition={{ duration: 0.35 }}
         className="flex items-center justify-between gap-2"
       >
-        <p className="min-w-0 text-[13px] font-bold leading-tight text-white">
+        <p className="min-w-0 text-[13px] font-bold leading-tight text-foreground">
           {slide.title}{" "}
           <span className={cn("bg-gradient-to-l bg-clip-text text-transparent", slide.accent)}>
             {slide.highlight}
@@ -228,7 +228,7 @@ function BannerDesktopContent({
             aria-hidden
           />
 
-          <div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-black/45 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl md:p-7">
+          <div className="relative overflow-hidden rounded-[28px] border border-border bg-background/45 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl md:p-7">
             <div
               className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.1),transparent_40%,rgba(34,211,238,0.07))]"
               aria-hidden
@@ -264,7 +264,7 @@ function BannerDesktopContent({
                     : { duration: 3.5, repeat: Infinity, ease: "easeInOut" }
                 }
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5 shadow-[0_0_24px_rgba(34,211,238,0.15)]",
+                  "flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface shadow-[0_0_24px_rgba(34,211,238,0.15)]",
                   slide.glow,
                 )}
               >
@@ -301,7 +301,7 @@ function BannerDesktopContent({
                 )}
                 initial={prefersReducedMotion ? false : "hidden"}
                 animate="visible"
-                className="text-2xl font-black leading-tight text-white md:text-3xl"
+                className="text-2xl font-black leading-tight text-foreground md:text-3xl"
               >
                 {slide.title}{" "}
                 <motion.span
@@ -331,7 +331,7 @@ function BannerDesktopContent({
                 )}
                 initial={prefersReducedMotion ? false : "hidden"}
                 animate="visible"
-                className="mt-2 text-sm leading-7 text-zinc-300/90"
+                className="mt-2 text-sm leading-7 text-muted/90"
               >
                 {slide.subtitle}
               </motion.p>
@@ -360,7 +360,7 @@ function BannerDesktopContent({
                   initial={prefersReducedMotion ? false : "hidden"}
                   animate="visible"
                   whileHover={prefersReducedMotion ? undefined : { scale: 1.05, y: -2 }}
-                  className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-200"
+                  className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs font-medium text-foreground"
                 >
                   {chip}
                 </motion.span>
@@ -503,13 +503,13 @@ export default function HomeBannerCarousel() {
             <div
               className={cn(
                 "absolute inset-0",
-                "bg-gradient-to-t from-black/80 via-black/20 to-transparent sm:from-transparent sm:via-transparent",
+                "bg-gradient-to-t from-background/80 via-background/20 to-transparent sm:from-transparent sm:via-transparent",
                 slide.align === "center" &&
                   "sm:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.6)_0%,rgba(0,0,0,0.28)_55%,transparent_100%)]",
                 slide.align === "right" &&
-                  "sm:bg-gradient-to-l sm:from-black/80 sm:via-black/40 sm:to-transparent",
+                  "sm:bg-gradient-to-l sm:from-background/80 sm:via-background/40 sm:to-transparent",
                 slide.align === "left" &&
-                  "sm:bg-gradient-to-r sm:from-black/80 sm:via-black/40 sm:to-transparent",
+                  "sm:bg-gradient-to-r sm:from-background/80 sm:via-background/40 sm:to-transparent",
               )}
             />
 
@@ -528,7 +528,7 @@ export default function HomeBannerCarousel() {
           type="button"
           onClick={goPrev}
           aria-label="اسلاید قبلی"
-          className="absolute start-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-sm transition active:scale-95 sm:start-5 sm:h-11 sm:w-11 sm:hover:scale-105 sm:hover:bg-black/60"
+          className="absolute start-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/50 text-foreground backdrop-blur-sm transition active:scale-95 sm:start-5 sm:h-11 sm:w-11 sm:hover:scale-105 sm:hover:bg-background/60"
         >
           <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" aria-hidden />
         </button>
@@ -537,7 +537,7 @@ export default function HomeBannerCarousel() {
           type="button"
           onClick={goNext}
           aria-label="اسلاید بعدی"
-          className="absolute end-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-sm transition active:scale-95 sm:end-5 sm:h-11 sm:w-11 sm:hover:scale-105 sm:hover:bg-black/60"
+          className="absolute end-2 top-1/2 z-20 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card/50 text-foreground backdrop-blur-sm transition active:scale-95 sm:end-5 sm:h-11 sm:w-11 sm:hover:scale-105 sm:hover:bg-background/60"
         >
           <ChevronLeft className="h-3.5 w-3.5 sm:h-5 sm:w-5" aria-hidden />
         </button>
@@ -554,7 +554,7 @@ export default function HomeBannerCarousel() {
                 "rounded-full transition-all duration-300",
                 index === activeIndex
                   ? "h-1.5 w-5 bg-cyan-400 sm:h-2.5 sm:w-7 sm:shadow-[0_0_12px_rgba(34,211,238,0.7)]"
-                  : "h-1.5 w-1.5 bg-white/50 hover:bg-white/80 sm:h-2.5 sm:w-2.5",
+                  : "h-1.5 w-1.5 bg-surface0 hover:bg-surface0 sm:h-2.5 sm:w-2.5",
               )}
             />
           ))}

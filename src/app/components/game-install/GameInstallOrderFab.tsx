@@ -99,7 +99,7 @@ export default function GameInstallOrderFab({
           >
             <ShoppingCart className="h-4 w-4 shrink-0" aria-hidden />
             <span>{label}</span>
-            <GameInstallListCountBadge className="relative shrink-0 rounded-full bg-black/20 px-2 py-0.5 text-xs">
+            <GameInstallListCountBadge className="relative shrink-0 rounded-full bg-surface px-2 py-0.5 text-xs">
               {games.length.toLocaleString("fa-IR")}
             </GameInstallListCountBadge>
           </motion.a>

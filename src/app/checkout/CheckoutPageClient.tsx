@@ -101,7 +101,7 @@ export default function CheckoutPageClient() {
   if (displayItems.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 pt-28 pb-16 text-center">
-        <h1 className="text-2xl font-black text-white">سبد خرید خالی است</h1>
+        <h1 className="text-2xl font-black text-foreground">سبد خرید خالی است</h1>
         <Link href="/cart" className="mt-4 inline-block text-cyan-400">
           بازگشت به سبد
         </Link>
@@ -111,52 +111,52 @@ export default function CheckoutPageClient() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-28 pb-16">
-      <h1 className="text-2xl font-black text-white">تسویه حساب</h1>
+      <h1 className="text-2xl font-black text-foreground">تسویه حساب</h1>
       <form onSubmit={onSubmit} className="mt-8 space-y-6">
-        <div className="space-y-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-6">
+        <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-6">
           <label className="block space-y-1">
-            <span className="text-sm text-zinc-400">نام و نام خانوادگی</span>
+            <span className="text-sm text-muted">نام و نام خانوادگی</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-white"
+              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground"
               required
             />
           </label>
           <label className="block space-y-1">
-            <span className="text-sm text-zinc-400">شماره موبایل</span>
+            <span className="text-sm text-muted">شماره موبایل</span>
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-white"
+              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground"
               dir="ltr"
               required
             />
           </label>
           <label className="block space-y-1">
-            <span className="text-sm text-zinc-400">آدرس کامل</span>
+            <span className="text-sm text-muted">آدرس کامل</span>
             <textarea
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               rows={3}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-white"
+              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground"
               required
             />
           </label>
           <label className="block space-y-1">
-            <span className="text-sm text-zinc-400">یادداشت (اختیاری)</span>
+            <span className="text-sm text-muted">یادداشت (اختیاری)</span>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-white"
+              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground"
             />
           </label>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-6">
-          <p className="mb-4 font-bold text-white">خلاصه سفارش</p>
-          <ul className="space-y-2 text-sm text-zinc-400">
+        <div className="rounded-2xl border border-border bg-card/60 p-6">
+          <p className="mb-4 font-bold text-foreground">خلاصه سفارش</p>
+          <ul className="space-y-2 text-sm text-muted">
             {displayItems.map((entry) =>
               entry ? (
                 <li key={entry.key} className="flex justify-between">
@@ -170,8 +170,8 @@ export default function CheckoutPageClient() {
               ) : null,
             )}
           </ul>
-          <div className="mt-4 flex justify-between border-t border-white/10 pt-4 font-bold">
-            <span className="text-zinc-400">مبلغ قابل پرداخت</span>
+          <div className="mt-4 flex justify-between border-t border-border pt-4 font-bold">
+            <span className="text-muted">مبلغ قابل پرداخت</span>
             <span className="text-cyan-400">{formatToman(subtotal)}</span>
           </div>
         </div>

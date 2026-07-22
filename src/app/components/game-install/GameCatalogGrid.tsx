@@ -59,7 +59,7 @@ export default function GameCatalogGrid({
             value={query}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="جستجوی نام بازی..."
-            className="h-12 w-full rounded-2xl border border-white/10 bg-black/30 px-4 text-sm text-white placeholder:text-zinc-500 focus:border-cyan-400/40 focus:outline-none"
+            className="h-12 w-full rounded-2xl border border-border bg-surface px-4 text-sm text-foreground placeholder:text-muted focus:border-cyan-400/40 focus:outline-none"
           />
         </label>
         {showFullListLink ? (
@@ -73,12 +73,12 @@ export default function GameCatalogGrid({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/20 bg-black/20 px-6 py-12 text-center">
-          <p className="text-zinc-400">بازی‌ای با این جستجو یافت نشد.</p>
+        <div className="rounded-2xl border border-dashed border-border bg-surface px-6 py-12 text-center">
+          <p className="text-muted">بازی‌ای با این جستجو یافت نشد.</p>
         </div>
       ) : (
         <>
-          <p className="mb-4 text-sm text-zinc-400">
+          <p className="mb-4 text-sm text-muted">
             نمایش {visibleGames.length.toLocaleString("fa-IR")} از{" "}
             {filtered.length.toLocaleString("fa-IR")} بازی — برای نصب روی{" "}
             {consoleLabel}، «اضافه به لیست بازی‌ها» را بزنید.

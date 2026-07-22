@@ -64,10 +64,10 @@ export default function GameHorizontalRow({
             </span>
           </div>
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h2 className="text-2xl font-black tracking-tight text-white md:text-[1.65rem]">
+            <h2 className="text-2xl font-black tracking-tight text-foreground md:text-[1.65rem]">
               {title}
             </h2>
-            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-400">
+            <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs font-medium text-muted">
               {games.length.toLocaleString("fa-IR")} بازی
             </span>
           </div>
@@ -75,7 +75,7 @@ export default function GameHorizontalRow({
 
         <Link
           href={gameListPath(consoleSlug, filter)}
-          className="inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-sm font-bold text-cyan-300 shadow-[0_0_24px_-6px_rgba(34,211,238,0.35)] transition hover:border-cyan-400/60 hover:bg-cyan-500/20 hover:text-white sm:self-auto"
+          className="inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-sm font-bold text-cyan-300 shadow-[0_0_24px_-6px_rgba(34,211,238,0.35)] transition hover:border-cyan-400/60 hover:bg-cyan-500/20 hover:text-foreground sm:self-auto"
         >
           <span>مشاهده همه</span>
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500/20">
@@ -107,7 +107,7 @@ export default function GameHorizontalRow({
           </div>
         </div>
 
-        <p className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-zinc-600 sm:justify-end">
+        <p className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-muted sm:justify-end">
           <ArrowLeft className="h-3 w-3 opacity-60" aria-hidden />
           برای دیدن بیشتر بکشید
         </p>

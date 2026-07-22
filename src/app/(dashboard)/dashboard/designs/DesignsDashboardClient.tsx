@@ -18,14 +18,14 @@ export default function DesignsDashboardClient() {
 
   return (
     <div className="px-4 pt-24 pb-16 sm:px-6">
-      <h1 className="text-2xl font-black text-white">طراحی‌های من</h1>
-      <p className="mt-2 text-zinc-400">طراحی‌های ذخیره‌شده شما</p>
+      <h1 className="text-2xl font-black text-foreground">طراحی‌های من</h1>
+      <p className="mt-2 text-muted">طراحی‌های ذخیره‌شده شما</p>
 
       {loading ? (
-        <p className="mt-8 text-zinc-500">در حال بارگذاری...</p>
+        <p className="mt-8 text-muted">در حال بارگذاری...</p>
       ) : designs.length === 0 ? (
         <div className="mt-8 text-center">
-          <p className="text-zinc-500">هنوز طراحی ذخیره نکرده‌اید</p>
+          <p className="text-muted">هنوز طراحی ذخیره نکرده‌اید</p>
           <Link href="/create" className="mt-4 inline-block text-cyan-400">
             شروع طراحی
           </Link>
@@ -35,16 +35,16 @@ export default function DesignsDashboardClient() {
           {designs.map((design) => (
             <li
               key={design.id}
-              className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4"
+              className="rounded-2xl border border-border bg-card/60 p-4"
             >
-              <p className="font-bold text-white">{design.name}</p>
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="font-bold text-foreground">{design.name}</p>
+              <p className="mt-1 text-xs text-muted">
                 {new Date(design.updatedAt).toLocaleDateString("fa-IR")}
               </p>
               <div className="mt-4 flex gap-2">
                 <Link
                   href={`/share/${design.shareToken}`}
-                  className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-border px-3 py-1.5 text-xs text-foreground"
                 >
                   مشاهده
                 </Link>

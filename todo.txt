@@ -14,13 +14,10 @@ add a we can design case for you, send us your image, and describe what you want
 
 also show a sample of our designs in home page and order page and also show a sample of our designs in case design page.
 
-//also add a search for mobile model search, if it not exist, show a message that your phone model is not exactly found, but you can create a case for it. you can create your case, if it need too much change we will double check with you.
-
 
 also refactor and fix and make each model of phones seprate seo and page, that when go to its page it have page of pre designed items of model and create case both, and select and continue.
 
 
-also add light and dark mode and also add a theme that user can select its theme but default should be base on device theme.
 
 
 also like all of these, add print for 

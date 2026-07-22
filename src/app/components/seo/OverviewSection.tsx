@@ -15,7 +15,7 @@ export default function OverviewSection({
 
   return (
     <section
-      className={cn("border-t border-white/10 py-24", className)}
+      className={cn("border-t border-border py-24", className)}
       aria-labelledby={sectionId}
     >
       <div className="container mx-auto px-6">
@@ -26,7 +26,7 @@ export default function OverviewSection({
         ) : null}
         <div className="max-w-3xl space-y-5">
           {paragraphs.map((paragraph, index) => (
-            <p key={index} className="leading-9 text-zinc-300">
+            <p key={index} className="leading-9 text-muted">
               {paragraph}
             </p>
           ))}

@@ -36,7 +36,7 @@ export default function GameInstallPriceCalculator({
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
             برآورد هزینه
           </p>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted">
             {quote.methodLabel}
             {count > 0 ? (
               <>
@@ -59,13 +59,13 @@ export default function GameInstallPriceCalculator({
       </p>
 
       {count > 0 && quote.discountPercent > 0 ? (
-        <p className="mt-2 text-sm text-zinc-500 line-through">
+        <p className="mt-2 text-sm text-muted line-through">
           قبل: {formatRangeToman(quote.tier.previousRange)}
         </p>
       ) : null}
 
       {quote.exceedsMaxTier ? (
-        <p className="mt-3 rounded-xl border border-amber-500/30 bg-black/20 px-4 py-3 text-sm text-amber-100">
+        <p className="mt-3 rounded-xl border border-amber-500/30 bg-surface px-4 py-3 text-sm text-amber-100">
           تعداد بازی بیش از پکیج استاندارد است — برای قیمت دقیق با ما تماس
           بگیرید.
         </p>
@@ -104,7 +104,7 @@ export default function GameInstallPriceCalculator({
       ) : null}
 
       {count === 0 ? (
-        <p className="mt-3 text-sm text-zinc-500">
+        <p className="mt-3 text-sm text-muted">
           بازی‌ها را از لیست پایین انتخاب کنید تا قیمت محاسبه شود.
         </p>
       ) : null}

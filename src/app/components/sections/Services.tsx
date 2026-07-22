@@ -17,11 +17,11 @@ export default function Services() {
               خدمات تخصصی
             </span>
 
-            <h2 className="mb-6 text-4xl font-black text-white md:text-6xl">
+            <h2 className="mb-6 text-4xl font-black text-foreground md:text-6xl">
               خدمات تعمیرات کنسول
             </h2>
 
-            <p className="mx-auto max-w-2xl text-base leading-8 text-zinc-400 md:text-lg">
+            <p className="mx-auto max-w-2xl text-base leading-8 text-muted md:text-lg">
               تعمیر تخصصی انواع کنسول بازی، دسته و HDMI با تجهیزات حرفه‌ای و
               ضمانت خدمات
             </p>

@@ -71,15 +71,15 @@ export default function AdminPage() {
 
   if (authLoading) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-zinc-400">در حال بارگذاری...</p>
+      <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <p className="text-muted">در حال بارگذاری...</p>
       </main>
     );
   }
 
   if (!user || user.role !== "admin") {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <h1 className="text-3xl text-red-500">شما دسترسی ندارید</h1>
       </main>
     );
@@ -108,20 +108,20 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen  bg-[#050816] text-white p-6 md:p-10">
+    <main className="min-h-screen  bg-[#050816] text-foreground p-6 md:p-10">
       <div className="max-w-7xl mx-auto pt-14">
         <div className="mb-10">
           <h1 className="text-4xl font-black text-cyan-400 mb-3">پنل مدیریت</h1>
 
-          <p className="text-zinc-400">
+          <p className="text-muted">
             مدیریت سفارشات تعمیر و وضعیت دستگاه‌ها
           </p>
         </div>
 
         {loading ? (
-          <div className="text-zinc-400">در حال دریافت سفارشات...</div>
+          <div className="text-muted">در حال دریافت سفارشات...</div>
         ) : orders.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-zinc-400">
+          <div className="rounded-3xl border border-border bg-surface p-10 text-center text-muted">
             هنوز سفارشی ثبت نشده است
           </div>
         ) : (
@@ -129,12 +129,12 @@ export default function AdminPage() {
             {orders.map((order) => (
               <div
                 key={order.trackingCode}
-                className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6"
+                className="rounded-3xl border border-border bg-surface backdrop-blur-xl p-6"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div className="space-y-3">
                     <div>
-                      <span className="text-zinc-500 text-sm">شناسه درخواست</span>
+                      <span className="text-muted text-sm">شناسه درخواست</span>
 
                       <h2 className="text-2xl font-black text-cyan-400 tracking-widest">
                         {order.trackingCode}
@@ -143,33 +143,33 @@ export default function AdminPage() {
 
                     <div className="grid sm:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <span className="text-zinc-500">نام مشتری:</span>
+                        <span className="text-muted">نام مشتری:</span>
 
-                        <p className="mt-1 text-white">{order.name}</p>
+                        <p className="mt-1 text-foreground">{order.name}</p>
                       </div>
 
                       <div>
-                        <span className="text-zinc-500">شماره تماس:</span>
+                        <span className="text-muted">شماره تماس:</span>
 
-                        <p className="mt-1 text-white">{order.phone}</p>
+                        <p className="mt-1 text-foreground">{order.phone}</p>
                       </div>
 
                       <div>
-                        <span className="text-zinc-500">دستگاه:</span>
+                        <span className="text-muted">دستگاه:</span>
 
-                        <p className="mt-1 text-white">{order.device}</p>
+                        <p className="mt-1 text-foreground">{order.device}</p>
                       </div>
 
                       <div>
-                        <span className="text-zinc-500">مشکل:</span>
+                        <span className="text-muted">مشکل:</span>
 
-                        <p className="mt-1 text-white">{order.issue}</p>
+                        <p className="mt-1 text-foreground">{order.issue}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="min-w-[220px]">
-                    <label className="block text-sm text-zinc-400 mb-2">
+                    <label className="block text-sm text-muted mb-2">
                       وضعیت سفارش
                     </label>
 
@@ -178,7 +178,7 @@ export default function AdminPage() {
                       onChange={(e) =>
                         updateStatus(order.trackingCode, e.target.value)
                       }
-                      className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 outline-none focus:border-cyan-500"
+                      className="w-full rounded-2xl border border-border bg-input-bg px-4 py-3 outline-none focus:border-cyan-500"
                     >
                       {BACKEND_REPAIR_STATUSES.map((status) => (
                         <option key={status} value={status}>
@@ -188,7 +188,7 @@ export default function AdminPage() {
                     </select>
 
                     {order.createdAt && (
-                      <div className="mt-4 text-xs text-zinc-500">
+                      <div className="mt-4 text-xs text-muted">
                         ثبت:{" "}
                         {new Date(order.createdAt).toLocaleDateString("fa-IR")}
                       </div>

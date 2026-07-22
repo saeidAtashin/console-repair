@@ -34,7 +34,7 @@ export default function SiteLogo({
           <p className="text-[11px] font-mono text-cyan-500 leading-none tracking-tight lowercase">
             fix bazi
           </p>
-          <p className="mt-1 text-base font-black text-white leading-none">
+          <p className="mt-1 text-base font-black text-foreground leading-none">
             فیکس<span className="text-cyan-500">‌بازی</span>
           </p>
         </div>

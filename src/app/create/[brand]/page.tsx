@@ -43,7 +43,7 @@ export default async function BrandModelsPage({ params, searchParams }: Props) {
   const series = seriesSlug ? getSeriesBySlug(brandSlug, seriesSlug) : undefined;
 
   return (
-    <div className="min-h-screen bg-black pt-24 pb-16 px-4 sm:px-6">
+    <div className="min-h-screen bg-background pt-24 pb-16 px-4 sm:px-6">
       <div className="mx-auto max-w-5xl">
         <WizardBreadcrumb
           crumbs={[
@@ -52,12 +52,12 @@ export default async function BrandModelsPage({ params, searchParams }: Props) {
             ...(series ? [{ label: series.name }] : []),
           ]}
         />
-        <h1 className="mt-6 text-2xl font-black text-white sm:text-3xl">
+        <h1 className="mt-6 text-2xl font-black text-foreground sm:text-3xl">
           {series
             ? `مدل ${series.name} خود را انتخاب کنید`
             : `مدل ${brand.name} خود را انتخاب کنید`}
         </h1>
-        <p className="mt-2 text-zinc-400">مرحله ۲ از ۳ — مدل</p>
+        <p className="mt-2 text-muted">مرحله ۲ از ۳ — مدل</p>
         {series ? (
           <Link
             href={`/create/${brandSlug}`}

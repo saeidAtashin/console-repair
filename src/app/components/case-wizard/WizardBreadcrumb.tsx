@@ -12,9 +12,9 @@ export default function WizardBreadcrumb({ crumbs }: Props) {
     <nav aria-label="مسیر طراحی" className="flex flex-wrap items-center gap-2 text-sm">
       {crumbs.map((crumb, i) => (
         <span key={crumb.label} className="flex items-center gap-2">
-          {i > 0 ? <ChevronLeft size={14} className="text-zinc-600" /> : null}
+          {i > 0 ? <ChevronLeft size={14} className="text-muted" /> : null}
           {crumb.href ? (
-            <Link href={crumb.href} className="text-zinc-400 transition hover:text-cyan-400">
+            <Link href={crumb.href} className="text-muted transition hover:text-cyan-400">
               {crumb.label}
             </Link>
           ) : (

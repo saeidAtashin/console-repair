@@ -32,8 +32,8 @@ export default function ServiceCard({
           overflow-hidden
           rounded-3xl
           border
-          border-zinc-800
-          bg-white/5
+          border-border
+          bg-surface
           p-8
           backdrop-blur-xl
           transition-all
@@ -66,9 +66,9 @@ export default function ServiceCard({
           <Icon size={32} />
         </div>
 
-        <h3 className="mb-4 text-2xl font-black text-white">{title}</h3>
+        <h3 className="mb-4 text-2xl font-black text-foreground">{title}</h3>
 
-        <p className="leading-8 text-zinc-400 line-clamp-3">{description}</p>
+        <p className="leading-8 text-muted line-clamp-3">{description}</p>
 
         <div className={`mt-auto pt-6 text-sm font-bold ${theme.primary}`}>
           مشاهده جزئیات ←

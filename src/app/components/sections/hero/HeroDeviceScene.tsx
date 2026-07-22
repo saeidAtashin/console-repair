@@ -175,7 +175,7 @@ const ConsolePickerButton = memo(function ConsolePickerButton({
           : "gap-0.5 px-1 py-2.5 text-[11px] font-semibold leading-tight",
         active
           ? "border-cyan-400/50 bg-cyan-500/25 text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.35)]"
-          : "border-white/15 bg-black/50 text-zinc-300 active:border-cyan-400/35 active:text-zinc-100 sm:hover:border-cyan-400/35 sm:hover:text-zinc-100 sm:hover:shadow-[0_0_18px_rgba(34,211,238,0.12)]",
+          : "border-border bg-card/50 text-muted active:border-cyan-400/35 active:text-foreground sm:hover:border-cyan-400/35 sm:hover:text-foreground sm:hover:shadow-[0_0_18px_rgba(34,211,238,0.12)]",
       )}
     >
       {active && (
@@ -193,7 +193,7 @@ const ConsolePickerButton = memo(function ConsolePickerButton({
             : "h-14 w-9",
           active
             ? cn(iconTheme.primary, "opacity-100 drop-shadow-[0_0_12px_rgba(34,211,238,0.45)]")
-            : "text-zinc-400 opacity-75 sm:opacity-70 sm:group-hover:text-zinc-300 sm:group-hover:opacity-95",
+            : "text-muted opacity-75 sm:opacity-70 sm:group-hover:text-muted sm:group-hover:opacity-95",
         )}
       />
       <span className="relative z-10 -mt-4 px-0.5 text-2xl text-cyan-300">
@@ -227,7 +227,7 @@ const ServicePickerButton = memo(function ServicePickerButton({
         "hero-scene__picker-item group relative flex min-h-[52px] min-w-0 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border px-1 py-2 text-center transition-[color,box-shadow,background-color] duration-200 sm:min-h-[56px] sm:gap-1.5 sm:rounded-2xl sm:px-1 sm:py-1",
         active
           ? "border-cyan-400/55 bg-cyan-500/15 text-cyan-50 shadow-[0_0_28px_rgba(34,211,238,0.32)]"
-          : "border-white/10 bg-white/[0.04] text-zinc-200 active:border-cyan-400/35 sm:hover:border-cyan-400/35 sm:hover:bg-white/[0.07] sm:hover:shadow-[0_0_20px_rgba(34,211,238,0.14)]",
+          : "border-border bg-white/[0.04] text-foreground active:border-cyan-400/35 sm:hover:border-cyan-400/35 sm:hover:bg-white/[0.07] sm:hover:shadow-[0_0_20px_rgba(34,211,238,0.14)]",
       )}
     >
       {active && (
@@ -238,10 +238,10 @@ const ServicePickerButton = memo(function ServicePickerButton({
       )}
       <span
         className={cn(
-          "relative z-10 flex h-7 w-7 items-center justify-center rounded-lg border bg-black/30 transition-[border-color,box-shadow,transform] duration-200 sm:h-8 sm:w-8",
+          "relative z-10 flex h-7 w-7 items-center justify-center rounded-lg border bg-surface transition-[border-color,box-shadow,transform] duration-200 sm:h-8 sm:w-8",
           active
             ? "scale-105 border-cyan-400/45 shadow-[0_0_16px_rgba(34,211,238,0.35)]"
-            : "border-white/10",
+            : "border-border",
         )}
       >
         <Icon
@@ -249,7 +249,7 @@ const ServicePickerButton = memo(function ServicePickerButton({
             "h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4",
             active
               ? "text-cyan-300"
-              : "text-zinc-400 sm:group-hover:text-cyan-200/90",
+              : "text-muted sm:group-hover:text-cyan-200/90",
           )}
           strokeWidth={active ? 2.25 : 1.75}
         />
@@ -349,11 +349,11 @@ export default function HeroDeviceScene() {
       <div className="hero-scene__rings absolute inset-0 hidden items-center justify-center sm:flex">
         <div className="h-[600px] w-[600px] rounded-full border border-cyan-400/10 xl:h-[720px] xl:w-[720px]" />
         <div className="absolute h-[500px] w-[500px] rounded-full border border-blue-400/10 xl:h-[600px] xl:w-[600px]" />
-        <div className="absolute h-[380px] w-[380px] rounded-full border border-white/5 xl:h-[480px] xl:w-[480px]" />
+        <div className="absolute h-[380px] w-[380px] rounded-full border border-border xl:h-[480px] xl:w-[480px]" />
       </div>
 
       <div className="hero-scene__tilt relative w-full max-w-[720px] xl:max-w-[820px]">
-        <div className="hero-scene__card relative rounded-[22px] border border-white/10 p-3.5 shadow-[0_24px_80px_rgba(0,0,0,0.55)] sm:rounded-[30px] sm:p-5 sm:shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
+        <div className="hero-scene__card relative rounded-[22px] border border-border p-3.5 shadow-[0_24px_80px_rgba(0,0,0,0.55)] sm:rounded-[30px] sm:p-5 sm:shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
           <HeroQuickAccessButton
             onClick={togglePicker}
             isOpen={isPickerOpen}
@@ -399,7 +399,7 @@ export default function HeroDeviceScene() {
                   </div>
                 </div>
 
-                <div className="hero-scene__image-slot relative w-full overflow-hidden rounded-[18px] border border-white/10 bg-[#07101f] sm:rounded-[26px]">
+                <div className="hero-scene__image-slot relative w-full overflow-hidden rounded-[18px] border border-border bg-[#07101f] sm:rounded-[26px]">
                   <div className="hero-scene__glow" aria-hidden />
 
                   <div className="absolute inset-0">

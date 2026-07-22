@@ -46,11 +46,11 @@ export default function WhyUs() {
             چرا ما؟
           </span>
 
-          <h2 className="mb-6 text-5xl font-black text-white">
+          <h2 className="mb-6 text-5xl font-black text-foreground">
             چرا مشتری‌ها به ما اعتماد می‌کنند؟
           </h2>
 
-          <p className="mx-auto max-w-2xl text-lg leading-8 text-zinc-400">
+          <p className="mx-auto max-w-2xl text-lg leading-8 text-muted">
             تجربه، تجهیزات تخصصی و پشتیبانی حرفه‌ای باعث شده صدها گیمر تعمیر
             کنسول خود را به ما بسپارند.
           </p>
@@ -81,22 +81,22 @@ export default function WhyUs() {
                   <FloatingBadge
                     label={feature.badge.label}
                     value={feature.badge.value}
-                    className="border-cyan-500/30 bg-black/40"
+                    className="border-cyan-500/30 bg-input-bg"
                     valueClassName="text-cyan-400"
                   />
                 </motion.div>
 
                 {/* Card */}
-                <div className="relative z-10 rounded-3xl border border-zinc-800 bg-white/5 backdrop-blur-xl p-8 transition-all duration-500 hover:-translate-y-2 hover:border-cyan-500/40">
+                <div className="relative z-10 rounded-3xl border border-border bg-surface backdrop-blur-xl p-8 transition-all duration-500 hover:-translate-y-2 hover:border-cyan-500/40">
                   <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
                     {feature.icon}
                   </div>
 
-                  <h3 className="mb-4 text-2xl font-bold text-white">
+                  <h3 className="mb-4 text-2xl font-bold text-foreground">
                     {feature.title}
                   </h3>
 
-                  <p className="leading-7 text-zinc-400">
+                  <p className="leading-7 text-muted">
                     {feature.description}
                   </p>
                 </div>

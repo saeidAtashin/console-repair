@@ -43,7 +43,7 @@ export default function PhoneMockupPreview({
             <PhoneBackSvg model={model} className="h-full w-full" bodyFill={bodyFill} />
           ) : (
             <div
-              className="flex h-full items-center justify-center text-xs text-zinc-600"
+              className="flex h-full items-center justify-center text-xs text-muted"
               style={{
                 background: "linear-gradient(180deg, #0a0a0f 0%, #12121a 100%)",
               }}

@@ -169,7 +169,7 @@ export default function PhoneVerificationModal({
       <button
         type="button"
         aria-label="بستن"
-        className="absolute inset-0 bg-black/80 backdrop-blur-md"
+        className="absolute inset-0 bg-background/80 backdrop-blur-md"
         onClick={onClose}
       />
 
@@ -177,12 +177,12 @@ export default function PhoneVerificationModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="phone-verification-title"
-        className="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#050816] p-8 shadow-2xl"
+        className="relative w-full max-w-md rounded-3xl border border-border bg-[#050816] p-8 shadow-2xl"
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute end-4 top-4 rounded-xl p-2 text-zinc-400 transition hover:bg-white/10 hover:text-white"
+          className="absolute end-4 top-4 rounded-xl p-2 text-muted transition hover:bg-surface hover:text-foreground"
           aria-label="بستن"
         >
           <X className="h-5 w-5" />
@@ -194,7 +194,7 @@ export default function PhoneVerificationModal({
         >
           تأیید شماره موبایل
         </h2>
-        <p className="mt-2 text-center text-sm text-zinc-400">
+        <p className="mt-2 text-center text-sm text-muted">
           برای ثبت درخواست، شماره موبایل خود را با کد تأیید وارد کنید.
         </p>
 
@@ -209,7 +209,7 @@ export default function PhoneVerificationModal({
                 placeholder="09 / +98 / 98 / 9..."
                 autoComplete="tel"
                 readOnly={phoneLocked}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-cyan-500 disabled:opacity-70"
+                className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-foreground outline-none focus:border-cyan-500 disabled:opacity-70"
               />
 
               <button
@@ -236,12 +236,12 @@ export default function PhoneVerificationModal({
                     value={digit}
                     onChange={(e) => handleOtpDigitChange(index, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                    className="h-12 w-12 rounded-xl border border-white/10 bg-white/5 text-center text-xl font-bold text-white outline-none focus:border-cyan-500"
+                    className="h-12 w-12 rounded-xl border border-border bg-surface text-center text-xl font-bold text-foreground outline-none focus:border-cyan-500"
                   />
                 ))}
               </div>
 
-              <p className="text-sm text-center text-zinc-400">
+              <p className="text-sm text-center text-muted">
                 {counter > 0
                   ? `زمان باقی‌مانده: ${formatTime(counter)}`
                   : "زمان کد به پایان رسید — دوباره ارسال کنید."}
@@ -278,7 +278,7 @@ export default function PhoneVerificationModal({
                     setSmsSent(false);
                     setError("");
                   }}
-                  className="w-full rounded-xl bg-white/10 py-3 text-white transition hover:bg-white/15"
+                  className="w-full rounded-xl bg-surface py-3 text-foreground transition hover:bg-white/15"
                 >
                   ارسال مجدد کد
                 </button>

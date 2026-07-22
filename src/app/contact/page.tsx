@@ -15,7 +15,7 @@ export const metadata = createPageMetadata({
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-black pt-24 text-white">
+    <main className="min-h-screen bg-background pt-24 text-foreground">
       <PageShell
         currentPath={PATH}
         containerClassName="container mx-auto px-6"
@@ -23,13 +23,13 @@ export default function ContactPage() {
       >
         <h1 className="text-4xl font-black md:text-5xl">{TITLE}</h1>
         <div className="mt-8 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6">
+          <div className="rounded-2xl border border-border bg-card/40 p-6">
             <p className="text-sm text-cyan-400">تلفن پشتیبانی</p>
-            <p className="mt-3 text-lg text-zinc-100">09107701704</p>
+            <p className="mt-3 text-lg text-foreground">09107701704</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6">
+          <div className="rounded-2xl border border-border bg-card/40 p-6">
             <p className="text-sm text-cyan-400">آدرس</p>
-            <p className="mt-3 text-lg text-zinc-100">
+            <p className="mt-3 text-lg text-foreground">
               تهران، توپخانه پاساژ لیلا طبقه 4 واحد 21
             </p>
           </div>

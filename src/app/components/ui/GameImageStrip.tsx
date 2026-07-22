@@ -106,7 +106,7 @@ function LazyCarousel({
   }, [updateVisibleSlides]);
 
   return (
-    <div className={cn("relative overflow-hidden bg-zinc-900", aspectClass, className)}>
+    <div className={cn("relative overflow-hidden bg-card", aspectClass, className)}>
       <div
         ref={scrollRef}
         className="absolute inset-0 snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
@@ -130,7 +130,7 @@ function LazyCarousel({
                   blurDataURL={index === 0 ? blurDataURL : undefined}
                 />
               ) : (
-                <div className="h-full w-full bg-zinc-900" aria-hidden />
+                <div className="h-full w-full bg-card" aria-hidden />
               )}
             </div>
           ))}
@@ -171,7 +171,7 @@ export default function GameImageStrip({
     return (
       <div
         className={cn(
-          "relative flex items-center justify-center bg-zinc-900 text-xs text-zinc-600",
+          "relative flex items-center justify-center bg-card text-xs text-muted",
           aspectClass,
           className,
         )}
@@ -183,7 +183,7 @@ export default function GameImageStrip({
 
   if (images.length === 1) {
     return (
-      <div className={cn("relative overflow-hidden bg-zinc-900", aspectClass, className)}>
+      <div className={cn("relative overflow-hidden bg-card", aspectClass, className)}>
         <StripImage
           src={images[0]}
           alt={alt}

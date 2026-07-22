@@ -12,7 +12,7 @@ export default function BlogGameSectionBlock({ section, index }: Props) {
   return (
     <section
       id={section.id}
-      className="scroll-mt-28 border-t border-white/[0.06] py-14 first:border-t-0 first:pt-0"
+      className="scroll-mt-28 border-t border-border py-14 first:border-t-0 first:pt-0"
       aria-labelledby={`blog-section-${section.id}`}
     >
       <FadeUp delay={index * 0.05}>
@@ -22,7 +22,7 @@ export default function BlogGameSectionBlock({ section, index }: Props) {
         >
           {section.title}
         </h2>
-        <p className="mt-3 max-w-3xl text-base leading-relaxed text-zinc-400">
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted">
           {section.description}
         </p>
       </FadeUp>

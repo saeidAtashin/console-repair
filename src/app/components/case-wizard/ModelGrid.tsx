@@ -16,7 +16,7 @@ function ModelCards({ brandSlug, models }: { brandSlug: string; models: PhoneMod
         <Link
           key={model.slug}
           href={`/create/${brandSlug}/${model.slug}`}
-          className="group rounded-2xl border border-white/10 bg-zinc-900/60 p-4 transition hover:border-cyan-500/50 hover:bg-zinc-900"
+          className="group rounded-2xl border border-border bg-card/60 p-4 transition hover:border-cyan-500/50 hover:bg-card"
         >
           <div className="relative mx-auto flex h-36 w-20 items-center justify-center">
             <PhoneBackSvg
@@ -25,8 +25,8 @@ function ModelCards({ brandSlug, models }: { brandSlug: string; models: PhoneMod
             />
           </div>
           <div className="mt-3 text-center">
-            <p className="text-sm font-bold text-white">{model.name}</p>
-            <p className="text-xs text-zinc-500">{model.nameEn}</p>
+            <p className="text-sm font-bold text-foreground">{model.name}</p>
+            <p className="text-xs text-muted">{model.nameEn}</p>
           </div>
         </Link>
       ))}
@@ -43,8 +43,8 @@ export default function ModelGrid({ brandSlug, models, seriesSlug }: Props) {
       <div className="space-y-6">
         {series ? (
           <div>
-            <h2 className="text-lg font-bold text-white">{series.name}</h2>
-            <p className="text-sm text-zinc-500">{series.nameEn}</p>
+            <h2 className="text-lg font-bold text-foreground">{series.name}</h2>
+            <p className="text-sm text-muted">{series.nameEn}</p>
           </div>
         ) : null}
         <ModelCards brandSlug={brandSlug} models={filtered} />
@@ -58,10 +58,10 @@ export default function ModelGrid({ brandSlug, models, seriesSlug }: Props) {
     <div className="space-y-12">
       {groups.map(({ series, models: groupModels }) => (
         <section key={series.slug} id={series.slug} className="scroll-mt-28">
-          <div className="mb-6 flex items-end justify-between gap-4 border-b border-white/10 pb-3">
+          <div className="mb-6 flex items-end justify-between gap-4 border-b border-border pb-3">
             <div>
-              <h2 className="text-lg font-bold text-white">{series.name}</h2>
-              <p className="text-sm text-zinc-500">{series.nameEn}</p>
+              <h2 className="text-lg font-bold text-foreground">{series.name}</h2>
+              <p className="text-sm text-muted">{series.nameEn}</p>
             </div>
             <Link
               href={`/create/${brandSlug}?series=${series.slug}`}

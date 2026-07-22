@@ -28,7 +28,7 @@ export default function TrustSignalsBar({
 }: Props) {
   return (
     <section
-      className={`border-t border-white/10 py-16 ${className}`}
+      className={`border-t border-border py-16 ${className}`}
       aria-label="مزایای خدمات"
     >
       <div className="container mx-auto px-6">
@@ -38,10 +38,10 @@ export default function TrustSignalsBar({
             return (
               <div
                 key={index}
-                className="rounded-2xl border border-white/10 bg-zinc-900/60 p-6"
+                className="rounded-2xl border border-border bg-card/60 p-6"
               >
                 <Icon className={cn("mb-3 h-6 w-6", iconClassName)} />
-                <p className="text-sm text-zinc-400">{signal.label}</p>
+                <p className="text-sm text-muted">{signal.label}</p>
                 <p className="mt-1 font-bold leading-7">{signal.value}</p>
               </div>
             );

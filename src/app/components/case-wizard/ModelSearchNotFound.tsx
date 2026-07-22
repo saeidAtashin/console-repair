@@ -8,24 +8,24 @@ type Props = {
 
 export default function ModelSearchNotFound({ query }: Props) {
   return (
-    <div className="rounded-2xl border border-amber-500/20 bg-zinc-900/60 p-6 sm:p-8">
-      <h2 className="text-lg font-bold text-white">
+    <div className="rounded-2xl border border-amber-500/20 bg-card/60 p-6 sm:p-8">
+      <h2 className="text-lg font-bold text-foreground">
         مدل «{query}» دقیقاً در لیست ما پیدا نشد
       </h2>
-      <p className="mt-2 text-sm leading-7 text-zinc-400">
+      <p className="mt-2 text-sm leading-7 text-muted">
         نگران نباشید — می‌توانید همین حالا قاب طراحی کنید. اگر تفاوت دوربین یا ابعاد
         گوشی شما زیاد باشد، قبل از چاپ با شما هماهنگ می‌کنیم.
       </p>
 
       <div className="mt-6 flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-        <div className="flex h-44 w-24 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/40 p-3">
+        <div className="flex h-44 w-24 shrink-0 items-center justify-center rounded-xl border border-border bg-input-bg p-3">
           <PhoneBackSvg
             model={GENERIC_CUSTOM_MODEL}
             className="h-full w-auto max-w-full drop-shadow-lg"
           />
         </div>
         <div className="flex flex-1 flex-col items-center gap-3 sm:items-start">
-          <p className="text-center text-xs text-zinc-500 sm:text-right">
+          <p className="text-center text-xs text-muted sm:text-right">
             نمونه پشت گوشی — برای طراحی قاب سفارشی
           </p>
           <Link

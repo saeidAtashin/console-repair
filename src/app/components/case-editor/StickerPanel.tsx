@@ -15,7 +15,7 @@ export default function StickerPanel({ packs }: Props) {
     <div className="space-y-4">
       {packs.map((pack) => (
         <div key={pack.id}>
-          <p className="mb-2 text-xs font-semibold text-zinc-400">{pack.name}</p>
+          <p className="mb-2 text-xs font-semibold text-muted">{pack.name}</p>
           <div className="grid grid-cols-4 gap-2">
             {pack.stickers.map((sticker) => (
               <button
@@ -24,7 +24,7 @@ export default function StickerPanel({ packs }: Props) {
                 onClick={() =>
                   addImageLayer(sticker.src, sticker.width, sticker.height, true)
                 }
-                className="flex aspect-square items-center justify-center rounded-lg border border-white/10 bg-zinc-900/60 p-2 transition hover:border-cyan-500/50"
+                className="flex aspect-square items-center justify-center rounded-lg border border-border bg-card/60 p-2 transition hover:border-cyan-500/50"
                 title={sticker.name}
               >
                 <Image

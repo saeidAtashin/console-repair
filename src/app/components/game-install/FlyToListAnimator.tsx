@@ -39,7 +39,7 @@ export default function FlyToListAnimator() {
   return createPortal(
     <motion.div
       aria-hidden
-      className="pointer-events-none fixed z-[250] overflow-hidden border border-white/10 bg-zinc-900/60 will-change-transform"
+      className="pointer-events-none fixed z-[250] overflow-hidden border border-border bg-card/60 will-change-transform"
       style={{
         top: fromRect.top,
         left: fromRect.left,
@@ -75,7 +75,7 @@ export default function FlyToListAnimator() {
       }}
       onAnimationComplete={completeFlyAnimation}
     >
-      <div className="relative h-full w-full overflow-hidden bg-zinc-950">
+      <div className="relative h-full w-full overflow-hidden bg-background">
         <Image src={image} alt="" fill sizes="400px" className="object-cover" />
       </div>
     </motion.div>,

@@ -106,14 +106,14 @@ const PriceTable = () => {
               پیشنهاد ویژه نصب بازی
             </span>
 
-            <h2 className="mb-5 text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
+            <h2 className="mb-5 text-3xl font-black leading-tight text-foreground sm:text-4xl md:text-5xl">
               بازی‌های محبوب را با
               <span className="mt-2 block bg-[linear-gradient(90deg,#60a5fa,#22d3ee,#a78bfa,#60a5fa)] bg-[length:220%_220%] bg-clip-text text-transparent animate-gradient-x">
                 قیمت گیمرها بگیر
               </span>
             </h2>
 
-            <p className="mx-auto max-w-2xl text-base leading-8 text-zinc-400 md:text-lg">
+            <p className="mx-auto max-w-2xl text-base leading-8 text-muted md:text-lg">
               تعرفه شفاف، تخفیف محدود و نصب تخصصی روی PS4، PS5 و Xbox — بدون
               دردسر، آماده بازی.
             </p>
@@ -121,7 +121,7 @@ const PriceTable = () => {
         </FadeUp>
 
         <FadeUp delay={0.08}>
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-4 shadow-[0_0_60px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-6 md:p-8">
+          <div className="overflow-hidden rounded-3xl border border-border bg-input-bg p-4 shadow-[0_0_60px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-6 md:p-8">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div
                 className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-1 scrollbar-none [&::-webkit-scrollbar]:hidden"
@@ -141,25 +141,25 @@ const PriceTable = () => {
                       onClick={() => setActiveTab(tab.id)}
                       className={`group relative shrink-0 snap-start overflow-hidden rounded-2xl border px-4 py-3 text-right transition-all duration-300 cursor-pointer sm:min-w-[148px] sm:px-5 ${isActive
                         ? `${tabTheme.border} ${tabTheme.bg} shadow-[0_0_24px_rgba(56,189,248,0.15)]`
-                        : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/8"
+                        : "border-border bg-surface hover:border-border hover:bg-surface"
                         }`}
                     >
-                      <span className="flex items-center gap-2.5 text-white">
+                      <span className="flex items-center gap-2.5 text-foreground">
                         <ConsoleTabIcon
                           src={tab.iconSrc}
                           className={`h-[46px] w-[46px] transition-[color,opacity] ${isActive
                             ? tabTheme.primary
-                            : "text-zinc-400 opacity-70 group-hover:text-zinc-300 group-hover:opacity-90"
+                            : "text-muted opacity-70 group-hover:text-muted group-hover:opacity-90"
                             }`}
                         />
                         <span className="min-w-0 text-right">
                           <span
-                            className={`block text-base font-black tracking-wide ${isActive ? tabTheme.primary : "text-white"
+                            className={`block text-base font-black tracking-wide ${isActive ? tabTheme.primary : "text-foreground"
                               }`}
                           >
                             {tab.label}
                           </span>
-                          <span className="mt-0.5 block text-xs text-zinc-500 group-hover:text-zinc-400">
+                          <span className="mt-0.5 block text-xs text-muted group-hover:text-muted">
                             {tab.sublabel}
                           </span>
                         </span>
@@ -183,7 +183,7 @@ const PriceTable = () => {
                 </Link>
                 <Link
                   href="#contact"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:border-white/30 hover:bg-white/10"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-surface px-5 py-3 text-sm font-bold text-foreground transition hover:border-border hover:bg-surface"
                 >
                   مشاوره رایگان
                 </Link>
@@ -212,13 +212,13 @@ const PriceTable = () => {
                 <div
                   className={`relative overflow-hidden rounded-2xl border p-5 md:p-6 ${theme.border} ${theme.bg}`}
                 >
-                  <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-white/5 blur-2xl" />
+                  <div className="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-surface blur-2xl" />
                   <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div className="max-w-2xl">
-                      <p className="text-xl font-black text-white sm:text-2xl">
+                      <p className="text-xl font-black text-foreground sm:text-2xl">
                         {activeData.title}
                       </p>
-                      <p className="mt-2 text-sm leading-7 text-zinc-300 sm:text-base">
+                      <p className="mt-2 text-sm leading-7 text-muted sm:text-base">
                         {activeData.description}
                       </p>
                     </div>
@@ -226,7 +226,7 @@ const PriceTable = () => {
                       {TRUST_SIGNALS.map(({ icon: Icon, label }) => (
                         <span
                           key={label}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-semibold text-zinc-300"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-muted"
                         >
                           <Icon className={`h-3.5 w-3.5 ${theme.primary}`} aria-hidden />
                           {label}
@@ -256,9 +256,9 @@ const PriceTable = () => {
                           ...panelTransition,
                           delay: prefersReducedMotion ? 0 : index * 0.06,
                         }}
-                        className={`group relative flex min-h-[210px] flex-col justify-between overflow-hidden rounded-2xl border bg-black/35 p-5 transition-all duration-300 hover:-translate-y-1 sm:min-h-[230px] sm:p-6 ${isFeatured
+                        className={`group relative flex min-h-[210px] flex-col justify-between overflow-hidden rounded-2xl border bg-background/35 p-5 transition-all duration-300 hover:-translate-y-1 sm:min-h-[230px] sm:p-6 ${isFeatured
                           ? `${theme.border} shadow-[0_0_30px_rgba(34,211,238,0.12)]`
-                          : "border-white/10 hover:border-white/20"
+                          : "border-border hover:border-border"
                           }`}
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -284,12 +284,12 @@ const PriceTable = () => {
                           </div>
                         </div>
 
-                        <p className="mt-4 text-base font-bold leading-7 text-zinc-100">
+                        <p className="mt-4 text-base font-bold leading-7 text-foreground">
                           {item.title}
                         </p>
 
                         <div className="mt-5">
-                          <p className="text-xs text-zinc-500 line-through decoration-red-400/80">
+                          <p className="text-xs text-muted line-through decoration-red-400/80">
                             {formatRangeToman(item.previous)}
                           </p>
                           <p
@@ -317,10 +317,10 @@ const PriceTable = () => {
               </motion.div>
             </AnimatePresence>
 
-            <div className="mt-6 flex flex-col items-center justify-between gap-4 rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-4 sm:flex-row sm:p-5">
-              <p className="text-center text-sm text-zinc-400 sm:text-right">
+            <div className="mt-6 flex flex-col items-center justify-between gap-4 rounded-2xl border border-dashed border-border bg-white/[0.03] p-4 sm:flex-row sm:p-5">
+              <p className="text-center text-sm text-muted sm:text-right">
                 هنوز مطمئن نیستی؟ همین الان با تیم ما صحبت کن —{" "}
-                <span className="font-semibold text-zinc-200">
+                <span className="font-semibold text-foreground">
                   مشاوره کاملاً رایگان است.
                 </span>
               </p>

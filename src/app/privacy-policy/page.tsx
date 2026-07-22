@@ -15,14 +15,14 @@ export const metadata = createPageMetadata({
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-black pt-24 text-white">
+    <main className="min-h-screen bg-background pt-24 text-foreground">
       <PageShell
         currentPath={PATH}
         containerClassName="container mx-auto px-6"
         className="container mx-auto px-6 pb-14"
       >
         <h1 className="text-4xl font-black md:text-5xl">{TITLE}</h1>
-        <p className="mt-6 max-w-4xl leading-8 text-zinc-300">
+        <p className="mt-6 max-w-4xl leading-8 text-muted">
           اطلاعات مورد نیاز برای ارائه خدمات، ثبت سفارش و ارتباط با مشتریان
           دریافت می شود و صرفا برای بهبود تجربه کاربری و انجام فرآیند تعمیرات
           استفاده خواهد شد. اطلاعات کاربران بدون مجوز به شخص ثالث منتقل نمی شود.

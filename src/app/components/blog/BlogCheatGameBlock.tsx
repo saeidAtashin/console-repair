@@ -51,7 +51,7 @@ export default function BlogCheatGameBlock({
     <article
       id={anchorId}
       className={cn(
-        "scroll-mt-28 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02]",
+        "scroll-mt-28 overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-surface to-surface",
         !isDetailPage && "[content-visibility:auto] [contain-intrinsic-size:auto_320px]",
       )}
       aria-labelledby={`cheat-game-${anchorId}`}
@@ -67,9 +67,9 @@ export default function BlogCheatGameBlock({
         />
       ) : null}
 
-      <div className="flex flex-col gap-4 border-b border-white/[0.06] p-5 sm:flex-row sm:items-start">
+      <div className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start">
         {!isDetailPage ? (
-          <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-zinc-900">
+          <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-card">
             <GameImageStrip
               images={images}
               alt={game.name}
@@ -82,14 +82,14 @@ export default function BlogCheatGameBlock({
         <div className="min-w-0 flex-1">
           <h3
             id={`cheat-game-${anchorId}`}
-            className="text-lg font-bold text-zinc-100 md:text-xl"
+            className="text-lg font-bold text-foreground md:text-xl"
           >
             {game.name}
           </h3>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
             <span
               className={cn(
-                "inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/40 px-2 py-0.5 font-bold",
+                "inline-flex items-center gap-1 rounded-lg border border-border bg-input-bg px-2 py-0.5 font-bold",
                 consoleMeta.color,
               )}
             >
@@ -102,7 +102,7 @@ export default function BlogCheatGameBlock({
               {game.rating.toFixed(1)}
             </span>
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+          <p className="mt-2 text-sm leading-relaxed text-muted">
             {game.highlight}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -128,7 +128,7 @@ export default function BlogCheatGameBlock({
       </div>
 
       {game.cheatActivation ? (
-        <div className="border-b border-white/[0.06] bg-amber-500/5 px-5 py-3">
+        <div className="border-b border-border bg-amber-500/5 px-5 py-3">
           <p className="text-sm leading-relaxed text-amber-200/90">
             <span className="font-bold text-amber-300">نحوه فعال‌سازی: </span>
             {game.cheatActivation}
@@ -143,7 +143,7 @@ export default function BlogCheatGameBlock({
             aria-label={`جدول چیت ${game.name}`}
           >
             <thead>
-              <tr className="border-b border-white/10 text-start text-xs text-zinc-500">
+              <tr className="border-b border-border text-start text-xs text-muted">
                 <th className="pb-2 pe-4 font-semibold">نام</th>
                 <th className="pb-2 pe-4 font-semibold">کد</th>
                 <th className="pb-2 pe-4 font-semibold">اثر</th>
@@ -154,18 +154,18 @@ export default function BlogCheatGameBlock({
               {game.cheats.map((cheat, cheatIndex) => (
                 <tr
                   key={`${anchorId}-cheat-${cheatIndex}`}
-                  className="border-b border-white/[0.04] last:border-0"
+                  className="border-b border-border last:border-0"
                 >
-                  <td className="py-2.5 pe-4 font-medium text-zinc-200">
+                  <td className="py-2.5 pe-4 font-medium text-foreground">
                     {cheat.title}
                   </td>
                   <td className="py-2.5 pe-4">
-                    <code className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-xs text-cyan-300">
+                    <code className="rounded bg-surface/80 px-1.5 py-0.5 text-xs text-cyan-300">
                       {cheat.code}
                     </code>
                   </td>
-                  <td className="py-2.5 pe-4 text-zinc-400">{cheat.effect}</td>
-                  <td className="py-2.5 text-zinc-500">
+                  <td className="py-2.5 pe-4 text-muted">{cheat.effect}</td>
+                  <td className="py-2.5 text-muted">
                     {cheat.platform
                       ? PLATFORM_LABEL[cheat.platform]
                       : PLATFORM_LABEL.all}
@@ -178,7 +178,7 @@ export default function BlogCheatGameBlock({
       ) : null}
 
       {game.secrets && game.secrets.length > 0 ? (
-        <div className="border-t border-white/[0.06] px-5 py-4">
+        <div className="border-t border-border px-5 py-4">
           <h4 className="mb-3 text-sm font-bold text-violet-300">
             ترفندها و رمزهای مخفی
           </h4>
@@ -186,7 +186,7 @@ export default function BlogCheatGameBlock({
             {game.secrets.map((secret, secretIndex) => (
               <li
                 key={`${anchorId}-secret-${secretIndex}`}
-                className="flex gap-2 text-sm leading-relaxed text-zinc-400"
+                className="flex gap-2 text-sm leading-relaxed text-muted"
               >
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400" />
                 {secret}
@@ -197,7 +197,7 @@ export default function BlogCheatGameBlock({
       ) : null}
 
       {showDetailLink && detailHref && postSlug ? (
-        <div className="border-t border-white/[0.06] px-5 py-3 text-end">
+        <div className="border-t border-border px-5 py-3 text-end">
           <Link
             href={detailHref}
             className="text-xs font-semibold text-cyan-400 transition hover:text-cyan-300"

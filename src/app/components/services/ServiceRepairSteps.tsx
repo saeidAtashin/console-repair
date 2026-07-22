@@ -39,7 +39,7 @@ function StepIcon({ index }: { index: number }) {
   const icon = isAxe ? (
     <Hammer className="h-6 w-6 text-sky-300 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]" />
   ) : isShield ? (
-    <Shield className="h-6 w-6 text-zinc-300 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
+    <Shield className="h-6 w-6 text-muted drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
   ) : (
     <Flame className="h-6 w-6 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)] animate-pulse" />
   );
@@ -47,7 +47,7 @@ function StepIcon({ index }: { index: number }) {
   return (
     <div
       className={cn(
-        "relative mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border bg-zinc-950/90 shadow-2xl transition-transform duration-300 group-hover:scale-110",
+        "relative mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border bg-background/90 shadow-2xl transition-transform duration-300 group-hover:scale-110",
         isAxe
           ? "border-sky-500/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_0_20px_rgba(14,165,233,0.15)]"
           : isShield
@@ -80,7 +80,7 @@ function RepairStepCard({ step, index }: { step: string; index: number }) {
       variants={cardVariants}
       whileHover={{ y: -6 }}
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-zinc-800 bg-gradient-to-b from-zinc-900/90 to-black/95 p-8 backdrop-blur-xl",
+        "group relative overflow-hidden rounded-xl border border-border bg-gradient-to-b from-card/90 to-background/95 p-8 backdrop-blur-xl",
         "transition-all duration-500 hover:border-red-500/40 hover:shadow-[0_25px_50px_-12px_rgba(220,38,38,0.15)]",
       )}
     >
@@ -103,24 +103,24 @@ function RepairStepCard({ step, index }: { step: string; index: number }) {
       />
 
       {/* Norse Rune Watermark */}
-      <div className="absolute right-4 top-2 font-serif text-8xl font-black text-zinc-800/15 pointer-events-none select-none transition-colors duration-500 group-hover:text-red-600/10">
+      <div className="absolute right-4 top-2 font-serif text-8xl font-black text-foreground/10 pointer-events-none select-none transition-colors duration-500 group-hover:text-red-600/10">
         {currentRune}
       </div>
 
       {/* Kratos' mark label */}
-      <span className="absolute left-6 top-4 font-mono text-[9px] tracking-[0.3em] text-zinc-500 transition-colors duration-500 group-hover:text-red-500/70">
+      <span className="absolute left-6 top-4 font-mono text-[9px] tracking-[0.3em] text-muted transition-colors duration-500 group-hover:text-red-500/70">
         REALM_VALHAL_{String(index + 1).padStart(2, "0")}
       </span>
 
       <div className="relative z-10 mt-4">
         <StepIcon index={index} />
 
-        <h3 className="font-serif text-xl font-bold tracking-wide text-stone-200 transition-colors duration-300 group-hover:text-white">
+        <h3 className="font-serif text-xl font-bold tracking-wide text-stone-200 transition-colors duration-300 group-hover:text-foreground">
           {step}
         </h3>
 
         {/* Runes / Norse Lore-friendly Description */}
-        <p className="mt-3 text-sm leading-relaxed text-zinc-400 font-sans transition-colors duration-300 group-hover:text-zinc-300">
+        <p className="mt-3 text-sm leading-relaxed text-muted font-sans transition-colors duration-300 group-hover:text-muted">
           با استعانت از مهارت دورف‌ها در کارگاه سندری و بروک؛ فلز را رام کرده و
           نظم و پایداری را به ابزارت بازمی‌گردانیم.
         </p>
@@ -131,7 +131,7 @@ function RepairStepCard({ step, index }: { step: string; index: number }) {
 
 export default function ServiceRepairSteps({ steps }: ServiceRepairStepsProps) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border-2 border-zinc-900 bg-radial-[at_50%_0%] from-zinc-900/60 via-black to-black p-8 shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+    <div className="relative overflow-hidden rounded-3xl border-2 border-border bg-radial-[at_50%_0%] from-card/60 via-background to-background p-8 shadow-[0_0_60px_rgba(0,0,0,0.8)]">
       {/* Ember glow backgrounds */}
       <div
         aria-hidden
@@ -149,7 +149,7 @@ export default function ServiceRepairSteps({ steps }: ServiceRepairStepsProps) {
       />
 
       {/* Runic Frame borders */}
-      <div className="absolute inset-2 pointer-events-none border border-zinc-800/40 rounded-2xl" />
+      <div className="absolute inset-2 pointer-events-none border border-border/40 rounded-2xl" />
 
       <motion.div
         variants={containerVariants}

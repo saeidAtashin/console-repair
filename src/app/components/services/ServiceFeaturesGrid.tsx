@@ -68,7 +68,7 @@ function ServiceFeatureCard({
   return (
     <div
       className={cn(
-        "group relative h-full overflow-hidden rounded-2xl border border-white/[0.08] bg-black/45 p-7 backdrop-blur-xl transition-all duration-500",
+        "group relative h-full overflow-hidden rounded-2xl border border-border bg-background/45 p-7 backdrop-blur-xl transition-all duration-500",
         "hover:-translate-y-1.5 hover:border-cyan-400/35 hover:shadow-[0_0_40px_rgba(34,211,238,0.12)]",
         theme.border,
       )}
@@ -105,7 +105,7 @@ function ServiceFeatureCard({
 
       <span
         aria-hidden
-        className="pointer-events-none absolute end-4 top-3 font-mono text-4xl font-black leading-none text-white/[0.04] transition-colors duration-500 group-hover:text-cyan-400/15"
+        className="pointer-events-none absolute end-4 top-3 font-mono text-4xl font-black leading-none text-foreground/[0.04] transition-colors duration-500 group-hover:text-cyan-400/15"
       >
         {String(index + 1).padStart(2, "0")}
       </span>
@@ -119,7 +119,7 @@ function ServiceFeatureCard({
         <div className="relative mb-6 inline-flex">
           <div
             className={cn(
-              "relative flex h-14 w-14 items-center justify-center rounded-xl border bg-black/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-500 group-hover:scale-110",
+              "relative flex h-14 w-14 items-center justify-center rounded-xl border bg-input-bg shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-500 group-hover:scale-110",
               theme.border,
               theme.bg,
             )}
@@ -139,11 +139,11 @@ function ServiceFeatureCard({
           {tag}_{String(index + 1).padStart(2, "0")}
         </span>
 
-        <h3 className="text-xl font-bold text-white transition-colors duration-300 group-hover:text-cyan-300">
+        <h3 className="text-xl font-bold text-foreground transition-colors duration-300 group-hover:text-cyan-300">
           {feature}
         </h3>
 
-        <p className="mt-3 text-sm leading-7 text-zinc-500 transition-colors duration-300 group-hover:text-zinc-400">
+        <p className="mt-3 text-sm leading-7 text-muted transition-colors duration-300 group-hover:text-muted">
           {featureDescription}
         </p>
 

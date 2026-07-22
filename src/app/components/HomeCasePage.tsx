@@ -7,16 +7,16 @@ export default function HomeCasePage() {
   const featured = getReadyCases().slice(0, 4);
 
   return (
-    <main className="min-h-screen bg-black pt-20">
+    <main className="min-h-screen bg-background pt-20">
       <section className="relative overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,182,212,0.15),transparent_60%)]" />
         <div className="relative mx-auto max-w-5xl text-center">
           <p className="mb-4 text-sm font-semibold text-cyan-400">قاب‌کده — طراحی اختصاصی</p>
-          <h1 className="text-3xl font-black leading-tight text-white sm:text-5xl">
+          <h1 className="text-3xl font-black leading-tight text-foreground sm:text-5xl">
             قاب موبایل خودت را
             <span className="block text-cyan-400">طراحی کن</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-zinc-400 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-muted sm:text-lg">
             برند و مدل گوشی‌ات را انتخاب کن، متن و استیکر اضافه کن، پیش‌نمایش ببین و سفارش بده.
             قاب‌های آماده هم داریم!
           </p>
@@ -30,7 +30,7 @@ export default function HomeCasePage() {
             </Link>
             <Link
               href="/cases"
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 px-8 py-3.5 text-sm font-bold text-white transition hover:border-cyan-500/50"
+              className="inline-flex items-center gap-2 rounded-xl border border-border px-8 py-3.5 text-sm font-bold text-foreground transition hover:border-cyan-500/50"
             >
               <Sparkles size={18} />
               قاب‌های آماده
@@ -39,7 +39,7 @@ export default function HomeCasePage() {
         </div>
       </section>
 
-      <section className="border-y border-white/5 bg-zinc-950/50 px-4 py-8 sm:px-6">
+      <section className="border-y border-border bg-background/50 px-4 py-8 sm:px-6">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
           {[
             { icon: Palette, title: "طراحی زنده", desc: "متن و استیکر را لحظه‌ای ببین" },
@@ -49,8 +49,8 @@ export default function HomeCasePage() {
             <div key={title} className="flex items-start gap-3 rounded-xl p-4">
               <Icon size={20} className="mt-0.5 shrink-0 text-cyan-400" />
               <div>
-                <p className="font-bold text-white">{title}</p>
-                <p className="text-sm text-zinc-500">{desc}</p>
+                <p className="font-bold text-foreground">{title}</p>
+                <p className="text-sm text-muted">{desc}</p>
               </div>
             </div>
           ))}
@@ -61,8 +61,8 @@ export default function HomeCasePage() {
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-end justify-between">
             <div>
-              <h2 className="text-2xl font-black text-white">قاب‌های آماده</h2>
-              <p className="mt-1 text-sm text-zinc-500">طراحی‌های از پیش ساخته‌شده</p>
+              <h2 className="text-2xl font-black text-foreground">قاب‌های آماده</h2>
+              <p className="mt-1 text-sm text-muted">طراحی‌های از پیش ساخته‌شده</p>
             </div>
             <Link href="/cases" className="text-sm text-cyan-400 hover:underline">
               مشاهده همه

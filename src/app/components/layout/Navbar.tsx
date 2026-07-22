@@ -9,6 +9,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import CartNavLink from "../shop/CartNavLink";
 import { navbarNavItems } from "@/lib/site-nav";
 import SiteLogo from "../ui/SiteLogo";
+import ThemeToggle from "../ui/ThemeToggle";
 import {
   X,
   ChevronDown,
@@ -145,19 +146,19 @@ export default function Navbar() {
   }, [open, closeMenu, openMenu]);
 
   const cartClassName =
-    "rounded-lg border border-zinc-800 bg-zinc-900 p-2.5 text-zinc-200 transition hover:border-cyan-500/50 touch-manipulation";
+    "rounded-lg border border-border bg-card p-2.5 text-foreground transition hover:border-cyan-500/50 touch-manipulation";
 
   const loginClassName =
     "relative overflow-hidden rounded-lg bg-cyan-500 px-4 py-2 text-sm font-bold text-black shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all hover:scale-105 active:scale-95 sm:px-5 lg:px-6 touch-manipulation";
 
   const panelClassName =
-    "flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs font-bold text-white transition-all hover:border-cyan-500/50 sm:gap-2 sm:px-5 sm:text-sm touch-manipulation";
+    "flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-bold text-foreground transition-all hover:border-cyan-500/50 sm:gap-2 sm:px-5 sm:text-sm touch-manipulation";
 
   return (
     <>
       <header
         className={`fixed inset-x-0 top-0 z-100 border-b transition-all duration-500 ${scrolled
-          ? "h-16 border-white/10 bg-black/80 backdrop-blur-2xl"
+          ? "h-16 border-border bg-background/80 backdrop-blur-2xl"
           : "h-16 border-transparent bg-transparent md:h-20"
           }`}
       >
@@ -167,6 +168,8 @@ export default function Navbar() {
           {/* Actions — end (left in RTL) */}
           <div className="flex min-w-0 items-center justify-start gap-2 sm:gap-3">
             <div className="hidden items-center gap-2 lg:flex xl:gap-3">
+              <ThemeToggle />
+
               {!user ? (
                 <Link href="/login" className={loginClassName}>
                   ورود
@@ -254,7 +257,7 @@ export default function Navbar() {
                       href={item.href}
                       className={`text-sm font-medium transition-colors ${active
                         ? "text-cyan-400"
-                        : "text-zinc-400 hover:text-cyan-400"
+                        : "text-muted hover:text-cyan-400"
                         }`}
                     >
                       {item.title}
@@ -262,7 +265,7 @@ export default function Navbar() {
                     <button
                       type="button"
                       aria-label={`${item.title} — زیرمنو`}
-                      className="flex items-center p-0.5 text-zinc-400 transition-colors hover:text-cyan-400"
+                      className="flex items-center p-0.5 text-muted transition-colors hover:text-cyan-400"
                     >
                       <ChevronDown
                         size={14}
@@ -272,7 +275,7 @@ export default function Navbar() {
                   </div>
 
                   <div className="invisible absolute top-full right-0 w-56 translate-y-2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                    <div className="rounded-2xl border border-white/10 bg-zinc-900/90 p-2 shadow-2xl backdrop-blur-2xl">
+                    <div className="rounded-2xl border border-border bg-card/90 p-2 shadow-2xl backdrop-blur-2xl">
                       {item.children.map((sub) =>
                         sub.children ? (
                           <div
@@ -281,7 +284,7 @@ export default function Navbar() {
                           >
                             <Link
                               href={sub.href}
-                              className="flex items-center justify-between rounded-xl px-4 py-2.5 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
+                              className="flex items-center justify-between rounded-xl px-4 py-2.5 text-sm text-muted transition-all hover:bg-surface hover:text-foreground"
                             >
                               <span>{sub.title}</span>
                               <ChevronDown
@@ -290,12 +293,12 @@ export default function Navbar() {
                               />
                             </Link>
                             <div className="invisible absolute top-0 right-full mr-1 w-48 translate-x-2 opacity-0 transition-all duration-200 group-hover/brand:visible group-hover/brand:translate-x-0 group-hover/brand:opacity-100">
-                              <div className="rounded-2xl border border-white/10 bg-zinc-900/95 p-2 shadow-2xl backdrop-blur-2xl">
+                              <div className="rounded-2xl border border-border bg-card/95 p-2 shadow-2xl backdrop-blur-2xl">
                                 {sub.children.map((series) => (
                                   <Link
                                     key={series.href}
                                     href={series.href}
-                                    className="block rounded-xl px-3 py-2 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
+                                    className="block rounded-xl px-3 py-2 text-sm text-muted transition-all hover:bg-surface hover:text-foreground"
                                   >
                                     {series.title}
                                   </Link>
@@ -307,7 +310,7 @@ export default function Navbar() {
                           <Link
                             key={sub.href}
                             href={sub.href}
-                            className="block rounded-xl px-4 py-2.5 text-sm text-zinc-400 transition-all hover:bg-white/5 hover:text-white"
+                            className="block rounded-xl px-4 py-2.5 text-sm text-muted transition-all hover:bg-surface hover:text-foreground"
                           >
                             {sub.title}
                           </Link>
@@ -322,7 +325,7 @@ export default function Navbar() {
                   href={item.href}
                   className={`relative px-3 py-2 text-sm font-medium transition-colors xl:px-4 ${active
                     ? "text-cyan-400"
-                    : "text-zinc-400 hover:text-cyan-400"
+                    : "text-muted hover:text-cyan-400"
                     }`}
                 >
                   {item.title}
@@ -350,7 +353,7 @@ export default function Navbar() {
         aria-hidden={!open}
       >
         <div
-          className="absolute inset-0 bg-black/80 backdrop-blur-md"
+          className="absolute inset-0 bg-background/80 backdrop-blur-md"
           onClick={closeMenu}
           aria-hidden
         />
@@ -359,12 +362,12 @@ export default function Navbar() {
           role="dialog"
           aria-modal="true"
           aria-label="منوی موبایل"
-          className={`absolute right-0 top-0 flex h-full w-[min(100vw-3rem,20rem)] flex-col overflow-hidden border-l border-white/10 bg-zinc-950 transition-transform duration-500 sm:w-80 ${open ? "translate-x-0" : "translate-x-full"}`}
+          className={`absolute right-0 top-0 flex h-full w-[min(100vw-3rem,20rem)] flex-col overflow-hidden border-l border-border bg-background transition-transform duration-500 sm:w-80 ${open ? "translate-x-0" : "translate-x-full"}`}
         >
           <div className="absolute inset-0 opacity-5 [background-image:linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] [background-size:20px_20px]" />
 
           <div className="relative z-10 flex min-h-0 flex-1 flex-col">
-            <div className="flex shrink-0 items-center justify-between border-b border-white/5 px-5 py-5 sm:px-8 sm:py-6">
+            <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-5 sm:px-8 sm:py-6">
               <SiteLogo
                 showText={false}
                 imageClassName="h-10 w-10 rounded-lg"
@@ -374,7 +377,7 @@ export default function Navbar() {
                 type="button"
                 onClick={closeMenu}
                 data-route-loader-ignore="true"
-                className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-white/5 hover:text-white touch-manipulation"
+                className="rounded-lg p-1.5 text-muted transition-colors hover:bg-surface hover:text-foreground touch-manipulation"
                 aria-label="بستن منو"
               >
                 <X size={28} />
@@ -400,7 +403,7 @@ export default function Navbar() {
                               onClick={closeMenu}
                               className={`text-lg font-bold transition-colors sm:text-xl ${active
                                 ? "text-cyan-400"
-                                : "text-white hover:text-cyan-400"
+                                : "text-foreground hover:text-cyan-400"
                                 }`}
                             >
                               {item.title}
@@ -411,7 +414,7 @@ export default function Navbar() {
                               data-route-loader-ignore="true"
                               aria-expanded={mobileOpen === item.title}
                               aria-label={`${item.title} — زیرمنو`}
-                              className="rounded-lg p-2 text-cyan-500 transition-colors hover:bg-white/5 touch-manipulation"
+                              className="rounded-lg p-2 text-cyan-500 transition-colors hover:bg-surface touch-manipulation"
                               onClick={() =>
                                 setMobileOpen(
                                   mobileOpen === item.title ? null : item.title,
@@ -437,7 +440,7 @@ export default function Navbar() {
                                         onClick={closeMenu}
                                         className={`text-sm transition-colors sm:text-base ${pathname === sub.href || pathname.startsWith(`${sub.href}/`)
                                           ? "text-cyan-400"
-                                          : "text-zinc-400 hover:text-cyan-400"
+                                          : "text-muted hover:text-cyan-400"
                                           }`}
                                       >
                                         {sub.title}
@@ -447,7 +450,7 @@ export default function Navbar() {
                                         data-route-loader-ignore="true"
                                         aria-expanded={mobileBrandOpen === sub.href}
                                         aria-label={`${sub.title} — سری‌ها`}
-                                        className="rounded-lg p-1.5 text-cyan-500 transition-colors hover:bg-white/5 touch-manipulation"
+                                        className="rounded-lg p-1.5 text-cyan-500 transition-colors hover:bg-surface touch-manipulation"
                                         onClick={() =>
                                           setMobileBrandOpen(
                                             mobileBrandOpen === sub.href ? null : sub.href,
@@ -463,7 +466,7 @@ export default function Navbar() {
                                     <div
                                       className={`overflow-hidden transition-all duration-300 ${mobileBrandOpen === sub.href ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
                                     >
-                                      <div className="mr-3 flex flex-col gap-2 border-r border-white/10 py-1 pr-3">
+                                      <div className="mr-3 flex flex-col gap-2 border-r border-border py-1 pr-3">
                                         {sub.children.map((series) => (
                                           <Link
                                             key={series.href}
@@ -471,7 +474,7 @@ export default function Navbar() {
                                             onClick={closeMenu}
                                             className={`text-xs transition-colors sm:text-sm ${pathname === series.href.split("?")[0]
                                               ? "text-cyan-400"
-                                              : "text-zinc-500 hover:text-cyan-400"
+                                              : "text-muted hover:text-cyan-400"
                                               }`}
                                           >
                                             {series.title}
@@ -487,7 +490,7 @@ export default function Navbar() {
                                     onClick={closeMenu}
                                     className={`text-sm transition-colors sm:text-base ${pathname === sub.href
                                       ? "text-cyan-400"
-                                      : "text-zinc-400 hover:text-cyan-400"
+                                      : "text-muted hover:text-cyan-400"
                                       }`}
                                   >
                                     {sub.title}
@@ -503,7 +506,7 @@ export default function Navbar() {
                           onClick={closeMenu}
                           className={`block rounded-xl px-2 py-3 text-lg font-bold transition-colors sm:text-xl ${active
                             ? "text-cyan-400"
-                            : "text-white hover:text-cyan-400"
+                            : "text-foreground hover:text-cyan-400"
                             }`}
                         >
                           {item.title}
@@ -515,13 +518,17 @@ export default function Navbar() {
               </nav>
             </div>
 
-            <div className="shrink-0 border-t border-white/5 px-5 py-5 sm:px-8 sm:py-6">
+            <div className="shrink-0 border-t border-border px-5 py-5 sm:px-8 sm:py-6">
               <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold text-muted">تم</span>
+                  <ThemeToggle />
+                </div>
                 <Link
                   href="/cart"
                   data-shop-cart-target
                   onClick={closeMenu}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 py-3.5 text-center text-sm font-bold text-white transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card py-3.5 text-center text-sm font-bold text-foreground transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
                 >
                   <ShoppingCart size={20} className="text-cyan-400" />
                   سبد خرید
@@ -544,7 +551,7 @@ export default function Navbar() {
                     <Link
                       href={user.role === "admin" ? "/admin" : "/dashboard"}
                       onClick={closeMenu}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 py-3.5 text-center text-sm font-bold text-white transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card py-3.5 text-center text-sm font-bold text-foreground transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
                     >
                       <LayoutDashboard size={20} className="text-cyan-400" />
                       پنل کاربری

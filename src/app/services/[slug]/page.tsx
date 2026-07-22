@@ -69,7 +69,7 @@ export default async function ServicePage({ params }: Props) {
   const repairHref = buildRepairHref(consoleId ? { consoleId } : undefined);
 
   return (
-    <main className="min-h-screen bg-black pt-24 text-white">
+    <main className="min-h-screen bg-background pt-24 text-foreground">
       <ServiceSchema
         title={service.title}
         description={service.seoDescription}
@@ -93,7 +93,7 @@ export default async function ServicePage({ params }: Props) {
         ]}
         containerClassName="container mx-auto px-6"
       >
-        <section className="relative overflow-hidden border-b border-white/10">
+        <section className="relative overflow-hidden border-b border-border">
           <div
             className={`absolute inset-0 bg-linear-to-b ${theme.glow} via-transparent to-transparent`}
           />
@@ -110,7 +110,7 @@ export default async function ServicePage({ params }: Props) {
                 {service.title}
               </h1>
 
-              <p className="mt-8 max-w-2xl text-lg leading-8 text-zinc-400">
+              <p className="mt-8 max-w-2xl text-lg leading-8 text-muted">
                 {service.longDescription}
               </p>
 
@@ -143,7 +143,7 @@ export default async function ServicePage({ params }: Props) {
               <div
                 className={`absolute -inset-5 rounded-[40px] ${theme.bg} blur-3xl`}
               />
-              <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-zinc-900">
+              <div className="relative overflow-hidden rounded-[32px] border border-border bg-card">
                 <Image
                   src={service.cover}
                   alt={service.title}
@@ -168,7 +168,7 @@ export default async function ServicePage({ params }: Props) {
             <h2 className="text-3xl font-black">
               چرا تعمیر کنسول خود را به ما بسپارید؟
             </h2>
-            <p className="mt-4 max-w-2xl text-zinc-400">
+            <p className="mt-4 max-w-2xl text-muted">
               تعمیرات تخصصی با قطعات باکیفیت، ابزار حرفه‌ای و تکنسین‌های باتجربه
               انجام می‌شود.
             </p>
@@ -244,9 +244,9 @@ function InfoBox({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-5 backdrop-blur">
+    <div className="rounded-2xl border border-border bg-card/70 p-5 backdrop-blur">
       <div className="mb-3">{icon}</div>
-      <p className="text-sm text-zinc-400">{label}</p>
+      <p className="text-sm text-muted">{label}</p>
       <p className="mt-1 font-bold">{value}</p>
     </div>
   );

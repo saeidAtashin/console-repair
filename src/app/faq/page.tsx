@@ -33,7 +33,7 @@ const faqItems = [
 
 export default function FaqPage() {
   return (
-    <main className="min-h-screen bg-black pt-24 text-white">
+    <main className="min-h-screen bg-background pt-24 text-foreground">
       <PageShell
         currentPath={PATH}
         containerClassName="container mx-auto px-6"
@@ -44,10 +44,10 @@ export default function FaqPage() {
           {faqItems.map((item) => (
             <article
               key={item.question}
-              className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6"
+              className="rounded-2xl border border-border bg-card/40 p-6"
             >
-              <h2 className="text-lg font-bold text-white">{item.question}</h2>
-              <p className="mt-3 leading-8 text-zinc-300">{item.answer}</p>
+              <h2 className="text-lg font-bold text-foreground">{item.question}</h2>
+              <p className="mt-3 leading-8 text-muted">{item.answer}</p>
             </article>
           ))}
         </div>

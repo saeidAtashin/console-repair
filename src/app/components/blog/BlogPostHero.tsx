@@ -22,7 +22,7 @@ export default function BlogPostHero({ post }: Props) {
   });
 
   return (
-    <header className="blog-scene relative mb-12 overflow-hidden rounded-[32px] border border-white/[0.08] bg-zinc-900/40">
+    <header className="blog-scene relative mb-12 overflow-hidden rounded-[32px] border border-border bg-card/40">
       <BlogFloatingOrbs />
 
       <div className="relative grid gap-8 p-6 md:grid-cols-[1fr_280px] md:p-10 lg:grid-cols-[1fr_320px]">
@@ -37,7 +37,7 @@ export default function BlogPostHero({ post }: Props) {
               (section) => (
                 <span
                   key={section.id}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300 backdrop-blur-sm"
+                  className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted backdrop-blur-sm"
                 >
                   {section.title.split(" ").slice(0, 5).join(" ")}
                 </span>
@@ -58,7 +58,7 @@ export default function BlogPostHero({ post }: Props) {
             initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.12 }}
-            className="mt-4 text-lg text-zinc-400"
+            className="mt-4 text-lg text-muted"
           >
             {post.excerpt}
           </motion.p>
@@ -67,7 +67,7 @@ export default function BlogPostHero({ post }: Props) {
             initial={prefersReducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.45, delay: 0.2 }}
-            className="mt-6 flex flex-wrap items-center gap-4 text-sm text-zinc-500"
+            className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted"
           >
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-cyan-400" aria-hidden />
@@ -84,7 +84,7 @@ export default function BlogPostHero({ post }: Props) {
           initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.55, delay: 0.1 }}
-          className="blog-tilt-frame blog-tilt relative mx-auto aspect-[4/5] w-full max-w-[320px] overflow-hidden rounded-2xl border border-white/10 shadow-[0_24px_60px_-12px_rgba(34,211,238,0.2)]"
+          className="blog-tilt-frame blog-tilt relative mx-auto aspect-[4/5] w-full max-w-[320px] overflow-hidden rounded-2xl border border-border shadow-[0_24px_60px_-12px_rgba(34,211,238,0.2)]"
         >
           <Image
             src={post.coverImage}
@@ -95,7 +95,7 @@ export default function BlogPostHero({ post }: Props) {
             className="object-cover"
           />
           <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"
             aria-hidden
           />
         </motion.div>

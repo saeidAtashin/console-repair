@@ -35,10 +35,10 @@ export default function CartPageClient() {
   if (displayItems.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 pt-28 pb-16 text-center">
-        <h1 className="text-2xl font-black text-white">سبد خرید خالی است</h1>
-        <p className="mt-3 text-zinc-400">قاب آماده انتخاب کن یا خودت طراحی کن</p>
+        <h1 className="text-2xl font-black text-foreground">سبد خرید خالی است</h1>
+        <p className="mt-3 text-muted">قاب آماده انتخاب کن یا خودت طراحی کن</p>
         <div className="mt-6 flex justify-center gap-4">
-          <Link href="/cases" className="rounded-xl border border-zinc-700 px-6 py-3 text-sm font-bold text-white">
+          <Link href="/cases" className="rounded-xl border border-border px-6 py-3 text-sm font-bold text-foreground">
             قاب‌های آماده
           </Link>
           <Link href="/create" className="rounded-xl bg-cyan-500 px-6 py-3 text-sm font-bold text-black">
@@ -51,38 +51,38 @@ export default function CartPageClient() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-28 pb-16">
-      <h1 className="text-2xl font-black text-white">سبد خرید</h1>
+      <h1 className="text-2xl font-black text-foreground">سبد خرید</h1>
       <ul className="mt-8 space-y-4">
         {displayItems.map((entry) => {
           if (!entry) return null;
           return (
             <li
               key={entry.key}
-              className="flex gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-4"
+              className="flex gap-4 rounded-2xl border border-border bg-card/60 p-4"
             >
-              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-zinc-800">
+              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl bg-surface">
                 {entry.image ? (
                   entry.image.startsWith("data:") ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={entry.image} alt="" className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-gradient-to-br from-cyan-900/40 to-purple-900/40">
-                      <div className="h-14 w-7 rounded-lg border border-white/20 bg-zinc-900" />
+                      <div className="h-14 w-7 rounded-lg border border-border bg-card" />
                     </div>
                   )
                 ) : (
                   <div className="flex h-full items-center justify-center bg-gradient-to-br from-cyan-900/40 to-purple-900/40">
-                    <div className="h-14 w-7 rounded-lg border border-white/20 bg-zinc-900" />
+                    <div className="h-14 w-7 rounded-lg border border-border bg-card" />
                   </div>
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-bold text-white">{entry.title}</p>
+                <p className="font-bold text-foreground">{entry.title}</p>
                 {entry.description ? (
-                  <p className="mt-1 line-clamp-2 text-xs text-zinc-500">{entry.description}</p>
+                  <p className="mt-1 line-clamp-2 text-xs text-muted">{entry.description}</p>
                 ) : null}
                 {entry.item.kind === "custom" ? (
-                  <p className="mt-1 text-xs text-zinc-500">
+                  <p className="mt-1 text-xs text-muted">
                     {getBrandBySlug(entry.item.brandSlug)?.name} —{" "}
                     {getModelBySlug(entry.item.brandSlug, entry.item.modelSlug)?.name} —{" "}
                     {getCaseTypeBySlug(entry.item.caseTypeSlug)?.name}
@@ -93,15 +93,15 @@ export default function CartPageClient() {
                   <button
                     type="button"
                     onClick={() => decrementQty(entry.key)}
-                    className="rounded-lg border border-zinc-700 px-3 py-1 text-sm"
+                    className="rounded-lg border border-border px-3 py-1 text-sm"
                   >
                     −
                   </button>
-                  <span className="text-sm text-white">{entry.item.qty}</span>
+                  <span className="text-sm text-foreground">{entry.item.qty}</span>
                   <button
                     type="button"
                     onClick={() => incrementQty(entry.key)}
-                    className="rounded-lg border border-zinc-700 px-3 py-1 text-sm"
+                    className="rounded-lg border border-border px-3 py-1 text-sm"
                   >
                     +
                   </button>
@@ -118,9 +118,9 @@ export default function CartPageClient() {
           );
         })}
       </ul>
-      <div className="mt-8 rounded-2xl border border-white/10 bg-zinc-900/60 p-6">
+      <div className="mt-8 rounded-2xl border border-border bg-card/60 p-6">
         <div className="flex justify-between text-lg font-bold">
-          <span className="text-zinc-400">جمع کل</span>
+          <span className="text-muted">جمع کل</span>
           <span className="text-cyan-400">{formatToman(subtotal)}</span>
         </div>
         <Link

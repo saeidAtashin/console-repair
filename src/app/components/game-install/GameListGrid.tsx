@@ -13,7 +13,7 @@ type Props = {
 export default function GameListGrid({ games, totalCount, consoleSlug }: Props) {
   if (games.length === 0) {
     return (
-      <p className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-zinc-400">
+      <p className="rounded-2xl border border-border bg-surface px-6 py-10 text-center text-muted">
         بازی‌ای یافت نشد.
       </p>
     );
@@ -21,7 +21,7 @@ export default function GameListGrid({ games, totalCount, consoleSlug }: Props) 
 
   return (
     <>
-      <p className="mb-6 text-sm text-zinc-500">
+      <p className="mb-6 text-sm text-muted">
         {totalCount.toLocaleString("fa-IR")} بازی — نمایش{" "}
         {games.length.toLocaleString("fa-IR")} مورد
       </p>
@@ -38,9 +38,9 @@ export default function GameListGrid({ games, totalCount, consoleSlug }: Props) 
           return (
             <li
               key={game.id}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-cyan-400/30 hover:bg-white/[0.07]"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface transition hover:border-cyan-400/30 hover:bg-white/[0.07]"
             >
-              <div className="relative aspect-[16/10] overflow-hidden bg-zinc-900">
+              <div className="relative aspect-[16/10] overflow-hidden bg-card">
                 <GameImageStrip
                   images={images}
                   alt={game.name}
@@ -57,14 +57,14 @@ export default function GameListGrid({ games, totalCount, consoleSlug }: Props) 
                 <h3 className="line-clamp-2 font-bold leading-snug">
                   {game.name}
                 </h3>
-                <p className="mt-1 text-xs text-zinc-500">
+                <p className="mt-1 text-xs text-muted">
                   {getInstallCatalogConsoleLabel(game.console)} · {game.genre}
                 </p>
                 {game.rating != null ? (
                   <p className="mt-2 text-sm text-cyan-400/90">
                     امتیاز: {game.rating.toFixed(1)}
                     {game.metacritic != null ? (
-                      <span className="text-zinc-500">
+                      <span className="text-muted">
                         {" "}
                         · متاکریتیک {game.metacritic}
                       </span>

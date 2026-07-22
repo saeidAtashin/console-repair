@@ -12,11 +12,11 @@ export const metadata = createPageMetadata({
 
 export default function CreatePage() {
   return (
-    <div className="min-h-screen bg-black pt-24 pb-16 px-4 sm:px-6">
+    <div className="min-h-screen bg-background pt-24 pb-16 px-4 sm:px-6">
       <div className="mx-auto max-w-5xl">
         <WizardBreadcrumb crumbs={[{ label: "برند" }]} />
-        <h1 className="mt-6 text-2xl font-black text-white sm:text-3xl">برند گوشی خود را انتخاب کنید</h1>
-        <p className="mt-2 text-zinc-400">مرحله ۱ از ۳ — برند</p>
+        <h1 className="mt-6 text-2xl font-black text-foreground sm:text-3xl">برند گوشی خود را انتخاب کنید</h1>
+        <p className="mt-2 text-muted">مرحله ۱ از ۳ — برند</p>
         <div className="mt-6">
           <ModelSearch placeholder="مثلاً گلکسی S24، آیفون 15 Pro، ردمی نوت 13…" />
         </div>

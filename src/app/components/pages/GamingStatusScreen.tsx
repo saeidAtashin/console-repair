@@ -75,7 +75,7 @@ export default function GamingStatusScreen({
           className="h-full w-full object-cover scale-110 opacity-40"
         />
         {/* cinematic overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/80" />
       </div>
 
       {/* HUD glow */}
@@ -96,7 +96,7 @@ export default function GamingStatusScreen({
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="relative z-20 w-full max-w-2xl"
       >
-        <div className="relative overflow-hidden rounded-[28px] border border-white/10  p-6 shadow-[0_0_80px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.06)] sm:p-10">
+        <div className="relative overflow-hidden rounded-[28px] border border-border  p-6 shadow-[0_0_80px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.06)] sm:p-10">
           <p
             className={`mb-4 text-center text-[10px] tracking-[0.35em] sm:text-xs ${config.accent}`}
           >
@@ -127,11 +127,11 @@ export default function GamingStatusScreen({
             {code}
           </p>
 
-          <h1 className="mt-4 text-center text-2xl font-bold text-white sm:text-3xl">
+          <h1 className="mt-4 text-center text-2xl font-bold text-foreground sm:text-3xl">
             {title}
           </h1>
 
-          <p className="mt-3 text-center text-sm text-zinc-400">
+          <p className="mt-3 text-center text-sm text-muted">
             {description}
           </p>
 
@@ -148,7 +148,7 @@ export default function GamingStatusScreen({
           </div>
         </div>
 
-        <p className="mt-6 text-center text-[10px] text-zinc-600">
+        <p className="mt-6 text-center text-[10px] text-muted">
           فیکس‌بازی · تعمیر تخصصی کنسول
         </p>
       </motion.div>

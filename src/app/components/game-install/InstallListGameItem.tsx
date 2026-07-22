@@ -22,7 +22,7 @@ export default function InstallListGameItem({ game, index, onRemove }: Props) {
 
   return (
     <li className="group flex items-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-500/10 p-2 transition hover:border-emerald-400/40 hover:bg-emerald-500/15">
-      <div className="relative h-11 w-8 shrink-0 overflow-hidden rounded-md bg-zinc-900">
+      <div className="relative h-11 w-8 shrink-0 overflow-hidden rounded-md bg-card">
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -32,21 +32,21 @@ export default function InstallListGameItem({ game, index, onRemove }: Props) {
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 text-zinc-500">
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-surface to-background text-muted">
             <Gamepad2 className="h-3.5 w-3.5 opacity-60" aria-hidden />
           </div>
         )}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="line-clamp-2 text-[11px] font-bold leading-tight text-zinc-100 sm:text-xs">
+        <p className="line-clamp-2 text-[11px] font-bold leading-tight text-foreground sm:text-xs">
           <span className="me-1 text-emerald-400/80">
             {(index + 1).toLocaleString("fa-IR")}.
           </span>
           {game.name}
         </p>
         {game.custom ? (
-          <span className="text-[9px] text-zinc-500">دلخواه</span>
+          <span className="text-[9px] text-muted">دلخواه</span>
         ) : null}
       </div>
 

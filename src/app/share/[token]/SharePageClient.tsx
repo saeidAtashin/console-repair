@@ -44,13 +44,13 @@ export default function SharePageClient({ design }: Props) {
   if (!brand || !model || !caseType) return null;
 
   return (
-    <div className="min-h-screen bg-black pt-24 pb-16 px-4">
+    <div className="min-h-screen bg-background pt-24 pb-16 px-4">
       <div className="mx-auto max-w-lg text-center">
-        <h1 className="text-2xl font-black text-white">{design.name}</h1>
+        <h1 className="text-2xl font-black text-foreground">{design.name}</h1>
         {design.description ? (
-          <p className="mt-2 text-zinc-400">{design.description}</p>
+          <p className="mt-2 text-muted">{design.description}</p>
         ) : null}
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-muted">
           {brand.name} — {model.name} — {caseType.name}
         </p>
         <div className="mt-8 flex justify-center">

@@ -66,7 +66,7 @@ function BreadcrumbSegment({
         initial={{ opacity: 0, x: 6 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2, delay: index * 0.04 }}
-        className={`${baseClass} inline-flex items-center font-medium text-white shadow-[0_1px_0_0_rgba(34,211,238,0.35)]`}
+        className={`${baseClass} inline-flex items-center font-medium text-foreground shadow-[0_1px_0_0_rgba(34,211,238,0.35)]`}
         aria-current="page"
       >
         {content}
@@ -84,7 +84,7 @@ function BreadcrumbSegment({
       >
         <Link
           href={item.href}
-          className={`${baseClass} text-zinc-400 transition-colors hover:text-cyan-200`}
+          className={`${baseClass} text-muted transition-colors hover:text-cyan-200`}
         >
           {content}
         </Link>
@@ -107,7 +107,7 @@ export default function SiteBreadcrumb({ items, className = "" }: Props) {
       <div
         className="
           inline-flex min-h-9 max-w-full items-center
-          rounded-2xl border border-white/10 bg-zinc-900/40
+          rounded-2xl border border-border bg-card/40
           px-4 py-2 backdrop-blur-md
         "
       >

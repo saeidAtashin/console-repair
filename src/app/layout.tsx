@@ -9,6 +9,8 @@ import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
 import { ShopCartProvider } from "./context/ShopCartContext";
+import { ThemeProvider } from "./providers/ThemeProvider";
+import ThemeColorMeta from "./components/ui/ThemeColorMeta";
 import { rootMetadata } from "../lib/seo/metadata";
 
 export const metadata: Metadata = rootMetadata;
@@ -111,12 +113,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fa" dir="rtl">
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body
-        className={`${vazirmatn.variable} ${pixel.variable} ${pixel2.variable} ${sorenanormal.variable} ${sorenapixelFont.variable} ${Cristik.variable} ${Mojita.variable} ${WAGHUBold.variable} ${WAGHURegular.variable} ${unixelFont.variable} `}
+        className={`${vazirmatn.variable} ${pixel.variable} ${pixel2.variable} ${sorenanormal.variable} ${sorenapixelFont.variable} ${Cristik.variable} ${Mojita.variable} ${WAGHUBold.variable} ${WAGHURegular.variable} ${unixelFont.variable} bg-background text-foreground`}
       >
+        <ThemeProvider>
         <AuthProvider>
           <ShopCartProvider>
+              <ThemeColorMeta />
               <LocalBusinessSchema />
               <Suspense fallback={null}>
                 <RouteLoadingOverlay />
@@ -126,6 +130,7 @@ export default function RootLayout({
               <Footer />
           </ShopCartProvider>
         </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

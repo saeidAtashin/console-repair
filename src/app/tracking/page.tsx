@@ -128,7 +128,7 @@ export default function TrackingPage() {
 
           <h1 className="text-4xl md:text-5xl font-black mb-4">پیگیری تعمیر</h1>
 
-          <p className="text-zinc-400 leading-8">
+          <p className="text-muted leading-8">
             کد رهگیری خود را وارد کنید تا وضعیت دستگاه را ببینید.
           </p>
         </div>
@@ -141,7 +141,7 @@ export default function TrackingPage() {
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="کد رهگیری"
-            className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 outline-none focus:border-cyan-500 tracking-widest"
+            className="flex-1 rounded-2xl border border-border bg-surface px-5 py-4 outline-none focus:border-cyan-500 tracking-widest"
           />
           <button
             type="submit"
@@ -160,9 +160,9 @@ export default function TrackingPage() {
         )}
 
         {order && (
-          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8">
+          <div className="rounded-3xl border border-border bg-surface backdrop-blur-xl p-8">
             <div className="mb-8">
-              <span className="text-zinc-400 text-sm">کد رهگیری</span>
+              <span className="text-muted text-sm">کد رهگیری</span>
 
               <div className="mt-3 flex items-center justify-between rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-5 py-4">
                 <span className="text-2xl font-black tracking-widest text-cyan-400">
@@ -175,11 +175,11 @@ export default function TrackingPage() {
 
             <div className="mb-8 grid sm:grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-zinc-500">دستگاه:</span>
+                <span className="text-muted">دستگاه:</span>
                 <p className="mt-1">{order.device}</p>
               </div>
               <div>
-                <span className="text-zinc-500">مشکل:</span>
+                <span className="text-muted">مشکل:</span>
                 <p className="mt-1">{order.issue || "—"}</p>
               </div>
             </div>
@@ -193,7 +193,7 @@ export default function TrackingPage() {
                 return (
                   <div
                     key={step.key}
-                    className={`flex gap-4 rounded-2xl border border-white/10 bg-black/20 p-5 ${
+                    className={`flex gap-4 rounded-2xl border border-border bg-surface p-5 ${
                       isUpcoming ? "opacity-50" : ""
                     }`}
                   >
@@ -205,7 +205,7 @@ export default function TrackingPage() {
 
                     <div>
                       <h3 className="font-bold text-lg mb-1">{step.title}</h3>
-                      <p className="text-zinc-400 text-sm leading-7">
+                      <p className="text-muted text-sm leading-7">
                         {state === "active"
                           ? step.description
                           : state === "done"

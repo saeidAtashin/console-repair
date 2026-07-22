@@ -13,9 +13,9 @@ export default function BrandGrid({ brands }: Props) {
         <Link
           key={brand.slug}
           href={`/create/${brand.slug}`}
-          className="group flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-6 transition hover:border-cyan-500/50 hover:bg-zinc-900"
+          className="group flex flex-col items-center gap-4 rounded-2xl border border-border bg-card/60 p-6 transition hover:border-cyan-500/50 hover:bg-card"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/5 p-3 transition group-hover:bg-cyan-500/10">
+          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-surface p-3 transition group-hover:bg-cyan-500/10">
             <Image
               src={brand.logo}
               alt={brand.name}
@@ -25,8 +25,8 @@ export default function BrandGrid({ brands }: Props) {
             />
           </div>
           <div className="text-center">
-            <p className="font-bold text-white">{brand.name}</p>
-            <p className="text-xs text-zinc-500">{brand.nameEn}</p>
+            <p className="font-bold text-foreground">{brand.name}</p>
+            <p className="text-xs text-muted">{brand.nameEn}</p>
           </div>
         </Link>
       ))}

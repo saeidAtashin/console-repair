@@ -22,7 +22,7 @@ export default function FaqSection({
 
   return (
     <section
-      className={`border-t border-white/10 bg-zinc-950 py-24 ${className}`}
+      className={`border-t border-border bg-background py-24 ${className}`}
       aria-labelledby="faq-section-title"
     >
       {withSchema ? <FAQSchema items={items} /> : null}
@@ -34,13 +34,13 @@ export default function FaqSection({
           {items.map((faq, index) => (
             <details
               key={index}
-              className="group rounded-2xl border border-white/10 bg-black/40 p-6"
+              className="group rounded-2xl border border-border bg-input-bg p-6"
               suppressHydrationWarning
             >
               <summary className="cursor-pointer font-bold marker:content-none">
                 {faq.question}
               </summary>
-              <p className="mt-4 leading-8 text-zinc-400">{faq.answer}</p>
+              <p className="mt-4 leading-8 text-muted">{faq.answer}</p>
             </details>
           ))}
         </div>

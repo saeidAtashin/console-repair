@@ -187,7 +187,7 @@ export default function GameInstallOrderPanel({
         <div className="mb-6">
           <h2
             id="game-install-order-title"
-            className="text-2xl font-black text-white"
+            className="text-2xl font-black text-foreground"
           >
             لیست بازی‌های من برای {consoleLabel}
             {games.length > 0 ? (
@@ -196,14 +196,14 @@ export default function GameInstallOrderPanel({
               </GameInstallListCountBadge>
             ) : null}
           </h2>
-          <p className="mt-2 text-sm leading-7 text-zinc-400">
+          <p className="mt-2 text-sm leading-7 text-muted">
             از کاتالوگ بازی اضافه کنید یا نام بازی دلخواه را بنویسید، سپس
             درخواست نصب را ثبت کنید.
           </p>
         </div>
       ) : embedded ? (
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-black text-white">
+          <h3 className="text-lg font-black text-foreground">
             بازی‌های انتخاب‌شده
             {games.length > 0 ? (
               <GameInstallListCountBadge className="relative ms-2 inline-flex rounded-full bg-emerald-500/25 px-2.5 py-0.5 text-sm text-emerald-200">
@@ -212,19 +212,19 @@ export default function GameInstallOrderPanel({
             ) : null}
           </h3>
           {games.length === 0 ? (
-            <span className="text-xs text-zinc-500">هنوز خالی است</span>
+            <span className="text-xs text-muted">هنوز خالی است</span>
           ) : null}
         </div>
       ) : variant === "compact" ? (
         <div className="mb-6">
-          <h2 className="text-xl font-black text-white">
+          <h2 className="text-xl font-black text-foreground">
             لیست بازی‌های من برای {consoleLabel}
           </h2>
         </div>
       ) : null}
 
       {games.length === 0 ? (
-        <p className="mb-6 rounded-xl border border-dashed border-white/20 bg-black/30 px-4 py-8 text-center text-sm text-zinc-400">
+        <p className="mb-6 rounded-xl border border-dashed border-border bg-surface px-4 py-8 text-center text-sm text-muted">
           هنوز بازی‌ای انتخاب نکرده‌اید. از لیست بالا «اضافه به لیست بازی‌ها» را
           بزنید یا نام بازی را پایین بنویسید.
         </p>
@@ -264,7 +264,7 @@ export default function GameInstallOrderPanel({
         </button>
       </form>
 
-      <form onSubmit={handleSubmit} className="space-y-4 border-t border-white/10 pt-6">
+      <form onSubmit={handleSubmit} className="space-y-4 border-t border-border pt-6">
         <FormInput
           label="شماره تماس *"
           id={`install-phone-${consoleSlug}`}

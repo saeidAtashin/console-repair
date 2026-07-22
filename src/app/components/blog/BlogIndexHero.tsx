@@ -17,7 +17,7 @@ export default function BlogIndexHero({ postCount, gameCount }: Props) {
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <section className="blog-scene relative mb-14 overflow-hidden rounded-[32px] border border-white/[0.08] bg-gradient-to-br from-zinc-900/80 via-zinc-950 to-black px-6 py-14 md:px-12 md:py-16">
+    <section className="blog-scene relative mb-14 overflow-hidden rounded-[32px] border border-border bg-gradient-to-br from-card/80 via-background to-background px-6 py-14 md:px-12 md:py-16">
       <BlogFloatingOrbs />
 
       <div className="blog-glow-ring absolute start-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 opacity-40" />
@@ -49,7 +49,7 @@ export default function BlogIndexHero({ postCount, gameCount }: Props) {
           initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.16 }}
-          className="mt-5 max-w-2xl text-lg leading-relaxed text-zinc-400"
+          className="mt-5 max-w-2xl text-lg leading-relaxed text-muted"
         >
           بهترین بازی‌های PS5 و Xbox، نکات نصب و راهنمای انتخاب — با داده‌های
           به‌روز و پیشنهاد تخصصی تیم فیکس‌بازی.

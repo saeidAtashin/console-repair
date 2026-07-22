@@ -176,17 +176,17 @@ export default function LoginPage() {
 
   if (authLoading || user) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-zinc-400">در حال بارگذاری...</p>
+      <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <p className="text-muted">در حال بارگذاری...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
+    <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-surface border border-border rounded-3xl p-8 backdrop-blur-xl">
         <h1 className="text-3xl font-black mb-2 text-center">ورود</h1>
-        <p className="text-zinc-400 text-center mb-8">ورود به حساب کاربری</p>
+        <p className="text-muted text-center mb-8">ورود به حساب کاربری</p>
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
@@ -197,7 +197,7 @@ export default function LoginPage() {
               setDevOtpHint("");
               setSmsSent(false);
             }}
-            className={`flex-1 py-3 rounded-xl ${mode === "password" ? "bg-cyan-500 text-black" : "bg-white/5"
+            className={`flex-1 py-3 rounded-xl ${mode === "password" ? "bg-cyan-500 text-black" : "bg-surface"
               }`}
           >
             رمز عبور
@@ -210,7 +210,7 @@ export default function LoginPage() {
               setDevOtpHint("");
               setSmsSent(false);
             }}
-            className={`flex-1 py-3 rounded-xl ${mode === "otp" ? "bg-cyan-500 text-black" : "bg-white/5"
+            className={`flex-1 py-3 rounded-xl ${mode === "otp" ? "bg-cyan-500 text-black" : "bg-surface"
               }`}
           >
             OTP
@@ -225,7 +225,7 @@ export default function LoginPage() {
                 setPhone_number(e.target.value)
               }
               placeholder="نام کاربری"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3"
             />
 
             <input
@@ -235,7 +235,7 @@ export default function LoginPage() {
                 setPassword(e.target.value)
               }
               placeholder="رمز عبور"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3"
             />
 
             <button
@@ -256,13 +256,13 @@ export default function LoginPage() {
                   onChange={handlePhoneChange}
                   placeholder="09 / +98 / 98 / 9..."
                   autoComplete="tel"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+                  className="w-full bg-surface border border-border rounded-xl px-4 py-3"
                 />
 
                 <button
                   type="submit"
                   disabled={sendingOtp || !validatePhone(phone)}
-                  className="w-full bg-white/10 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-surface py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sendingOtp ? "در حال ارسال..." : "ارسال کد"}
                 </button>
@@ -286,12 +286,12 @@ export default function LoginPage() {
                         handleOtpDigitChange(index, e.target.value)
                       }
                       onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      className="w-12 h-12 text-center text-xl font-bold bg-white/5 border border-white/10 rounded-xl"
+                      className="w-12 h-12 text-center text-xl font-bold bg-surface border border-border rounded-xl"
                     />
                   ))}
                 </div>
 
-                <p className="text-sm text-center text-zinc-400">
+                <p className="text-sm text-center text-muted">
                   {counter > 0
                     ? `زمان باقی‌مانده: ${formatTime(counter)}`
                     : "زمان کد به پایان رسید — دوباره ارسال کنید."}
@@ -327,7 +327,7 @@ export default function LoginPage() {
                       setSmsSent(false);
                       setError("");
                     }}
-                    className="w-full bg-white/10 py-3 rounded-xl"
+                    className="w-full bg-surface py-3 rounded-xl"
                   >
                     ارسال مجدد کد
                   </button>

@@ -156,7 +156,7 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
   ];
 
   return (
-    <div className="min-h-screen bg-black pt-20 pb-24 lg:pb-8">
+    <div className="min-h-screen bg-background pt-20 pb-24 lg:pb-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <WizardBreadcrumb
           crumbs={[
@@ -198,11 +198,11 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
           </p>
         ) : null}
         {shareUrl ? (
-          <p className="mt-2 truncate text-xs text-zinc-500">{shareUrl}</p>
+          <p className="mt-2 truncate text-xs text-muted">{shareUrl}</p>
         ) : null}
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-zinc-900/30 p-4 lg:p-8">
+          <div className="flex items-center justify-center rounded-2xl border border-border bg-card/30 p-4 lg:p-8">
             <CaseCanvas
               caseColor={caseType.color}
               caseMaterial={caseType.material}
@@ -223,15 +223,15 @@ export default function EditorPageClient({ brandSlug, modelSlug, caseTypeSlug }:
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-zinc-950/95 backdrop-blur-xl lg:hidden">
-        <div className="flex border-b border-white/5">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur-xl lg:hidden">
+        <div className="flex border-b border-border">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-1 flex-col items-center gap-1 py-3 text-xs ${
-                activeTab === tab.id ? "text-cyan-400" : "text-zinc-500"
+                activeTab === tab.id ? "text-cyan-400" : "text-muted"
               }`}
             >
               {tab.icon}
@@ -280,7 +280,7 @@ function ToolbarButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-2 text-xs text-zinc-300 transition hover:border-cyan-500/50 disabled:opacity-40"
+      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-cyan-500/50 disabled:opacity-40"
     >
       {icon}
       <span className="hidden sm:inline">{label}</span>
@@ -308,16 +308,16 @@ function EditorSidePanel({
   ];
 
   return (
-    <div className={compact ? "" : "rounded-2xl border border-white/10 bg-zinc-900/60 p-4"}>
+    <div className={compact ? "" : "rounded-2xl border border-border bg-card/60 p-4"}>
       {!compact ? (
-        <div className="mb-4 flex gap-1 border-b border-white/5 pb-3">
+        <div className="mb-4 flex gap-1 border-b border-border pb-3">
           {tabLabels.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
               className={`rounded-lg px-3 py-1.5 text-xs transition ${
-                activeTab === tab.id ? "bg-cyan-500/20 text-cyan-400" : "text-zinc-500 hover:text-white"
+                activeTab === tab.id ? "bg-cyan-500/20 text-cyan-400" : "text-muted hover:text-foreground"
               }`}
             >
               {tab.label}

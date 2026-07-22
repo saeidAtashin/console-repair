@@ -39,7 +39,7 @@ function SpoilerCheatCard({
   const consoleMeta = CONSOLE_META[gameConsole];
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/60">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card/60">
       <div className="relative overflow-hidden">
         <GameImageStrip
           images={images}
@@ -50,19 +50,19 @@ function SpoilerCheatCard({
           priority={priority}
           fetchPriority={priority ? "high" : "auto"}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
-        <span className="absolute start-3 top-3 inline-flex items-center gap-1 rounded-lg border border-white/10 bg-black/60 px-2 py-1 text-[10px] font-bold text-zinc-200 backdrop-blur-sm">
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <span className="absolute start-3 top-3 inline-flex items-center gap-1 rounded-lg border border-border bg-background/60 px-2 py-1 text-[10px] font-bold text-foreground backdrop-blur-sm">
           <ConsoleTabIcon src={consoleMeta.icon} className="h-3.5 w-3.5" />
           {consoleMeta.label}
         </span>
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-bold text-zinc-100">{name}</h3>
+        <h3 className="font-bold text-foreground">{name}</h3>
 
         <div className="relative mt-3 min-h-[88px]">
           <motion.div
-            className="rounded-xl border border-white/10 bg-black/40 p-3"
+            className="rounded-xl border border-border bg-input-bg p-3"
             animate={
               revealed || prefersReducedMotion
                 ? { filter: "blur(0px)", opacity: 1 }
@@ -80,7 +80,7 @@ function SpoilerCheatCard({
             <button
               type="button"
               onClick={() => setRevealed(true)}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-zinc-950/70 text-sm font-semibold text-zinc-200 backdrop-blur-[2px] transition hover:bg-zinc-950/50"
+              className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-xl bg-background/70 text-sm font-semibold text-foreground backdrop-blur-[2px] transition hover:bg-background/50"
             >
               <Eye className="h-5 w-5 text-violet-400" />
               نمایش چیت
@@ -108,7 +108,7 @@ export default function HomeCheatsSectionClient({ featured }: Props) {
   return (
     <section
       id="game-cheats"
-      className="relative border-t border-white/5 bg-[#0505054c] py-24"
+      className="relative border-t border-border bg-[#0505054c] py-24"
     >
       <div className="container mx-auto px-6">
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
@@ -124,13 +124,13 @@ export default function HomeCheatsSectionClient({ featured }: Props) {
           <span className="mb-4 inline-block rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-violet-400">
             Cheat Codes
           </span>
-          <h2 className="mb-4 text-4xl font-black text-white md:text-5xl">
+          <h2 className="mb-4 text-4xl font-black text-foreground md:text-5xl">
             رمز و چیت{" "}
             <span className="bg-gradient-to-l from-violet-400 to-cyan-400 bg-clip-text text-transparent">
               بازی‌های محبوب
             </span>
           </h2>
-          <p className="max-w-2xl text-lg text-zinc-500">
+          <p className="max-w-2xl text-lg text-muted">
             GTA، Minecraft، Sims و بیشتر — با reveal مدرن و لینک به صفحه اختصاصی
             هر بازی.
           </p>
