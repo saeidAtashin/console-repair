@@ -127,10 +127,15 @@ export default function EditorPageClient({
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const mobileDockRef = useRef<HTMLDivElement>(null);
 
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const isMobileViewport = isDesktop === false;
+  const isSplitLayout = useMediaQuery("(min-width: 768px)");
+  const isMobileViewport = isSplitLayout === false;
   const dockSize = useElementSize(mobileDockRef);
-  const canvasDisplaySize = useCanvasDisplaySize(canvasContainerRef, isMobileViewport);
+  const canvasDisplaySize = useCanvasDisplaySize(
+    canvasContainerRef,
+    true,
+    isSplitLayout ? "desktop" : "mobile",
+    { width: model.canvasWidth, height: model.canvasHeight },
+  );
 
   const init = useEditorStore((s) => s.init);
   const loadDocument = useEditorStore((s) => s.loadDocument);
@@ -330,7 +335,7 @@ export default function EditorPageClient({
 
   return (
     <div
-      className={`min-h-screen bg-background pt-20 lg:pb-8 ${
+      className={`min-h-screen bg-background pt-20 md:pb-8 ${
         isMobileViewport && !mobileBottomPadding ? "pb-24" : ""
       }`}
       style={mobileBottomPadding ? { paddingBottom: mobileBottomPadding } : undefined}
@@ -351,7 +356,7 @@ export default function EditorPageClient({
           <div className="min-w-0 flex-1">
             <p
               className={`text-sm leading-relaxed text-amber-100/90 ${
-                warningExpanded ? "" : "line-clamp-2 lg:line-clamp-none"
+                warningExpanded ? "" : "line-clamp-2 md:line-clamp-none"
               }`}
             >
               تفاوت طراحی و قاب اصلی را چشم‌پوشی کنید. قبل از طراحی و ارسال، هماهنگی
@@ -360,7 +365,7 @@ export default function EditorPageClient({
             <button
               type="button"
               onClick={() => setWarningExpanded((v) => !v)}
-              className="mt-1 flex items-center gap-1 text-xs text-amber-300/80 lg:hidden"
+              className="mt-1 flex items-center gap-1 text-xs text-amber-300/80 md:hidden"
             >
               {warningExpanded ? (
                 <>
@@ -377,18 +382,22 @@ export default function EditorPageClient({
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <ToolbarButton onClick={undo} disabled={!canUndo()} icon={<Undo2 size={16} />} label="بازگشت" />
-          <ToolbarButton onClick={redo} disabled={!canRedo()} icon={<Redo2 size={16} />} label="جلو" />
-          <ToolbarButton
-            onClick={() => {
-              setPreviewMode(true);
-              setShowPreview(true);
-            }}
-            icon={<Eye size={16} />}
-            label="پیش‌نمایش"
-          />
-          <ToolbarButton onClick={handleSave} disabled={saving} icon={<Save size={16} />} label="ذخیره" />
+        <div className="mt-4 flex flex-wrap items-center gap-2 md:flex-nowrap">
+          <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
+            <ToolbarButton onClick={undo} disabled={!canUndo()} icon={<Undo2 size={16} />} label="بازگشت" />
+            <ToolbarButton onClick={redo} disabled={!canRedo()} icon={<Redo2 size={16} />} label="جلو" />
+            <ToolbarButton
+              onClick={() => {
+                setPreviewMode(true);
+                setShowPreview(true);
+              }}
+              icon={<Eye size={16} />}
+              label="پیش‌نمایش"
+            />
+            <ToolbarButton onClick={handleSave} disabled={saving} icon={<Save size={16} />} label="ذخیره" />
+          </div>
+
+          <div className="hidden h-6 w-px shrink-0 bg-border sm:block" aria-hidden />
 
           <div className="hidden sm:contents">
             <ToolbarButton onClick={handleShare} icon={<Share2 size={16} />} label="اشتراک" />
@@ -471,28 +480,28 @@ export default function EditorPageClient({
           <p className="mt-2 truncate text-xs text-muted">{shareUrl}</p>
         ) : null}
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="mt-6 grid gap-6 md:grid-cols-[auto_minmax(0,1fr)] md:gap-8">
           <div
             ref={canvasContainerRef}
-            className="flex min-h-[280px] items-center justify-center rounded-2xl border border-border bg-card/30 p-4 lg:min-h-0 lg:p-8"
+            className="relative flex min-h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-[radial-gradient(ellipse_at_50%_30%,rgba(34,211,238,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(139,92,246,0.1),transparent_50%)] bg-card/40 p-4 md:sticky md:top-24 md:w-fit md:min-h-0 md:self-start md:p-8"
           >
+            <div
+              className="pointer-events-none absolute inset-x-6 top-1/2 h-24 -translate-y-1/2 rounded-full bg-cyan-400/20 blur-3xl animate-preview-glow motion-reduce:animate-none"
+              aria-hidden
+            />
             <CaseCanvas
               caseColor={caseType.color}
               caseMaterial={caseType.material}
               onStageRef={(stage) => {
                 stageRef.current = stage;
               }}
-              displayMaxWidth={
-                isMobileViewport ? canvasDisplaySize.width : undefined
-              }
-              displayMaxHeight={
-                isMobileViewport ? canvasDisplaySize.height : undefined
-              }
+              displayMaxWidth={canvasDisplaySize.width}
+              displayMaxHeight={canvasDisplaySize.height}
               mobileTouchMode={isMobileViewport}
             />
           </div>
 
-          {isDesktop ? (
+          {isSplitLayout ? (
             <EditorSidePanel {...sidePanelProps} />
           ) : null}
         </div>
@@ -501,7 +510,7 @@ export default function EditorPageClient({
       {isMobileViewport ? (
         <div
           ref={mobileDockRef}
-          className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
         >
           <div className="flex overflow-x-auto border-b border-border">
             {tabs.map((tab) => (
@@ -566,6 +575,7 @@ function ToolbarButton({
 }
 
 function EditorSidePanel({
+  tabs,
   activeTab,
   onTabChange,
   stickerPacks,
@@ -587,41 +597,36 @@ function EditorSidePanel({
   compact?: boolean;
   loadedTabs: Set<EditorTab>;
 }) {
-  const tabLabels: { id: EditorTab; label: string }[] = [
-    { id: "layers", label: "لایه‌ها" },
-    { id: "text", label: "متن" },
-    { id: "stickers", label: "طراحی آماده" },
-    { id: "upload", label: "تصویر" },
-    { id: "templates", label: "قالب" },
-    { id: "design-for-you", label: "طراحی برای شما" },
-    { id: "description", label: "توضیحات" },
-  ];
-
   return (
     <div
       className={
         compact
           ? "min-h-0"
-          : "flex max-h-[min(560px,calc(100vh-280px))] min-h-0 flex-col rounded-2xl border border-border bg-card/60 p-4"
+          : "flex max-h-[calc(100dvh-13rem)] min-h-0 min-w-0 flex-col rounded-2xl border border-border bg-card/60"
       }
     >
       {!compact ? (
-        <div className="mb-4 flex shrink-0 flex-wrap gap-1 border-b border-border pb-3">
-          {tabLabels.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onTabChange(tab.id)}
-              className={`rounded-lg px-2 py-1.5 text-[10px] transition ${
-                activeTab === tab.id ? "bg-cyan-500/20 text-cyan-400" : "text-muted hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="sticky top-0 z-10 shrink-0 border-b border-border bg-card/95 backdrop-blur-sm">
+          <div className="flex gap-1 overflow-x-auto overscroll-x-contain p-3">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => onTabChange(tab.id)}
+                className={`flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-xs transition ${
+                  activeTab === tab.id
+                    ? "border-cyan-500/30 bg-cyan-500/20 text-cyan-400"
+                    : "border-transparent text-muted hover:border-border hover:text-foreground"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
-      <div className={compact ? "min-h-0" : "min-h-0 flex-1 overflow-y-auto overscroll-contain"}>
+      <div className={compact ? "min-h-0" : "min-h-0 flex-1 overflow-y-auto overscroll-contain p-4"}>
         {loadedTabs.has("layers") && activeTab === "layers" ? <LayersPanel /> : null}
         {loadedTabs.has("text") && activeTab === "text" ? <TextPanel /> : null}
         {loadedTabs.has("stickers") && activeTab === "stickers" ? (

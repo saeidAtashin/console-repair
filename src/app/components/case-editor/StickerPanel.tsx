@@ -73,24 +73,28 @@ export default function StickerPanel({ packs }: Props) {
 
   return (
     <div ref={containerRef}>
-      <p className="mb-3 text-xs font-semibold text-foreground">طراحی‌های آماده</p>
-      <div className="grid grid-cols-4 gap-2">
+      <p className="text-sm font-bold text-foreground">طراحی‌های آماده</p>
+      <p className="mb-4 mt-1 text-xs text-muted">برای افزودن روی قاب کلیک کنید</p>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4">
         {visibleStickers.map((sticker) => (
           <button
             key={sticker.id}
             type="button"
             onClick={() => handleSelect(sticker.src, sticker.width, sticker.height)}
-            className="flex aspect-square items-center justify-center rounded-lg border border-border bg-card/60 p-2 transition hover:border-cyan-500/50"
+            className="flex flex-col rounded-xl border border-border bg-card/60 p-3 text-center transition hover:border-cyan-500/50 hover:bg-cyan-500/5 hover:shadow-md"
             title={sticker.name}
           >
-            <Image
-              src={sticker.src}
-              alt={sticker.name}
-              width={40}
-              height={40}
-              loading="lazy"
-              className="h-10 w-10 object-contain"
-            />
+            <div className="flex aspect-square items-center justify-center rounded-lg bg-background/50 p-2">
+              <Image
+                src={sticker.src}
+                alt={sticker.name}
+                width={96}
+                height={96}
+                loading="lazy"
+                className="h-full w-full max-h-[72px] object-contain sm:max-h-[88px]"
+              />
+            </div>
+            <p className="mt-2 line-clamp-2 text-[11px] text-muted sm:text-xs">{sticker.name}</p>
           </button>
         ))}
       </div>

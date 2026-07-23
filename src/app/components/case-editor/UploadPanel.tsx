@@ -108,7 +108,7 @@ export default function UploadPanel() {
       {uploadedAssets.length > 0 ? (
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted">تصاویر قبلی</p>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2 md:grid-cols-5 lg:grid-cols-6">
             {uploadedAssets.map((src) => (
               <button
                 key={src}
