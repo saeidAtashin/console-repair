@@ -7,6 +7,7 @@ import { Check, Search, X } from "lucide-react";
 
 import CaseTypePicker from "@/app/components/case-wizard/CaseTypePicker";
 import { PhoneBackSvg } from "@/app/components/case-wizard/PhoneBackSvg";
+import { usePreferredBrandLoader } from "@/app/context/PreferredBrandLoaderContext";
 import DesignSamplePreview from "@/app/components/designs/DesignSamplePreview";
 import {
   CASE_TYPES,
@@ -121,6 +122,7 @@ export default function ApplyTemplateWizard({
   initialModelSlug,
 }: Props) {
   const router = useRouter();
+  const { setPreferredBrandSlug } = usePreferredBrandLoader();
   const [brandSlug, setBrandSlug] = useState(initialBrandSlug ?? "");
   const [modelSlug, setModelSlug] = useState(initialModelSlug ?? "");
   const [caseTypeSlug, setCaseTypeSlug] = useState(CASE_TYPES[0]?.slug ?? "matte");
@@ -274,6 +276,7 @@ export default function ApplyTemplateWizard({
                       key={item.slug}
                       type="button"
                       onClick={() => {
+                        setPreferredBrandSlug(item.slug);
                         setBrandSlug(item.slug);
                         setModelSlug("");
                         setModelQuery("");
