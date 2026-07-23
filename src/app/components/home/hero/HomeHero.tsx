@@ -9,7 +9,7 @@ export default function HomeHero() {
       aria-labelledby="home-hero-heading"
     >
       <Image
-        src="/banner.png"
+        src="/banner.webp"
         alt=""
         fill
         priority
