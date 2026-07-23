@@ -161,6 +161,7 @@ export default function EditorPageClient({
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [warningExpanded, setWarningExpanded] = useState(false);
+  const [mobileDockCollapsed, setMobileDockCollapsed] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -321,6 +322,14 @@ export default function EditorPageClient({
   const mobileBottomPadding =
     isMobileViewport && dockSize.height > 0 ? dockSize.height + 8 : undefined;
 
+  const handleMobileTabChange = useCallback(
+    (tab: EditorTab) => {
+      setActiveTab(tab);
+      if (mobileDockCollapsed) setMobileDockCollapsed(false);
+    },
+    [mobileDockCollapsed],
+  );
+
   const sidePanelProps = {
     tabs,
     activeTab,
@@ -336,7 +345,11 @@ export default function EditorPageClient({
   return (
     <div
       className={`min-h-screen bg-background pt-20 md:pb-8 ${
-        isMobileViewport && !mobileBottomPadding ? "pb-24" : ""
+        isMobileViewport && !mobileBottomPadding
+          ? mobileDockCollapsed
+            ? "pb-14"
+            : "pb-24"
+          : ""
       }`}
       style={mobileBottomPadding ? { paddingBottom: mobileBottomPadding } : undefined}
     >
@@ -517,7 +530,7 @@ export default function EditorPageClient({
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleMobileTabChange(tab.id)}
                 className={`flex min-h-11 min-w-[5rem] flex-1 flex-col items-center justify-center gap-1 py-2 text-xs ${
                   activeTab === tab.id ? "text-cyan-400" : "text-muted"
                 }`}
@@ -527,9 +540,29 @@ export default function EditorPageClient({
               </button>
             ))}
           </div>
-          <div className="max-h-[min(40dvh,280px)] overflow-y-auto overscroll-contain p-4 md:max-h-[min(45dvh,320px)]">
-            <EditorSidePanel {...sidePanelProps} compact />
-          </div>
+          <button
+            type="button"
+            aria-expanded={!mobileDockCollapsed}
+            onClick={() => setMobileDockCollapsed((v) => !v)}
+            className="flex min-h-9 w-full items-center justify-center gap-1.5 border-b border-border text-xs text-muted transition hover:bg-card/60 hover:text-foreground"
+          >
+            {mobileDockCollapsed ? (
+              <>
+                <ChevronUp size={14} />
+                نمایش ابزارها
+              </>
+            ) : (
+              <>
+                <ChevronDown size={14} />
+                بستن ابزارها
+              </>
+            )}
+          </button>
+          {!mobileDockCollapsed ? (
+            <div className="max-h-[min(40dvh,280px)] overflow-y-auto overscroll-contain p-4">
+              <EditorSidePanel {...sidePanelProps} compact />
+            </div>
+          ) : null}
         </div>
       ) : null}
 
