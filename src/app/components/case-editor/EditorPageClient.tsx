@@ -384,8 +384,12 @@ export default function EditorPageClient({
           ))}
         </div>
         <div
-          className={`overflow-y-auto p-4 ${
-            activeTab === "stickers" ? "max-h-60" : "max-h-48"
+          className={`p-4 ${
+            activeTab === "text"
+              ? "overflow-visible"
+              : activeTab === "stickers"
+                ? "max-h-60 overflow-y-auto overscroll-contain"
+                : "max-h-48 overflow-y-auto overscroll-contain"
           }`}
         >
           <EditorSidePanel
@@ -470,12 +474,24 @@ function EditorSidePanel({
     { id: "description", label: "توضیحات" },
   ];
 
+  const scrollableTabs: EditorTab[] = [
+    "layers",
+    "stickers",
+    "upload",
+    "templates",
+    "design-for-you",
+    "description",
+  ];
+  const isScrollable = scrollableTabs.includes(activeTab);
+
   return (
     <div
       className={
         compact
           ? "min-h-0"
-          : "flex max-h-[min(560px,calc(100vh-280px))] min-h-0 flex-col rounded-2xl border border-border bg-card/60 p-4"
+          : isScrollable
+            ? "flex max-h-[min(560px,calc(100vh-280px))] min-h-0 flex-col rounded-2xl border border-border bg-card/60 p-4"
+            : "flex flex-col rounded-2xl border border-border bg-card/60 p-4"
       }
     >
       {!compact ? (
@@ -494,7 +510,13 @@ function EditorSidePanel({
           ))}
         </div>
       ) : null}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div
+        className={
+          isScrollable
+            ? "min-h-0 flex-1 overflow-y-auto overscroll-contain"
+            : "overflow-visible"
+        }
+      >
       {activeTab === "layers" ? <LayersPanel /> : null}
       {activeTab === "text" ? <TextPanel /> : null}
       {activeTab === "stickers" ? <StickerPanel packs={stickerPacks} /> : null}
