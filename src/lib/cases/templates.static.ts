@@ -450,6 +450,10 @@ export function getUniversalTemplates(): CaseTemplate[] {
   return CASE_TEMPLATES;
 }
 
+export function getDesignedTemplates(): CaseTemplate[] {
+  return DESIGNED_TEMPLATES;
+}
+
 export function getFeaturedTemplates(limit = 4): CaseTemplate[] {
   return CASE_TEMPLATES.slice(0, limit);
 }

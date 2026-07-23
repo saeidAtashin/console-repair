@@ -129,6 +129,10 @@ export type CaseTemplate = {
   description: string;
   thumbnail: string;
   tags: string[];
+  /** Top-level folder slug from designed-source (e.g. abstract, islamic). */
+  category?: string;
+  /** Filename-derived subcategory (e.g. seamless, modern, others). */
+  subcategory?: string;
   referenceCanvas: { width: number; height: number };
   layers: DesignLayer[];
 };

@@ -41,6 +41,8 @@ type DesignedMeta = Record<string, DesignedMetaEntry>;
 
 type ManifestEntry = {
   slug: string;
+  category: string;
+  subcategory: string;
   sourceFile: string;
   sourceFormat: "eps" | "jpg-fallback";
   outputFormat: "svg" | "png" | "jpg" | "webp";
@@ -68,6 +70,8 @@ type SourceCandidate = {
   slug: string;
   path: string;
   format: "eps" | "jpg";
+  category: string;
+  subcategory: string;
 };
 
 function hasFlag(name: string): boolean {
@@ -89,6 +93,43 @@ function titleFromSlug(slug: string): string {
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+function categoryFromRelativePath(relativePath: string): string {
+  const normalized = relativePath.replace(/\\/g, "/");
+  const parts = normalized.split("/");
+  if (parts.length <= 1) return "general";
+  return parts[0].toLowerCase();
+}
+
+function subcategoryFromBasename(filename: string): string {
+  const base = slugFromFilename(filename);
+  const match = base.match(/^vecteezy_([^_-]+)/i);
+  return match ? match[1].toLowerCase() : "others";
+}
+
+function categoryLabel(category: string): string {
+  const labels: Record<string, string> = {
+    abstract: "انتزاعی",
+    islamic: "اسلامی",
+    general: "عمومی",
+  };
+  return labels[category] ?? titleFromSlug(category);
+}
+
+function subcategoryLabel(subcategory: string): string {
+  if (subcategory === "others") return "سایر";
+  return titleFromSlug(subcategory);
+}
+
+function titleFromBasename(filename: string): string {
+  let slug = slugFromFilename(filename);
+  if (/^vecteezy_/i.test(slug)) {
+    slug = slug.replace(/^vecteezy_/i, "");
+    slug = slug.replace(/_\d+(-\d+)?$/, "");
+    slug = slug.replace(/_+$/, "");
+  }
+  return titleFromSlug(slug);
 }
 
 function readMeta(): DesignedMeta {
@@ -468,39 +509,85 @@ async function generateThumbnail(
   };
 }
 
+function walkSourceFiles(
+  dir: string,
+  relativeDir = "",
+): Array<{ relativePath: string; absPath: string }> {
+  const files: Array<{ relativePath: string; absPath: string }> = [];
+
+  for (const name of readdirSync(dir)) {
+    if (name === "README.md") continue;
+    const absPath = join(dir, name);
+    const relativePath = relativeDir ? join(relativeDir, name) : name;
+
+    if (statSync(absPath).isDirectory()) {
+      files.push(...walkSourceFiles(absPath, relativePath));
+      continue;
+    }
+
+    if (/\.(eps|jpe?g)$/i.test(name)) {
+      files.push({
+        relativePath: relativePath.replace(/\\/g, "/"),
+        absPath,
+      });
+    }
+  }
+
+  return files;
+}
+
 function discoverSources(): SourceCandidate[] {
   if (!existsSync(SOURCE_DIR)) {
     return [];
   }
 
-  const bySlug = new Map<string, SourceCandidate>();
+  const allFiles = walkSourceFiles(SOURCE_DIR);
+  const byKey = new Map<
+    string,
+    { slug: string; path: string; format: "eps" | "jpg"; category: string; subcategory: string }
+  >();
 
-  for (const name of readdirSync(SOURCE_DIR)) {
-    const lower = name.toLowerCase();
-    if (lower.endsWith(".eps")) {
-      const slug = slugFromFilename(name);
-      bySlug.set(slug, {
-        slug,
-        path: join(SOURCE_DIR, name),
-        format: "eps",
+  for (const file of allFiles) {
+    const filename = basename(file.relativePath);
+    const lower = filename.toLowerCase();
+    const format: "eps" | "jpg" = lower.endsWith(".eps") ? "eps" : "jpg";
+    const category = categoryFromRelativePath(file.relativePath);
+    const subcategory = subcategoryFromBasename(filename);
+    const baseSlug = slugFromFilename(filename);
+    const key = `${category}/${baseSlug}`;
+
+    const existing = byKey.get(key);
+    if (!existing || (existing.format === "jpg" && format === "eps")) {
+      byKey.set(key, {
+        slug: baseSlug,
+        path: file.absPath,
+        format,
+        category,
+        subcategory,
       });
     }
   }
 
-  for (const name of readdirSync(SOURCE_DIR)) {
-    const lower = name.toLowerCase();
-    if (!/\.jpe?g$/i.test(lower)) continue;
-    const slug = slugFromFilename(name);
-    if (!bySlug.has(slug)) {
-      bySlug.set(slug, {
-        slug,
-        path: join(SOURCE_DIR, name),
-        format: "jpg",
-      });
-    }
+  const slugCategories = new Map<string, Set<string>>();
+  for (const entry of byKey.values()) {
+    const categories = slugCategories.get(entry.slug) ?? new Set<string>();
+    categories.add(entry.category);
+    slugCategories.set(entry.slug, categories);
   }
 
-  return [...bySlug.values()].sort((a, b) => a.slug.localeCompare(b.slug));
+  const candidates: SourceCandidate[] = [];
+  for (const entry of byKey.values()) {
+    const hasCollision = (slugCategories.get(entry.slug)?.size ?? 0) > 1;
+    candidates.push({
+      slug: hasCollision ? `${entry.category}-${entry.slug}` : entry.slug,
+      path: entry.path,
+      format: entry.format,
+      category: entry.category,
+      subcategory: entry.subcategory,
+    });
+  }
+
+  return candidates.sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
 function coverLayerPlacement(
@@ -546,10 +633,14 @@ function toPublicPath(absolutePath: string): string {
 function writeGeneratedFiles(entries: ManifestEntry[], meta: DesignedMeta): void {
   const templates = entries.map((entry) => {
     const metaEntry = meta[entry.slug] ?? {};
-    const title = metaEntry.title ?? titleFromSlug(entry.slug);
+    const title = metaEntry.title ?? titleFromBasename(entry.sourceFile);
     const description =
       metaEntry.description ?? `طرح آماده ${title} — مناسب کاور گوشی`;
-    const tags = metaEntry.tags ?? ["طراحی آماده"];
+    const tags = metaEntry.tags ?? [
+      categoryLabel(entry.category),
+      subcategoryLabel(entry.subcategory),
+      "طراحی آماده",
+    ];
     const placement = coverLayerPlacement(entry.width, entry.height);
     const publicSrc = toPublicPath(join("public", entry.outputPath));
     const thumbnail = toPublicPath(join("public", entry.thumbnailPath));
@@ -561,6 +652,8 @@ function writeGeneratedFiles(entries: ManifestEntry[], meta: DesignedMeta): void
       description,
       thumbnail,
       tags,
+      category: entry.category,
+      subcategory: entry.subcategory,
       publicSrc,
       placement,
     };
@@ -579,6 +672,8 @@ ${templates
     description: "${escapeString(t.description)}",
     thumbnail: "${escapeString(t.thumbnail)}",
     tags: [${t.tags.map((tag) => `"${escapeString(tag)}"`).join(", ")}],
+    category: "${escapeString(t.category)}",
+    subcategory: "${escapeString(t.subcategory)}",
     referenceCanvas: DEFAULT_REFERENCE_CANVAS,
     layers: [
       {
@@ -605,7 +700,7 @@ ${templates
 
   const stickerItems = entries.map((entry) => {
     const metaEntry = meta[entry.slug] ?? {};
-    const title = metaEntry.title ?? titleFromSlug(entry.slug);
+    const title = metaEntry.title ?? titleFromBasename(entry.sourceFile);
     const stickerSize = metaEntry.stickerSize ?? DEFAULT_STICKER_SIZE;
     const dims = stickerDimensions(entry.width, entry.height, stickerSize);
     const publicSrc = toPublicPath(join("public", entry.outputPath));
@@ -730,51 +825,71 @@ async function main(): Promise<void> {
   console.log(`  Ghostscript: ${tools.ghostscriptBin ?? "not found"}`);
 
   const manifest: ManifestEntry[] = [];
+  let skipped = 0;
 
   for (const source of sources) {
     console.log(`\nConverting ${basename(source.path)} (${source.format})...`);
 
-    let converted: {
-      outputFormat: ManifestEntry["outputFormat"];
-      outputPath: string;
-      dimensions: { width: number; height: number };
-      conversionMethod: ManifestEntry["conversionMethod"];
-    };
+    try {
+      let converted: {
+        outputFormat: ManifestEntry["outputFormat"];
+        outputPath: string;
+        dimensions: { width: number; height: number };
+        conversionMethod: ManifestEntry["conversionMethod"];
+      };
 
-    if (source.format === "eps") {
-      try {
-        converted = await convertEpsFile(tools, source.path, source.slug);
-      } catch (error) {
-        const jpgFallback = join(SOURCE_DIR, `${source.slug}.jpg`);
-        const jpegFallback = join(SOURCE_DIR, `${source.slug}.jpeg`);
-        const fallbackPath = [jpgFallback, jpegFallback].find((p) => existsSync(p));
-        if (!fallbackPath) throw error;
-        console.log(`  EPS failed — using JPG fallback: ${basename(fallbackPath)}`);
-        converted = await convertJpgFallback(fallbackPath, source.slug);
+      if (source.format === "eps") {
+        try {
+          converted = await convertEpsFile(tools, source.path, source.slug);
+        } catch (error) {
+          const sourceDir = dirname(source.path);
+          const baseSlug = basename(source.path).replace(/\.eps$/i, "");
+          const jpgFallback = join(sourceDir, `${baseSlug}.jpg`);
+          const jpegFallback = join(sourceDir, `${baseSlug}.jpeg`);
+          const fallbackPath = [jpgFallback, jpegFallback].find((p) => existsSync(p));
+          if (!fallbackPath) throw error;
+          console.log(`  EPS failed — using JPG fallback: ${basename(fallbackPath)}`);
+          converted = await convertJpgFallback(fallbackPath, source.slug);
+        }
+      } else {
+        converted = await convertJpgFallback(source.path, source.slug);
       }
-    } else {
-      converted = await convertJpgFallback(source.path, source.slug);
+
+      const thumb = await generateThumbnail(converted.outputPath, source.slug);
+
+      manifest.push({
+        slug: source.slug,
+        category: source.category,
+        subcategory: source.subcategory,
+        sourceFile: basename(source.path),
+        sourceFormat: source.format === "eps" ? "eps" : "jpg-fallback",
+        outputFormat: converted.outputFormat,
+        outputPath: `designed/${basename(converted.outputPath)}`,
+        thumbnailPath: `designed/thumbs/${source.slug}.webp`,
+        width: converted.dimensions.width,
+        height: converted.dimensions.height,
+        convertedAt: new Date().toISOString(),
+        conversionMethod: converted.conversionMethod,
+      });
+
+      console.log(
+        `  → ${basename(converted.outputPath)} (${converted.dimensions.width}×${converted.dimensions.height}, ${converted.conversionMethod})`,
+      );
+      console.log(`  → thumb: ${basename(thumb.thumbnailPath)} (${thumb.width}×${thumb.height})`);
+    } catch (error) {
+      skipped += 1;
+      console.warn(
+        `  Skipped ${basename(source.path)}: ${error instanceof Error ? error.message : error}`,
+      );
     }
+  }
 
-    const thumb = await generateThumbnail(converted.outputPath, source.slug);
+  if (manifest.length === 0) {
+    throw new Error("No designs were converted successfully.");
+  }
 
-    manifest.push({
-      slug: source.slug,
-      sourceFile: basename(source.path),
-      sourceFormat: source.format === "eps" ? "eps" : "jpg-fallback",
-      outputFormat: converted.outputFormat,
-      outputPath: `designed/${basename(converted.outputPath)}`,
-      thumbnailPath: `designed/thumbs/${source.slug}.webp`,
-      width: converted.dimensions.width,
-      height: converted.dimensions.height,
-      convertedAt: new Date().toISOString(),
-      conversionMethod: converted.conversionMethod,
-    });
-
-    console.log(
-      `  → ${basename(converted.outputPath)} (${converted.dimensions.width}×${converted.dimensions.height}, ${converted.conversionMethod})`,
-    );
-    console.log(`  → thumb: ${basename(thumb.thumbnailPath)} (${thumb.width}×${thumb.height})`);
+  if (skipped > 0) {
+    console.warn(`\nWarning: skipped ${skipped} source file(s) due to conversion errors.`);
   }
 
   writeFileSync(MANIFEST_PATH, JSON.stringify({ entries: manifest }, null, 2), "utf8");
