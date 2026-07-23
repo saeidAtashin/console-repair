@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 
 import ApplyTemplateWizard from "@/app/components/designs/ApplyTemplateWizard";
+import DesignedCategoryFilters from "@/app/components/designs/DesignedCategoryFilters";
 import DesignSampleGrid from "@/app/components/designs/DesignSampleGrid";
+import { filterDesignedTemplates } from "@/lib/designed-categories";
 import type { CaseTemplate } from "@/lib/design/types";
 
 type Props = {
@@ -17,6 +19,7 @@ type Props = {
   linkMode?: boolean;
   initialBrandSlug?: string;
   initialModelSlug?: string;
+  showFilters?: boolean;
 };
 
 export default function DesignSamplesSection({
@@ -28,8 +31,24 @@ export default function DesignSamplesSection({
   linkMode = false,
   initialBrandSlug,
   initialModelSlug,
+  showFilters = true,
 }: Props) {
   const [activeTemplate, setActiveTemplate] = useState<CaseTemplate | null>(null);
+  const [category, setCategory] = useState<string | undefined>();
+  const [subcategory, setSubcategory] = useState<string | undefined>();
+
+  const filteredTemplates = useMemo(
+    () => filterDesignedTemplates(templates, { category, subcategory }),
+    [templates, category, subcategory],
+  );
+
+  const displayTemplates =
+    limit != null ? filteredTemplates.slice(0, limit) : filteredTemplates;
+
+  function handleCategoryChange(next: string | undefined) {
+    setCategory(next);
+    setSubcategory(undefined);
+  }
 
   return (
     <>
@@ -48,12 +67,29 @@ export default function DesignSamplesSection({
         ) : null}
       </div>
 
-      <DesignSampleGrid
-        templates={templates}
-        limit={limit}
-        linkMode={linkMode}
-        onSelect={linkMode ? undefined : setActiveTemplate}
-      />
+      {showFilters && templates.some((t) => t.category) ? (
+        <div className="mb-6">
+          <DesignedCategoryFilters
+            templates={templates}
+            category={category}
+            subcategory={subcategory}
+            onCategoryChange={handleCategoryChange}
+            onSubcategoryChange={setSubcategory}
+          />
+        </div>
+      ) : null}
+
+      {displayTemplates.length === 0 ? (
+        <p className="rounded-2xl border border-border bg-surface px-6 py-10 text-center text-muted">
+          طراحی‌ای در این دسته یافت نشد.
+        </p>
+      ) : (
+        <DesignSampleGrid
+          templates={displayTemplates}
+          linkMode={linkMode}
+          onSelect={linkMode ? undefined : setActiveTemplate}
+        />
+      )}
 
       {activeTemplate ? (
         <ApplyTemplateWizard

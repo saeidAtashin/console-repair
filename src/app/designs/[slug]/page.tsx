@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import DesignDetailClient from "@/app/components/designs/DesignDetailClient";
 import JsonLd from "@/app/components/seo/JsonLd";
-import { getCaseTemplateBySlug, getUniversalTemplates } from "@/lib/cases/templates.static";
+import { getCaseTemplateBySlug, getDesignedTemplates } from "@/lib/cases/templates.static";
 import { designedAssetUrl } from "@/lib/designed-assets";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { webPageJsonLd } from "@/lib/seo/jsonld";
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  return getUniversalTemplates().map((template) => ({ slug: template.slug }));
+  return getDesignedTemplates().map((template) => ({ slug: template.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {

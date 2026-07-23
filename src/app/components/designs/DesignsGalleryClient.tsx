@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import DesignedCategoryFilters from "@/app/components/designs/DesignedCategoryFilters";
 import DesignSampleGrid from "@/app/components/designs/DesignSampleGrid";
+import { filterDesignedTemplates } from "@/lib/designed-categories";
 import type { CaseTemplate } from "@/lib/design/types";
 
 const PAGE_SIZE = 24;
@@ -14,25 +16,57 @@ type Props = {
 
 export default function DesignsGalleryClient({ templates }: Props) {
   const [page, setPage] = useState(0);
+  const [category, setCategory] = useState<string | undefined>();
+  const [subcategory, setSubcategory] = useState<string | undefined>();
 
-  const pageCount = Math.max(1, Math.ceil(templates.length / PAGE_SIZE));
+  const filteredTemplates = useMemo(
+    () => filterDesignedTemplates(templates, { category, subcategory }),
+    [templates, category, subcategory],
+  );
+
+  const pageCount = Math.max(1, Math.ceil(filteredTemplates.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
 
   const pageTemplates = useMemo(() => {
     const start = safePage * PAGE_SIZE;
-    return templates.slice(start, start + PAGE_SIZE);
-  }, [templates, safePage]);
+    return filteredTemplates.slice(start, start + PAGE_SIZE);
+  }, [filteredTemplates, safePage]);
+
+  function handleCategoryChange(next: string | undefined) {
+    setCategory(next);
+    setSubcategory(undefined);
+    setPage(0);
+  }
+
+  function handleSubcategoryChange(next: string | undefined) {
+    setSubcategory(next);
+    setPage(0);
+  }
 
   return (
     <div className="space-y-6">
-      <DesignSampleGrid templates={pageTemplates} linkMode priorityFirst />
+      <DesignedCategoryFilters
+        templates={templates}
+        category={category}
+        subcategory={subcategory}
+        onCategoryChange={handleCategoryChange}
+        onSubcategoryChange={handleSubcategoryChange}
+      />
+
+      {filteredTemplates.length === 0 ? (
+        <p className="rounded-2xl border border-border bg-surface px-6 py-10 text-center text-muted">
+          طراحی‌ای در این دسته یافت نشد.
+        </p>
+      ) : (
+        <DesignSampleGrid templates={pageTemplates} linkMode priorityFirst />
+      )}
 
       {pageCount > 1 ? (
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
           <p className="text-sm text-muted">
             نمایش {safePage * PAGE_SIZE + 1}–
-            {Math.min((safePage + 1) * PAGE_SIZE, templates.length)} از {templates.length}{" "}
-            طراحی
+            {Math.min((safePage + 1) * PAGE_SIZE, filteredTemplates.length)} از{" "}
+            {filteredTemplates.length} طراحی
           </p>
           <div className="flex items-center gap-2">
             <button

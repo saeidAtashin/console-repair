@@ -12,7 +12,7 @@ import {
   getModelBySlug,
   PHONE_MODELS,
 } from "@/lib/cases/brands.static";
-import { getAllTemplates } from "@/lib/cases/templates.static";
+import { getDesignedTemplates } from "@/lib/cases/templates.static";
 import ModelCaseHubClient from "./ModelCaseHubClient";
 
 type Props = { params: Promise<{ brand: string; model: string }> };
@@ -45,7 +45,7 @@ export default async function ModelCaseHubPage({ params }: Props) {
   if (!brand || !model) notFound();
 
   const seo = resolveModelSeo(brandSlug, modelSlug)!;
-  const templates = getAllTemplates();
+  const templates = getDesignedTemplates();
 
   return (
     <>
