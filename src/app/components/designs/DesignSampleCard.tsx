@@ -1,13 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Layers, Smartphone } from "lucide-react";
+import { Layers, Smartphone } from "lucide-react";
 
 import { designedAssetUrl } from "@/lib/designed-assets";
 import { categoryLabel } from "@/lib/designed-categories";
 import type { CaseTemplate } from "@/lib/design/types";
 import { cn } from "@/lib/utils";
+import DesignSamplePhoneHover from "./DesignSamplePhoneHover";
 import DesignSamplePreview from "./DesignSamplePreview";
 
 type Props = {
@@ -32,6 +34,15 @@ export default function DesignSampleCard({
   useLivePreview = false,
   priority = false,
 }: Props) {
+  const [isActive, setIsActive] = useState(false);
+
+  const interactionHandlers = {
+    onMouseEnter: () => setIsActive(true),
+    onMouseLeave: () => setIsActive(false),
+    onFocus: () => setIsActive(true),
+    onBlur: () => setIsActive(false),
+  };
+
   const content = (
     <>
       <div className="relative flex h-40 items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_50%_30%,rgba(34,211,238,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(139,92,246,0.1),transparent_50%)] p-3 sm:h-44">
@@ -57,7 +68,7 @@ export default function DesignSampleCard({
           </span>
         ) : null}
 
-        <div className="relative z-[1] overflow-hidden rounded-[1.75rem] border border-border/80 bg-background/40 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_12px_32px_-8px_rgba(0,0,0,0.45)] transition duration-500 motion-reduce:transition-none group-hover/card:scale-[1.03]">
+        <div className="relative z-[1] overflow-hidden rounded-[1.75rem] border border-border/80 bg-background/40 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_12px_32px_-8px_rgba(0,0,0,0.45)] transition duration-300 motion-reduce:transition-none group-hover/card:scale-95 group-hover/card:opacity-0 group-focus-within/card:scale-95 group-focus-within/card:opacity-0">
           {useLivePreview ? (
             <DesignSamplePreview template={template} maxHeight={140} />
           ) : (
@@ -75,19 +86,16 @@ export default function DesignSampleCard({
         </div>
 
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background/80 via-background/20 to-transparent"
-          aria-hidden
-        />
-
-        <div
-          className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/40 opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 group-focus-within/card:opacity-100 motion-reduce:transition-none"
+          className="pointer-events-none absolute inset-0 z-[3] overflow-hidden opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 group-focus-within/card:opacity-100 motion-reduce:transition-none"
           aria-hidden
         >
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-background/80 px-4 py-2 text-xs font-bold text-cyan-400 backdrop-blur-sm">
-            انتخاب طراحی
-            <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          </span>
+          <DesignSamplePhoneHover template={template} active={isActive} />
         </div>
+
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-1/3 bg-gradient-to-t from-background/80 via-background/20 to-transparent"
+          aria-hidden
+        />
       </div>
 
       <div className="border-t border-border/80 p-3">
@@ -114,14 +122,14 @@ export default function DesignSampleCard({
 
   if (href) {
     return (
-      <Link href={href} className={cardClassName}>
+      <Link href={href} className={cardClassName} {...interactionHandlers}>
         {content}
       </Link>
     );
   }
 
   return (
-    <button type="button" onClick={() => onSelect?.(template)} className={cardClassName}>
+    <button type="button" onClick={() => onSelect?.(template)} className={cardClassName} {...interactionHandlers}>
       {content}
     </button>
   );
