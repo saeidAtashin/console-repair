@@ -2,10 +2,20 @@ import { Star } from "lucide-react";
 
 import { HERO_RATING } from "./hero.constants";
 
-export default function HomeHeroRating() {
+type Props = {
+  variant?: "default" | "onDark";
+};
+
+export default function HomeHeroRating({ variant = "default" }: Props) {
+  const onDark = variant === "onDark";
+
   return (
     <div
-      className="flex flex-wrap items-center gap-3 text-sm text-muted"
+      className={
+        onDark
+          ? "flex flex-wrap items-center gap-3 text-sm text-white/70"
+          : "flex flex-wrap items-center gap-3 text-sm text-muted"
+      }
       aria-label={`${HERO_RATING.label}، ${HERO_RATING.score} از ۵`}
     >
       <div className="flex items-center gap-0.5" aria-hidden>
@@ -17,7 +27,9 @@ export default function HomeHeroRating() {
           />
         ))}
       </div>
-      <span className="font-semibold text-foreground">{HERO_RATING.score}</span>
+      <span className={onDark ? "font-semibold text-white" : "font-semibold text-foreground"}>
+        {HERO_RATING.score}
+      </span>
       <span>{HERO_RATING.label}</span>
     </div>
   );

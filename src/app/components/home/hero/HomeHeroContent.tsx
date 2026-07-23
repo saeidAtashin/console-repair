@@ -8,6 +8,12 @@ import HomeHeroRating from "./HomeHeroRating";
 import HomeHeroTrustBadges from "./HomeHeroTrustBadges";
 import { HERO_DESCRIPTION, HERO_HEADING } from "./hero.constants";
 
+type Variant = "default" | "onDark";
+
+type Props = {
+  variant?: Variant;
+};
+
 const container = {
   hidden: {},
   show: {
@@ -24,30 +30,34 @@ const item = {
   },
 };
 
-export default function HomeHeroContent() {
+export default function HomeHeroContent({ variant = "default" }: Props) {
   const prefersReducedMotion = useReducedMotion();
+  const onDark = variant === "onDark";
+
+  const headingClass = onDark
+    ? "mt-6 max-w-2xl text-[clamp(2rem,4.5vw,3.75rem)] font-black leading-[1.08] tracking-tight text-white"
+    : "mt-6 max-w-2xl text-[clamp(2rem,4.5vw,3.75rem)] font-black leading-[1.08] tracking-tight text-foreground";
+
+  const descriptionClass = onDark
+    ? "mt-5 max-w-xl text-base leading-8 text-white/80 sm:text-lg"
+    : "mt-5 max-w-xl text-base leading-8 text-muted sm:text-lg";
 
   if (prefersReducedMotion) {
     return (
       <div className="flex flex-col items-start text-right">
-        <HomeHeroBadge />
-        <h1
-          id="home-hero-heading"
-          className="mt-6 max-w-2xl text-[clamp(2rem,4.5vw,3.75rem)] font-black leading-[1.08] tracking-tight text-foreground"
-        >
+        <HomeHeroBadge variant={variant} />
+        <h1 id="home-hero-heading" className={headingClass}>
           {HERO_HEADING}
         </h1>
-        <p className="mt-5 max-w-xl text-base leading-8 text-muted sm:text-lg">
-          {HERO_DESCRIPTION}
-        </p>
+        <p className={descriptionClass}>{HERO_DESCRIPTION}</p>
         <div className="mt-8 w-full">
-          <HomeHeroTrustBadges />
+          <HomeHeroTrustBadges variant={variant} />
         </div>
         <div className="mt-8">
-          <HomeHeroCta />
+          <HomeHeroCta variant={variant} />
         </div>
         <div className="mt-6">
-          <HomeHeroRating />
+          <HomeHeroRating variant={variant} />
         </div>
       </div>
     );
@@ -61,34 +71,27 @@ export default function HomeHeroContent() {
       className="flex flex-col items-start text-right"
     >
       <motion.div variants={item}>
-        <HomeHeroBadge />
+        <HomeHeroBadge variant={variant} />
       </motion.div>
 
-      <motion.h1
-        id="home-hero-heading"
-        variants={item}
-        className="mt-6 max-w-2xl text-[clamp(2rem,4.5vw,3.75rem)] font-black leading-[1.08] tracking-tight text-foreground"
-      >
+      <motion.h1 id="home-hero-heading" variants={item} className={headingClass}>
         {HERO_HEADING}
       </motion.h1>
 
-      <motion.p
-        variants={item}
-        className="mt-5 max-w-xl text-base leading-8 text-muted sm:text-lg"
-      >
+      <motion.p variants={item} className={descriptionClass}>
         {HERO_DESCRIPTION}
       </motion.p>
 
       <motion.div variants={item} className="mt-8 w-full">
-        <HomeHeroTrustBadges />
+        <HomeHeroTrustBadges variant={variant} />
       </motion.div>
 
       <motion.div variants={item} className="mt-8">
-        <HomeHeroCta />
+        <HomeHeroCta variant={variant} />
       </motion.div>
 
       <motion.div variants={item} className="mt-6">
-        <HomeHeroRating />
+        <HomeHeroRating variant={variant} />
       </motion.div>
     </motion.div>
   );

@@ -118,8 +118,8 @@ export default function DashboardPage() {
           ) : orders.length === 0 ? (
             <div className="rounded-3xl border border-border bg-surface p-10 text-center">
               <p className="text-lg text-muted">سفارشی ثبت نشده است</p>
-              <Link href="/cases" className="mt-4 inline-block text-cyan-400">
-                مشاهده قاب‌های آماده
+              <Link href="/create" className="mt-4 inline-block text-cyan-400">
+                شروع طراحی قاب
               </Link>
             </div>
           ) : (
