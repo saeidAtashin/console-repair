@@ -18,7 +18,7 @@ const HOVER_IPHONE_MODELS = [
   { brandSlug: "apple", modelSlug: "iphone-12" },
 ] as const;
 
-const designImageClassName = "h-full w-full object-cover object-center";
+const designImageClassName = "h-full w-full object-cover object-center origin-center scale-[1.4]";
 
 const slideTransition = {
   duration: 5,
@@ -58,7 +58,11 @@ export default function DesignSamplePhoneHover({
 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
   const phoneRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState<TrackSize>({ trackW: 200, trackH: 160, phoneW: 56 });
+  const [size, setSize] = useState<TrackSize>({
+    trackW: 200,
+    trackH: 160,
+    phoneW: 56,
+  });
   const prefersReducedMotion = useReducedMotion();
   const model = pickHoverIphoneModel(template.id);
   const thumbnailSrc = designedAssetUrl(template.thumbnail);
@@ -102,18 +106,20 @@ export default function DesignSamplePhoneHover({
       className={cn("absolute inset-0 overflow-hidden", className)}
       aria-hidden
     >
-      <Image
-        src={thumbnailSrc}
-        alt=""
-        width={280}
-        height={560}
-        className={cn("absolute inset-0", designImageClassName)}
-        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        loading="lazy"
-      />
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={thumbnailSrc}
+          alt=""
+          width={280}
+          height={560}
+          className={designImageClassName}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          loading="lazy"
+        />
+      </div>
 
       <div
-        className="pointer-events-none absolute inset-0 bg-background/10"
+        className="pointer-events-none absolute inset-0 bg-background/15 backdrop-blur-sm"
         aria-hidden
       />
 
@@ -128,16 +134,16 @@ export default function DesignSamplePhoneHover({
         }}
       >
         <div
-          className="pointer-events-none absolute -inset-5 rounded-full bg-violet-500/10 blur-2xl"
+          className="pointer-events-none absolute -inset-8 rounded-[2rem] bg-black/20 blur-3xl dark:bg-black/45"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -inset-3 rounded-[1.5rem] bg-cyan-400/30 blur-xl dark:bg-cyan-500/20"
+          className="pointer-events-none absolute -inset-3 rounded-[1.35rem] bg-black/10 blur-xl dark:bg-black/25"
           aria-hidden
         />
 
         <div
-          className="relative rounded-[1.1rem] border border-border/70 bg-gradient-to-b from-zinc-100/80 to-zinc-200/40 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.45)] dark:from-zinc-900/80 dark:to-zinc-950/60"
+          className="relative rounded-[1.15rem] p-1 shadow-[0_10px_28px_rgba(0,0,0,0.35)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.55)]"
           style={{ aspectRatio: `${model.canvasWidth}/${model.canvasHeight}` }}
         >
           <div className="absolute inset-[3px] overflow-hidden rounded-[0.85rem] bg-[#0a0a0f]">
@@ -167,11 +173,6 @@ export default function DesignSamplePhoneHover({
             className="pointer-events-none absolute inset-0 h-full w-full drop-shadow-md"
             bodyFill="transparent"
             showCamera
-          />
-
-          <div
-            className="pointer-events-none absolute inset-0 rounded-[0.85rem] bg-gradient-to-tr from-white/10 via-transparent to-cyan-300/10"
-            aria-hidden
           />
         </div>
       </motion.div>
