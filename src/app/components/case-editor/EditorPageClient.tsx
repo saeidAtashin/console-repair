@@ -258,7 +258,7 @@ export default function EditorPageClient({
   const tabs: { id: EditorTab; label: string; icon: React.ReactNode }[] = [
     { id: "layers", label: "لایه‌ها", icon: <Layers size={16} /> },
     { id: "text", label: "متن", icon: <Type size={16} /> },
-    { id: "stickers", label: "استیکر", icon: <Sticker size={16} /> },
+    { id: "stickers", label: "طراحی آماده", icon: <Sticker size={16} /> },
     { id: "upload", label: "تصویر", icon: <Upload size={16} /> },
     { id: "templates", label: "قالب", icon: <LayoutTemplate size={16} /> },
     { id: "design-for-you", label: "طراحی برای شما", icon: <Sparkles size={16} /> },
@@ -463,7 +463,7 @@ function EditorSidePanel({
   const tabLabels: { id: EditorTab; label: string }[] = [
     { id: "layers", label: "لایه‌ها" },
     { id: "text", label: "متن" },
-    { id: "stickers", label: "استیکر" },
+    { id: "stickers", label: "طراحی آماده" },
     { id: "upload", label: "تصویر" },
     { id: "templates", label: "قالب" },
     { id: "design-for-you", label: "طراحی برای شما" },
@@ -497,7 +497,7 @@ function EditorSidePanel({
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
       {activeTab === "layers" ? <LayersPanel /> : null}
       {activeTab === "text" ? <TextPanel /> : null}
-      {activeTab === "stickers" ? <StickerPanel packs={stickerPacks} compact={compact} /> : null}
+      {activeTab === "stickers" ? <StickerPanel packs={stickerPacks} /> : null}
       {activeTab === "upload" ? <UploadPanel /> : null}
       {activeTab === "templates" ? (
         <TemplatesPanel
