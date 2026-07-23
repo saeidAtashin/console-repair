@@ -1,31 +1,38 @@
 import type { ConsoleId } from "@/lib/console-catalog";
 import { consoleIdFromIssueSlug } from "@/lib/repair-links";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo/site";
 import type { ShopConsole, ShopProduct } from "@/lib/shop/types";
 
 export type QuickAccessServiceKind = "game-install" | "repair" | "shop";
+
+const CONSOLE_ICON: Record<ConsoleId, string> = {
+  ps4: "/icons/ps4.svg",
+  ps5: "/icons/ps5.svg",
+  xbox: "/icons/xbox.svg",
+};
 
 export const quickAccessImages: Record<
   ConsoleId,
   Record<QuickAccessServiceKind, string>
 > = {
   ps4: {
-    "game-install": "/quick-access/ps4game.jpg",
-    repair: "/quick-access/ps4repair.png",
-    shop: "/quick-access/ps4shop.png",
+    "game-install": CONSOLE_ICON.ps4,
+    repair: CONSOLE_ICON.ps4,
+    shop: CONSOLE_ICON.ps4,
   },
   ps5: {
-    "game-install": "/quick-access/ps5game.jpg",
-    repair: "/quick-access/ps5repair.png",
-    shop: "/quick-access/ps5shop.png",
+    "game-install": CONSOLE_ICON.ps5,
+    repair: CONSOLE_ICON.ps5,
+    shop: CONSOLE_ICON.ps5,
   },
   xbox: {
-    "game-install": "/quick-access/xboxgame.png",
-    repair: "/quick-access/xboxrepair.png",
-    shop: "/quick-access/xboxshop.png",
+    "game-install": CONSOLE_ICON.xbox,
+    repair: CONSOLE_ICON.xbox,
+    shop: CONSOLE_ICON.xbox,
   },
 };
 
-const DEFAULT_ISSUE_IMAGE = "/images/Ps5-Parts-1-scaled.webp";
+const DEFAULT_ISSUE_IMAGE = DEFAULT_OG_IMAGE;
 
 export function shopConsoleToConsoleId(console: ShopConsole): ConsoleId {
   if (console === "ps4" || console === "ps5") return console;

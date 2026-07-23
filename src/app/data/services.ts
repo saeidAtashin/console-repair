@@ -6,6 +6,11 @@ import {
   type ServiceSeoContent,
 } from "./service-seo-content";
 
+const SERVICE_PLACEHOLDER_IMAGE = "/cases/og-default.jpg";
+const PS5_SERVICE_IMAGE = "/icons/ps5.svg";
+const PS4_SERVICE_IMAGE = "/icons/ps4.svg";
+const XBOX_SERVICE_IMAGE = "/icons/xbox.svg";
+
 export interface Service extends ServiceSeoContent {
   slug: string;
   brand: Brand;
@@ -60,9 +65,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Cpu,
 
-    image: "/quick-access/ps5repair.png",
+    image: PS5_SERVICE_IMAGE,
 
-    cover: "/quick-access/ps5repair.png",
+    cover: PS5_SERVICE_IMAGE,
 
     seoTitle: "تعمیر PS5 | تعمیر تخصصی پلی استیشن 5 با ضمانت",
 
@@ -129,9 +134,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Gamepad2,
 
-    image: "/quick-access/ps4repair.png",
+    image: PS4_SERVICE_IMAGE,
 
-    cover: "/quick-access/ps4repair.png",
+    cover: PS4_SERVICE_IMAGE,
 
     seoTitle: "تعمیر PS4 | تعمیر پلی استیشن 4 با ضمانت",
 
@@ -195,9 +200,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Monitor,
 
-    image: "/quick-access/xboxrepair.png",
+    image: XBOX_SERVICE_IMAGE,
 
-    cover: "/quick-access/xboxrepair.png",
+    cover: XBOX_SERVICE_IMAGE,
 
     seoTitle: "تعمیر Xbox | تعمیر تخصصی ایکس باکس",
 
@@ -256,9 +261,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Cable,
 
-    image: "/obj-console/s-l1600.webp",
+    image: SERVICE_PLACEHOLDER_IMAGE,
 
-    cover: "/obj-console/s-l1600.webp",
+    cover: SERVICE_PLACEHOLDER_IMAGE,
 
     seoTitle: "تعمیر HDMI کنسول | تعمیر سوکت HDMI PS5 و Xbox",
 
@@ -313,9 +318,9 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     icon: Gamepad2,
 
-    image: "/images/controller-repair.jpg",
+    image: SERVICE_PLACEHOLDER_IMAGE,
 
-    cover: "/images/controller-repair.jpg",
+    cover: SERVICE_PLACEHOLDER_IMAGE,
 
     seoTitle: "تعمیر دسته PS5، PS4 و Xbox",
 

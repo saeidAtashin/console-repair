@@ -25,9 +25,9 @@ import { cn } from "@/lib/utils";
 import "./hero-device-scene.css";
 
 const consoleImages: Record<ConsoleId, string> = {
-  ps4: "/obj-console/PS4-service-center-in-Delhi.webp",
-  ps5: "/obj-console/ps5-repair.webp",
-  xbox: "/obj-console/Series_X_Digital_Edition_Layout.jpg",
+  ps4: "/icons/ps4.svg",
+  ps5: "/icons/ps5.svg",
+  xbox: "/icons/xbox.svg",
 };
 
 const quickAccessImageUrls = consoleIds.flatMap((id) =>

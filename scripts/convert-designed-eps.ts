@@ -1,24 +1,34 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import {
   existsSync,
+  mkdirSync,
   readFileSync,
   readdirSync,
   statSync,
   writeFileSync,
 } from "node:fs";
 import { basename, dirname, join } from "node:path";
+import sharp from "sharp";
 
 const ROOT = process.cwd();
+const SOURCE_DIR = getArg("source-dir")
+  ? join(ROOT, getArg("source-dir")!)
+  : join(ROOT, "designed-source");
 const DESIGNED_DIR = join(ROOT, "public", "designed");
+const THUMBS_DIR = join(DESIGNED_DIR, "thumbs");
 const META_PATH = join(DESIGNED_DIR, "designed.meta.json");
 const MANIFEST_PATH = join(DESIGNED_DIR, "designed.manifest.json");
 const TEMPLATES_OUT = join(ROOT, "src", "lib", "cases", "designed.templates.generated.ts");
 const STICKERS_OUT = join(ROOT, "src", "lib", "cases", "designed.stickers.generated.ts");
+const OG_DEFAULT_PATH = join(ROOT, "public", "cases", "og-default.jpg");
 
 const REF_CANVAS = { width: 280, height: 560 } as const;
 const SVG_SIZE_LIMIT_BYTES = 2 * 1024 * 1024;
 const DEFAULT_STICKER_SIZE = 240;
 const MAX_EXPORT_EDGE = 2048;
+const THUMB_MAX_EDGE = 400;
+const OG_WIDTH = 1200;
+const OG_HEIGHT = 630;
 
 type DesignedMetaEntry = {
   title?: string;
@@ -31,19 +41,33 @@ type DesignedMeta = Record<string, DesignedMetaEntry>;
 
 type ManifestEntry = {
   slug: string;
-  sourceEps: string;
-  outputFormat: "svg" | "png" | "jpg";
+  sourceFile: string;
+  sourceFormat: "eps" | "jpg-fallback";
+  outputFormat: "svg" | "png" | "jpg" | "webp";
   outputPath: string;
+  thumbnailPath: string;
   width: number;
   height: number;
   convertedAt: string;
-  conversionMethod: "inkscape-svg" | "inkscape-png" | "imagemagick" | "xmp-preview";
+  conversionMethod:
+    | "inkscape-svg"
+    | "inkscape-png"
+    | "imagemagick"
+    | "xmp-preview"
+    | "jpg-fallback"
+    | "sharp-webp";
 };
 
 type ToolPaths = {
   inkscape?: string;
   magick?: string;
   ghostscriptBin?: string;
+};
+
+type SourceCandidate = {
+  slug: string;
+  path: string;
+  format: "eps" | "jpg";
 };
 
 function hasFlag(name: string): boolean {
@@ -57,7 +81,7 @@ function getArg(name: string): string | undefined {
 }
 
 function slugFromFilename(filename: string): string {
-  return basename(filename, ".eps");
+  return basename(filename).replace(/\.(eps|jpe?g|jpg)$/i, "");
 }
 
 function titleFromSlug(slug: string): string {
@@ -223,27 +247,14 @@ function parseSvgDimensions(svgPath: string): { width: number; height: number } 
   return { width: REF_CANVAS.width, height: REF_CANVAS.height };
 }
 
-function parsePngDimensions(pngPath: string): { width: number; height: number } {
-  const buf = readFileSync(pngPath);
-  if (buf.length >= 24 && buf[0] === 0x89 && buf[1] === 0x50) {
-    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
-  }
-  return { width: REF_CANVAS.width, height: REF_CANVAS.height };
-}
-
-function parseJpegDimensions(jpegPath: string): { width: number; height: number } {
-  const buf = readFileSync(jpegPath);
-  let offset = 2;
-  while (offset < buf.length) {
-    if (buf[offset] !== 0xff) break;
-    const marker = buf[offset + 1];
-    const length = buf.readUInt16BE(offset + 2);
-    if (marker === 0xc0 || marker === 0xc2) {
-      return { height: buf.readUInt16BE(offset + 5), width: buf.readUInt16BE(offset + 7) };
-    }
-    offset += 2 + length;
-  }
-  return { width: REF_CANVAS.width, height: REF_CANVAS.height };
+async function getImageDimensions(
+  imagePath: string,
+): Promise<{ width: number; height: number }> {
+  const meta = await sharp(imagePath).metadata();
+  return {
+    width: meta.width ?? REF_CANVAS.width,
+    height: meta.height ?? REF_CANVAS.height,
+  };
 }
 
 function extractXmpPreview(
@@ -266,9 +277,7 @@ function extractXmpPreview(
   const outputPath = join(DESIGNED_DIR, `${slug}${ext}`);
   writeFileSync(outputPath, binary);
 
-  const dimensions =
-    ext === ".jpg" ? parseJpegDimensions(outputPath) : parsePngDimensions(outputPath);
-  return { outputPath, dimensions };
+  return { outputPath, dimensions: { width: REF_CANVAS.width, height: REF_CANVAS.height } };
 }
 
 function tryInkscapeExport(
@@ -320,16 +329,16 @@ function tryMagickExport(
   return result.ok && existsSync(outputPath);
 }
 
-function convertEpsFile(
+async function convertEpsFile(
   tools: ToolPaths,
   inputPath: string,
   slug: string,
-): {
-  outputFormat: "svg" | "png" | "jpg";
+): Promise<{
+  outputFormat: ManifestEntry["outputFormat"];
   outputPath: string;
   dimensions: { width: number; height: number };
   conversionMethod: ManifestEntry["conversionMethod"];
-} {
+}> {
   const svgPath = join(DESIGNED_DIR, `${slug}.svg`);
   const pngPath = join(DESIGNED_DIR, `${slug}.png`);
   const bbox = parseEpsBoundingBox(inputPath);
@@ -353,19 +362,21 @@ function convertEpsFile(
   }
 
   if (tryInkscapeExport(tools, inputPath, pngPath, "png", exportSize)) {
+    const dimensions = await getImageDimensions(pngPath);
     return {
       outputFormat: "png",
       outputPath: pngPath,
-      dimensions: parsePngDimensions(pngPath),
+      dimensions,
       conversionMethod: "inkscape-png",
     };
   }
 
   if (tryMagickExport(tools, inputPath, pngPath, exportSize)) {
+    const dimensions = await getImageDimensions(pngPath);
     return {
       outputFormat: "png",
       outputPath: pngPath,
-      dimensions: parsePngDimensions(pngPath),
+      dimensions,
       conversionMethod: "imagemagick",
     };
   }
@@ -384,16 +395,112 @@ function convertEpsFile(
   const preview = extractXmpPreview(inputPath, slug);
   if (!preview) {
     throw new Error(
-      `Could not convert ${basename(inputPath)}. Install Ghostscript (https://ghostscript.com) or run npm run setup:ghostscript.`,
+      `Could not convert ${basename(inputPath)}. Install Ghostscript or add a JPG fallback in designed-source/.`,
     );
   }
 
+  const dimensions = await getImageDimensions(preview.outputPath);
   return {
     outputFormat: preview.outputPath.endsWith(".jpg") ? "jpg" : "png",
     outputPath: preview.outputPath,
-    dimensions: preview.dimensions,
+    dimensions,
     conversionMethod: "xmp-preview",
   };
+}
+
+async function convertJpgFallback(
+  inputPath: string,
+  slug: string,
+): Promise<{
+  outputFormat: ManifestEntry["outputFormat"];
+  outputPath: string;
+  dimensions: { width: number; height: number };
+  conversionMethod: ManifestEntry["conversionMethod"];
+}> {
+  const webpPath = join(DESIGNED_DIR, `${slug}.webp`);
+  const meta = await sharp(inputPath).metadata();
+  const width = meta.width ?? MAX_EXPORT_EDGE;
+  const height = meta.height ?? MAX_EXPORT_EDGE;
+  const longest = Math.max(width, height);
+  const resize =
+    longest > MAX_EXPORT_EDGE
+      ? {
+          width: width >= height ? MAX_EXPORT_EDGE : undefined,
+          height: height > width ? MAX_EXPORT_EDGE : undefined,
+        }
+      : undefined;
+
+  await sharp(inputPath)
+    .resize(resize)
+    .webp({ quality: 85 })
+    .toFile(webpPath);
+
+  const dimensions = await getImageDimensions(webpPath);
+  return {
+    outputFormat: "webp",
+    outputPath: webpPath,
+    dimensions,
+    conversionMethod: "jpg-fallback",
+  };
+}
+
+async function generateThumbnail(
+  sourcePath: string,
+  slug: string,
+): Promise<{ thumbnailPath: string; width: number; height: number }> {
+  mkdirSync(THUMBS_DIR, { recursive: true });
+  const thumbPath = join(THUMBS_DIR, `${slug}.webp`);
+  await sharp(sourcePath)
+    .resize({
+      width: THUMB_MAX_EDGE,
+      height: THUMB_MAX_EDGE,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .webp({ quality: 80 })
+    .toFile(thumbPath);
+
+  const dimensions = await getImageDimensions(thumbPath);
+  return {
+    thumbnailPath: thumbPath,
+    width: dimensions.width,
+    height: dimensions.height,
+  };
+}
+
+function discoverSources(): SourceCandidate[] {
+  if (!existsSync(SOURCE_DIR)) {
+    return [];
+  }
+
+  const bySlug = new Map<string, SourceCandidate>();
+
+  for (const name of readdirSync(SOURCE_DIR)) {
+    const lower = name.toLowerCase();
+    if (lower.endsWith(".eps")) {
+      const slug = slugFromFilename(name);
+      bySlug.set(slug, {
+        slug,
+        path: join(SOURCE_DIR, name),
+        format: "eps",
+      });
+    }
+  }
+
+  for (const name of readdirSync(SOURCE_DIR)) {
+    const lower = name.toLowerCase();
+    if (!/\.jpe?g$/i.test(lower)) continue;
+    const slug = slugFromFilename(name);
+    if (!bySlug.has(slug)) {
+      bySlug.set(slug, {
+        slug,
+        path: join(SOURCE_DIR, name),
+        format: "jpg",
+      });
+    }
+  }
+
+  return [...bySlug.values()].sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
 function coverLayerPlacement(
@@ -429,6 +536,13 @@ function escapeString(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
 
+function toPublicPath(absolutePath: string): string {
+  return `/${absolutePath
+    .replace(/\\/g, "/")
+    .replace(/^public\//, "")
+    .replace(/^.*?\/public\//, "")}`;
+}
+
 function writeGeneratedFiles(entries: ManifestEntry[], meta: DesignedMeta): void {
   const templates = entries.map((entry) => {
     const metaEntry = meta[entry.slug] ?? {};
@@ -437,14 +551,15 @@ function writeGeneratedFiles(entries: ManifestEntry[], meta: DesignedMeta): void
       metaEntry.description ?? `طرح آماده ${title} — مناسب کاور گوشی`;
     const tags = metaEntry.tags ?? ["طراحی آماده"];
     const placement = coverLayerPlacement(entry.width, entry.height);
-    const publicSrc = `/${entry.outputPath.replace(/\\/g, "/").replace(/^public\//, "")}`;
+    const publicSrc = toPublicPath(join("public", entry.outputPath));
+    const thumbnail = toPublicPath(join("public", entry.thumbnailPath));
 
     return {
       id: `designed-${entry.slug}`,
       slug: entry.slug,
       title,
       description,
-      thumbnail: publicSrc,
+      thumbnail,
       tags,
       publicSrc,
       placement,
@@ -493,7 +608,7 @@ ${templates
     const title = metaEntry.title ?? titleFromSlug(entry.slug);
     const stickerSize = metaEntry.stickerSize ?? DEFAULT_STICKER_SIZE;
     const dims = stickerDimensions(entry.width, entry.height, stickerSize);
-    const publicSrc = `/${entry.outputPath.replace(/\\/g, "/").replace(/^public\//, "")}`;
+    const publicSrc = toPublicPath(join("public", entry.outputPath));
 
     return {
       id: `designed-${entry.slug}`,
@@ -558,21 +673,57 @@ export const DESIGNED_STICKER_PACK: StickerPack = {
   );
 }
 
-function main(): void {
-  const tools = resolveTools();
-  const meta = readMeta();
+async function ensureOgDefaultImage(): Promise<void> {
+  if (existsSync(OG_DEFAULT_PATH)) return;
 
-  const epsFiles = readdirSync(DESIGNED_DIR)
-    .filter((name) => name.toLowerCase().endsWith(".eps"))
-    .sort();
+  mkdirSync(dirname(OG_DEFAULT_PATH), { recursive: true });
 
-  if (epsFiles.length === 0) {
-    console.log("No .eps files found in public/designed/. Writing empty catalogs.");
-    writeEmptyGeneratedFiles();
-    writeFileSync(MANIFEST_PATH, JSON.stringify({ entries: [] }, null, 2), "utf8");
+  const candidates = [
+    join(ROOT, "public", "designed", "palm-tree-leaves.png"),
+    join(ROOT, "public", "designed", "thumbs", "palm-tree-leaves.webp"),
+  ];
+
+  const source = candidates.find((path) => existsSync(path));
+  if (!source) {
+    await sharp({
+      create: {
+        width: OG_WIDTH,
+        height: OG_HEIGHT,
+        channels: 3,
+        background: { r: 10, g: 10, b: 15 },
+      },
+    })
+      .jpeg({ quality: 85 })
+      .toFile(OG_DEFAULT_PATH);
+    console.log(`Created placeholder OG image at ${OG_DEFAULT_PATH}`);
     return;
   }
 
+  await sharp(source)
+    .resize(OG_WIDTH, OG_HEIGHT, { fit: "cover", position: "centre" })
+    .jpeg({ quality: 85 })
+    .toFile(OG_DEFAULT_PATH);
+  console.log(`Created OG default image from ${basename(source)}`);
+}
+
+async function main(): Promise<void> {
+  const tools = resolveTools();
+  const meta = readMeta();
+  mkdirSync(DESIGNED_DIR, { recursive: true });
+  mkdirSync(THUMBS_DIR, { recursive: true });
+
+  const sources = discoverSources();
+
+  if (sources.length === 0) {
+    console.log(`No source files found in ${SOURCE_DIR}. Writing empty catalogs.`);
+    writeEmptyGeneratedFiles();
+    writeFileSync(MANIFEST_PATH, JSON.stringify({ entries: [] }, null, 2), "utf8");
+    await ensureOgDefaultImage();
+    return;
+  }
+
+  console.log(`Source directory: ${SOURCE_DIR}`);
+  console.log(`Found ${sources.length} design source(s).`);
   console.log("Conversion tools:");
   console.log(`  Inkscape: ${tools.inkscape ?? "not found"}`);
   console.log(`  ImageMagick: ${tools.magick ?? "not found"}`);
@@ -580,18 +731,40 @@ function main(): void {
 
   const manifest: ManifestEntry[] = [];
 
-  for (const epsFile of epsFiles) {
-    const slug = slugFromFilename(epsFile);
-    const inputPath = join(DESIGNED_DIR, epsFile);
+  for (const source of sources) {
+    console.log(`\nConverting ${basename(source.path)} (${source.format})...`);
 
-    console.log(`\nConverting ${epsFile}...`);
-    const converted = convertEpsFile(tools, inputPath, slug);
+    let converted: {
+      outputFormat: ManifestEntry["outputFormat"];
+      outputPath: string;
+      dimensions: { width: number; height: number };
+      conversionMethod: ManifestEntry["conversionMethod"];
+    };
+
+    if (source.format === "eps") {
+      try {
+        converted = await convertEpsFile(tools, source.path, source.slug);
+      } catch (error) {
+        const jpgFallback = join(SOURCE_DIR, `${source.slug}.jpg`);
+        const jpegFallback = join(SOURCE_DIR, `${source.slug}.jpeg`);
+        const fallbackPath = [jpgFallback, jpegFallback].find((p) => existsSync(p));
+        if (!fallbackPath) throw error;
+        console.log(`  EPS failed — using JPG fallback: ${basename(fallbackPath)}`);
+        converted = await convertJpgFallback(fallbackPath, source.slug);
+      }
+    } else {
+      converted = await convertJpgFallback(source.path, source.slug);
+    }
+
+    const thumb = await generateThumbnail(converted.outputPath, source.slug);
 
     manifest.push({
-      slug,
-      sourceEps: epsFile,
+      slug: source.slug,
+      sourceFile: basename(source.path),
+      sourceFormat: source.format === "eps" ? "eps" : "jpg-fallback",
       outputFormat: converted.outputFormat,
       outputPath: `designed/${basename(converted.outputPath)}`,
+      thumbnailPath: `designed/thumbs/${source.slug}.webp`,
       width: converted.dimensions.width,
       height: converted.dimensions.height,
       convertedAt: new Date().toISOString(),
@@ -599,23 +772,38 @@ function main(): void {
     });
 
     console.log(
-      `  → ${basename(converted.outputPath)} (${converted.dimensions.width}×${converted.dimensions.height}, ${converted.outputFormat}, ${converted.conversionMethod})`,
+      `  → ${basename(converted.outputPath)} (${converted.dimensions.width}×${converted.dimensions.height}, ${converted.conversionMethod})`,
     );
+    console.log(`  → thumb: ${basename(thumb.thumbnailPath)} (${thumb.width}×${thumb.height})`);
   }
 
   writeFileSync(MANIFEST_PATH, JSON.stringify({ entries: manifest }, null, 2), "utf8");
-  writeGeneratedFiles(
-    manifest.map((entry) => ({
-      ...entry,
-      outputPath: join("public", entry.outputPath),
-    })),
-    meta,
-  );
+  writeGeneratedFiles(manifest, meta);
+  await ensureOgDefaultImage();
+
+  const totalBytes = manifest.reduce((sum, entry) => {
+    const main = join(ROOT, "public", entry.outputPath);
+    const thumb = join(ROOT, "public", entry.thumbnailPath);
+    return (
+      sum +
+      (existsSync(main) ? statSync(main).size : 0) +
+      (existsSync(thumb) ? statSync(thumb).size : 0)
+    );
+  }, 0);
 
   console.log(`\nWrote ${manifest.length} design(s) to:`);
   console.log(`  ${TEMPLATES_OUT}`);
   console.log(`  ${STICKERS_OUT}`);
   console.log(`  ${MANIFEST_PATH}`);
+  console.log(`  Optimized catalog size: ${(totalBytes / 1024 / 1024).toFixed(1)} MB`);
+  if (totalBytes > 200 * 1024 * 1024) {
+    console.log(
+      "\nNote: catalog exceeds 200 MB — consider uploading public/designed/ to CDN and setting NEXT_PUBLIC_DESIGNED_CDN_URL.",
+    );
+  }
 }
 
-main();
+main().catch((error) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+});

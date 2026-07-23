@@ -223,7 +223,7 @@ export default function Navbar() {
                   className="h-10 w-10 will-change-transform sm:h-11 sm:w-11"
                 >
                   <Image
-                    src="/obj-console/cd.png"
+                    src="/cases/stickers/gamepad.svg"
                     alt=""
                     width={44}
                     height={44}

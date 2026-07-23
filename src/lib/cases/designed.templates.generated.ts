@@ -7,7 +7,7 @@ export const DESIGNED_TEMPLATES: CaseTemplate[] = [
     slug: "palm-tree-leaves",
     title: "برگ نخل",
     description: "طرح برگ نخل — مناسب کاور گوشی",
-    thumbnail: "/designed/palm-tree-leaves.png",
+    thumbnail: "/designed/thumbs/palm-tree-leaves.webp",
     tags: ["طبیعت", "طراحی آماده"],
     referenceCanvas: DEFAULT_REFERENCE_CANVAS,
     layers: [

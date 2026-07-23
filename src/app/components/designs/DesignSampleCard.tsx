@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+
+import { designedAssetUrl } from "@/lib/designed-assets";
 import type { CaseTemplate } from "@/lib/design/types";
 import DesignSamplePreview from "./DesignSamplePreview";
 
@@ -8,13 +11,35 @@ type Props = {
   template: CaseTemplate;
   onSelect?: (template: CaseTemplate) => void;
   href?: string;
+  /** Use Konva preview instead of thumbnail image (detail views). */
+  useLivePreview?: boolean;
+  priority?: boolean;
 };
 
-export default function DesignSampleCard({ template, onSelect, href }: Props) {
+export default function DesignSampleCard({
+  template,
+  onSelect,
+  href,
+  useLivePreview = false,
+  priority = false,
+}: Props) {
   const content = (
     <>
       <div className="flex aspect-[1/2] items-center justify-center bg-background/50 p-3">
-        <DesignSamplePreview template={template} maxHeight={180} />
+        {useLivePreview ? (
+          <DesignSamplePreview template={template} maxHeight={180} />
+        ) : (
+          <Image
+            src={designedAssetUrl(template.thumbnail)}
+            alt={template.title}
+            width={280}
+            height={560}
+            className="h-full w-auto max-h-[180px] object-contain"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            loading={priority ? undefined : "lazy"}
+            priority={priority}
+          />
+        )}
       </div>
       <div className="border-t border-border p-3">
         <div className="mb-2 flex flex-wrap gap-1">

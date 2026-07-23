@@ -2,13 +2,15 @@
   "entries": [
     {
       "slug": "palm-tree-leaves",
-      "sourceEps": "palm-tree-leaves.eps",
+      "sourceFile": "palm-tree-leaves.eps",
+      "sourceFormat": "eps",
       "outputFormat": "png",
       "outputPath": "designed/palm-tree-leaves.png",
+      "thumbnailPath": "designed/thumbs/palm-tree-leaves.webp",
       "width": 2048,
       "height": 2048,
-      "convertedAt": "2026-07-22T11:11:41.437Z",
-      "conversionMethod": "imagemagick"
+      "convertedAt": "2026-07-23T20:52:52.059Z",
+      "conversionMethod": "inkscape-png"
     }
   ]
 }

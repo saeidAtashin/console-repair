@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Gamepad2, Hammer, Home, Skull, Wrench } from "lucide-react";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { ArrowLeft, Hammer, Home, Skull } from "lucide-react";
 
 export type GamingStatusVariant = "not-found" | "construction";
 
@@ -30,7 +29,6 @@ const variantConfig: Record<
     glow: string;
     barLabel: string;
     barPercent: number;
-    lottieSrc: string;
   }
 > = {
   "not-found": {
@@ -39,7 +37,6 @@ const variantConfig: Record<
     glow: "from-red-600/30 via-rose-500/10 to-transparent",
     barLabel: "HP",
     barPercent: 0,
-    lottieSrc: "/obj-console/404.lottie",
   },
   construction: {
     icon: Hammer,
@@ -47,7 +44,6 @@ const variantConfig: Record<
     glow: "from-amber-500/25 via-cyan-500/10 to-transparent",
     barLabel: "LOAD",
     barPercent: 67,
-    lottieSrc: "/obj-console/siteisundercunstruction.lottie",
   },
 };
 
@@ -57,7 +53,6 @@ export default function GamingStatusScreen({
   hudLabel,
   title,
   description,
-  flavorText,
   quickLinks = [],
 }: GamingStatusScreenProps) {
   const config = variantConfig[variant];
@@ -66,30 +61,15 @@ export default function GamingStatusScreen({
 
   return (
     <main className="relative flex min-h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden px-4 py-16 sm:py-20">
-      {/* 🎬 DOTLOTTIE BACKGROUND LAYER */}
-      <div className="absolute inset-0 z-0">
-        <DotLottieReact
-          src={config.lottieSrc}
-          loop
-          autoplay
-          className="h-full w-full object-cover scale-110 opacity-40"
-        />
-        {/* cinematic overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/80" />
-      </div>
-
-      {/* HUD glow */}
       <div
-        className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${config.glow} z-10`}
+        className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${config.glow} z-0`}
       />
 
-      {/* scanlines */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-10 opacity-[0.07] [background-image:repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.15)_2px,rgba(255,255,255,0.15)_3px)]"
       />
 
-      {/* content */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -103,7 +83,6 @@ export default function GamingStatusScreen({
             {hudLabel}
           </p>
 
-          {/* icon */}
           <div className="mb-6 flex justify-center">
             <div
               className={`flex h-20 w-20 items-center justify-center rounded-2xl border ${
@@ -118,7 +97,6 @@ export default function GamingStatusScreen({
             </div>
           </div>
 
-          {/* code */}
           <p
             className={`text-center text-6xl font-bold sm:text-8xl ${
               is404 ? "text-red-400" : "text-amber-300"
@@ -131,11 +109,8 @@ export default function GamingStatusScreen({
             {title}
           </h1>
 
-          <p className="mt-3 text-center text-sm text-muted">
-            {description}
-          </p>
+          <p className="mt-3 text-center text-sm text-muted">{description}</p>
 
-          {/* CTA */}
           <div className="mt-10 flex flex-col items-center gap-4">
             <Link
               href="/"
@@ -148,9 +123,7 @@ export default function GamingStatusScreen({
           </div>
         </div>
 
-        <p className="mt-6 text-center text-[10px] text-muted">
-          فیکس‌بازی · تعمیر تخصصی کنسول
-        </p>
+        <p className="mt-6 text-center text-[10px] text-muted">قاب‌کده</p>
       </motion.div>
     </main>
   );
