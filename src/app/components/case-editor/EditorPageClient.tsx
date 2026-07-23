@@ -383,7 +383,11 @@ export default function EditorPageClient({
             </button>
           ))}
         </div>
-        <div className="max-h-48 overflow-y-auto p-4">
+        <div
+          className={`overflow-y-auto p-4 ${
+            activeTab === "stickers" ? "max-h-60" : "max-h-48"
+          }`}
+        >
           <EditorSidePanel
             tabs={tabs}
             activeTab={activeTab}
@@ -467,9 +471,15 @@ function EditorSidePanel({
   ];
 
   return (
-    <div className={compact ? "" : "rounded-2xl border border-border bg-card/60 p-4"}>
+    <div
+      className={
+        compact
+          ? "min-h-0"
+          : "flex max-h-[min(560px,calc(100vh-280px))] min-h-0 flex-col rounded-2xl border border-border bg-card/60 p-4"
+      }
+    >
       {!compact ? (
-        <div className="mb-4 flex flex-wrap gap-1 border-b border-border pb-3">
+        <div className="mb-4 flex shrink-0 flex-wrap gap-1 border-b border-border pb-3">
           {tabLabels.map((tab) => (
             <button
               key={tab.id}
@@ -484,9 +494,10 @@ function EditorSidePanel({
           ))}
         </div>
       ) : null}
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
       {activeTab === "layers" ? <LayersPanel /> : null}
       {activeTab === "text" ? <TextPanel /> : null}
-      {activeTab === "stickers" ? <StickerPanel packs={stickerPacks} /> : null}
+      {activeTab === "stickers" ? <StickerPanel packs={stickerPacks} compact={compact} /> : null}
       {activeTab === "upload" ? <UploadPanel /> : null}
       {activeTab === "templates" ? (
         <TemplatesPanel
@@ -504,6 +515,7 @@ function EditorSidePanel({
         />
       ) : null}
       {activeTab === "description" ? <DescriptionPanel /> : null}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { Stage, Layer, Text, Transformer, Group, Rect } from "react-konva";
+import { Stage, Layer, Transformer, Group, Rect } from "react-konva";
 import type Konva from "konva";
 
 import { PhoneBackKonvaLayers } from "@/app/components/case-wizard/PhoneBackKonva";
@@ -11,13 +11,9 @@ import {
   mapGeometryToCanvas,
 } from "@/lib/cases/phone-back";
 import { useEditorStore } from "@/lib/design/editor-store";
-import {
-  getDefaultTextBoxWidth,
-  getTextOffsetX,
-  normalizeFontFamily,
-} from "@/lib/design/editor-fonts";
-import { isLayerVisible, type DesignLayer, type TextLayer } from "@/lib/design/types";
+import { isLayerVisible, type DesignLayer } from "@/lib/design/types";
 import DesignImageLayerNode from "@/app/components/case-editor/DesignImageLayerNode";
+import TextLayerNode from "@/app/components/case-editor/TextLayerNode";
 
 type Props = {
   caseColor: string;
@@ -54,17 +50,18 @@ export default function CaseCanvas({
   const stageRef = useRef<Konva.Stage>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
   const touchGestureRef = useRef<TouchGesture | null>(null);
-  const {
-    document,
-    meta,
-    selectedLayerId,
-    previewMode,
-    selectLayer,
-    updateLayer,
-  } = useEditorStore();
 
-  const width = meta?.canvasWidth ?? document.canvas.width;
-  const height = meta?.canvasHeight ?? document.canvas.height;
+  const layers = useEditorStore((s) => s.document.layers);
+  const canvasWidth = useEditorStore((s) => s.document.canvas.width);
+  const canvasHeight = useEditorStore((s) => s.document.canvas.height);
+  const meta = useEditorStore((s) => s.meta);
+  const selectedLayerId = useEditorStore((s) => s.selectedLayerId);
+  const previewMode = useEditorStore((s) => s.previewMode);
+  const selectLayer = useEditorStore((s) => s.selectLayer);
+  const updateLayer = useEditorStore((s) => s.updateLayer);
+
+  const width = meta?.canvasWidth ?? canvasWidth;
+  const height = meta?.canvasHeight ?? canvasHeight;
   const scale = Math.min(280 / width, 480 / height);
   const isClear = caseMaterial === "clear";
   const model = meta?.model;
@@ -72,7 +69,7 @@ export default function CaseCanvas({
     ? createCaseDesignClipFunc(mapGeometryToCanvas(model))
     : createFallbackCaseDesignClipFunc(width, height);
 
-  const visibleLayers = document.layers.filter(isLayerVisible);
+  const visibleLayers = layers.filter(isLayerVisible);
 
   useEffect(() => {
     if (stageRef.current) onStageRef?.(stageRef.current);
@@ -88,7 +85,7 @@ export default function CaseCanvas({
 
     const selected = selectedLayerId ? stage.findOne(`#${selectedLayerId}`) : null;
     if (selected && selectedLayerId) {
-      const layer = document.layers.find((l) => l.id === selectedLayerId);
+      const layer = layers.find((l) => l.id === selectedLayerId);
       if (layer && isLayerVisible(layer)) {
         transformer.nodes([selected]);
         transformer.getLayer()?.batchDraw();
@@ -98,7 +95,7 @@ export default function CaseCanvas({
     } else {
       transformer.nodes([]);
     }
-  }, [selectedLayerId, document.layers, readOnly, previewMode]);
+  }, [selectedLayerId, layers, readOnly, previewMode]);
 
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
     if (readOnly || previewMode) return;
@@ -113,7 +110,7 @@ export default function CaseCanvas({
       const touches = e.evt.touches;
       if (touches.length !== 2) return;
 
-      const layer = document.layers.find((l) => l.id === layerId);
+      const layer = layers.find((l) => l.id === layerId);
       if (!layer) return;
 
       e.evt.preventDefault();
@@ -127,7 +124,7 @@ export default function CaseCanvas({
         startRotation: layer.rotation,
       };
     },
-    [document.layers, previewMode, readOnly, selectLayer],
+    [layers, previewMode, readOnly, selectLayer],
   );
 
   const handleTouchMove = useCallback(
@@ -144,18 +141,33 @@ export default function CaseCanvas({
       const scaleFactor = dist / gesture.startDistance;
       const rotationDelta = angle - gesture.startAngle;
 
-      updateLayer(layerId, {
-        scaleX: gesture.startScaleX * scaleFactor,
-        scaleY: gesture.startScaleY * scaleFactor,
-        rotation: gesture.startRotation + rotationDelta,
-      });
+      const node = stageRef.current?.findOne(`#${layerId}`);
+      if (node) {
+        node.scaleX(gesture.startScaleX * scaleFactor);
+        node.scaleY(gesture.startScaleY * scaleFactor);
+        node.rotation(gesture.startRotation + rotationDelta);
+        node.getLayer()?.batchDraw();
+      }
     },
-    [updateLayer],
+    [],
   );
 
   const handleTouchEnd = useCallback(() => {
+    const gesture = touchGestureRef.current;
+    if (gesture) {
+      const node = stageRef.current?.findOne(`#${gesture.layerId}`);
+      if (node) {
+        updateLayer(gesture.layerId, {
+          x: node.x(),
+          y: node.y(),
+          scaleX: node.scaleX(),
+          scaleY: node.scaleY(),
+          rotation: node.rotation(),
+        });
+      }
+    }
     touchGestureRef.current = null;
-  }, []);
+  }, [updateLayer]);
 
   const bodyFill = isClear ? "rgba(10,10,15,0.85)" : "#0a0a0f";
 
@@ -223,25 +235,12 @@ export default function CaseCanvas({
               };
 
               if (layer.type === "text") {
-                const textLayer = layer as TextLayer;
-                const boxWidth = textLayer.width ?? getDefaultTextBoxWidth(width);
                 return (
-                  <Text
-                    key={`${textLayer.id}-${textLayer.text}-${textLayer.fontFamily}-${textLayer.fontSize}-${textLayer.align}`}
-                    id={textLayer.id}
-                    text={textLayer.text}
-                    x={textLayer.x}
-                    y={textLayer.y}
-                    width={boxWidth}
-                    offsetX={getTextOffsetX(textLayer.align, boxWidth)}
-                    fontSize={textLayer.fontSize}
-                    fontFamily={normalizeFontFamily(textLayer.fontFamily)}
-                    fill={textLayer.fill}
-                    align={textLayer.align}
-                    rotation={textLayer.rotation}
-                    scaleX={textLayer.scaleX}
-                    scaleY={textLayer.scaleY}
-                    {...commonHandlers}
+                  <TextLayerNode
+                    key={layer.id}
+                    layer={layer}
+                    canvasWidth={width}
+                    handlers={commonHandlers}
                   />
                 );
               }

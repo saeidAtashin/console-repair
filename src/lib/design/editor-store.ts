@@ -50,7 +50,12 @@ type EditorState = {
   setPendingEffectPreview: (preview: PendingEffectPreview | null) => void;
   addTextLayer: (text?: string) => void;
   addImageLayer: (src: string, width: number, height: number, isSticker?: boolean, name?: string) => void;
-  updateLayer: (id: string, patch: Partial<DesignLayer>) => void;
+  updateLayer: (
+    id: string,
+    patch: Partial<DesignLayer>,
+    options?: { recordHistory?: boolean },
+  ) => void;
+  commitHistory: () => void;
   removeLayer: (id: string) => void;
   setLayerVisible: (id: string, visible: boolean) => void;
   restoreLayer: (id: string) => void;
@@ -80,6 +85,10 @@ function pushHistory(state: EditorState, nextDoc: DesignDocument): Partial<Edito
 function updateDoc(state: EditorState, updater: (doc: DesignDocument) => DesignDocument) {
   const nextDoc = updater(structuredClone(state.document));
   return pushHistory(state, nextDoc);
+}
+
+function patchDoc(state: EditorState, updater: (doc: DesignDocument) => DesignDocument) {
+  return { document: updater(structuredClone(state.document)) };
 }
 
 function countTextLayers(layers: DesignLayer[]): number {
@@ -184,6 +193,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       fill: "#ffffff",
       align: "center",
       width: boxWidth,
+      backgroundFill: null,
+      cornerRadius: 0,
+      padding: 8,
       name: `متن ${textCount}`,
       visible: true,
       x: meta.canvasWidth / 2,
@@ -230,15 +242,21 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
 
-  updateLayer: (id, patch) => {
-    set((state) =>
-      updateDoc(state, (doc) => ({
+  updateLayer: (id, patch, options) => {
+    const recordHistory = options?.recordHistory !== false;
+    set((state) => {
+      const updater = (doc: DesignDocument) => ({
         ...doc,
         layers: doc.layers.map((layer) =>
           layer.id === id ? ({ ...layer, ...patch } as DesignLayer) : layer,
         ),
-      })),
-    );
+      });
+      return recordHistory ? updateDoc(state, updater) : patchDoc(state, updater);
+    });
+  },
+
+  commitHistory: () => {
+    set((state) => pushHistory(state, structuredClone(state.document)));
   },
 
   removeLayer: (id) => {

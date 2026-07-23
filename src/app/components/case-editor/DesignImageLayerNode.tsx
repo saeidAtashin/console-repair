@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { Image as KonvaImage } from "react-konva";
 import useImage from "use-image";
 import type Konva from "konva";
@@ -18,7 +18,7 @@ type Props = {
   handlers?: Record<string, unknown>;
 };
 
-export default function DesignImageLayerNode({ layer, handlers }: Props) {
+function DesignImageLayerNode({ layer, handlers }: Props) {
   const [image] = useImage(layer.src, "anonymous");
   const imageRef = useRef<Konva.Image>(null);
   const pendingEffectPreview = useEditorStore((s) => s.pendingEffectPreview);
@@ -60,3 +60,5 @@ export default function DesignImageLayerNode({ layer, handlers }: Props) {
     />
   );
 }
+
+export default memo(DesignImageLayerNode);
