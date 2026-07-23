@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   ArrowDown,
   ArrowUp,
@@ -15,7 +16,6 @@ import {
   X,
 } from "lucide-react";
 
-import ImageToolsPanel from "@/app/components/case-editor/ImageToolsPanel";
 import { useEditorStore } from "@/lib/design/editor-store";
 import {
   BLEND_MODE_OPTIONS,
@@ -33,6 +33,16 @@ import {
   type ImageLayer,
   type ImageLayerEffect,
 } from "@/lib/design/types";
+
+const ImageToolsPanel = dynamic(
+  () => import("@/app/components/case-editor/ImageToolsPanel"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="py-4 text-center text-xs text-muted">در حال بارگذاری ابزار تصویر…</div>
+    ),
+  },
+);
 
 function layerLabel(layer: DesignLayer): string {
   if (layer.name) return layer.name;

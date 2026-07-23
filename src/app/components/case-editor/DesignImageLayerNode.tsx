@@ -21,7 +21,9 @@ type Props = {
 function DesignImageLayerNode({ layer, handlers }: Props) {
   const [image] = useImage(layer.src, "anonymous");
   const imageRef = useRef<Konva.Image>(null);
-  const pendingEffectPreview = useEditorStore((s) => s.pendingEffectPreview);
+  const pendingEffectPreview = useEditorStore((s) =>
+    s.pendingEffectPreview?.layerId === layer.id ? s.pendingEffectPreview : null,
+  );
   const effectsKey = serializeImageLayerEffects(layer, pendingEffectPreview);
 
   useEffect(() => {

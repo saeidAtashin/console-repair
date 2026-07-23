@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { Stage, Layer, Transformer, Group, Rect } from "react-konva";
 import type Konva from "konva";
 
@@ -22,6 +22,7 @@ type Props = {
   readOnly?: boolean;
   displayMaxWidth?: number;
   displayMaxHeight?: number;
+  mobileTouchMode?: boolean;
 };
 
 type TouchGesture = {
@@ -31,6 +32,16 @@ type TouchGesture = {
   startScaleX: number;
   startScaleY: number;
   startRotation: number;
+};
+
+type LayerHandlers = {
+  onClick: () => void;
+  onTap: () => void;
+  onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onTransformEnd: (e: Konva.KonvaEventObject<Event>) => void;
+  onTouchStart: (e: Konva.KonvaEventObject<TouchEvent>) => void;
+  onTouchMove: (e: Konva.KonvaEventObject<TouchEvent>) => void;
+  draggable: boolean;
 };
 
 function touchDistance(t1: Touch, t2: Touch): number {
@@ -43,13 +54,14 @@ function touchAngle(t1: Touch, t2: Touch): number {
   return (Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180) / Math.PI;
 }
 
-export default function CaseCanvas({
+function CaseCanvas({
   caseColor,
   caseMaterial,
   onStageRef,
   readOnly = false,
   displayMaxWidth,
   displayMaxHeight,
+  mobileTouchMode = false,
 }: Props) {
   const stageRef = useRef<Konva.Stage>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
@@ -76,6 +88,10 @@ export default function CaseCanvas({
     : createFallbackCaseDesignClipFunc(width, height);
 
   const visibleLayers = layers.filter(isLayerVisible);
+  const layerIds = useMemo(
+    () => visibleLayers.map((layer) => layer.id).join(","),
+    [visibleLayers],
+  );
 
   useEffect(() => {
     if (stageRef.current) onStageRef?.(stageRef.current);
@@ -175,6 +191,45 @@ export default function CaseCanvas({
     touchGestureRef.current = null;
   }, [updateLayer]);
 
+  const layerHandlers = useMemo(() => {
+    const handlers = new Map<string, LayerHandlers>();
+    const isInteractive = !readOnly && !previewMode;
+
+    for (const layer of visibleLayers) {
+      handlers.set(layer.id, {
+        onClick: () => isInteractive && selectLayer(layer.id),
+        onTap: () => isInteractive && selectLayer(layer.id),
+        onDragEnd: (e) => {
+          updateLayer(layer.id, { x: e.target.x(), y: e.target.y() });
+        },
+        onTransformEnd: (e) => {
+          const node = e.target;
+          updateLayer(layer.id, {
+            x: node.x(),
+            y: node.y(),
+            rotation: node.rotation(),
+            scaleX: node.scaleX(),
+            scaleY: node.scaleY(),
+          });
+        },
+        onTouchStart: (e) => handleTouchStart(layer.id, e),
+        onTouchMove: (e) => handleTouchMove(layer.id, e),
+        draggable: isInteractive,
+      });
+    }
+
+    return handlers;
+  }, [
+    visibleLayers,
+    readOnly,
+    previewMode,
+    selectLayer,
+    updateLayer,
+    handleTouchStart,
+    handleTouchMove,
+    layerIds,
+  ]);
+
   const bodyFill = isClear ? "rgba(10,10,15,0.85)" : "#0a0a0f";
 
   return (
@@ -217,28 +272,7 @@ export default function CaseCanvas({
 
           <Group clipFunc={designClipFunc}>
             {visibleLayers.map((layer: DesignLayer) => {
-              const commonHandlers = {
-                onClick: () => !readOnly && !previewMode && selectLayer(layer.id),
-                onTap: () => !readOnly && !previewMode && selectLayer(layer.id),
-                onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
-                  updateLayer(layer.id, { x: e.target.x(), y: e.target.y() });
-                },
-                onTransformEnd: (e: Konva.KonvaEventObject<Event>) => {
-                  const node = e.target;
-                  updateLayer(layer.id, {
-                    x: node.x(),
-                    y: node.y(),
-                    rotation: node.rotation(),
-                    scaleX: node.scaleX(),
-                    scaleY: node.scaleY(),
-                  });
-                },
-                onTouchStart: (e: Konva.KonvaEventObject<TouchEvent>) =>
-                  handleTouchStart(layer.id, e),
-                onTouchMove: (e: Konva.KonvaEventObject<TouchEvent>) =>
-                  handleTouchMove(layer.id, e),
-                draggable: !readOnly && !previewMode,
-              };
+              const commonHandlers = layerHandlers.get(layer.id)!;
 
               if (layer.type === "text") {
                 return (
@@ -284,7 +318,9 @@ export default function CaseCanvas({
           {!readOnly && !previewMode ? (
             <Transformer
               ref={transformerRef}
-              padding={8}
+              padding={mobileTouchMode ? 10 : 8}
+              anchorSize={mobileTouchMode ? 12 : 8}
+              borderStrokeWidth={mobileTouchMode ? 2 : 1}
               boundBoxFunc={(oldBox, newBox) => {
                 if (newBox.width < 10 || newBox.height < 10) return oldBox;
                 return newBox;
@@ -305,3 +341,5 @@ export default function CaseCanvas({
     </div>
   );
 }
+
+export default memo(CaseCanvas);

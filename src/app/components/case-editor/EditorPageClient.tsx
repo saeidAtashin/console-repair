@@ -19,18 +19,18 @@ import {
   Sparkles,
   HelpCircle,
   AlertTriangle,
+  MoreHorizontal,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import type Konva from "konva";
 
 import WizardBreadcrumb from "@/app/components/case-wizard/WizardBreadcrumb";
 import TextPanel from "@/app/components/case-editor/TextPanel";
-import StickerPanel from "@/app/components/case-editor/StickerPanel";
 import UploadPanel from "@/app/components/case-editor/UploadPanel";
 import DescriptionPanel from "@/app/components/case-editor/DescriptionPanel";
 import LayersPanel from "@/app/components/case-editor/LayersPanel";
-import TemplatesPanel from "@/app/components/case-editor/TemplatesPanel";
-import DesignForYouPanel from "@/app/components/case-editor/DesignForYouPanel";
 import PreviewModal from "@/app/components/case-editor/PreviewModal";
 import { useAuth } from "@/app/context/AuthContext";
 import { useShopCart } from "@/app/context/ShopCartContext";
@@ -43,7 +43,6 @@ import {
 } from "@/lib/cases";
 import { getCaseTemplateBySlug } from "@/lib/cases/templates.static";
 import { getReadyCaseBySlug } from "@/lib/cases/ready.static";
-import type { CaseType } from "@/lib/cases/types";
 import { getDesign, getDesignByShareToken } from "@/lib/design/api";
 import { useEditorStore } from "@/lib/design/editor-store";
 import { saveDesign } from "@/lib/design/api";
@@ -53,11 +52,32 @@ import {
   useEditorShortcuts,
 } from "@/lib/design/use-editor-shortcuts";
 import { loadEditorFonts } from "@/lib/design/editor-fonts";
+import { useCanvasDisplaySize } from "@/lib/design/use-canvas-display-size";
+import { useElementSize } from "@/lib/design/use-element-size";
+import { useMediaQuery } from "@/lib/design/use-media-query";
 import { formatToman } from "@/lib/shop/format";
 
 const CaseCanvas = dynamic(() => import("@/app/components/case-editor/CaseCanvas"), {
   ssr: false,
 });
+
+const StickerPanel = dynamic(() => import("@/app/components/case-editor/StickerPanel"), {
+  ssr: false,
+  loading: () => <PanelLoading />,
+});
+
+const TemplatesPanel = dynamic(() => import("@/app/components/case-editor/TemplatesPanel"), {
+  ssr: false,
+  loading: () => <PanelLoading />,
+});
+
+const DesignForYouPanel = dynamic(
+  () => import("@/app/components/case-editor/DesignForYouPanel"),
+  {
+    ssr: false,
+    loading: () => <PanelLoading />,
+  },
+);
 
 export type EditorTab =
   | "layers"
@@ -78,6 +98,14 @@ type Props = {
   initialTab?: EditorTab;
 };
 
+function PanelLoading() {
+  return (
+    <div className="flex items-center justify-center py-8 text-xs text-muted">
+      در حال بارگذاری…
+    </div>
+  );
+}
+
 export default function EditorPageClient({
   brandSlug,
   modelSlug,
@@ -96,18 +124,23 @@ export default function EditorPageClient({
   const { addCustomCase } = useShopCart();
   const stageRef = useRef<Konva.Stage | null>(null);
   const loadedRef = useRef(false);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const mobileDockRef = useRef<HTMLDivElement>(null);
 
-  const {
-    init,
-    loadDocument,
-    loadTemplate,
-    document,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-    setPreviewMode,
-  } = useEditorStore();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isMobileViewport = isDesktop === false;
+  const dockSize = useElementSize(mobileDockRef);
+  const canvasDisplaySize = useCanvasDisplaySize(canvasContainerRef, isMobileViewport);
+
+  const init = useEditorStore((s) => s.init);
+  const loadDocument = useEditorStore((s) => s.loadDocument);
+  const loadTemplate = useEditorStore((s) => s.loadTemplate);
+  const document = useEditorStore((s) => s.document);
+  const undo = useEditorStore((s) => s.undo);
+  const redo = useEditorStore((s) => s.redo);
+  const canUndo = useEditorStore((s) => s.canUndo);
+  const canRedo = useEditorStore((s) => s.canRedo);
+  const setPreviewMode = useEditorStore((s) => s.setPreviewMode);
 
   useEditorShortcuts();
 
@@ -116,11 +149,25 @@ export default function EditorPageClient({
   }, []);
 
   const [activeTab, setActiveTab] = useState<EditorTab>(initialTab ?? "text");
+  const [loadedTabs, setLoadedTabs] = useState<Set<EditorTab>>(
+    () => new Set([initialTab ?? "text"]),
+  );
   const [showPreview, setShowPreview] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [warningExpanded, setWarningExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoadedTabs((prev) => {
+      if (prev.has(activeTab)) return prev;
+      const next = new Set(prev);
+      next.add(activeTab);
+      return next;
+    });
+  }, [activeTab]);
 
   useEffect(() => {
     if (loadedRef.current) return;
@@ -266,8 +313,28 @@ export default function EditorPageClient({
     { id: "description", label: "توضیحات", icon: <FileText size={16} /> },
   ];
 
+  const mobileBottomPadding =
+    isMobileViewport && dockSize.height > 0 ? dockSize.height + 8 : undefined;
+
+  const sidePanelProps = {
+    tabs,
+    activeTab,
+    onTabChange: setActiveTab,
+    stickerPacks,
+    brandSlug,
+    modelSlug,
+    caseTypeSlug,
+    modelName: model.name,
+    loadedTabs,
+  };
+
   return (
-    <div className="min-h-screen bg-background pt-20 pb-24 lg:pb-8">
+    <div
+      className={`min-h-screen bg-background pt-20 lg:pb-8 ${
+        isMobileViewport && !mobileBottomPadding ? "pb-24" : ""
+      }`}
+      style={mobileBottomPadding ? { paddingBottom: mobileBottomPadding } : undefined}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <WizardBreadcrumb
           crumbs={[
@@ -281,10 +348,33 @@ export default function EditorPageClient({
 
         <div className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" aria-hidden />
-          <p className="text-sm leading-relaxed text-amber-100/90">
-            تفاوت طراحی و قاب اصلی را چشم‌پوشی کنید. قبل از طراحی و ارسال، هماهنگی
-            بابت تایید طراحی با شما انجام خواهد شد.
-          </p>
+          <div className="min-w-0 flex-1">
+            <p
+              className={`text-sm leading-relaxed text-amber-100/90 ${
+                warningExpanded ? "" : "line-clamp-2 lg:line-clamp-none"
+              }`}
+            >
+              تفاوت طراحی و قاب اصلی را چشم‌پوشی کنید. قبل از طراحی و ارسال، هماهنگی
+              بابت تایید طراحی با شما انجام خواهد شد.
+            </p>
+            <button
+              type="button"
+              onClick={() => setWarningExpanded((v) => !v)}
+              className="mt-1 flex items-center gap-1 text-xs text-amber-300/80 lg:hidden"
+            >
+              {warningExpanded ? (
+                <>
+                  <ChevronUp size={14} />
+                  کمتر
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={14} />
+                  بیشتر
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -299,37 +389,76 @@ export default function EditorPageClient({
             label="پیش‌نمایش"
           />
           <ToolbarButton onClick={handleSave} disabled={saving} icon={<Save size={16} />} label="ذخیره" />
-          <ToolbarButton onClick={handleShare} icon={<Share2 size={16} />} label="اشتراک" />
-          <ToolbarButton onClick={handleDownload} icon={<Download size={16} />} label="دانلود" />
-          <div className="relative">
+
+          <div className="hidden sm:contents">
+            <ToolbarButton onClick={handleShare} icon={<Share2 size={16} />} label="اشتراک" />
+            <ToolbarButton onClick={handleDownload} icon={<Download size={16} />} label="دانلود" />
+            <div className="relative">
+              <ToolbarButton
+                onClick={() => setShowShortcuts((v) => !v)}
+                icon={<HelpCircle size={16} />}
+                label="?"
+              />
+              {showShortcuts ? (
+                <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-border bg-card p-3 shadow-xl">
+                  <p className="mb-2 text-xs font-bold text-foreground">میانبرهای صفحه‌کلید</p>
+                  <ul className="space-y-1">
+                    {SHORTCUT_HELP.map((item) => (
+                      <li key={item.keys} className="flex justify-between gap-2 text-[10px]">
+                        <span className="text-muted">{item.action}</span>
+                        <kbd className="shrink-0 rounded bg-background px-1.5 py-0.5 font-mono text-foreground">
+                          {item.keys}
+                        </kbd>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="relative sm:hidden">
             <ToolbarButton
-              onClick={() => setShowShortcuts((v) => !v)}
-              icon={<HelpCircle size={16} />}
-              label="?"
+              onClick={() => setShowMoreMenu((v) => !v)}
+              icon={<MoreHorizontal size={16} />}
+              label="بیشتر"
             />
-            {showShortcuts ? (
-              <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-border bg-card p-3 shadow-xl">
-                <p className="mb-2 text-xs font-bold text-foreground">میانبرهای صفحه‌کلید</p>
-                <ul className="space-y-1">
-                  {SHORTCUT_HELP.map((item) => (
-                    <li key={item.keys} className="flex justify-between gap-2 text-[10px]">
-                      <span className="text-muted">{item.action}</span>
-                      <kbd className="shrink-0 rounded bg-background px-1.5 py-0.5 font-mono text-foreground">
-                        {item.keys}
-                      </kbd>
-                    </li>
-                  ))}
-                </ul>
+            {showMoreMenu ? (
+              <div className="absolute right-0 top-full z-50 mt-2 min-w-[10rem] rounded-xl border border-border bg-card p-1 shadow-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleShare();
+                    setShowMoreMenu(false);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-xs text-foreground hover:bg-background"
+                >
+                  <Share2 size={14} />
+                  اشتراک
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleDownload();
+                    setShowMoreMenu(false);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-xs text-foreground hover:bg-background"
+                >
+                  <Download size={14} />
+                  دانلود
+                </button>
               </div>
             ) : null}
           </div>
+
           <button
             type="button"
             onClick={handleBuy}
-            className="mr-auto flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-black transition hover:bg-cyan-400"
+            className="mr-auto flex min-h-11 items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-black transition hover:bg-cyan-400"
           >
             <ShoppingCart size={16} />
-            خرید — {formatToman(getCaseTotalPrice(caseType, true))}
+            <span className="hidden sm:inline">خرید — </span>
+            {formatToman(getCaseTotalPrice(caseType, true))}
           </button>
         </div>
 
@@ -343,69 +472,57 @@ export default function EditorPageClient({
         ) : null}
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="flex items-center justify-center rounded-2xl border border-border bg-card/30 p-4 lg:p-8">
+          <div
+            ref={canvasContainerRef}
+            className="flex min-h-[280px] items-center justify-center rounded-2xl border border-border bg-card/30 p-4 lg:min-h-0 lg:p-8"
+          >
             <CaseCanvas
               caseColor={caseType.color}
               caseMaterial={caseType.material}
               onStageRef={(stage) => {
                 stageRef.current = stage;
               }}
+              displayMaxWidth={
+                isMobileViewport ? canvasDisplaySize.width : undefined
+              }
+              displayMaxHeight={
+                isMobileViewport ? canvasDisplaySize.height : undefined
+              }
+              mobileTouchMode={isMobileViewport}
             />
           </div>
 
-          <div className="hidden lg:block">
-            <EditorSidePanel
-              tabs={tabs}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              stickerPacks={stickerPacks}
-              brandSlug={brandSlug}
-              modelSlug={modelSlug}
-              caseTypeSlug={caseTypeSlug}
-              modelName={model.name}
-            />
-          </div>
+          {isDesktop ? (
+            <EditorSidePanel {...sidePanelProps} />
+          ) : null}
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur-xl lg:hidden">
-        <div className="flex overflow-x-auto border-b border-border">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-3 text-[10px] ${
-                activeTab === tab.id ? "text-cyan-400" : "text-muted"
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      {isMobileViewport ? (
         <div
-          className={`p-4 ${
-            activeTab === "text"
-              ? "overflow-visible"
-              : activeTab === "stickers"
-                ? "max-h-60 overflow-y-auto overscroll-contain"
-                : "max-h-48 overflow-y-auto overscroll-contain"
-          }`}
+          ref={mobileDockRef}
+          className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] lg:hidden"
         >
-          <EditorSidePanel
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            stickerPacks={stickerPacks}
-            brandSlug={brandSlug}
-            modelSlug={modelSlug}
-            caseTypeSlug={caseTypeSlug}
-            modelName={model.name}
-            compact
-          />
+          <div className="flex overflow-x-auto border-b border-border">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex min-h-11 min-w-[5rem] flex-1 flex-col items-center justify-center gap-1 py-2 text-xs ${
+                  activeTab === tab.id ? "text-cyan-400" : "text-muted"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="max-h-[min(40dvh,280px)] overflow-y-auto overscroll-contain p-4 md:max-h-[min(45dvh,320px)]">
+            <EditorSidePanel {...sidePanelProps} compact />
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <AnimatePresence>
         {showPreview ? (
@@ -440,7 +557,7 @@ function ToolbarButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-cyan-500/50 disabled:opacity-40"
+      className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-cyan-500/50 disabled:opacity-40 sm:min-h-0 sm:min-w-0"
     >
       {icon}
       <span className="hidden sm:inline">{label}</span>
@@ -457,6 +574,7 @@ function EditorSidePanel({
   caseTypeSlug,
   modelName,
   compact,
+  loadedTabs,
 }: {
   tabs: { id: EditorTab; label: string; icon: React.ReactNode }[];
   activeTab: EditorTab;
@@ -467,6 +585,7 @@ function EditorSidePanel({
   caseTypeSlug: string;
   modelName: string;
   compact?: boolean;
+  loadedTabs: Set<EditorTab>;
 }) {
   const tabLabels: { id: EditorTab; label: string }[] = [
     { id: "layers", label: "لایه‌ها" },
@@ -478,24 +597,12 @@ function EditorSidePanel({
     { id: "description", label: "توضیحات" },
   ];
 
-  const scrollableTabs: EditorTab[] = [
-    "layers",
-    "stickers",
-    "upload",
-    "templates",
-    "design-for-you",
-    "description",
-  ];
-  const isScrollable = scrollableTabs.includes(activeTab);
-
   return (
     <div
       className={
         compact
           ? "min-h-0"
-          : isScrollable
-            ? "flex max-h-[min(560px,calc(100vh-280px))] min-h-0 flex-col rounded-2xl border border-border bg-card/60 p-4"
-            : "flex flex-col rounded-2xl border border-border bg-card/60 p-4"
+          : "flex max-h-[min(560px,calc(100vh-280px))] min-h-0 flex-col rounded-2xl border border-border bg-card/60 p-4"
       }
     >
       {!compact ? (
@@ -514,33 +621,31 @@ function EditorSidePanel({
           ))}
         </div>
       ) : null}
-      <div
-        className={
-          isScrollable
-            ? "min-h-0 flex-1 overflow-y-auto overscroll-contain"
-            : "overflow-visible"
-        }
-      >
-      {activeTab === "layers" ? <LayersPanel /> : null}
-      {activeTab === "text" ? <TextPanel /> : null}
-      {activeTab === "stickers" ? <StickerPanel packs={stickerPacks} /> : null}
-      {activeTab === "upload" ? <UploadPanel /> : null}
-      {activeTab === "templates" ? (
-        <TemplatesPanel
-          brandSlug={brandSlug}
-          modelSlug={modelSlug}
-          caseTypeSlug={caseTypeSlug}
-        />
-      ) : null}
-      {activeTab === "design-for-you" ? (
-        <DesignForYouPanel
-          brandSlug={brandSlug}
-          modelSlug={modelSlug}
-          caseTypeSlug={caseTypeSlug}
-          modelName={modelName}
-        />
-      ) : null}
-      {activeTab === "description" ? <DescriptionPanel /> : null}
+      <div className={compact ? "min-h-0" : "min-h-0 flex-1 overflow-y-auto overscroll-contain"}>
+        {loadedTabs.has("layers") && activeTab === "layers" ? <LayersPanel /> : null}
+        {loadedTabs.has("text") && activeTab === "text" ? <TextPanel /> : null}
+        {loadedTabs.has("stickers") && activeTab === "stickers" ? (
+          <StickerPanel packs={stickerPacks} />
+        ) : null}
+        {loadedTabs.has("upload") && activeTab === "upload" ? <UploadPanel /> : null}
+        {loadedTabs.has("templates") && activeTab === "templates" ? (
+          <TemplatesPanel
+            brandSlug={brandSlug}
+            modelSlug={modelSlug}
+            caseTypeSlug={caseTypeSlug}
+          />
+        ) : null}
+        {loadedTabs.has("design-for-you") && activeTab === "design-for-you" ? (
+          <DesignForYouPanel
+            brandSlug={brandSlug}
+            modelSlug={modelSlug}
+            caseTypeSlug={caseTypeSlug}
+            modelName={modelName}
+          />
+        ) : null}
+        {loadedTabs.has("description") && activeTab === "description" ? (
+          <DescriptionPanel />
+        ) : null}
       </div>
     </div>
   );

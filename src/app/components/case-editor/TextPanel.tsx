@@ -117,7 +117,7 @@ export default function TextPanel() {
                   key={value}
                   type="button"
                   onClick={() => updateLayer(textLayer.id, { align: value })}
-                  className={`flex flex-1 items-center justify-center rounded-lg border py-2 ${
+                  className={`flex min-h-11 flex-1 items-center justify-center rounded-lg border py-2 ${
                     textLayer.align === value
                       ? "border-cyan-500/50 bg-cyan-500/10 text-cyan-400"
                       : "border-border text-muted"
@@ -137,7 +137,7 @@ export default function TextPanel() {
                   key={color}
                   type="button"
                   onClick={() => updateLayer(textLayer.id, { fill: color })}
-                  className={`h-7 w-7 rounded-full border-2 ${
+                  className={`h-9 w-9 max-lg:h-9 max-lg:w-9 lg:h-7 lg:w-7 rounded-full border-2 ${
                     textLayer.fill === color ? "border-cyan-400" : "border-transparent"
                   }`}
                   style={{ backgroundColor: color }}
@@ -147,7 +147,7 @@ export default function TextPanel() {
                 type="color"
                 value={textLayer.fill}
                 onChange={(e) => updateLayer(textLayer.id, { fill: e.target.value })}
-                className="h-7 w-7 cursor-pointer rounded border border-border bg-transparent"
+                className="h-9 w-9 max-lg:h-9 max-lg:w-9 lg:h-7 lg:w-7 cursor-pointer rounded border border-border bg-transparent"
                 title="رنگ دلخواه"
               />
             </div>
@@ -179,7 +179,7 @@ export default function TextPanel() {
                     key={`bg-${color}`}
                     type="button"
                     onClick={() => updateLayer(textLayer.id, { backgroundFill: color })}
-                    className={`h-7 w-7 rounded-full border-2 ${
+                    className={`h-9 w-9 max-lg:h-9 max-lg:w-9 lg:h-7 lg:w-7 rounded-full border-2 ${
                       textLayer.backgroundFill === color
                         ? "border-cyan-400"
                         : "border-transparent"
@@ -193,7 +193,7 @@ export default function TextPanel() {
                   onChange={(e) =>
                     updateLayer(textLayer.id, { backgroundFill: e.target.value })
                   }
-                  className="h-7 w-7 cursor-pointer rounded border border-border bg-transparent"
+                  className="h-9 w-9 max-lg:h-9 max-lg:w-9 lg:h-7 lg:w-7 cursor-pointer rounded border border-border bg-transparent"
                   title="رنگ پس‌زمینه دلخواه"
                 />
               </div>

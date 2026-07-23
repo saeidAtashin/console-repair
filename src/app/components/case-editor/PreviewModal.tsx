@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEditorStore } from "@/lib/design/editor-store";
+import { createRafResizeHandler } from "@/lib/design/throttle-raf";
 import CaseCanvas from "./CaseCanvas";
 
 type Props = {
@@ -46,9 +47,14 @@ export default function PreviewModal({ caseColor, caseMaterial, onClose }: Props
   }, []);
 
   useEffect(() => {
-    const handleResize = () => setDisplaySize(getPreviewDisplaySize());
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const { handler, cancel } = createRafResizeHandler(() =>
+      setDisplaySize(getPreviewDisplaySize()),
+    );
+    window.addEventListener("resize", handler);
+    return () => {
+      window.removeEventListener("resize", handler);
+      cancel();
+    };
   }, []);
 
   const handleKeyDown = useCallback(

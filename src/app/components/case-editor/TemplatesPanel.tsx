@@ -16,7 +16,8 @@ type Props = {
 };
 
 export default function TemplatesPanel({ brandSlug: _brandSlug, modelSlug: _modelSlug, caseTypeSlug: _caseTypeSlug }: Props) {
-  const { document, loadTemplate } = useEditorStore();
+  const document = useEditorStore((s) => s.document);
+  const loadTemplate = useEditorStore((s) => s.loadTemplate);
   const [confirmTemplate, setConfirmTemplate] = useState<CaseTemplate | null>(null);
 
   const displayTemplates = getAllTemplates();
