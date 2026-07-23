@@ -20,6 +20,8 @@ type Props = {
   caseMaterial: string;
   onStageRef?: (stage: Konva.Stage | null) => void;
   readOnly?: boolean;
+  displayMaxWidth?: number;
+  displayMaxHeight?: number;
 };
 
 type TouchGesture = {
@@ -46,6 +48,8 @@ export default function CaseCanvas({
   caseMaterial,
   onStageRef,
   readOnly = false,
+  displayMaxWidth,
+  displayMaxHeight,
 }: Props) {
   const stageRef = useRef<Konva.Stage>(null);
   const transformerRef = useRef<Konva.Transformer>(null);
@@ -62,7 +66,9 @@ export default function CaseCanvas({
 
   const width = meta?.canvasWidth ?? canvasWidth;
   const height = meta?.canvasHeight ?? canvasHeight;
-  const scale = Math.min(280 / width, 480 / height);
+  const maxW = displayMaxWidth ?? 280;
+  const maxH = displayMaxHeight ?? 480;
+  const scale = Math.min(maxW / width, maxH / height);
   const isClear = caseMaterial === "clear";
   const model = meta?.model;
   const designClipFunc = model

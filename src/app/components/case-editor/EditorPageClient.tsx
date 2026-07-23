@@ -20,6 +20,7 @@ import {
   HelpCircle,
   AlertTriangle,
 } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import type Konva from "konva";
 
 import WizardBreadcrumb from "@/app/components/case-wizard/WizardBreadcrumb";
@@ -406,16 +407,19 @@ export default function EditorPageClient({
         </div>
       </div>
 
-      {showPreview ? (
-        <PreviewModal
-          caseColor={caseType.color}
-          caseMaterial={caseType.material}
-          onClose={() => {
-            setShowPreview(false);
-            setPreviewMode(false);
-          }}
-        />
-      ) : null}
+      <AnimatePresence>
+        {showPreview ? (
+          <PreviewModal
+            key="case-preview"
+            caseColor={caseType.color}
+            caseMaterial={caseType.material}
+            onClose={() => {
+              setShowPreview(false);
+              setPreviewMode(false);
+            }}
+          />
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
