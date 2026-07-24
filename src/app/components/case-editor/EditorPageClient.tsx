@@ -18,6 +18,7 @@ import {
   LayoutTemplate,
   Sparkles,
   HelpCircle,
+  GraduationCap,
   AlertTriangle,
   MoreHorizontal,
   ChevronDown,
@@ -32,6 +33,7 @@ import UploadPanel from "@/app/components/case-editor/UploadPanel";
 import DescriptionPanel from "@/app/components/case-editor/DescriptionPanel";
 import LayersPanel from "@/app/components/case-editor/LayersPanel";
 import PreviewModal from "@/app/components/case-editor/PreviewModal";
+import EditorGuideOverlay from "@/app/components/case-editor/EditorGuideOverlay";
 import { useAuth } from "@/app/context/AuthContext";
 import { useShopCart } from "@/app/context/ShopCartContext";
 import {
@@ -56,6 +58,10 @@ import { useCanvasDisplaySize } from "@/lib/design/use-canvas-display-size";
 import { useElementSize } from "@/lib/design/use-element-size";
 import { useMediaQuery } from "@/lib/design/use-media-query";
 import { formatToman } from "@/lib/shop/format";
+import {
+  hasSeenEditorGuide,
+  markEditorGuideSeen,
+} from "@/lib/design/editor-guide-storage";
 
 const CaseCanvas = dynamic(() => import("@/app/components/case-editor/CaseCanvas"), {
   ssr: false,
@@ -124,6 +130,7 @@ export default function EditorPageClient({
   const { addCustomCase } = useShopCart();
   const stageRef = useRef<Konva.Stage | null>(null);
   const loadedRef = useRef(false);
+  const guideCheckedRef = useRef(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const mobileDockRef = useRef<HTMLDivElement>(null);
 
@@ -165,6 +172,8 @@ export default function EditorPageClient({
   const [saving, setSaving] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [editorReady, setEditorReady] = useState(false);
+  const [showEditorGuide, setShowEditorGuide] = useState(false);
 
   useEffect(() => {
     setLoadedTabs((prev) => {
@@ -174,6 +183,19 @@ export default function EditorPageClient({
       return next;
     });
   }, [activeTab]);
+
+  useEffect(() => {
+    if (!editorReady || guideCheckedRef.current) return;
+    guideCheckedRef.current = true;
+
+    const timer = window.setTimeout(() => {
+      if (!hasSeenEditorGuide()) {
+        setShowEditorGuide(true);
+      }
+    }, 300);
+
+    return () => window.clearTimeout(timer);
+  }, [editorReady]);
 
   useEffect(() => {
     if (loadedRef.current) return;
@@ -194,6 +216,7 @@ export default function EditorPageClient({
         if (saved) {
           loadDocument(saved, meta);
           loadedRef.current = true;
+          setEditorReady(true);
           return;
         }
       }
@@ -202,11 +225,13 @@ export default function EditorPageClient({
         if (shared) {
           loadDocument(shared, meta);
           loadedRef.current = true;
+          setEditorReady(true);
           return;
         }
       }
       init(meta);
       loadedRef.current = true;
+      setEditorReady(true);
 
       if (initialTemplateSlug) {
         const template = getCaseTemplateBySlug(initialTemplateSlug);
@@ -330,6 +355,24 @@ export default function EditorPageClient({
     [mobileDockCollapsed],
   );
 
+  const handleGuideTabChange = useCallback((tab: EditorTab) => {
+    setActiveTab(tab);
+  }, []);
+
+  const handleEnsureMobileDockOpen = useCallback(() => {
+    setMobileDockCollapsed(false);
+  }, []);
+
+  const handleGuideComplete = useCallback(() => {
+    markEditorGuideSeen();
+  }, []);
+
+  const handleOpenEditorGuide = useCallback(() => {
+    setShowShortcuts(false);
+    setShowMoreMenu(false);
+    setShowEditorGuide(true);
+  }, []);
+
   const sidePanelProps = {
     tabs,
     activeTab,
@@ -395,7 +438,10 @@ export default function EditorPageClient({
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2 md:flex-nowrap">
+        <div
+          data-editor-guide="toolbar"
+          className="mt-4 flex flex-wrap items-center gap-2 md:flex-nowrap"
+        >
           <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
             <ToolbarButton onClick={undo} disabled={!canUndo()} icon={<Undo2 size={16} />} label="بازگشت" />
             <ToolbarButton onClick={redo} disabled={!canRedo()} icon={<Redo2 size={16} />} label="جلو" />
@@ -415,6 +461,11 @@ export default function EditorPageClient({
           <div className="hidden sm:contents">
             <ToolbarButton onClick={handleShare} icon={<Share2 size={16} />} label="اشتراک" />
             <ToolbarButton onClick={handleDownload} icon={<Download size={16} />} label="دانلود" />
+            <ToolbarButton
+              onClick={handleOpenEditorGuide}
+              icon={<GraduationCap size={16} />}
+              label="راهنما"
+            />
             <div className="relative">
               <ToolbarButton
                 onClick={() => setShowShortcuts((v) => !v)}
@@ -469,12 +520,24 @@ export default function EditorPageClient({
                   <Download size={14} />
                   دانلود
                 </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleOpenEditorGuide();
+                    setShowMoreMenu(false);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-xs text-foreground hover:bg-background"
+                >
+                  <GraduationCap size={14} />
+                  راهنما
+                </button>
               </div>
             ) : null}
           </div>
 
           <button
             type="button"
+            data-editor-guide="buy"
             onClick={handleBuy}
             className="mr-auto flex min-h-11 items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-black transition hover:bg-cyan-400"
           >
@@ -496,6 +559,7 @@ export default function EditorPageClient({
         <div className="mt-6 grid gap-6 md:grid-cols-[auto_minmax(0,1fr)] md:gap-8">
           <div
             ref={canvasContainerRef}
+            data-editor-guide="canvas"
             className="relative flex min-h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-[radial-gradient(ellipse_at_50%_30%,rgba(34,211,238,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(139,92,246,0.1),transparent_50%)] bg-card/40 p-4 md:sticky md:top-24 md:w-fit md:min-h-0 md:self-start md:p-8"
           >
             <div
@@ -523,6 +587,7 @@ export default function EditorPageClient({
       {isMobileViewport ? (
         <div
           ref={mobileDockRef}
+          data-editor-guide="mobile-dock"
           className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
         >
           <div className="flex overflow-x-auto border-b border-border">
@@ -530,6 +595,7 @@ export default function EditorPageClient({
               <button
                 key={tab.id}
                 type="button"
+                data-editor-guide={`tab-${tab.id}`}
                 onClick={() => handleMobileTabChange(tab.id)}
                 className={`flex min-h-11 min-w-[5rem] flex-1 flex-col items-center justify-center gap-1 py-2 text-xs ${
                   activeTab === tab.id ? "text-cyan-400" : "text-muted"
@@ -576,6 +642,17 @@ export default function EditorPageClient({
               setShowPreview(false);
               setPreviewMode(false);
             }}
+          />
+        ) : null}
+        {showEditorGuide ? (
+          <EditorGuideOverlay
+            key="editor-guide"
+            open={showEditorGuide}
+            onClose={() => setShowEditorGuide(false)}
+            onComplete={handleGuideComplete}
+            onTabChange={handleGuideTabChange}
+            onEnsureMobileDockOpen={handleEnsureMobileDockOpen}
+            isMobileViewport={isMobileViewport}
           />
         ) : null}
       </AnimatePresence>
@@ -645,6 +722,7 @@ function EditorSidePanel({
               <button
                 key={tab.id}
                 type="button"
+                data-editor-guide={`tab-${tab.id}`}
                 onClick={() => onTabChange(tab.id)}
                 className={`flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-xs transition ${
                   activeTab === tab.id
