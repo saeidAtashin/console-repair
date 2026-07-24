@@ -440,7 +440,7 @@ export default function EditorPageClient({
 
         <div
           data-editor-guide="toolbar"
-          className="mt-4 flex flex-wrap items-center gap-2 md:flex-nowrap"
+          className="mt-4 flex scroll-mt-24 flex-wrap items-center gap-2 md:flex-nowrap"
         >
           <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
             <ToolbarButton onClick={undo} disabled={!canUndo()} icon={<Undo2 size={16} />} label="بازگشت" />
@@ -539,7 +539,7 @@ export default function EditorPageClient({
             type="button"
             data-editor-guide="buy"
             onClick={handleBuy}
-            className="mr-auto flex min-h-11 items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-black transition hover:bg-cyan-400"
+            className="mr-auto flex min-h-11 scroll-mt-24 items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-black transition hover:bg-cyan-400"
           >
             <ShoppingCart size={16} />
             <span className="hidden sm:inline">خرید — </span>
@@ -560,7 +560,7 @@ export default function EditorPageClient({
           <div
             ref={canvasContainerRef}
             data-editor-guide="canvas"
-            className="relative flex min-h-[280px] w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-[radial-gradient(ellipse_at_50%_30%,rgba(34,211,238,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(139,92,246,0.1),transparent_50%)] bg-card/40 p-4 md:sticky md:top-24 md:w-fit md:min-h-0 md:self-start md:p-8"
+            className="relative flex min-h-[280px] w-full scroll-mt-24 scroll-mb-36 items-center justify-center overflow-hidden rounded-2xl border border-border bg-[radial-gradient(ellipse_at_50%_30%,rgba(34,211,238,0.12),transparent_55%),radial-gradient(ellipse_at_80%_80%,rgba(139,92,246,0.1),transparent_50%)] bg-card/40 p-4 md:sticky md:top-24 md:w-fit md:min-h-0 md:scroll-mb-0 md:scroll-mt-0 md:self-start md:p-8"
           >
             <div
               className="pointer-events-none absolute inset-x-6 top-1/2 h-24 -translate-y-1/2 rounded-full bg-cyan-400/20 blur-3xl animate-preview-glow motion-reduce:animate-none"

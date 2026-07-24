@@ -44,6 +44,20 @@ function findGuideTarget(selector: string): Element | null {
   return best;
 }
 
+function scrollGuideTargetIntoView(target: string, isMobileViewport: boolean): void {
+  if (!isMobileViewport) return;
+
+  const el = findGuideTarget(target);
+  if (!el) return;
+
+  if (target.startsWith("tab-")) {
+    el.scrollIntoView({ behavior: "instant", block: "nearest", inline: "center" });
+    return;
+  }
+
+  el.scrollIntoView({ behavior: "instant", block: "center", inline: "nearest" });
+}
+
 function measureTarget(selector: string): SpotlightRect | null {
   const el = findGuideTarget(selector);
   if (!el) return null;
@@ -167,14 +181,20 @@ export default function EditorGuideOverlay({
 
     applyStepSideEffects(step, onTabChange, onEnsureMobileDockOpen, isMobileViewport);
 
+    if (step.kind === "spotlight" && isMobileViewport) {
+      scrollGuideTargetIntoView(step.target, true);
+    }
+
     const raf = requestAnimationFrame(() => {
       updateMeasurements();
     });
-    const retry = window.setTimeout(updateMeasurements, 150);
+    const retry150 = window.setTimeout(updateMeasurements, 150);
+    const retry350 = window.setTimeout(updateMeasurements, 350);
 
     return () => {
       cancelAnimationFrame(raf);
-      window.clearTimeout(retry);
+      window.clearTimeout(retry150);
+      window.clearTimeout(retry350);
     };
   }, [open, step, stepIndex, onTabChange, onEnsureMobileDockOpen, isMobileViewport, updateMeasurements]);
 
