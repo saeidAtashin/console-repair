@@ -39,10 +39,6 @@ function buildCaseDesignNavChildren(): SiteNavBranch[] {
 export const navbarNavItems: SiteNavItem[] = [
   { title: "خانه", href: "/" },
   {
-    title: "قاب‌های آماده",
-    href: "/cases",
-  },
-  {
     title: "طراحی‌های آماده",
     href: "/designs",
   },
@@ -57,7 +53,6 @@ export const navbarNavItems: SiteNavItem[] = [
 
 export const headerNavItems: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
-  { title: "قاب‌های آماده", href: "/cases" },
   { title: "طراحی‌های آماده", href: "/designs" },
   { title: "طراحی قاب", href: "/create" },
   { title: "پیگیری سفارش", href: "/tracking" },
@@ -65,7 +60,6 @@ export const headerNavItems: SiteNavLeaf[] = [
 
 export const footerQuickLinks: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
-  { title: "قاب‌های آماده", href: "/cases" },
   { title: "طراحی‌های آماده", href: "/designs" },
   { title: "طراحی قاب", href: "/create" },
   { title: "سبد خرید", href: "/cart" },

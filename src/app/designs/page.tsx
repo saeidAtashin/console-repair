@@ -1,7 +1,7 @@
 import { createPageMetadata } from "@/lib/seo/metadata";
 import JsonLd from "@/app/components/seo/JsonLd";
 import DesignsGalleryClient from "@/app/components/designs/DesignsGalleryClient";
-import { getUniversalTemplates } from "@/lib/cases/templates.static";
+import { getDesignedTemplates } from "@/lib/cases/templates.static";
 import { collectionPageJsonLd, webPageJsonLd } from "@/lib/seo/jsonld";
 
 const TITLE = "طراحی‌های آماده";
@@ -15,7 +15,7 @@ export const metadata = createPageMetadata({
 });
 
 export default function DesignsGalleryPage() {
-  const templates = getUniversalTemplates();
+  const templates = getDesignedTemplates();
 
   return (
     <>

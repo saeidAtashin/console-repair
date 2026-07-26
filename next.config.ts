@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 
+import { getDesignedCdnHostname } from "./src/lib/designed-assets";
+
+const designedCdnHost = getDesignedCdnHostname();
+
 const nextConfig: NextConfig = {
   reactCompiler: true,
   async redirects() {
@@ -18,7 +22,6 @@ const nextConfig: NextConfig = {
     "localhost",
     "127.0.0.1",
   ],
-  serverExternalPackages: ["better-sqlite3"],
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,
@@ -30,6 +33,15 @@ const nextConfig: NextConfig = {
         hostname: "media.rawg.io",
         pathname: "/media/**",
       },
+      ...(designedCdnHost
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: designedCdnHost,
+              pathname: "/**",
+            },
+          ]
+        : []),
     ],
   },
 };

@@ -16,7 +16,8 @@ type Props = {
 };
 
 export default function TemplatesPanel({ brandSlug: _brandSlug, modelSlug: _modelSlug, caseTypeSlug: _caseTypeSlug }: Props) {
-  const { document, loadTemplate } = useEditorStore();
+  const document = useEditorStore((s) => s.document);
+  const loadTemplate = useEditorStore((s) => s.loadTemplate);
   const [confirmTemplate, setConfirmTemplate] = useState<CaseTemplate | null>(null);
 
   const displayTemplates = getAllTemplates();
@@ -36,33 +37,38 @@ export default function TemplatesPanel({ brandSlug: _brandSlug, modelSlug: _mode
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-muted">
+      <p className="text-sm leading-relaxed text-muted">
         از قالب‌های از پیش طراحی‌شده استفاده کنید و آن‌ها را ویرایش کنید.
       </p>
 
       {displayTemplates.length === 0 ? (
         <p className="text-center text-xs text-muted">قالب‌های بیشتر به زودی اضافه می‌شوند.</p>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
           {displayTemplates.map((template) => (
             <button
               key={template.id}
               type="button"
               onClick={() => handleSelect(template)}
-              className="overflow-hidden rounded-xl border border-border bg-card/60 text-right transition hover:border-cyan-500/50"
+              className="overflow-hidden rounded-xl border border-border bg-card/60 text-right transition hover:-translate-y-0.5 hover:border-cyan-500/50 hover:shadow-lg"
             >
-              <div className="flex aspect-square items-center justify-center bg-background/50 p-4">
+              <div className="relative flex min-h-[140px] items-center justify-center bg-background/50 p-4 sm:min-h-[160px] sm:p-6">
+                {template.tags[0] ? (
+                  <span className="absolute start-3 top-3 rounded-lg border border-cyan-500/25 bg-background/70 px-2 py-0.5 text-[10px] font-medium text-cyan-300 backdrop-blur-sm">
+                    {template.tags[0]}
+                  </span>
+                ) : null}
                 <Image
                   src={template.thumbnail}
                   alt={template.title}
-                  width={64}
-                  height={64}
-                  className="h-16 w-16 object-contain opacity-80"
+                  width={140}
+                  height={140}
+                  className="h-auto w-full max-h-[120px] object-contain sm:max-h-[140px]"
                 />
               </div>
-              <div className="border-t border-border px-3 py-2">
-                <p className="text-xs font-semibold text-foreground">{template.title}</p>
-                <p className="text-[10px] text-muted">{template.layers.length} لایه</p>
+              <div className="border-t border-border px-3 py-3 sm:px-4">
+                <p className="text-sm font-bold text-foreground">{template.title}</p>
+                <p className="mt-1 text-xs text-muted">{template.layers.length} لایه</p>
               </div>
             </button>
           ))}

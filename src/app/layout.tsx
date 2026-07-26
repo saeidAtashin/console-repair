@@ -8,6 +8,7 @@ import Footer from "./components/layout/Footer";
 import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
+import { PreferredBrandLoaderProvider } from "./context/PreferredBrandLoaderContext";
 import { ShopCartProvider } from "./context/ShopCartContext";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import ThemeColorMeta from "./components/ui/ThemeColorMeta";
@@ -120,6 +121,7 @@ export default function RootLayout({
         <ThemeProvider>
         <AuthProvider>
           <ShopCartProvider>
+            <PreferredBrandLoaderProvider>
               <ThemeColorMeta />
               <LocalBusinessSchema />
               <Suspense fallback={null}>
@@ -128,6 +130,7 @@ export default function RootLayout({
               <Navbar />
               {children}
               <Footer />
+            </PreferredBrandLoaderProvider>
           </ShopCartProvider>
         </AuthProvider>
         </ThemeProvider>

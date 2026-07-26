@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, X } from "lucide-react";
 
 import type { CropRect } from "@/lib/design/image-tools/types";
+import { createRafResizeHandler } from "@/lib/design/throttle-raf";
 import { clamp, loadImageElement } from "@/lib/design/image-tools/utils";
 
 type Props = {
@@ -59,15 +60,22 @@ export default function ImageCropModal({ open, src, onClose, onConfirm }: Props)
   useEffect(() => {
     if (!open || !containerRef.current) return;
 
+    const el = containerRef.current;
     const updateSize = () => {
-      const el = containerRef.current;
-      if (!el) return;
       setDisplaySize({ width: el.clientWidth, height: el.clientHeight });
     };
 
     updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
+    const { handler, cancel } = createRafResizeHandler(updateSize);
+    const observer = new ResizeObserver(handler);
+    observer.observe(el);
+    window.addEventListener("resize", handler);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", handler);
+      cancel();
+    };
   }, [open, naturalSize.width, naturalSize.height]);
 
   const toPixels = useCallback(

@@ -3,7 +3,9 @@
 import { useEditorStore } from "@/lib/design/editor-store";
 
 export default function DescriptionPanel() {
-  const { document, setDescription, setName } = useEditorStore();
+  const document = useEditorStore((s) => s.document);
+  const setDescription = useEditorStore((s) => s.setDescription);
+  const setName = useEditorStore((s) => s.setName);
 
   return (
     <div className="space-y-4">

@@ -1,4 +1,3 @@
-import { getReadyCases } from "@/lib/cases/ready.static";
 import { PHONE_BRANDS, PHONE_MODELS } from "@/lib/cases/brands.static";
 
 export type SitemapEntry = {
@@ -32,12 +31,6 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     path: `/create/${brand.slug}`,
     changeFrequency: "weekly" as const,
     priority: 0.85,
-  })),
-  { path: "/cases", changeFrequency: "daily", priority: 0.9 },
-  ...getReadyCases().map((product) => ({
-    path: `/cases/${product.slug}`,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
   })),
   { path: "/cart", changeFrequency: "monthly", priority: 0.5 },
   { path: "/checkout", changeFrequency: "monthly", priority: 0.5 },

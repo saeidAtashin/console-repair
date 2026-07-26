@@ -3,13 +3,18 @@ import Link from "next/link";
 
 import DesignDetailClient from "@/app/components/designs/DesignDetailClient";
 import JsonLd from "@/app/components/seo/JsonLd";
-import { getCaseTemplateBySlug } from "@/lib/cases/templates.static";
+import { getCaseTemplateBySlug, getDesignedTemplates } from "@/lib/cases/templates.static";
+import { designedAssetUrl } from "@/lib/designed-assets";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { webPageJsonLd } from "@/lib/seo/jsonld";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+export async function generateStaticParams() {
+  return getDesignedTemplates().map((template) => ({ slug: template.slug }));
+}
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
@@ -20,6 +25,7 @@ export async function generateMetadata({ params }: Props) {
     title: template.title,
     description: template.description,
     path: `/designs/${slug}`,
+    ogImage: designedAssetUrl(template.thumbnail),
   });
 }
 

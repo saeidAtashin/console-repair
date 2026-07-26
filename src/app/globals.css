@@ -69,6 +69,22 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
+@keyframes preview-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.05);
+  }
+}
+
+.animate-preview-glow {
+  animation: preview-glow 3s ease-in-out infinite;
+}
+
 @keyframes scan {
   0% {
     top: 0%;

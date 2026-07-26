@@ -1,15 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { Group, Layer, Rect, Stage, Text } from "react-konva";
+import { Group, Layer, Rect, Stage } from "react-konva";
 
 import DesignImageLayerNode from "@/app/components/case-editor/DesignImageLayerNode";
-import {
-  getDefaultTextBoxWidth,
-  getTextOffsetX,
-  loadEditorFonts,
-  normalizeFontFamily,
-} from "@/lib/design/editor-fonts";
+import TextLayerNode from "@/app/components/case-editor/TextLayerNode";
+import { loadEditorFonts } from "@/lib/design/editor-fonts";
 import type { CaseTemplate } from "@/lib/design/types";
 import { isLayerVisible, type DesignLayer, type ImageLayer, type TextLayer } from "@/lib/design/types";
 
@@ -66,23 +62,11 @@ export default function DesignSamplePreview({
           >
             {visibleLayers.map((layer: DesignLayer) => {
               if (layer.type === "text") {
-                const textLayer = layer as TextLayer;
-                const boxWidth = textLayer.width ?? getDefaultTextBoxWidth(width);
                 return (
-                  <Text
-                    key={textLayer.id}
-                    text={textLayer.text}
-                    x={textLayer.x}
-                    y={textLayer.y}
-                    width={boxWidth}
-                    offsetX={getTextOffsetX(textLayer.align, boxWidth)}
-                    fontSize={textLayer.fontSize}
-                    fontFamily={normalizeFontFamily(textLayer.fontFamily)}
-                    fill={textLayer.fill}
-                    align={textLayer.align}
-                    rotation={textLayer.rotation}
-                    scaleX={textLayer.scaleX}
-                    scaleY={textLayer.scaleY}
+                  <TextLayerNode
+                    key={layer.id}
+                    layer={layer as TextLayer}
+                    canvasWidth={width}
                   />
                 );
               }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   ArrowDown,
   ArrowUp,
@@ -15,7 +16,6 @@ import {
   X,
 } from "lucide-react";
 
-import ImageToolsPanel from "@/app/components/case-editor/ImageToolsPanel";
 import { useEditorStore } from "@/lib/design/editor-store";
 import {
   BLEND_MODE_OPTIONS,
@@ -33,6 +33,16 @@ import {
   type ImageLayer,
   type ImageLayerEffect,
 } from "@/lib/design/types";
+
+const ImageToolsPanel = dynamic(
+  () => import("@/app/components/case-editor/ImageToolsPanel"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="py-4 text-center text-xs text-muted">در حال بارگذاری ابزار تصویر…</div>
+    ),
+  },
+);
 
 function layerLabel(layer: DesignLayer): string {
   if (layer.name) return layer.name;
@@ -249,7 +259,7 @@ function ImageLayerSettings({
     "blur",
   );
   const [pendingIntensity, setPendingIntensity] = useState(50);
-  const [previewEnabled, setPreviewEnabled] = useState(true);
+  const [previewEnabled, setPreviewEnabled] = useState(false);
 
   const opacityPercent = Math.round((layer.opacity ?? 1) * 100);
   const activeEffects = getImageLayerEffects(layer);
@@ -261,6 +271,10 @@ function ImageLayerSettings({
   const availableEffectTypes = EFFECT_TYPE_OPTIONS.filter(
     (option) => !appliedTypes.has(option.value),
   );
+
+  useEffect(() => {
+    return () => setPendingEffectPreview(null);
+  }, [setPendingEffectPreview]);
 
   useEffect(() => {
     if (
@@ -314,7 +328,7 @@ function ImageLayerSettings({
       ],
     });
     setPendingEffectPreview(null);
-    setPreviewEnabled(true);
+    setPreviewEnabled(false);
   };
 
   const cancelPreview = () => {
@@ -427,9 +441,20 @@ function ImageLayerSettings({
 
         {availableEffectTypes.length > 0 ? (
           <div className="space-y-2 rounded-lg border border-dashed border-cyan-500/30 bg-cyan-500/5 p-2">
-            <p className="text-[10px] font-medium text-cyan-200/90">
-              پیش‌نمایش افکت / Effect Preview
-            </p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-medium text-cyan-200/90">
+                پیش‌نمایش افکت / Effect Preview
+              </p>
+              {!previewEnabled ? (
+                <button
+                  type="button"
+                  onClick={() => setPreviewEnabled(true)}
+                  className="rounded-md px-2 py-0.5 text-[10px] text-cyan-400 transition hover:bg-cyan-500/10"
+                >
+                  فعال‌سازی پیش‌نمایش
+                </button>
+              ) : null}
+            </div>
             <select
               value={pendingEffectType}
               onChange={(e) => {

@@ -20,6 +20,12 @@ export type TextLayer = DesignLayerBase & {
   align: "left" | "center" | "right";
   /** Text box width for Konva alignment */
   width?: number;
+  /** Background fill behind text; null/undefined = transparent */
+  backgroundFill?: string | null;
+  /** Corner radius for text background box (0–24) */
+  cornerRadius?: number;
+  /** Inner padding for text background box */
+  padding?: number;
 };
 
 export type ImageBlendMode =
@@ -129,6 +135,10 @@ export type CaseTemplate = {
   description: string;
   thumbnail: string;
   tags: string[];
+  /** Top-level folder slug from designed-source (e.g. abstract, islamic). */
+  category?: string;
+  /** Filename-derived subcategory (e.g. seamless, modern, others). */
+  subcategory?: string;
   referenceCanvas: { width: number; height: number };
   layers: DesignLayer[];
 };

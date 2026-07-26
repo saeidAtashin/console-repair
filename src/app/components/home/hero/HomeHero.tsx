@@ -1,29 +1,30 @@
-import type { CaseTemplate } from "@/lib/design/types";
-import HomeHeroBackground from "./HomeHeroBackground";
+import Image from "next/image";
+
 import HomeHeroContent from "./HomeHeroContent";
-import HomeHeroVisual from "./HomeHeroVisual";
 
-type Props = {
-  templates: CaseTemplate[];
-};
-
-export default function HomeHero({ templates }: Props) {
+export default function HomeHero() {
   return (
     <section
-      className="relative isolate overflow-hidden px-4 pb-12 pt-24 sm:px-6 sm:pb-16 sm:pt-28 lg:pb-20 lg:pt-32"
+      className="relative isolate min-h-svh w-full overflow-hidden"
       aria-labelledby="home-hero-heading"
     >
-      <HomeHeroBackground />
+      <Image
+        src="/banner.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-[80%_center] sm:object-[70%_center] lg:object-right"
+      />
 
-      <div className="relative z-10 mx-auto w-full max-w-[1500px]">
-        <div className="grid items-center gap-10 lg:min-h-[85vh] lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 xl:gap-20">
-          <div className="order-2 lg:order-1">
-            <HomeHeroContent />
-          </div>
+      <div
+        className="absolute inset-0 bg-linear-to-r from-black/90 via-black/55 to-transparent sm:from-black/85 sm:via-black/45"
+        aria-hidden
+      />
 
-          <div className="order-1 lg:order-2">
-            <HomeHeroVisual templates={templates} />
-          </div>
+      <div className="relative z-10 flex min-h-svh items-center justify-end px-4 pb-12 pt-24 sm:px-8 lg:px-12">
+        <div className="w-full max-w-xl">
+          <HomeHeroContent variant="onDark" />
         </div>
       </div>
     </section>

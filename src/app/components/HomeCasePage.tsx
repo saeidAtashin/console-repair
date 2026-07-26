@@ -1,14 +1,12 @@
 import Link from "next/link";
-import { Palette, Sparkles, Truck, Shield, Smartphone } from "lucide-react";
+import { Palette, Truck, Shield, Smartphone } from "lucide-react";
 import DesignSamplesSection from "@/app/components/designs/DesignSamplesSection";
-import ReadyCaseCard from "@/app/components/cases/ReadyCaseCard";
 import HomeHero from "@/app/components/home/hero/HomeHero";
 import { PhoneBackSvg } from "@/app/components/case-wizard/PhoneBackSvg";
 import { getHeroTemplates } from "@/app/components/home/hero/hero.constants";
 import { getModelBySlug } from "@/lib/cases/brands.static";
-import { getReadyCases, getModelsWithReadyCases } from "@/lib/cases/ready.static";
 
-const EXTRA_POPULAR_MODELS = [
+const POPULAR_MODELS = [
   { brandSlug: "apple", modelSlug: "iphone-16-pro" },
   { brandSlug: "apple", modelSlug: "iphone-14-pro" },
   { brandSlug: "samsung", modelSlug: "galaxy-s25-ultra" },
@@ -18,32 +16,21 @@ const EXTRA_POPULAR_MODELS = [
 ] as const;
 
 function getPopularModels() {
-  const seen = new Set<string>();
-  const entries = [
-    ...getModelsWithReadyCases(),
-    ...EXTRA_POPULAR_MODELS,
-  ];
-
   const models = [];
-  for (const { brandSlug, modelSlug } of entries) {
-    const key = `${brandSlug}/${modelSlug}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
+  for (const { brandSlug, modelSlug } of POPULAR_MODELS) {
     const model = getModelBySlug(brandSlug, modelSlug);
     if (model) models.push(model);
   }
-
-  return models.slice(0, 12);
+  return models;
 }
 
 export default function HomeCasePage() {
-  const featured = getReadyCases().slice(0, 4);
   const heroTemplates = getHeroTemplates();
   const popularModels = getPopularModels();
 
   return (
     <main className="min-h-screen bg-background">
-      <HomeHero templates={heroTemplates} />
+      <HomeHero />
 
       <section className="border-y border-border bg-background/50 px-4 py-8 sm:px-6">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-3">
@@ -71,7 +58,7 @@ export default function HomeCasePage() {
                 <Smartphone size={24} className="text-cyan-400" />
                 محبوب‌ترین مدل‌ها
               </h2>
-              <p className="mt-1 text-sm text-muted">قاب آماده یا طراحی اختصاصی</p>
+              <p className="mt-1 text-sm text-muted">طراحی اختصاصی برای مدل گوشی تو</p>
             </div>
             <Link href="/create" className="text-sm text-cyan-400 hover:underline">
               همه برندها
@@ -103,25 +90,6 @@ export default function HomeCasePage() {
       <section className="px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <DesignSamplesSection templates={heroTemplates.slice(0, 4)} limit={4} />
-        </div>
-      </section>
-
-      <section className="px-4 py-16 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-8 flex items-end justify-between">
-            <div>
-              <h2 className="text-2xl font-black text-foreground">قاب‌های آماده</h2>
-              <p className="mt-1 text-sm text-muted">طراحی‌های از پیش ساخته‌شده</p>
-            </div>
-            <Link href="/cases" className="text-sm text-cyan-400 hover:underline">
-              مشاهده همه
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {featured.map((product) => (
-              <ReadyCaseCard key={product.id} product={product} />
-            ))}
-          </div>
         </div>
       </section>
     </main>

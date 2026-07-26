@@ -36,10 +36,10 @@ export default function CartPageClient() {
     return (
       <div className="mx-auto max-w-2xl px-4 pt-28 pb-16 text-center">
         <h1 className="text-2xl font-black text-foreground">سبد خرید خالی است</h1>
-        <p className="mt-3 text-muted">قاب آماده انتخاب کن یا خودت طراحی کن</p>
+        <p className="mt-3 text-muted">یک طراحی انتخاب کن یا خودت قاب بساز</p>
         <div className="mt-6 flex justify-center gap-4">
-          <Link href="/cases" className="rounded-xl border border-border px-6 py-3 text-sm font-bold text-foreground">
-            قاب‌های آماده
+          <Link href="/designs" className="rounded-xl border border-border px-6 py-3 text-sm font-bold text-foreground">
+            طراحی‌های آماده
           </Link>
           <Link href="/create" className="rounded-xl bg-cyan-500 px-6 py-3 text-sm font-bold text-black">
             طراحی قاب

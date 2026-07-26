@@ -44,7 +44,7 @@ type BannerSlide = {
 
 const BANNER_SLIDES: BannerSlide[] = [
   {
-    image: "/images/bannerrepair.png",
+    image: "/cases/og-default.jpg",
     tag: "خدمات تخصصی",
     title: "تعمیرات",
     highlight: "تخصصی",
@@ -59,7 +59,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     icon: Gamepad2,
   },
   {
-    image: "/images/banner2.png",
+    image: "/cases/og-default.jpg",
     tag: "ارسال فوری",
     title: "تحویل کالا",
     highlight: "در منزل",
@@ -74,7 +74,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     icon: Truck,
   },
   {
-    image: "/images/banner3.png",
+    image: "/cases/og-default.jpg",
     tag: "فروشگاه آنلاین",
     title: "کنسول و",
     highlight: "لوازم جانبی",
@@ -89,7 +89,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     icon: ShoppingBag,
   },
   {
-    image: "/images/banner4.png",
+    image: "/cases/og-default.jpg",
     tag: "راهنمای گیمر",
     title: "رمز و چیت",
     highlight: "بازی‌ها",
