@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react";
 
 import {
@@ -35,6 +36,21 @@ export default function TextControls() {
   const setFill = useCalligraphyStore((s) => s.setFill);
   const setAlign = useCalligraphyStore((s) => s.setAlign);
   const setBackgroundColor = useCalligraphyStore((s) => s.setBackgroundColor);
+  const [fontQuery, setFontQuery] = useState("");
+
+  const filteredFonts = useMemo(() => {
+    const q = fontQuery.trim().toLowerCase();
+    const list = !q
+      ? CALLIGRAPHY_FONT_OPTIONS
+      : CALLIGRAPHY_FONT_OPTIONS.filter((font) =>
+          font.label.toLowerCase().includes(q),
+        );
+    if (list.some((f) => f.family === document.fontFamily)) return list;
+    const current = CALLIGRAPHY_FONT_OPTIONS.find(
+      (f) => f.family === document.fontFamily,
+    );
+    return current ? [current, ...list] : list;
+  }, [fontQuery, document.fontFamily]);
 
   async function handleFontChange(family: string) {
     await loadCalligraphyFonts([family]);
@@ -57,30 +73,28 @@ export default function TextControls() {
 
       <div className="space-y-2">
         <span className="text-sm font-bold text-foreground">فونت خوشنویسی</span>
-        <div className="grid grid-cols-2 gap-2">
-          {CALLIGRAPHY_FONT_OPTIONS.map((font) => (
-            <button
-              key={font.family}
-              type="button"
-              onClick={() => void handleFontChange(font.family)}
-              className={`relative rounded-xl border px-3 py-3 text-right transition ${
-                document.fontFamily === font.family
-                  ? "border-cyan-500 bg-cyan-500/10"
-                  : "border-border bg-card/60 hover:border-cyan-500/50"
-              }`}
-            >
-              <span className="block text-sm font-bold text-foreground">
-                {font.label}
-              </span>
-              <span className="text-xs text-muted">{font.style}</span>
-              {font.tier === "premium" ? (
-                <span className="absolute left-2 top-2 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">
-                  ویژه
-                </span>
-              ) : null}
-            </button>
+        <input
+          type="search"
+          value={fontQuery}
+          onChange={(e) => setFontQuery(e.target.value)}
+          placeholder="جستجوی فونت…"
+          dir="rtl"
+          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted"
+        />
+        <select
+          value={document.fontFamily}
+          onChange={(e) => void handleFontChange(e.target.value)}
+          className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground"
+        >
+          {filteredFonts.map((font) => (
+            <option key={font.family} value={font.family}>
+              {font.label}
+            </option>
           ))}
-        </div>
+        </select>
+        <p className="text-xs text-muted">
+          {filteredFonts.length} از {CALLIGRAPHY_FONT_OPTIONS.length} فونت
+        </p>
       </div>
 
       <label className="block space-y-2">

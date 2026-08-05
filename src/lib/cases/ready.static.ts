@@ -1,3 +1,5 @@
+import { DEFAULT_EDITOR_FONT } from "@/lib/design/editor-fonts";
+
 import type { ReadyCase } from "./types";
 
 export const READY_CASES: ReadyCase[] = [
@@ -61,7 +63,7 @@ export const READY_CASES: ReadyCase[] = [
           id: "rc-floral-2",
           type: "text",
           text: "زیبایی",
-          fontFamily: "CaseEditorCristik",
+          fontFamily: DEFAULT_EDITOR_FONT,
           fontSize: 40,
           fill: "#f472b6",
           align: "center",
@@ -95,7 +97,7 @@ export const READY_CASES: ReadyCase[] = [
           id: "rc-cyber-1",
           type: "text",
           text: "GAME ON",
-          fontFamily: "CaseEditorPixel",
+          fontFamily: DEFAULT_EDITOR_FONT,
           fontSize: 32,
           fill: "#06b6d4",
           align: "center",

@@ -1,3 +1,5 @@
+import { DEFAULT_CALLIGRAPHY_FONT } from "./fonts";
+
 export type CalligraphyAlign = "left" | "center" | "right";
 
 export type ExportTier = "free" | "hd-png" | "pdf";
@@ -29,7 +31,7 @@ export function createCalligraphyDocument(
     id: partial?.id ?? generateDesignId(),
     name: partial?.name ?? "اثر جدید",
     text: partial?.text ?? DEFAULT_CALLIGRAPHY_TEXT,
-    fontFamily: partial?.fontFamily ?? "CalligraphyIranNastaliq",
+    fontFamily: partial?.fontFamily ?? DEFAULT_CALLIGRAPHY_FONT,
     fontSize: partial?.fontSize ?? 72,
     fill: partial?.fill ?? "#1a1a2e",
     align: partial?.align ?? "center",

@@ -53,7 +53,11 @@ import {
   SHORTCUT_HELP,
   useEditorShortcuts,
 } from "@/lib/design/use-editor-shortcuts";
-import { loadEditorFonts } from "@/lib/design/editor-fonts";
+import {
+  DEFAULT_EDITOR_FONT,
+  loadEditorFonts,
+  normalizeFontFamily,
+} from "@/lib/design/editor-fonts";
 import { useCanvasDisplaySize } from "@/lib/design/use-canvas-display-size";
 import { useElementSize } from "@/lib/design/use-element-size";
 import { useMediaQuery } from "@/lib/design/use-media-query";
@@ -157,8 +161,14 @@ export default function EditorPageClient({
   useEditorShortcuts();
 
   useEffect(() => {
-    void loadEditorFonts();
-  }, []);
+    const families = new Set<string>([DEFAULT_EDITOR_FONT]);
+    for (const layer of document.layers) {
+      if (layer.type === "text") {
+        families.add(normalizeFontFamily(layer.fontFamily));
+      }
+    }
+    void loadEditorFonts([...families]);
+  }, [document.layers]);
 
   const [activeTab, setActiveTab] = useState<EditorTab>(initialTab ?? "text");
   const [loadedTabs, setLoadedTabs] = useState<Set<EditorTab>>(

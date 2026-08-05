@@ -5,7 +5,10 @@ import { Group, Layer, Rect, Stage } from "react-konva";
 
 import DesignImageLayerNode from "@/app/components/case-editor/DesignImageLayerNode";
 import TextLayerNode from "@/app/components/case-editor/TextLayerNode";
-import { loadEditorFonts } from "@/lib/design/editor-fonts";
+import {
+  loadEditorFonts,
+  normalizeFontFamily,
+} from "@/lib/design/editor-fonts";
 import type { CaseTemplate } from "@/lib/design/types";
 import { isLayerVisible, type DesignLayer, type ImageLayer, type TextLayer } from "@/lib/design/types";
 
@@ -27,8 +30,11 @@ export default function DesignSamplePreview({
   const visibleLayers = template.layers.filter(isLayerVisible);
 
   useEffect(() => {
-    void loadEditorFonts();
-  }, []);
+    const families = visibleLayers
+      .filter((layer): layer is TextLayer => layer.type === "text")
+      .map((layer) => normalizeFontFamily(layer.fontFamily));
+    void loadEditorFonts(families);
+  }, [template]);
 
   return (
     <div

@@ -1,78 +1,48 @@
+import {
+  DEFAULT_USE_FONT,
+  USE_FONT_OPTIONS,
+  getUseFontOption,
+  loadUseFonts,
+} from "@/lib/fonts/use-fonts";
+
 export type EditorFontOption = {
   family: string;
   label: string;
   src: string;
 };
 
-/** Canvas-safe font family names (not CSS variables). */
-export const EDITOR_FONT_OPTIONS: EditorFontOption[] = [
-  {
-    family: "CaseEditorVazirmatn",
-    label: "وزیرمتن",
-    src: "/fonts/editor/Vazirmatn-Regular.woff2",
-  },
-  {
-    family: "CaseEditorSorena",
-    label: "سورنا",
-    src: "/fonts/editor/Sorena-Normal.ttf",
-  },
-  {
-    family: "CaseEditorPixel",
-    label: "پیکسل",
-    src: "/fonts/editor/A-Pixel.ttf",
-  },
-  {
-    family: "CaseEditorCristik",
-    label: "کریستیک",
-    src: "/fonts/editor/Cristik.ttf",
-  },
-];
+/** Canvas-safe font family names from public/use-fonts. */
+export const EDITOR_FONT_OPTIONS: EditorFontOption[] = USE_FONT_OPTIONS.map(
+  (font) => ({
+    family: font.family,
+    label: font.label,
+    src: font.src,
+  }),
+);
 
-export const DEFAULT_EDITOR_FONT = EDITOR_FONT_OPTIONS[0].family;
+export const DEFAULT_EDITOR_FONT =
+  EDITOR_FONT_OPTIONS[0]?.family ?? DEFAULT_USE_FONT;
 
 const LEGACY_FONT_MAP: Record<string, string> = {
   Vazirmatn: DEFAULT_EDITOR_FONT,
   "var(--font-vazirmatn)": DEFAULT_EDITOR_FONT,
-  "var(--font-Sorena-Normal)": "CaseEditorSorena",
-  "var(--font-pixel)": "CaseEditorPixel",
-  "var(--Cristik)": "CaseEditorCristik",
+  "var(--font-Sorena-Normal)": DEFAULT_EDITOR_FONT,
+  "var(--font-pixel)": DEFAULT_EDITOR_FONT,
+  "var(--Cristik)": DEFAULT_EDITOR_FONT,
   CaseEditorVazirmatn: DEFAULT_EDITOR_FONT,
-  CaseEditorSorena: "CaseEditorSorena",
-  CaseEditorPixel: "CaseEditorPixel",
-  CaseEditorCristik: "CaseEditorCristik",
+  CaseEditorSorena: DEFAULT_EDITOR_FONT,
+  CaseEditorPixel: DEFAULT_EDITOR_FONT,
+  CaseEditorCristik: DEFAULT_EDITOR_FONT,
 };
 
-let fontsLoaded = false;
-let fontsLoading: Promise<void> | null = null;
-
 export function normalizeFontFamily(value: string): string {
-  return LEGACY_FONT_MAP[value] ?? value;
+  if (LEGACY_FONT_MAP[value]) return LEGACY_FONT_MAP[value];
+  if (getUseFontOption(value)) return value;
+  return DEFAULT_EDITOR_FONT;
 }
 
-export function loadEditorFonts(): Promise<void> {
-  if (fontsLoaded) return Promise.resolve();
-  if (fontsLoading) return fontsLoading;
-
-  fontsLoading = (async () => {
-    if (typeof document === "undefined") return;
-
-    await Promise.all(
-      EDITOR_FONT_OPTIONS.map(async ({ family, src }) => {
-        if (document.fonts.check(`16px "${family}"`)) return;
-        try {
-          const face = new FontFace(family, `url(${src})`);
-          await face.load();
-          document.fonts.add(face);
-        } catch {
-          // Font file may be missing in dev; canvas falls back to system font
-        }
-      }),
-    );
-
-    fontsLoaded = true;
-  })();
-
-  return fontsLoading;
+export function loadEditorFonts(families?: string[]): Promise<void> {
+  return loadUseFonts(families);
 }
 
 export function getDefaultTextBoxWidth(canvasWidth: number): number {

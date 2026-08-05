@@ -19,7 +19,7 @@ export default function HomeCalligraphyPage() {
             <span className="block text-cyan-400">خوشنویسی تبدیل کنید</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted">
-            با فونت‌های نستعلیق، نسخ و خطاطی — پیش‌نمایش رایگان با واترمارک و
+            با صدها فونت عربی و فارسی — پیش‌نمایش رایگان با واترمارک و
             دانلود با کیفیت بالا پس از پرداخت.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
@@ -42,7 +42,7 @@ export default function HomeCalligraphyPage() {
       <section className="border-y border-border bg-card/30 px-4 py-12 sm:px-6">
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 sm:grid-cols-3">
           {[
-            { icon: Type, title: "فونت‌های خوشنویسی", desc: "نستعلیق، نسخ و خطاطی تزئینی" },
+            { icon: Type, title: "فونت‌های متنوع", desc: "کتابخانه بزرگ فونت‌های عربی و فارسی" },
             { icon: Download, title: "دانلود رایگان", desc: "پیش‌نمایش با واترمارک بدون هزینه" },
             { icon: Sparkles, title: "خروجی حرفه‌ای", desc: "PNG و PDF با کیفیت بالا" },
           ].map(({ icon: Icon, title, desc }) => (
@@ -58,30 +58,35 @@ export default function HomeCalligraphyPage() {
       </section>
 
       <section className="px-4 py-16 sm:px-6">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="text-center text-2xl font-black text-foreground">
+        <div className="mx-auto max-w-5xl text-center">
+          <h2 className="text-2xl font-black text-foreground">
             فونت‌های موجود
           </h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {CALLIGRAPHY_FONT_OPTIONS.map((font) => (
-              <div
+          <p className="mx-auto mt-4 max-w-xl text-muted">
+            بیش از {CALLIGRAPHY_FONT_OPTIONS.length} فونت متنوع در استودیو —
+            از خطاطی کلاسیک تا سبک‌های مدرن عربی و فارسی.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            {CALLIGRAPHY_FONT_OPTIONS.slice(0, 8).map((font) => (
+              <span
                 key={font.family}
-                className="rounded-2xl border border-border bg-card/60 p-5 text-center"
+                className="rounded-full border border-border bg-card/60 px-3 py-1.5 text-xs text-muted"
               >
-                <p className="text-2xl font-bold text-foreground" style={{ fontFamily: font.label }}>
-                  {font.label}
-                </p>
-                <p className="mt-1 text-sm text-muted">{font.style}</p>
-                {font.tier === "premium" ? (
-                  <span className="mt-2 inline-block rounded bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-400">
-                    ویژه
-                  </span>
-                ) : (
-                  <span className="mt-2 inline-block text-xs text-emerald-400">رایگان</span>
-                )}
-              </div>
+                {font.label}
+              </span>
             ))}
+            {CALLIGRAPHY_FONT_OPTIONS.length > 8 ? (
+              <span className="rounded-full border border-cyan-500/40 bg-cyan-500/10 px-3 py-1.5 text-xs font-bold text-cyan-400">
+                +{CALLIGRAPHY_FONT_OPTIONS.length - 8} فونت دیگر
+              </span>
+            ) : null}
           </div>
+          <Link
+            href="/studio"
+            className="mt-8 inline-block rounded-xl bg-cyan-500 px-6 py-2.5 text-sm font-bold text-black transition hover:bg-cyan-400"
+          >
+            انتخاب فونت در استودیو
+          </Link>
         </div>
       </section>
 

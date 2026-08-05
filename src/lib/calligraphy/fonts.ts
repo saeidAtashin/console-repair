@@ -1,3 +1,10 @@
+import {
+  DEFAULT_USE_FONT,
+  USE_FONT_OPTIONS,
+  getUseFontOption,
+  loadUseFonts,
+} from "@/lib/fonts/use-fonts";
+
 export type FontTier = "free" | "premium";
 
 export type CalligraphyFontOption = {
@@ -8,90 +15,41 @@ export type CalligraphyFontOption = {
   tier: FontTier;
 };
 
-export const CALLIGRAPHY_FONT_OPTIONS: CalligraphyFontOption[] = [
-  {
-    family: "CalligraphyIranNastaliq",
-    label: "ایران نستعلیق",
-    style: "نستعلیق",
-    src: "/fonts/calligraphy/IranNastaliq.ttf",
-    tier: "free",
-  },
-  {
-    family: "CalligraphyAmiri",
-    label: "امیری",
-    style: "نسخ",
-    src: "/fonts/calligraphy/Amiri-Regular.ttf",
-    tier: "free",
-  },
-  {
-    family: "CalligraphyScheherazade",
-    label: "شهرزاد",
-    style: "نسخ سنتی",
-    src: "/fonts/calligraphy/ScheherazadeNew-Regular.ttf",
-    tier: "free",
-  },
-  {
-    family: "CalligraphyKatibeh",
-    label: "کتیبه",
-    style: "خطاطی تزئینی",
-    src: "/fonts/calligraphy/Katibeh-Regular.ttf",
-    tier: "premium",
-  },
-];
+export const CALLIGRAPHY_FONT_OPTIONS: CalligraphyFontOption[] =
+  USE_FONT_OPTIONS.map((font) => ({
+    family: font.family,
+    label: font.label,
+    style: "",
+    src: font.src,
+    tier: "free" as const,
+  }));
 
-export const DEFAULT_CALLIGRAPHY_FONT = CALLIGRAPHY_FONT_OPTIONS[0].family;
+export const DEFAULT_CALLIGRAPHY_FONT =
+  CALLIGRAPHY_FONT_OPTIONS[0]?.family ?? DEFAULT_USE_FONT;
 
-const loadedFamilies = new Set<string>();
-let fontsLoading: Promise<void> | null = null;
+const LEGACY_CALLIGRAPHY_FONTS = new Set([
+  "CalligraphyIranNastaliq",
+  "CalligraphyAmiri",
+  "CalligraphyScheherazade",
+  "CalligraphyKatibeh",
+]);
 
 export function getFontOption(family: string): CalligraphyFontOption | undefined {
   return CALLIGRAPHY_FONT_OPTIONS.find((f) => f.family === family);
 }
 
-export function isPremiumFont(family: string): boolean {
-  return getFontOption(family)?.tier === "premium";
+export function isPremiumFont(_family: string): boolean {
+  return false;
 }
 
 export function normalizeCalligraphyFont(family: string): string {
-  const match = CALLIGRAPHY_FONT_OPTIONS.find((f) => f.family === family);
-  return match?.family ?? DEFAULT_CALLIGRAPHY_FONT;
+  if (LEGACY_CALLIGRAPHY_FONTS.has(family)) return DEFAULT_CALLIGRAPHY_FONT;
+  if (getUseFontOption(family)) return family;
+  return DEFAULT_CALLIGRAPHY_FONT;
 }
 
 export function loadCalligraphyFonts(families?: string[]): Promise<void> {
-  const toLoad =
-    families ??
-    CALLIGRAPHY_FONT_OPTIONS.map((f) => f.family);
-
-  const pending = CALLIGRAPHY_FONT_OPTIONS.filter(
-    (f) => toLoad.includes(f.family) && !loadedFamilies.has(f.family),
-  );
-  if (pending.length === 0) return Promise.resolve();
-  if (fontsLoading) return fontsLoading;
-
-  fontsLoading = (async () => {
-    if (typeof document === "undefined") return;
-
-    await Promise.all(
-      pending.map(async ({ family, src }) => {
-        if (loadedFamilies.has(family)) return;
-        try {
-          if (document.fonts.check(`16px "${family}"`)) {
-            loadedFamilies.add(family);
-            return;
-          }
-          const face = new FontFace(family, `url(${src})`);
-          await face.load();
-          document.fonts.add(face);
-          loadedFamilies.add(family);
-        } catch {
-          // Font may be missing in dev
-        }
-      }),
-    );
-    fontsLoading = null;
-  })();
-
-  return fontsLoading;
+  return loadUseFonts(families);
 }
 
 export function getTextOffsetX(

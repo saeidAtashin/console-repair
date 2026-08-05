@@ -4,7 +4,6 @@ import JsonLd from "@/app/components/seo/JsonLd";
 import PageShell from "@/app/components/seo/PageShell";
 import {
   EXPORT_PRICES,
-  PREMIUM_FONT_EXPORT_PRICE,
   getExportTierDescription,
 } from "@/lib/calligraphy/pricing";
 import { CALLIGRAPHY_FONT_OPTIONS } from "@/lib/calligraphy/fonts";
@@ -68,10 +67,10 @@ export default function PricingPage() {
         </div>
 
         <section className="mt-12 rounded-2xl border border-border bg-card/40 p-6">
-          <h2 className="text-lg font-bold text-foreground">فونت‌های ویژه</h2>
+          <h2 className="text-lg font-bold text-foreground">فونت‌ها</h2>
           <p className="mt-2 text-sm text-muted">
-            استفاده از فونت‌های ویژه ({CALLIGRAPHY_FONT_OPTIONS.filter((f) => f.tier === "premium").map((f) => f.label).join("، ")})
-            {" "}{formatToman(PREMIUM_FONT_EXPORT_PRICE)} به هزینه خروجی HD اضافه می‌شود.
+            تمام فونت‌های استودیو ({CALLIGRAPHY_FONT_OPTIONS.length} فونت) بدون
+            هزینه اضافی در خروجی‌های پولی در دسترس هستند.
           </p>
         </section>
 

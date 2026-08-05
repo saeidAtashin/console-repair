@@ -31,8 +31,8 @@ export default function StudioPageClient() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    void loadCalligraphyFonts();
-  }, []);
+    void loadCalligraphyFonts([document.fontFamily]);
+  }, [document.fontFamily]);
 
   const handleStageReady = useCallback((s: Konva.Stage) => {
     setStage(s);
