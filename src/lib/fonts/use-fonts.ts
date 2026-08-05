@@ -21,12 +21,24 @@ export function normalizeUseFont(family: string): string {
   return DEFAULT_USE_FONT;
 }
 
+function isFaceLoaded(family: string): boolean {
+  if (loadedFamilies.has(family)) return true;
+  if (typeof document === "undefined") return false;
+  for (const face of document.fonts) {
+    if (face.family === family && face.status === "loaded") {
+      loadedFamilies.add(family);
+      return true;
+    }
+  }
+  return false;
+}
+
 export function loadUseFonts(families?: string[]): Promise<void> {
   const toLoad =
     families ?? USE_FONT_OPTIONS.map((f) => f.family);
 
   const pending = toLoad.filter(
-    (family) => getUseFontOption(family) && !loadedFamilies.has(family),
+    (family) => getUseFontOption(family) && !isFaceLoaded(family),
   );
   if (pending.length === 0) return Promise.resolve();
 
@@ -34,7 +46,7 @@ export function loadUseFonts(families?: string[]): Promise<void> {
 }
 
 function loadOne(family: string): Promise<void> {
-  if (loadedFamilies.has(family)) return Promise.resolve();
+  if (isFaceLoaded(family)) return Promise.resolve();
   const existing = inFlight.get(family);
   if (existing) return existing;
 
@@ -44,11 +56,8 @@ function loadOne(family: string): Promise<void> {
   const promise = (async () => {
     if (typeof document === "undefined") return;
     try {
-      if (document.fonts.check(`16px "${family}"`)) {
-        loadedFamilies.add(family);
-        return;
-      }
-      const face = new FontFace(family, `url(${option.src})`);
+      if (isFaceLoaded(family)) return;
+      const face = new FontFace(family, `url("${option.src}")`);
       await face.load();
       document.fonts.add(face);
       loadedFamilies.add(family);

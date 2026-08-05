@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Layer, Rect, Stage, Text } from "react-konva";
 import type Konva from "konva";
 
@@ -23,15 +23,23 @@ function CalligraphyCanvas({ onStageReady }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const setStageRef = useCalligraphyStore((s) => s.setStageRef);
   const { width: containerWidth } = useElementSize(containerRef);
+  const [fontEpoch, setFontEpoch] = useState(0);
 
   const { canvas, text, fontFamily, fontSize, fill, align, backgroundColor } =
     document;
+  const normalizedFont = normalizeCalligraphyFont(fontFamily);
   const boxWidth = getDefaultTextBoxWidth(canvas.width);
   const scale = containerWidth > 0 ? containerWidth / canvas.width : 1;
   const displayHeight = canvas.height * scale;
 
   useEffect(() => {
-    void loadCalligraphyFonts([fontFamily]);
+    let cancelled = false;
+    void loadCalligraphyFonts([fontFamily]).then(() => {
+      if (!cancelled) setFontEpoch((n) => n + 1);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [fontFamily]);
 
   useEffect(() => {
@@ -69,12 +77,13 @@ function CalligraphyCanvas({ onStageReady }: Props) {
             fill={backgroundColor === "transparent" ? "#faf8f5" : backgroundColor}
           />
           <Text
+            key={`${normalizedFont}-${fontEpoch}`}
             x={canvas.width / 2}
             y={canvas.height / 2}
             offsetX={getTextOffsetX(align, boxWidth)}
             offsetY={fontSize / 2}
             text={text || " "}
-            fontFamily={normalizeCalligraphyFont(fontFamily)}
+            fontFamily={normalizedFont}
             fontSize={fontSize}
             fill={fill}
             align={align}
