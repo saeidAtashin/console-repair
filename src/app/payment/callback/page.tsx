@@ -3,6 +3,8 @@
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { verifyZarinPalPayment } from "@/lib/payments/zarinpal";
+import { unlockFromCartItems } from "@/lib/calligraphy/unlocks";
+import { consumePendingUnlocks } from "@/lib/shop/calligraphy-checkout";
 
 type Props = {
   searchParams: Promise<{
@@ -22,6 +24,8 @@ export default function PaymentCallbackPage({ searchParams }: Props) {
   useEffect(() => {
     async function verify() {
       if (params.local === "1") {
+        const pending = consumePendingUnlocks();
+        unlockFromCartItems(pending, params.orderId);
         setStatus("success");
         return;
       }
@@ -32,6 +36,8 @@ export default function PaymentCallbackPage({ searchParams }: Props) {
       try {
         const result = await verifyZarinPalPayment(params.Authority, params.orderId);
         if (result.success) {
+          const pending = consumePendingUnlocks();
+          unlockFromCartItems(pending, params.orderId);
           setStatus("success");
           setRefId(result.refId ?? null);
         } else {
@@ -55,16 +61,21 @@ export default function PaymentCallbackPage({ searchParams }: Props) {
           </div>
           <h1 className="text-2xl font-black text-foreground">پرداخت موفق</h1>
           <p className="mt-3 text-muted">
-            سفارش شما ثبت شد
+            خروجی شما آماده دانلود است
             {params.code ? ` — کد: ${params.code}` : ""}
           </p>
           {refId ? <p className="mt-2 text-sm text-muted">شماره پیگیری: {refId}</p> : null}
-          <Link
-            href="/tracking"
-            className="mt-8 inline-block rounded-xl bg-cyan-500 px-8 py-3 text-sm font-bold text-black"
-          >
-            پیگیری سفارش
-          </Link>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <Link
+              href="/studio"
+              className="inline-block rounded-xl bg-cyan-500 px-8 py-3 text-sm font-bold text-black"
+            >
+              بازگشت به استودیو و دانلود
+            </Link>
+            <Link href="/dashboard/designs" className="text-sm text-cyan-400 hover:underline">
+              مشاهده آثار من
+            </Link>
+          </div>
         </>
       ) : (
         <>

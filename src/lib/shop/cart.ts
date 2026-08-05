@@ -1,7 +1,7 @@
-import { getReadyCaseById } from "@/lib/cases/ready.static";
 import {
   getCartItemKey,
   normalizeCartItem,
+  type CalligraphyExportItem,
   type CartLineItem,
   type CustomCartLineItem,
   type ReadyCartLineItem,
@@ -43,12 +43,13 @@ export function getCartCount(items: CartLineItem[]): number {
 
 export function getCartSubtotal(items: CartLineItem[]): number {
   return items.reduce((sum, item) => {
-    if (item.kind === "ready") {
-      const product = getReadyCaseById(item.productId);
-      if (!product) return sum;
-      return sum + product.price * item.qty;
+    if (item.kind === "calligraphy-export") {
+      return sum + item.unitPrice;
     }
-    return sum + item.unitPrice * item.qty;
+    if (item.kind === "custom") {
+      return sum + item.unitPrice * item.qty;
+    }
+    return sum;
   }, 0);
 }
 
@@ -66,6 +67,17 @@ export function addReadyToCart(
       ? { ...item, qty: item.qty + 1 }
       : item,
   );
+}
+
+export function addCalligraphyExportToCart(
+  items: CartLineItem[],
+  exportItem: Omit<CalligraphyExportItem, "kind" | "qty">,
+): CartLineItem[] {
+  const key = `calligraphy:${exportItem.designId}:${exportItem.tier}`;
+  const existing = items.find((item) => getCartItemKey(item) === key);
+  if (existing) return items;
+
+  return [...items, { kind: "calligraphy-export", ...exportItem, qty: 1 }];
 }
 
 export function addCustomToCart(
@@ -98,13 +110,20 @@ export function setCartItemQty(
   qty: number,
 ): CartLineItem[] {
   if (qty <= 0) return items.filter((item) => getCartItemKey(item) !== key);
-  return items.map((item) =>
-    getCartItemKey(item) === key ? { ...item, qty } : item,
-  );
+  return items.map((item) => {
+    if (getCartItemKey(item) !== key) return item;
+    if (item.kind === "calligraphy-export") return item;
+    return { ...item, qty };
+  });
 }
 
 export function removeCartItem(items: CartLineItem[], key: string): CartLineItem[] {
   return items.filter((item) => getCartItemKey(item) !== key);
 }
 
-export type { CartLineItem, CustomCartLineItem, ReadyCartLineItem };
+export type {
+  CalligraphyExportItem,
+  CartLineItem,
+  CustomCartLineItem,
+  ReadyCartLineItem,
+};

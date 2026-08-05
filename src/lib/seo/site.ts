@@ -1,8 +1,8 @@
-export const SITE_NAME = "قاب‌کده | CaseKadeh";
+export const SITE_NAME = "خوشنویسی آنلاین";
 export const SITE_TAGLINE =
-  "طراحی و خرید قاب موبایل اختصاصی — انتخاب برند و مدل، چاپ با کیفیت و ارسال سریع";
+  "تبدیل متن فارسی به خوشنویسی با فونت‌های نستعلیق، نسخ و خطاطی — پیش‌نمایش رایگان و دانلود با کیفیت بالا";
 export const SITE_LOCALE = "fa_IR";
-export const DEFAULT_OG_IMAGE = "/cases/og-default.jpg";
+export const DEFAULT_OG_IMAGE = "/banner.webp";
 export const SITE_PHONE = "+989107701704";
 export const SITE_ADDRESS = {
   streetAddress: "تهران",

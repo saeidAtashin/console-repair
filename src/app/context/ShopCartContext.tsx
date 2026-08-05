@@ -12,6 +12,7 @@ import {
 
 import AddToCartFeedback from "@/app/components/shop/AddToCartFeedback";
 import {
+  addCalligraphyExportToCart,
   addCustomToCart,
   addReadyToCart,
   getCartCount,
@@ -20,6 +21,7 @@ import {
   removeCartItem,
   setCartItemQty,
   writeCartItems,
+  type CalligraphyExportItem,
   type CartLineItem,
   type CustomCartLineItem,
 } from "@/lib/shop/cart";
@@ -33,6 +35,7 @@ type ShopCartContextValue = {
   cartBounce: boolean;
   addReadyCase: (productId: string, title?: string) => void;
   addCustomCase: (item: Omit<CustomCartLineItem, "kind" | "qty">) => void;
+  addCalligraphyExport: (item: Omit<CalligraphyExportItem, "kind" | "qty">) => void;
   incrementQty: (key: string) => void;
   decrementQty: (key: string) => void;
   removeItem: (key: string) => void;
@@ -89,6 +92,10 @@ export function ShopCartProvider({ children }: { children: React.ReactNode }) {
       },
       addCustomCase: (item) => {
         setItems((prev) => addCustomToCart(prev, item));
+        showToast(`${item.title} به سبد خرید اضافه شد`);
+      },
+      addCalligraphyExport: (item) => {
+        setItems((prev) => addCalligraphyExportToCart(prev, item));
         showToast(`${item.title} به سبد خرید اضافه شد`);
       },
       incrementQty: (key) => {

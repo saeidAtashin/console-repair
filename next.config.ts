@@ -8,11 +8,19 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   async redirects() {
     return [
-      { source: "/shop", destination: "/cases", permanent: true },
-      { source: "/shop/:path*", destination: "/cases", permanent: true },
-      { source: "/repair", destination: "/create", permanent: true },
-      { source: "/services/:path*", destination: "/create", permanent: true },
+      { source: "/shop", destination: "/studio", permanent: true },
+      { source: "/shop/:path*", destination: "/studio", permanent: true },
+      { source: "/repair", destination: "/studio", permanent: true },
+      { source: "/services/:path*", destination: "/studio", permanent: true },
       { source: "/blog/:path*", destination: "/", permanent: true },
+      { source: "/create", destination: "/studio", permanent: true },
+      { source: "/create/:path*", destination: "/studio", permanent: true },
+      { source: "/design/:path*", destination: "/studio", permanent: true },
+      { source: "/cases", destination: "/studio", permanent: true },
+      { source: "/cases/:path*", destination: "/studio", permanent: true },
+      { source: "/phones/:path*", destination: "/studio", permanent: true },
+      { source: "/designs", destination: "/studio", permanent: true },
+      { source: "/designs/:path*", destination: "/studio", permanent: true },
     ];
   },
   // Allow LAN phone access during `next dev` (Next.js 16 blocks cross-origin /_next by default)

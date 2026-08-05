@@ -98,14 +98,14 @@ export default function DashboardPage() {
             className="inline-flex items-center gap-2 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-6 py-3 font-bold text-cyan-300"
           >
             <Palette className="h-5 w-5" />
-            طراحی‌های من
+            آثار من
           </Link>
           <Link
-            href="/create"
+            href="/studio"
             className="inline-flex items-center gap-2 rounded-2xl border border-border px-6 py-3 font-bold"
           >
             <ShoppingBag className="h-5 w-5 text-cyan-400" />
-            طراحی جدید
+            استودیو خوشنویسی
           </Link>
         </div>
 
@@ -118,8 +118,8 @@ export default function DashboardPage() {
           ) : orders.length === 0 ? (
             <div className="rounded-3xl border border-border bg-surface p-10 text-center">
               <p className="text-lg text-muted">سفارشی ثبت نشده است</p>
-              <Link href="/create" className="mt-4 inline-block text-cyan-400">
-                شروع طراحی قاب
+              <Link href="/studio" className="mt-4 inline-block text-cyan-400">
+                شروع خوشنویسی
               </Link>
             </div>
           ) : (

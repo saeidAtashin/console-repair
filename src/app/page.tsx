@@ -1,17 +1,17 @@
-import HomeCasePage from "./components/HomeCasePage";
+import HomeCalligraphyPage from "./components/HomeCalligraphyPage";
 import JsonLd from "./components/seo/JsonLd";
 import { createPageMetadata } from "../lib/seo/metadata";
 import { webPageJsonLd } from "../lib/seo/jsonld";
 
-const HOME_TITLE = "طراحی و خرید قاب موبایل اختصاصی";
+const HOME_TITLE = "خوشنویسی آنلاین فارسی";
 const HOME_DESCRIPTION =
-  "قاب موبایل خودت را طراحی کن — انتخاب برند و مدل، افزودن متن و استیکر، پیش‌نمایش و خرید آنلاین با ارسال سریع.";
+  "متن فارسی خود را با فونت‌های نستعلیق، نسخ و خطاطی به خوشنویسی تبدیل کنید. پیش‌نمایش رایگان و دانلود با کیفیت بالا.";
 
 export const metadata = createPageMetadata({
   title: HOME_TITLE,
   description: HOME_DESCRIPTION,
   path: "/",
-  keywords: ["قاب موبایل", "طراحی قاب", "قاب آیفون", "قاب سامسونگ", "قاب سفارشی"],
+  keywords: ["خوشنویسی", "خطاطی", "فونت نستعلیق", "خوشنویسی آنلاین", "فارسی"],
 });
 
 export default function Home() {
@@ -24,7 +24,7 @@ export default function Home() {
           path: "/",
         })}
       />
-      <HomeCasePage />
+      <HomeCalligraphyPage />
     </>
   );
 }

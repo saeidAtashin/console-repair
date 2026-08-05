@@ -44,6 +44,7 @@ function TextLayerNode({ layer, canvasWidth, handlers }: Props) {
           align={layer.align}
           width={boxWidth}
           padding={padding}
+          direction="rtl"
         />
       </Label>
     </Group>

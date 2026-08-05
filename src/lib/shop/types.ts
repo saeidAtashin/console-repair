@@ -17,7 +17,21 @@ export type CustomCartLineItem = {
   description?: string;
 };
 
-export type CartLineItem = ReadyCartLineItem | CustomCartLineItem;
+export type CalligraphyExportItem = {
+  kind: "calligraphy-export";
+  designId: string;
+  tier: "hd-png" | "pdf";
+  fontFamily: string;
+  previewUrl: string;
+  unitPrice: number;
+  title: string;
+  qty: 1;
+};
+
+export type CartLineItem =
+  | ReadyCartLineItem
+  | CustomCartLineItem
+  | CalligraphyExportItem;
 
 /** Legacy console shop types (kept for unused modules) */
 export const SHOP_CONSOLES = ["ps4", "ps5", "xbox-one", "xbox-series"] as const;
@@ -74,7 +88,11 @@ export type ShopOrderResponse = {
 };
 
 export function getCartItemKey(item: CartLineItem): string {
-  return item.kind === "ready" ? `ready:${item.productId}` : `custom:${item.designId}`;
+  if (item.kind === "ready") return `ready:${item.productId}`;
+  if (item.kind === "calligraphy-export") {
+    return `calligraphy:${item.designId}:${item.tier}`;
+  }
+  return `custom:${item.designId}`;
 }
 
 export function isReadyCartItem(item: CartLineItem): item is ReadyCartLineItem {
@@ -85,6 +103,12 @@ export function isCustomCartItem(item: CartLineItem): item is CustomCartLineItem
   return item.kind === "custom";
 }
 
+export function isCalligraphyExportItem(
+  item: CartLineItem,
+): item is CalligraphyExportItem {
+  return item.kind === "calligraphy-export";
+}
+
 /** Migrate legacy cart items without kind field */
 export function normalizeCartItem(item: unknown): CartLineItem | null {
   if (!item || typeof item !== "object") return null;
@@ -93,6 +117,19 @@ export function normalizeCartItem(item: unknown): CartLineItem | null {
 
   if (obj.kind === "ready" && typeof obj.productId === "string") {
     return { kind: "ready", productId: obj.productId, qty: obj.qty };
+  }
+  if (obj.kind === "calligraphy-export" && typeof obj.designId === "string") {
+    const tier = obj.tier === "pdf" ? "pdf" : "hd-png";
+    return {
+      kind: "calligraphy-export",
+      designId: obj.designId,
+      tier,
+      fontFamily: String(obj.fontFamily ?? ""),
+      previewUrl: String(obj.previewUrl ?? ""),
+      unitPrice: Number(obj.unitPrice) || 0,
+      title: String(obj.title ?? "خروجی خوشنویسی"),
+      qty: 1,
+    };
   }
   if (obj.kind === "custom" && typeof obj.designId === "string") {
     return {

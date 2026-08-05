@@ -2,7 +2,7 @@ import { createPageMetadata } from "@/lib/seo/metadata";
 import DesignsDashboardClient from "./DesignsDashboardClient";
 
 export const metadata = createPageMetadata({
-  title: "طراحی‌های من",
+  title: "آثار من",
   path: "/dashboard/designs",
 });
 

@@ -9,8 +9,12 @@ import { usePhoneVerifiedSubmit, VerificationCancelledError } from "@/app/hooks/
 import { normalizeIranPhone } from "@/lib/phone";
 import { requestZarinPalPayment } from "@/lib/payments/zarinpal";
 import { formatToman, submitShopOrder } from "@/lib/shop";
-import { getReadyCaseById } from "@/lib/cases/ready.static";
-import { getCartItemKey } from "@/lib/shop/types";
+import {
+  isDigitalOnlyCart,
+  savePendingUnlocks,
+  serializeItemsForApi,
+} from "@/lib/shop/calligraphy-checkout";
+import { getCartItemKey, isCalligraphyExportItem } from "@/lib/shop/types";
 
 export default function CheckoutPageClient() {
   const { user } = useAuth();
@@ -23,6 +27,7 @@ export default function CheckoutPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const digitalOnly = isDigitalOnlyCart(items);
   const accountPhone = user?.phone_number ?? user?.phone ?? "";
 
   useEffect(() => {
@@ -31,13 +36,13 @@ export default function CheckoutPageClient() {
 
   const displayItems = useMemo(
     () =>
-      items.map((item) => {
-        if (item.kind === "ready") {
-          const product = getReadyCaseById(item.productId);
-          return product ? { item, product, key: getCartItemKey(item) } : null;
-        }
-        return { item, key: getCartItemKey(item), product: null };
-      }).filter(Boolean),
+      items.map((item) => ({
+        item,
+        key: getCartItemKey(item),
+        title: item.kind === "calligraphy-export" || item.kind === "custom" ? item.title : "محصول",
+        price: item.kind === "calligraphy-export" || item.kind === "custom" ? item.unitPrice : 0,
+        image: item.kind === "calligraphy-export" || item.kind === "custom" ? item.previewUrl : "",
+      })),
     [items],
   );
 
@@ -54,7 +59,7 @@ export default function CheckoutPageClient() {
       setError("شماره موبایل معتبر نیست.");
       return;
     }
-    if (!address.trim()) {
+    if (!digitalOnly && !address.trim()) {
       setError("آدرس ارسال الزامی است.");
       return;
     }
@@ -66,14 +71,15 @@ export default function CheckoutPageClient() {
     const payload = {
       name: name.trim(),
       phone: normalizedPhone,
-      address: address.trim(),
+      address: digitalOnly ? undefined : address.trim(),
       note: note.trim() || undefined,
-      items,
+      items: serializeItemsForApi(items),
     };
 
     setLoading(true);
     try {
       await requestSubmit(normalizedPhone, async () => {
+        savePendingUnlocks(items);
         const order = await submitShopOrder(payload);
 
         try {
@@ -112,6 +118,11 @@ export default function CheckoutPageClient() {
   return (
     <div className="mx-auto max-w-3xl px-4 pt-28 pb-16">
       <h1 className="text-2xl font-black text-foreground">تسویه حساب</h1>
+      {digitalOnly ? (
+        <p className="mt-2 text-sm text-muted">
+          خرید دیجیتال — پس از پرداخت، لینک دانلود در داشبورد فعال می‌شود.
+        </p>
+      ) : null}
       <form onSubmit={onSubmit} className="mt-8 space-y-6">
         <div className="space-y-4 rounded-2xl border border-border bg-card/60 p-6">
           <label className="block space-y-1">
@@ -133,16 +144,18 @@ export default function CheckoutPageClient() {
               required
             />
           </label>
-          <label className="block space-y-1">
-            <span className="text-sm text-muted">آدرس کامل</span>
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              rows={3}
-              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground"
-              required
-            />
-          </label>
+          {!digitalOnly ? (
+            <label className="block space-y-1">
+              <span className="text-sm text-muted">آدرس کامل</span>
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                rows={3}
+                className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-foreground"
+                required
+              />
+            </label>
+          ) : null}
           <label className="block space-y-1">
             <span className="text-sm text-muted">یادداشت (اختیاری)</span>
             <textarea
@@ -157,18 +170,21 @@ export default function CheckoutPageClient() {
         <div className="rounded-2xl border border-border bg-card/60 p-6">
           <p className="mb-4 font-bold text-foreground">خلاصه سفارش</p>
           <ul className="space-y-2 text-sm text-muted">
-            {displayItems.map((entry) =>
-              entry ? (
-                <li key={entry.key} className="flex justify-between">
+            {displayItems.map((entry) => (
+                <li key={entry.key} className="flex justify-between gap-4">
                   <span>
-                    {entry.item.kind === "ready"
-                      ? entry.product?.title
-                      : entry.item.title}{" "}
-                    × {entry.item.qty}
+                    {entry.title}
+                    {!isCalligraphyExportItem(entry.item) && entry.item.kind === "custom"
+                      ? ` × ${entry.item.qty}`
+                      : ""}
                   </span>
+                  {entry.item.kind !== "ready" ? (
+                    <span className="shrink-0 text-cyan-400">
+                      {formatToman(entry.price)}
+                    </span>
+                  ) : null}
                 </li>
-              ) : null,
-            )}
+              ))}
           </ul>
           <div className="mt-4 flex justify-between border-t border-border pt-4 font-bold">
             <span className="text-muted">مبلغ قابل پرداخت</span>
