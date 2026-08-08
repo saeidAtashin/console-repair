@@ -20,8 +20,7 @@ export const EDITOR_FONT_OPTIONS: EditorFontOption[] = USE_FONT_OPTIONS.map(
   }),
 );
 
-export const DEFAULT_EDITOR_FONT =
-  EDITOR_FONT_OPTIONS[0]?.family ?? DEFAULT_USE_FONT;
+export const DEFAULT_EDITOR_FONT = DEFAULT_USE_FONT;
 
 const LEGACY_FONT_MAP: Record<string, string> = {
   Vazirmatn: DEFAULT_EDITOR_FONT,

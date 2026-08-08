@@ -24,8 +24,7 @@ export const CALLIGRAPHY_FONT_OPTIONS: CalligraphyFontOption[] =
     tier: "free" as const,
   }));
 
-export const DEFAULT_CALLIGRAPHY_FONT =
-  CALLIGRAPHY_FONT_OPTIONS[0]?.family ?? DEFAULT_USE_FONT;
+export const DEFAULT_CALLIGRAPHY_FONT = DEFAULT_USE_FONT;
 
 const LEGACY_CALLIGRAPHY_FONTS = new Set([
   "CalligraphyIranNastaliq",

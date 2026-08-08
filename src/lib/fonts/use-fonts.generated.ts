@@ -208,6 +208,12 @@ export const USE_FONT_OPTIONS: UseFontGeneratedOption[] = [
     src: "/use-fonts/dara-peyvastee.ttf",
   },
   {
+    family: "UseFont_Dima_Shekasteh",
+    label: "Dima Shekasteh",
+    fileName: "Dima Shekasteh.ttf",
+    src: "/use-fonts/Dima%20Shekasteh.ttf",
+  },
+  {
     family: "UseFont_DubidamArabicFREEPERSONALUSE_Bold",
     label: "DubidamArabicFREEPERSONALUSE Bold",
     fileName: "DubidamArabicFREEPERSONALUSE-Bold.otf",
@@ -344,6 +350,12 @@ export const USE_FONT_OPTIONS: UseFontGeneratedOption[] = [
     label: "InkBrushArabic DEMO Textured",
     fileName: "InkBrushArabic_DEMO-Textured.otf",
     src: "/use-fonts/InkBrushArabic_DEMO-Textured.otf",
+  },
+  {
+    family: "UseFont_IranNastaliq",
+    label: "IranNastaliq",
+    fileName: "IranNastaliq.ttf",
+    src: "/use-fonts/IranNastaliq.ttf",
   },
   {
     family: "UseFont_kaman_Regular",
@@ -764,6 +776,12 @@ export const USE_FONT_OPTIONS: UseFontGeneratedOption[] = [
     label: "SH.Panda",
     fileName: "SH.Panda.ttf",
     src: "/use-fonts/SH.Panda.ttf",
+  },
+  {
+    family: "UseFont_Shekasteh_V2_001",
+    label: "Shekasteh V2.001",
+    fileName: "Shekasteh V2.001.ttf",
+    src: "/use-fonts/Shekasteh%20V2.001.ttf",
   },
   {
     family: "UseFont_Sp_Morvarid_Normal",

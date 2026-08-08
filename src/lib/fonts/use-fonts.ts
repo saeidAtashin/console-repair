@@ -7,7 +7,12 @@ export type UseFontOption = UseFontGeneratedOption;
 
 export { USE_FONT_OPTIONS };
 
-export const DEFAULT_USE_FONT = USE_FONT_OPTIONS[0]?.family ?? "sans-serif";
+const PREFERRED_DEFAULT_FILE = "IranNastaliq.ttf";
+
+export const DEFAULT_USE_FONT =
+  USE_FONT_OPTIONS.find((f) => f.fileName === PREFERRED_DEFAULT_FILE)?.family ??
+  USE_FONT_OPTIONS[0]?.family ??
+  "sans-serif";
 
 const loadedFamilies = new Set<string>();
 const inFlight = new Map<string, Promise<void>>();
