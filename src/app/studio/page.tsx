@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import StudioPageClient from "@/app/components/calligraphy/StudioPageClient";
 import JsonLd from "@/app/components/seo/JsonLd";
 import { createPageMetadata } from "@/lib/seo/metadata";
@@ -24,7 +26,15 @@ export default function StudioPage() {
           path: "/studio",
         })}
       />
-      <StudioPageClient />
+      <Suspense
+        fallback={
+          <div className="mx-auto max-w-7xl px-4 pt-24 pb-16">
+            <div className="aspect-[4/3] w-full animate-pulse rounded-2xl border border-border bg-card/40" />
+          </div>
+        }
+      >
+        <StudioPageClient />
+      </Suspense>
     </>
   );
 }

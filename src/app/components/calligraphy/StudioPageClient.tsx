@@ -1,13 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import { Save, RotateCcw } from "lucide-react";
 import type Konva from "konva";
 
 import TextControls from "@/app/components/calligraphy/TextControls";
 import ExportPanel from "@/app/components/calligraphy/ExportPanel";
-import { loadCalligraphyFonts } from "@/lib/calligraphy/fonts";
+import {
+  loadCalligraphyFonts,
+  normalizeCalligraphyFont,
+} from "@/lib/calligraphy/fonts";
 import { saveWork } from "@/lib/calligraphy/storage";
 import { useCalligraphyStore } from "@/lib/calligraphy/store";
 import { exportCalligraphyPng } from "@/lib/calligraphy/export";
@@ -26,9 +30,24 @@ function CanvasSkeleton() {
 export default function StudioPageClient() {
   const document = useCalligraphyStore((s) => s.document);
   const setName = useCalligraphyStore((s) => s.setName);
+  const setText = useCalligraphyStore((s) => s.setText);
+  const setFontFamily = useCalligraphyStore((s) => s.setFontFamily);
   const resetDocument = useCalligraphyStore((s) => s.resetDocument);
   const [stage, setStage] = useState<Konva.Stage | null>(null);
   const [saved, setSaved] = useState(false);
+  const searchParams = useSearchParams();
+  const prefilledRef = useRef(false);
+
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    const text = searchParams.get("text");
+    const font = searchParams.get("font");
+    if (!text && !font) return;
+
+    prefilledRef.current = true;
+    if (text) setText(text);
+    if (font) setFontFamily(normalizeCalligraphyFont(font));
+  }, [searchParams, setText, setFontFamily]);
 
   useEffect(() => {
     void loadCalligraphyFonts([document.fontFamily]);

@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { Download, Palette, Sparkles, Type } from "lucide-react";
 
+import VerseSampleCard from "@/app/components/home/VerseSampleCard";
 import { CALLIGRAPHY_FONT_OPTIONS } from "@/lib/calligraphy/fonts";
 import { EXPORT_PRICES } from "@/lib/calligraphy/pricing";
+import {
+  FEATURED_VERSE,
+  GRID_VERSES,
+} from "@/lib/calligraphy/sample-verses";
 import { formatToman } from "@/lib/shop/format";
 
 export default function HomeCalligraphyPage() {
@@ -36,6 +41,10 @@ export default function HomeCalligraphyPage() {
               مشاهده تعرفه‌ها
             </Link>
           </div>
+
+          <div className="mx-auto mt-14 max-w-xl">
+            <VerseSampleCard verse={FEATURED_VERSE} variant="featured" />
+          </div>
         </div>
       </section>
 
@@ -54,6 +63,33 @@ export default function HomeCalligraphyPage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center">
+            <h2 className="text-2xl font-black text-foreground">
+              نمونه‌های تک‌بیت
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted">
+              از شعر کلاسیک تا رپ و پاپ — ببینید متن فارسی با فونت‌های
+              خوشنویسی چطور دیده می‌شود.
+            </p>
+          </div>
+          <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {GRID_VERSES.map((verse) => (
+              <VerseSampleCard key={verse.id} verse={verse} variant="compact" />
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link
+              href="/studio"
+              className="inline-block rounded-xl bg-cyan-500 px-6 py-2.5 text-sm font-bold text-black transition hover:bg-cyan-400"
+            >
+              با متن خودت شروع کن
+            </Link>
+          </div>
         </div>
       </section>
 
