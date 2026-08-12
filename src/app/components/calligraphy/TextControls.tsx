@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -88,6 +94,18 @@ function ColorField({
   );
 }
 
+function getAdjacentFontFamily(
+  current: string,
+  direction: "prev" | "next",
+): string {
+  const options = CALLIGRAPHY_FONT_OPTIONS;
+  const idx = options.findIndex((f) => f.family === current);
+  const base = idx === -1 ? 0 : idx;
+  const delta = direction === "next" ? 1 : -1;
+  const nextIdx = (base + delta + options.length) % options.length;
+  return options[nextIdx]!.family;
+}
+
 function FontPicker({
   value,
   onChange,
@@ -97,8 +115,11 @@ function FontPicker({
 }) {
   const [open, setOpen] = useState(false);
   const [fontQuery, setFontQuery] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const currentLabel =
     CALLIGRAPHY_FONT_OPTIONS.find((f) => f.family === value)?.label ?? value;
@@ -115,6 +136,45 @@ function FontPicker({
     return current ? [current, ...list] : list;
   }, [fontQuery, value]);
 
+  function closeDropdown() {
+    setOpen(false);
+    setFontQuery("");
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  }
+
+  function cycleFont(direction: "prev" | "next") {
+    onChange(getAdjacentFontFamily(value, direction));
+  }
+
+  function handleListNavigation(event: ReactKeyboardEvent, delta: -1 | 1) {
+    if (filteredFonts.length === 0) return;
+
+    event.preventDefault();
+    setHighlightedIndex((current) => {
+      const next = (current + delta + filteredFonts.length) % filteredFonts.length;
+      const family = filteredFonts[next]?.family;
+      if (family) onChange(family);
+      return next;
+    });
+  }
+
+  function handleDropdownKeyDown(event: ReactKeyboardEvent) {
+    if (event.key === "ArrowDown" || event.key === "ArrowLeft") {
+      handleListNavigation(event, 1);
+    } else if (event.key === "ArrowUp" || event.key === "ArrowRight") {
+      handleListNavigation(event, -1);
+    } else if (event.key === "Enter") {
+      const family = filteredFonts[highlightedIndex]?.family;
+      if (family) {
+        event.preventDefault();
+        handlePick(family);
+      }
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      closeDropdown();
+    }
+  }
+
   useEffect(() => {
     if (!open) return;
 
@@ -123,40 +183,65 @@ function FontPicker({
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
       ) {
-        setOpen(false);
+        closeDropdown();
       }
     }
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-
     document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
 
   useEffect(() => {
-    if (open) searchRef.current?.focus();
+    if (!open) return;
+    const idx = filteredFonts.findIndex((f) => f.family === value);
+    setHighlightedIndex(idx >= 0 ? idx : 0);
+    searchRef.current?.focus();
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    setHighlightedIndex((current) =>
+      filteredFonts.length === 0
+        ? 0
+        : Math.min(current, filteredFonts.length - 1),
+    );
+  }, [filteredFonts.length, open]);
+
+  useEffect(() => {
+    if (!open) return;
+    optionRefs.current[highlightedIndex]?.scrollIntoView({ block: "nearest" });
+  }, [highlightedIndex, open]);
 
   function handlePick(family: string) {
     onChange(family);
-    setOpen(false);
-    setFontQuery("");
+    closeDropdown();
+  }
+
+  function handleTriggerKeyDown(event: ReactKeyboardEvent<HTMLButtonElement>) {
+    if (open) return;
+
+    if (event.key === "ArrowDown" || event.key === "ArrowLeft") {
+      event.preventDefault();
+      cycleFont("next");
+    } else if (event.key === "ArrowUp" || event.key === "ArrowRight") {
+      event.preventDefault();
+      cycleFont("prev");
+    }
   }
 
   return (
     <div ref={containerRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((prev) => !prev)}
+        onKeyDown={handleTriggerKeyDown}
         aria-expanded={open}
         aria-haspopup="listbox"
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground"
+        aria-label={`فونت خوشنویسی: ${currentLabel}`}
+        className="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50"
       >
         <span className="truncate">{currentLabel}</span>
         <ChevronDown
@@ -168,6 +253,7 @@ function FontPicker({
         <div
           className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-border bg-background shadow-xl"
           dir="rtl"
+          onKeyDown={handleDropdownKeyDown}
         >
           <div className="relative border-b border-border p-2">
             <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
@@ -175,23 +261,49 @@ function FontPicker({
               ref={searchRef}
               type="search"
               value={fontQuery}
-              onChange={(e) => setFontQuery(e.target.value)}
+              onChange={(e) => {
+                setFontQuery(e.target.value);
+                setHighlightedIndex(0);
+              }}
+              onKeyDown={handleDropdownKeyDown}
               placeholder="جستجوی فونت…"
               dir="rtl"
+              aria-controls="calligraphy-font-listbox"
+              aria-activedescendant={
+                filteredFonts[highlightedIndex]
+                  ? `calligraphy-font-${filteredFonts[highlightedIndex]!.family}`
+                  : undefined
+              }
               className="w-full rounded-lg border border-border bg-background py-2 pl-3 pr-9 text-sm text-foreground placeholder:text-muted"
             />
           </div>
-          <ul role="listbox" className="max-h-72 overflow-y-auto p-1">
-            {filteredFonts.map((font) => {
+          <ul
+            id="calligraphy-font-listbox"
+            role="listbox"
+            className="max-h-72 overflow-y-auto p-1"
+          >
+            {filteredFonts.map((font, index) => {
               const selected = font.family === value;
+              const highlighted = index === highlightedIndex;
               return (
-                <li key={font.family} role="option" aria-selected={selected}>
+                <li
+                  key={font.family}
+                  id={`calligraphy-font-${font.family}`}
+                  role="option"
+                  aria-selected={selected}
+                >
                   <button
+                    ref={(node) => {
+                      optionRefs.current[index] = node;
+                    }}
                     type="button"
+                    onMouseEnter={() => setHighlightedIndex(index)}
                     onClick={() => handlePick(font.family)}
                     className={`w-full rounded-lg px-3 py-2 text-right text-sm transition ${selected
                       ? "bg-cyan-500/10 font-bold text-cyan-400"
-                      : "text-foreground hover:bg-surface"
+                      : highlighted
+                        ? "bg-surface text-foreground"
+                        : "text-foreground hover:bg-surface"
                       }`}
                   >
                     {font.label}
@@ -201,7 +313,8 @@ function FontPicker({
             })}
           </ul>
           <p className="border-t border-border px-3 py-2 text-xs text-muted">
-            {filteredFonts.length} از {CALLIGRAPHY_FONT_OPTIONS.length} فونت
+            {filteredFonts.length} از {CALLIGRAPHY_FONT_OPTIONS.length} فونت — از ↑↓ برای
+            جابجایی استفاده کنید
           </p>
         </div>
       ) : null}
