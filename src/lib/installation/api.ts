@@ -124,7 +124,7 @@ export async function fetchInstallationGames(params?: {
   pageSize?: number;
 }): Promise<InstallationGame[]> {
   const page = params?.page ?? 1;
-  const pageSize = params?.pageSize ?? 100;
+  const pageSize = params?.pageSize ?? 20;
   const response = await apiRequest<
     ApiWrapper<PaginatedResults<InstallationGame>>
   >(`/installation/games/?page=${page}&page_size=${pageSize}`, {
@@ -177,7 +177,7 @@ export async function fetchInstallationDraft(options: {
   pageSize?: number;
 }): Promise<InstallationDraft | null> {
   const page = options.page ?? 1;
-  const pageSize = options.pageSize ?? 100;
+  const pageSize = options.pageSize ?? 20;
   const qs = `page=${page}&page_size=${pageSize}${guestQuery(options.isLoggedIn)}`;
 
   try {

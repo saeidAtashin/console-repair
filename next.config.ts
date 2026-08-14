@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
         hostname: "k3isonfire.ir",
         pathname: "/media/**",
       },
+      {
+        protocol: "https",
+        hostname: "api.k3isonfire.ir",
+        pathname: "/media/**",
+      },
     ],
   },
 };
