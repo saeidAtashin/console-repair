@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  skipTrailingSlashRedirect: true,
   // Allow LAN phone access during `next dev` (Next.js 16 blocks cross-origin /_next by default)
   allowedDevOrigins: [
     "192.168.1.101",

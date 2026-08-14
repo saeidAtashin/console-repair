@@ -1,6 +1,7 @@
 import { getAuthToken } from "@/lib/auth-storage";
 
-const DEFAULT_API_BASE_URL = "https://k3isonfire.ir/api/v1/";
+const DEFAULT_SERVER_API_BASE_URL = "https://api.k3isonfire.ir/api/v1";
+const BROWSER_API_BASE_URL = "/api/v1";
 const DEFAULT_TENANT_ID = "fix-bazi";
 
 function normalizeBaseUrl(baseUrl: string): string {
@@ -8,8 +9,17 @@ function normalizeBaseUrl(baseUrl: string): string {
 }
 
 export function getApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (configured) {
+    return normalizeBaseUrl(configured);
+  }
+
+  if (typeof window !== "undefined") {
+    return BROWSER_API_BASE_URL;
+  }
+
   return normalizeBaseUrl(
-    process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL,
+    process.env.API_BASE_URL?.trim() || DEFAULT_SERVER_API_BASE_URL,
   );
 }
 
