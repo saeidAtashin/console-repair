@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import "swagger-ui-react/swagger-ui.css";
-import { getApiBaseUrl } from "@/lib/api-client";
+import { getApiBaseUrl, getTenantId } from "@/lib/api-client";
 
 const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
@@ -15,6 +15,10 @@ export default function ApiDocsPage() {
         defaultModelsExpandDepth={1}
         persistAuthorization
         tryItOutEnabled
+        requestInterceptor={(req) => {
+          req.headers["X-Tenant-ID"] = getTenantId();
+          return req;
+        }}
       />
     </main>
   );

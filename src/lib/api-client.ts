@@ -1,6 +1,7 @@
 import { getAuthToken } from "@/lib/auth-storage";
 
 const DEFAULT_API_BASE_URL = "https://k3isonfire.ir/api/v1/";
+const DEFAULT_TENANT_ID = "fix-bazi";
 
 function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
@@ -10,6 +11,10 @@ export function getApiBaseUrl(): string {
   return normalizeBaseUrl(
     process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL,
   );
+}
+
+export function getTenantId(): string {
+  return process.env.NEXT_PUBLIC_API_TENANT_ID?.trim() || DEFAULT_TENANT_ID;
 }
 
 function buildUrl(path: string): string {
@@ -41,6 +46,7 @@ export async function apiRequest<T = unknown>(
 ): Promise<T> {
   const { auth = true, ...requestOptions } = options;
   const headers = new Headers(requestOptions.headers ?? {});
+  headers.set("X-Tenant-ID", getTenantId());
   const token = auth ? getAuthToken() : null;
 
   if (token) {

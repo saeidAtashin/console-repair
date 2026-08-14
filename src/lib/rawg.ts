@@ -1,5 +1,5 @@
 import type { GameFilterId } from "@/lib/game-filters";
-import { getApiBaseUrl } from "@/lib/api-client";
+import { getApiBaseUrl, getTenantId } from "@/lib/api-client";
 
 export type GameInstallConsole = "ps4" | "ps5" | "xbox-one" | "xbox-series";
 
@@ -57,7 +57,10 @@ export async function fetchGamesByConsole(
   url.searchParams.set("pageSize", String(pageSize));
   url.searchParams.set("filter", filter);
 
-  const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+  const res = await fetch(url.toString(), {
+    next: { revalidate: 3600 },
+    headers: { "X-Tenant-ID": getTenantId() },
+  });
   const data = (await res.json()) as RemoteGamesResponse;
 
   if (!res.ok || data.success === false) {
