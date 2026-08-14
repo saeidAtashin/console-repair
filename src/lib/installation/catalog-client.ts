@@ -1,5 +1,18 @@
-import { positiveOrUndefined } from "@/lib/game-install-catalog";
-import { fetchAllInstallationGames } from "@/lib/installation/api";
+import {
+  INSTALLATION_CATALOG_PAGE_SIZE,
+  positiveOrUndefined,
+  sortInstallCatalogByRating,
+} from "@/lib/game-install-catalog";
+import {
+  fetchAllInstallationGames,
+  fetchInstallationGamesPage,
+  filterGamesForDevice,
+} from "@/lib/installation/api";
+import {
+  getInstallationCatalogPage,
+  mapInstallationGameToCatalog,
+  type InstallationCatalogPage,
+} from "@/lib/installation/catalog";
 
 export type InstallCatalogIndexEntry = {
   coverImage: string | null;
@@ -32,4 +45,27 @@ export async function ensureInstallCatalogIndex(): Promise<
       .catch(() => new Map());
   }
   return catalogIndexPromise;
+}
+
+/** Client fetch for GameCatalogGrid "show more" — one API page at a time. */
+export async function fetchInstallationCatalogPage(
+  consoleSlug: string | undefined,
+  page: number,
+  deviceTypeId: number | null,
+): Promise<InstallationCatalogPage> {
+  if (consoleSlug && deviceTypeId != null) {
+    const { games: rawGames, hasNext, totalCount } =
+      await fetchInstallationGamesPage(page, INSTALLATION_CATALOG_PAGE_SIZE);
+    const filtered = filterGamesForDevice(rawGames, deviceTypeId);
+    return {
+      games: sortInstallCatalogByRating(
+        filtered.map((game) => mapInstallationGameToCatalog(game, consoleSlug)),
+      ),
+      deviceTypeId,
+      hasNext,
+      totalCount,
+    };
+  }
+
+  return getInstallationCatalogPage(consoleSlug, page);
 }

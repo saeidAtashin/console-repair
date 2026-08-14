@@ -2,12 +2,20 @@ import { apiRequest } from "@/lib/api-client";
 import {
   unwrapData,
   unwrapResults,
+  pathFromApiPaginationUrl,
   type ApiWrapper,
   type PaginatedResults,
 } from "@/lib/api-unwrap";
 import { clearGuestUid, getOrCreateGuestUid } from "@/lib/guest-uid";
+import { INSTALLATION_CATALOG_PAGE_SIZE } from "@/lib/game-install-catalog";
 import { consoleIdFromGameInstallSlug } from "@/lib/repair-links";
 import type { ConsoleId } from "@/lib/console-catalog";
+
+export type InstallationGamesPage = {
+  games: InstallationGame[];
+  hasNext: boolean;
+  totalCount: number;
+};
 
 export type InstallationDevice = { id: number; name: string };
 
@@ -123,34 +131,55 @@ export async function fetchInstallationGames(params?: {
   page?: number;
   pageSize?: number;
 }): Promise<InstallationGame[]> {
-  const page = params?.page ?? 1;
-  const pageSize = params?.pageSize ?? 20;
-  const response = await apiRequest<
-    ApiWrapper<PaginatedResults<InstallationGame>>
-  >(`/installation/games/?page=${page}&page_size=${pageSize}`, {
-    ...publicCatalogFetch,
-  });
-  return unwrapResults(response);
+  const page = await fetchInstallationGamesPage(
+    params?.page ?? 1,
+    params?.pageSize ?? INSTALLATION_CATALOG_PAGE_SIZE,
+  );
+  return page.games;
 }
 
-/** Fetch every page from `/installation/games/`. */
+export async function fetchInstallationGamesPage(
+  page = 1,
+  pageSize = INSTALLATION_CATALOG_PAGE_SIZE,
+): Promise<InstallationGamesPage> {
+  const response = await apiRequest<
+    ApiWrapper<PaginatedResults<InstallationGame>>
+  >(catalogGamesPath(page, pageSize), publicCatalogFetch);
+  const data = unwrapData(response);
+  return {
+    games: data.results ?? [],
+    hasNext: Boolean(data.next),
+    totalCount: data.count ?? 0,
+  };
+}
+
+function catalogGamesPath(page: number, pageSize: number): string {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+  if (typeof window !== "undefined") {
+    params.set("guest_uid", getOrCreateGuestUid());
+  }
+  return `/installation/games/?${params.toString()}`;
+}
+
+/** Fetch every page from `/installation/games/` (for draft catalog index). */
 export async function fetchAllInstallationGames(
-  pageSize = 100,
+  pageSize = INSTALLATION_CATALOG_PAGE_SIZE,
 ): Promise<InstallationGame[]> {
   const games: InstallationGame[] = [];
-  let page = 1;
-  let hasNext = true;
+  let path: string | null = catalogGamesPath(1, pageSize);
 
-  while (hasNext) {
-    const response = await apiRequest<
-      ApiWrapper<PaginatedResults<InstallationGame>>
-    >(`/installation/games/?page=${page}&page_size=${pageSize}`, {
-      ...publicCatalogFetch,
-    });
-    const data = unwrapData(response);
+  while (path) {
+    const response: ApiWrapper<PaginatedResults<InstallationGame>> =
+      await apiRequest<ApiWrapper<PaginatedResults<InstallationGame>>>(
+        path,
+        publicCatalogFetch,
+      );
+    const data: PaginatedResults<InstallationGame> = unwrapData(response);
     games.push(...(data.results ?? []));
-    hasNext = Boolean(data.next);
-    page += 1;
+    path = data.next ? pathFromApiPaginationUrl(data.next) : null;
   }
 
   return games;

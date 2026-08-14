@@ -59,7 +59,7 @@ export default async function GameListPage({ params }: Props) {
 
   const hubPath = `/services/game-install/${consoleSlug}`;
   const listPath = `${hubPath}/games`;
-  const { games: catalogGames, deviceTypeId, fetchFailed } =
+  const { games: catalogGames, deviceTypeId, fetchFailed, hasMoreGames, totalCount } =
     await getInstallCatalogWithMeta(consoleSlug);
   const introParagraphs = content.gamesPageIntro;
 
@@ -125,6 +125,9 @@ export default async function GameListPage({ params }: Props) {
             consoleSlug={consoleSlug}
             consoleLabel={meta.label}
             games={catalogGames}
+            deviceTypeId={deviceTypeId}
+            hasMoreGames={hasMoreGames}
+            totalCount={totalCount}
             showFullListLink={false}
           />
         )}

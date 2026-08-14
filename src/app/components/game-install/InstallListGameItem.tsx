@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
 
@@ -21,7 +21,9 @@ type Props = {
 };
 
 export default function InstallListGameItem({ game, index, onRemove }: Props) {
-  const [imageLoading, setImageLoading] = useState(true);
+  const [imageStatus, setImageStatus] = useState<"loading" | "loaded" | "error">(
+    "loading",
+  );
   const { images, coverImage } = resolveGameImages({
     slug: game.slug,
     name: game.name,
@@ -31,27 +33,34 @@ export default function InstallListGameItem({ game, index, onRemove }: Props) {
   const price = positiveOrUndefined(game.price);
   const size = positiveOrUndefined(game.size);
 
+  useEffect(() => {
+    setImageStatus("loading");
+  }, [imageSrc]);
+
   return (
     <li className="group flex items-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-500/10 p-2 transition hover:border-emerald-400/40 hover:bg-emerald-500/15">
       <div className="relative h-11 w-8 shrink-0 overflow-hidden rounded-md bg-zinc-900">
-        {imageSrc ? (
+        {imageSrc && imageStatus !== "error" ? (
           <>
-            {imageLoading ? (
+            {imageStatus === "loading" ? (
               <div
                 className="absolute inset-0 z-[1] animate-pulse bg-gradient-to-br from-zinc-800 to-zinc-900"
                 aria-hidden
               />
             ) : null}
             <Image
+              key={imageSrc}
               src={imageSrc}
               alt=""
               fill
               sizes="32px"
+              loading="eager"
               className={cn(
                 "object-cover transition-opacity duration-300",
-                imageLoading ? "opacity-0" : "opacity-100",
+                imageStatus === "loading" ? "opacity-0" : "opacity-100",
               )}
-              onLoad={() => setImageLoading(false)}
+              onLoadingComplete={() => setImageStatus("loaded")}
+              onError={() => setImageStatus("error")}
             />
           </>
         ) : (

@@ -35,6 +35,7 @@ function ImageLoadingShimmer() {
 function StripImage({
   src,
   alt,
+  fallbackTitle,
   sizes,
   imageClassName,
   priority,
@@ -45,6 +46,7 @@ function StripImage({
 }: {
   src: string;
   alt: string;
+  fallbackTitle?: string;
   sizes: string;
   imageClassName: string;
   priority?: boolean;
@@ -53,12 +55,26 @@ function StripImage({
   placeholder?: "blur" | "empty";
   blurDataURL?: string;
 }) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+
+  useEffect(() => {
+    setStatus("loading");
+  }, [src]);
+
+  if (status === "error") {
+    return (
+      <GameCoverFallback
+        title={fallbackTitle ?? alt}
+        aspectClass="h-full w-full"
+      />
+    );
+  }
 
   return (
-    <>
-      {isLoading ? <ImageLoadingShimmer /> : null}
+    <div className="relative h-full w-full">
+      {status === "loading" ? <ImageLoadingShimmer /> : null}
       <Image
+        key={src}
         src={src}
         alt={alt}
         fill
@@ -66,16 +82,17 @@ function StripImage({
         className={cn(
           imageClassName,
           "transition-opacity duration-300",
-          isLoading ? "opacity-0" : "opacity-100",
+          status === "loading" ? "opacity-0" : "opacity-100",
         )}
         priority={priority}
         loading={loading ?? (priority ? undefined : "lazy")}
         fetchPriority={fetchPriority}
         placeholder={placeholder}
         blurDataURL={blurDataURL}
-        onLoad={() => setIsLoading(false)}
+        onLoadingComplete={() => setStatus("loaded")}
+        onError={() => setStatus("error")}
       />
-    </>
+    </div>
   );
 }
 
@@ -95,6 +112,7 @@ function LazyCarousel({
   fetchPriority,
   placeholder,
   blurDataURL,
+  fallbackTitle,
   onOpenLightbox,
 }: CarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -170,6 +188,7 @@ function LazyCarousel({
                 <StripImage
                   src={src}
                   alt={index === 0 ? alt : `${alt} — تصویر ${index + 1}`}
+                  fallbackTitle={fallbackTitle}
                   sizes={sizes}
                   imageClassName={imageClassName ?? "object-cover"}
                   priority={priority && index === 0}
@@ -295,10 +314,11 @@ export default function GameImageStrip({
           <StripImage
             src={images[0]}
             alt={alt}
+            fallbackTitle={fallbackTitle}
             sizes={sizes}
             imageClassName={imageClassName}
             priority={priority}
-            loading={loading}
+            loading={loading ?? "eager"}
             fetchPriority={fetchPriority}
             placeholder={placeholder}
             blurDataURL={blurDataURL}
@@ -323,6 +343,7 @@ export default function GameImageStrip({
         fetchPriority={fetchPriority}
         placeholder={placeholder}
         blurDataURL={blurDataURL}
+        fallbackTitle={fallbackTitle}
         onOpenLightbox={setLightboxIndex}
       />
       {lightbox}

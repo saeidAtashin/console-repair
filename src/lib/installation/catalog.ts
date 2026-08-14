@@ -5,8 +5,8 @@ import {
   type InstallCatalogGame,
 } from "@/lib/game-install-catalog";
 import {
-  fetchAllInstallationGames,
   fetchInstallationDevices,
+  fetchInstallationGamesPage,
   filterGamesForDevice,
   matchInstallationDevice,
   type InstallationGame,
@@ -15,6 +15,13 @@ import {
   consoleIdFromDeviceName,
   consoleIdFromGameInstallSlug,
 } from "@/lib/repair-links";
+
+export type InstallationCatalogPage = {
+  games: InstallCatalogGame[];
+  deviceTypeId: number | null;
+  hasNext: boolean;
+  totalCount: number;
+};
 
 function rateNumber(rates: InstallationGame["rates"], source: string): number | undefined {
   const found = rates.find(
@@ -89,46 +96,49 @@ export function mapInstallationGameToCatalogForAll(
   return buildInstallCatalogGame(game, consoleIdFromGameDevices(game.device_type));
 }
 
-export async function getInstallationCatalogForConsole(
-  consoleSlug: string,
-): Promise<{
-  games: InstallCatalogGame[];
-  deviceTypeId: number | null;
-}> {
-  const { games, deviceTypeId } = await getAllInstallationCatalogGames(consoleSlug);
-  return { games, deviceTypeId };
-}
-
-export async function getAllInstallationCatalogGames(
-  consoleSlug?: string,
-): Promise<{
-  games: InstallCatalogGame[];
-  deviceTypeId: number | null;
-}> {
-  const [devices, allGames] = await Promise.all([
-    fetchInstallationDevices(),
-    fetchAllInstallationGames(),
-  ]);
+export async function getInstallationCatalogPage(
+  consoleSlug: string | undefined,
+  page: number,
+): Promise<InstallationCatalogPage> {
+  const { games: rawGames, hasNext, totalCount } =
+    await fetchInstallationGamesPage(page);
 
   if (!consoleSlug) {
     return {
       games: sortInstallCatalogByRating(
-        allGames.map(mapInstallationGameToCatalogForAll),
+        rawGames.map(mapInstallationGameToCatalogForAll),
       ),
       deviceTypeId: null,
+      hasNext,
+      totalCount,
     };
   }
 
+  const devices = await fetchInstallationDevices();
   const device = matchInstallationDevice(devices, consoleSlug);
   if (!device) {
-    return { games: [], deviceTypeId: null };
+    return { games: [], deviceTypeId: null, hasNext: false, totalCount: 0 };
   }
 
-  const filtered = filterGamesForDevice(allGames, device.id);
+  const filtered = filterGamesForDevice(rawGames, device.id);
   return {
     games: sortInstallCatalogByRating(
-      filtered.map((g) => mapInstallationGameToCatalog(g, consoleSlug)),
+      filtered.map((game) => mapInstallationGameToCatalog(game, consoleSlug)),
     ),
     deviceTypeId: device.id,
+    hasNext,
+    totalCount,
   };
+}
+
+export async function getInstallationCatalogForConsole(
+  consoleSlug: string,
+): Promise<InstallationCatalogPage> {
+  return getInstallationCatalogPage(consoleSlug, 1);
+}
+
+export async function getAllInstallationCatalogGames(
+  consoleSlug?: string,
+): Promise<InstallationCatalogPage> {
+  return getInstallationCatalogPage(consoleSlug, 1);
 }

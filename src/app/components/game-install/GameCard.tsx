@@ -74,6 +74,7 @@ export default function GameCard({
           aspectClass="h-full w-full"
           className="absolute inset-0"
           imageClassName="object-cover transition duration-500 group-hover/card:scale-105"
+          loading="eager"
         />
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816] via-[#050816]/25 to-transparent"

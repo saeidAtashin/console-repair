@@ -18,6 +18,9 @@ export type InstallCatalogGame = {
   price?: number;
 };
 
+/** Matches GameCatalogGrid batch size and `/installation/games/` page_size. */
+export const INSTALLATION_CATALOG_PAGE_SIZE = 10;
+
 /** Section titles hidden from catalog and category filters. */
 export const EXCLUDED_CATALOG_SECTIONS = new Set([
   "رمز و چیت انحصاری‌ها و مستقل‌ها",

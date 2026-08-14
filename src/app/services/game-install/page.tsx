@@ -51,8 +51,13 @@ export default async function GameInstallIndexPage({ searchParams }: Props) {
     ? GAME_INSTALL_CONSOLE_META[activeConsoleSlug]
     : undefined;
 
-  const { games: catalogGames, deviceTypeId, fetchFailed } =
-    await getAllInstallCatalogWithMeta(activeConsoleSlug);
+  const {
+    games: catalogGames,
+    deviceTypeId,
+    fetchFailed,
+    hasMoreGames,
+    totalCount,
+  } = await getAllInstallCatalogWithMeta(activeConsoleSlug);
   const consoleLabel = activeMeta?.label ?? "همه کنسول‌ها";
 
   return (
@@ -85,7 +90,10 @@ export default async function GameInstallIndexPage({ searchParams }: Props) {
                 {isAllConsoles ? "همه بازی‌ها" : `بازی‌های ${activeMeta?.label}`}
               </h2>
               <p className="mt-2 text-sm text-zinc-400">
-                {catalogGames.length.toLocaleString("fa-IR")} بازی
+                {totalCount > 0
+                  ? totalCount.toLocaleString("fa-IR")
+                  : catalogGames.length.toLocaleString("fa-IR")}{" "}
+                بازی
                 {isAllConsoles
                   ? " — برای ثبت سفارش، کنسول خود را از تب‌های بالا انتخاب کنید."
                   : " — انتخاب کنید و به لیست سفارش اضافه کنید."}
@@ -97,6 +105,9 @@ export default async function GameInstallIndexPage({ searchParams }: Props) {
             consoleSlug={activeConsoleSlug ?? ""}
             consoleLabel={consoleLabel}
             games={catalogGames}
+            deviceTypeId={deviceTypeId}
+            hasMoreGames={hasMoreGames}
+            totalCount={totalCount}
             showFullListLink={false}
             fetchFailed={fetchFailed}
           />

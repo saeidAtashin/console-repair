@@ -10,6 +10,8 @@ export type InstallCatalogResult = {
   games: InstallCatalogGame[];
   deviceTypeId: number | null;
   fetchFailed: boolean;
+  hasMoreGames: boolean;
+  totalCount: number;
 };
 
 function logCatalogError(error: unknown): void {
@@ -30,15 +32,27 @@ export async function getInstallCatalogWithMeta(
   consoleSlug?: string,
 ): Promise<InstallCatalogResult> {
   if (!consoleSlug) {
-    return { games: [], deviceTypeId: null, fetchFailed: false };
+    return {
+      games: [],
+      deviceTypeId: null,
+      fetchFailed: false,
+      hasMoreGames: false,
+      totalCount: 0,
+    };
   }
   try {
-    const { games, deviceTypeId } =
+    const { games, deviceTypeId, hasNext, totalCount } =
       await getInstallationCatalogForConsole(consoleSlug);
-    return { games, deviceTypeId, fetchFailed: false };
+    return {
+      games,
+      deviceTypeId,
+      fetchFailed: false,
+      hasMoreGames: hasNext,
+      totalCount,
+    };
   } catch (error) {
     logCatalogError(error);
-    return { games: [], deviceTypeId: null, fetchFailed: true };
+    return { games: [], deviceTypeId: null, fetchFailed: true, hasMoreGames: false, totalCount: 0 };
   }
 }
 
@@ -61,11 +75,17 @@ export async function getAllInstallCatalogWithMeta(
   consoleSlug?: string,
 ): Promise<InstallCatalogResult> {
   try {
-    const { games, deviceTypeId } =
+    const { games, deviceTypeId, hasNext, totalCount } =
       await getAllInstallationCatalogGames(consoleSlug);
-    return { games, deviceTypeId, fetchFailed: false };
+    return {
+      games,
+      deviceTypeId,
+      fetchFailed: false,
+      hasMoreGames: hasNext,
+      totalCount,
+    };
   } catch (error) {
     logCatalogError(error);
-    return { games: [], deviceTypeId: null, fetchFailed: true };
+    return { games: [], deviceTypeId: null, fetchFailed: true, hasMoreGames: false, totalCount: 0 };
   }
 }
