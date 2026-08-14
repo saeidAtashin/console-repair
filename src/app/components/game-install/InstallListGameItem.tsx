@@ -1,12 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Gamepad2, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
+import GameCoverFallback from "@/app/components/game-install/GameCoverFallback";
+import {
+  formatInstallGameSize,
+  positiveOrUndefined,
+} from "@/lib/game-install-catalog";
 import type { InstallListGame } from "@/lib/game-install-list";
-import { formatInstallGameSize } from "@/lib/game-install-catalog";
 import { formatToman } from "@/lib/game-install-pricing";
 import { resolveGameImages } from "@/lib/game-images";
+import { cn } from "@/lib/utils";
 
 type Props = {
   game: InstallListGame;
@@ -15,28 +21,45 @@ type Props = {
 };
 
 export default function InstallListGameItem({ game, index, onRemove }: Props) {
+  const [imageLoading, setImageLoading] = useState(true);
   const { images, coverImage } = resolveGameImages({
     slug: game.slug,
     name: game.name,
     fallback: game.backgroundImage,
   });
   const imageSrc = images[0] ?? coverImage;
+  const price = positiveOrUndefined(game.price);
+  const size = positiveOrUndefined(game.size);
 
   return (
     <li className="group flex items-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-500/10 p-2 transition hover:border-emerald-400/40 hover:bg-emerald-500/15">
       <div className="relative h-11 w-8 shrink-0 overflow-hidden rounded-md bg-zinc-900">
         {imageSrc ? (
-          <Image
-            src={imageSrc}
-            alt=""
-            fill
-            sizes="32px"
-            className="object-cover"
-          />
+          <>
+            {imageLoading ? (
+              <div
+                className="absolute inset-0 z-[1] animate-pulse bg-gradient-to-br from-zinc-800 to-zinc-900"
+                aria-hidden
+              />
+            ) : null}
+            <Image
+              src={imageSrc}
+              alt=""
+              fill
+              sizes="32px"
+              className={cn(
+                "object-cover transition-opacity duration-300",
+                imageLoading ? "opacity-0" : "opacity-100",
+              )}
+              onLoad={() => setImageLoading(false)}
+            />
+          </>
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 text-zinc-500">
-            <Gamepad2 className="h-3.5 w-3.5 opacity-60" aria-hidden />
-          </div>
+          <GameCoverFallback
+            title={game.name}
+            variant="compact"
+            aspectClass="h-full w-full"
+          />
         )}
       </div>
 
@@ -49,11 +72,11 @@ export default function InstallListGameItem({ game, index, onRemove }: Props) {
         </p>
         {game.custom ? (
           <span className="text-[9px] text-zinc-500">دلخواه</span>
-        ) : game.price != null || game.size != null ? (
+        ) : price != null || size != null ? (
           <p className="mt-0.5 text-[9px] text-zinc-500">
-            {game.price != null ? formatToman(game.price) : null}
-            {game.price != null && game.size != null ? " · " : null}
-            {game.size != null ? formatInstallGameSize(game.size) : null}
+            {price != null ? formatToman(price) : null}
+            {price != null && size != null ? " · " : null}
+            {size != null ? formatInstallGameSize(size) : null}
           </p>
         ) : null}
       </div>

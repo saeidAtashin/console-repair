@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import GameCoverFallback from "@/app/components/game-install/GameCoverFallback";
 import ImageLightbox, { getActiveIndex } from "@/app/components/ui/ImageLightbox";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,17 @@ type Props = {
   fetchPriority?: "high" | "low" | "auto";
   placeholder?: "blur" | "empty";
   blurDataURL?: string;
+  fallbackTitle?: string;
 };
+
+function ImageLoadingShimmer() {
+  return (
+    <div
+      className="absolute inset-0 z-[1] animate-pulse bg-gradient-to-br from-zinc-800 via-zinc-700/80 to-zinc-900"
+      aria-hidden
+    />
+  );
+}
 
 function StripImage({
   src,
@@ -42,19 +53,29 @@ function StripImage({
   placeholder?: "blur" | "empty";
   blurDataURL?: string;
 }) {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
-    <Image
-      src={src}
-      alt={alt}
-      fill
-      sizes={sizes}
-      className={imageClassName}
-      priority={priority}
-      loading={loading ?? (priority ? undefined : "lazy")}
-      fetchPriority={fetchPriority}
-      placeholder={placeholder}
-      blurDataURL={blurDataURL}
-    />
+    <>
+      {isLoading ? <ImageLoadingShimmer /> : null}
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        className={cn(
+          imageClassName,
+          "transition-opacity duration-300",
+          isLoading ? "opacity-0" : "opacity-100",
+        )}
+        priority={priority}
+        loading={loading ?? (priority ? undefined : "lazy")}
+        fetchPriority={fetchPriority}
+        placeholder={placeholder}
+        blurDataURL={blurDataURL}
+        onLoad={() => setIsLoading(false)}
+      />
+    </>
   );
 }
 
@@ -234,20 +255,17 @@ export default function GameImageStrip({
   fetchPriority,
   placeholder,
   blurDataURL,
+  fallbackTitle,
 }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   if (images.length === 0) {
     return (
-      <div
-        className={cn(
-          "relative flex items-center justify-center bg-zinc-900 text-xs text-zinc-600",
-          aspectClass,
-          className,
-        )}
-      >
-        بدون تصویر
-      </div>
+      <GameCoverFallback
+        title={fallbackTitle ?? alt}
+        className={className}
+        aspectClass={aspectClass}
+      />
     );
   }
 

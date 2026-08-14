@@ -10,7 +10,9 @@ import type { InstallCatalogGame } from "@/lib/game-install-catalog";
 import {
   formatInstallGameSize,
   getInstallCatalogConsoleLabel,
+  hasInstallGamePrice,
   hasInstallGameRating,
+  hasInstallGameSize,
 } from "@/lib/game-install-catalog";
 import { formatToman } from "@/lib/game-install-pricing";
 import { resolveGameImages } from "@/lib/game-images";
@@ -67,6 +69,7 @@ export default function GameCard({
         <GameImageStrip
           images={images}
           alt={game.name}
+          fallbackTitle={game.name}
           sizes={imageSizes}
           aspectClass="h-full w-full"
           className="absolute inset-0"
@@ -99,16 +102,19 @@ export default function GameCard({
             </span>
           ) : null}
         </div>
-        {game.source === "api" && (game.price != null || game.size != null) ? (
+        {game.source === "api" &&
+        (hasInstallGamePrice(game) || hasInstallGameSize(game)) ? (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-zinc-400">
-            {game.price != null ? (
-              <span className="font-bold text-emerald-300">{formatToman(game.price)}</span>
+            {hasInstallGamePrice(game) ? (
+              <span className="font-bold text-emerald-300">
+                {formatToman(game.price!)}
+              </span>
             ) : null}
-            {game.price != null && game.size != null ? (
+            {hasInstallGamePrice(game) && hasInstallGameSize(game) ? (
               <span className="text-zinc-600">·</span>
             ) : null}
-            {game.size != null ? (
-              <span>{formatInstallGameSize(game.size)}</span>
+            {hasInstallGameSize(game) ? (
+              <span>{formatInstallGameSize(game.size!)}</span>
             ) : null}
           </div>
         ) : null}

@@ -1,4 +1,7 @@
-import type { InstallCatalogGame } from "@/lib/game-install-catalog";
+import {
+  positiveOrUndefined,
+  type InstallCatalogGame,
+} from "@/lib/game-install-catalog";
 import type { InstallationDraftItem } from "@/lib/installation/api";
 import {
   calculateInstallQuote,
@@ -39,8 +42,8 @@ export function toInstallListGame(
     name: game.name,
     backgroundImage: game.coverImage || null,
     consoleSlug,
-    price: game.price,
-    size: game.size,
+    price: positiveOrUndefined(game.price),
+    size: positiveOrUndefined(game.size),
   };
 }
 
@@ -61,18 +64,22 @@ export function draftItemToInstallListGame(
     name: item.game.name,
     backgroundImage: enrichment?.coverImage ?? null,
     consoleSlug,
-    price: item.price,
-    size: enrichment?.size ?? item.game.size,
+    price: positiveOrUndefined(item.price),
+    size: positiveOrUndefined(enrichment?.size ?? item.game.size),
   };
 }
 
 /** Sum line-item prices when every game has a finite price. */
 export function sumInstallListPrices(games: InstallListGame[]): number | null {
   if (games.length === 0) return null;
-  if (!games.every((g) => g.price != null && Number.isFinite(g.price))) {
+  if (
+    !games.every(
+      (g) => positiveOrUndefined(g.price) != null && Number.isFinite(g.price),
+    )
+  ) {
     return null;
   }
-  return games.reduce((sum, g) => sum + (g.price ?? 0), 0);
+  return games.reduce((sum, g) => sum + (positiveOrUndefined(g.price) ?? 0), 0);
 }
 
 export function cacheDeviceTypeId(consoleSlug: string, deviceTypeId: number): void {

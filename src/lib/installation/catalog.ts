@@ -1,5 +1,6 @@
 import type { BlogGame } from "@/app/data/blog";
 import {
+  positiveOrUndefined,
   sortInstallCatalogByRating,
   type InstallCatalogGame,
 } from "@/lib/game-install-catalog";
@@ -24,6 +25,14 @@ function rateNumber(rates: InstallationGame["rates"], source: string): number | 
   return Number.isFinite(n) ? n : undefined;
 }
 
+function slugFromGameName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[''`]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function consoleIdFromGameDevices(
   deviceTypes: InstallationGame["device_type"],
 ): BlogGame["console"] {
@@ -42,10 +51,14 @@ function buildInstallCatalogGame(
   const gamespot = rateNumber(game.rates, "gamespot");
   const displayRating = gamespot ?? metacritic;
 
+  const slug = slugFromGameName(game.name) || `api-${game.id}`;
+  const size = positiveOrUndefined(game.size);
+  const price = positiveOrUndefined(game.price);
+
   return {
     id: String(game.id),
     apiId: game.id,
-    slug: `api-${game.id}`,
+    slug,
     name: game.name,
     coverImage: game.image ?? "",
     ...(displayRating != null ? { rating: displayRating } : {}),
@@ -55,8 +68,8 @@ function buildInstallCatalogGame(
     console: consoleId,
     sectionTitle: "کاتالوگ نصب",
     source: "api",
-    size: game.size,
-    price: game.price,
+    ...(size != null ? { size } : {}),
+    ...(price != null ? { price } : {}),
   };
 }
 

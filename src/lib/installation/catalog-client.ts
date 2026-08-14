@@ -1,3 +1,4 @@
+import { positiveOrUndefined } from "@/lib/game-install-catalog";
 import { fetchAllInstallationGames } from "@/lib/installation/api";
 
 export type InstallCatalogIndexEntry = {
@@ -18,10 +19,12 @@ export async function ensureInstallCatalogIndex(): Promise<
       .then((games) => {
         const map = new Map<number, InstallCatalogIndexEntry>();
         for (const game of games) {
+          const price = positiveOrUndefined(game.price);
+          const size = positiveOrUndefined(game.size);
           map.set(game.id, {
             coverImage: game.image,
-            price: game.price,
-            size: game.size,
+            ...(price != null ? { price } : {}),
+            ...(size != null ? { size } : {}),
           });
         }
         return map;

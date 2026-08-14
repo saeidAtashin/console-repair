@@ -52,6 +52,21 @@ export function hasInstallGameRating(game: InstallCatalogGame): boolean {
   return game.rating != null && game.rating > 0;
 }
 
+/** Treat API zero/null as absent (e.g. placeholder price/size). */
+export function positiveOrUndefined(
+  value: number | null | undefined,
+): number | undefined {
+  return value != null && value > 0 ? value : undefined;
+}
+
+export function hasInstallGamePrice(game: InstallCatalogGame): boolean {
+  return positiveOrUndefined(game.price) != null;
+}
+
+export function hasInstallGameSize(game: InstallCatalogGame): boolean {
+  return positiveOrUndefined(game.size) != null;
+}
+
 /** Display install size from API (assumed GB). */
 export function formatInstallGameSize(size: number): string {
   if (size >= 1000) {

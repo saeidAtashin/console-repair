@@ -182,7 +182,7 @@ export async function fetchInstallationDraft(options: {
 
   try {
     const response = await apiRequest<ApiWrapper<InstallationDraft>>(
-      `/installation/games/?${qs}`,
+      `/installation/requests/draft/?${qs}`,
       { auth: options.isLoggedIn },
     );
     return unwrapData(response);

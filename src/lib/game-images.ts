@@ -236,11 +236,19 @@ function normalizeSlug(value: string): string {
     .trim();
 }
 
+const API_CATALOG_SLUG = /^api-\d+$/;
+
+function isRemoteUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
+
 function resolveCanonicalKey(slug?: string, name?: string): string | undefined {
   if (slug) {
     const normalized = normalizeSlug(slug);
-    if (SLUG_ALIASES[normalized]) return SLUG_ALIASES[normalized];
-    if (GAME_IMAGE_MAP[normalized]) return normalized;
+    if (!API_CATALOG_SLUG.test(normalized)) {
+      if (SLUG_ALIASES[normalized]) return SLUG_ALIASES[normalized];
+      if (GAME_IMAGE_MAP[normalized]) return normalized;
+    }
   }
 
   if (name) {
@@ -277,6 +285,15 @@ export function resolveGameImages({
 }: ResolveGameImagesInput): ResolvedGameImages {
   const key = resolveCanonicalKey(slug, name);
   const localImages = key ? [...(GAME_IMAGE_MAP[key] ?? [])] : [];
+  const remoteFallback = fallback && isRemoteUrl(fallback) ? fallback : null;
+
+  if (remoteFallback) {
+    const extras = localImages.filter((image) => image !== remoteFallback);
+    return {
+      images: [remoteFallback, ...extras],
+      coverImage: remoteFallback,
+    };
+  }
 
   if (localImages.length > 0) {
     return { images: localImages, coverImage: localImages[0] };
