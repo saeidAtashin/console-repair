@@ -7,7 +7,12 @@ import AddToGameListButton from "@/app/components/game-install/AddToGameListButt
 import { useGameInstallList } from "@/app/context/GameInstallListContext";
 import GameImageStrip from "@/app/components/ui/GameImageStrip";
 import type { InstallCatalogGame } from "@/lib/game-install-catalog";
-import { getInstallCatalogConsoleLabel } from "@/lib/game-install-catalog";
+import {
+  formatInstallGameSize,
+  getInstallCatalogConsoleLabel,
+  hasInstallGameRating,
+} from "@/lib/game-install-catalog";
+import { formatToman } from "@/lib/game-install-pricing";
 import { resolveGameImages } from "@/lib/game-images";
 import { cn } from "@/lib/utils";
 
@@ -71,10 +76,10 @@ export default function GameCard({
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816] via-[#050816]/25 to-transparent"
           aria-hidden
         />
-        {game.rating != null ? (
+        {hasInstallGameRating(game) ? (
           <span className="absolute start-2.5 top-2.5 inline-flex items-center gap-1 rounded-lg border border-amber-400/30 bg-black/60 px-2 py-1 text-[11px] font-bold text-amber-300 backdrop-blur-sm">
             <Star className="h-3 w-3 fill-amber-400 text-amber-400" aria-hidden />
-            {game.rating.toFixed(1)}
+            {game.rating!.toFixed(1)}
           </span>
         ) : null}
       </div>
@@ -94,6 +99,19 @@ export default function GameCard({
             </span>
           ) : null}
         </div>
+        {game.source === "api" && (game.price != null || game.size != null) ? (
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-zinc-400">
+            {game.price != null ? (
+              <span className="font-bold text-emerald-300">{formatToman(game.price)}</span>
+            ) : null}
+            {game.price != null && game.size != null ? (
+              <span className="text-zinc-600">·</span>
+            ) : null}
+            {game.size != null ? (
+              <span>{formatInstallGameSize(game.size)}</span>
+            ) : null}
+          </div>
+        ) : null}
         {showAddButton && consoleSlug ? (
           <AddToGameListButton
             game={game}

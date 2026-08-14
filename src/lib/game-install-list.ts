@@ -16,6 +16,7 @@ export type InstallListGame = {
   consoleSlug: string;
   custom?: boolean;
   price?: number;
+  size?: number;
 };
 
 export const INSTALL_GAME_LIST_CHANGED_EVENT = "game-install-list-changed";
@@ -39,22 +40,39 @@ export function toInstallListGame(
     backgroundImage: game.coverImage || null,
     consoleSlug,
     price: game.price,
+    size: game.size,
   };
 }
+
+export type DraftItemEnrichment = {
+  coverImage?: string | null;
+  size?: number;
+};
 
 export function draftItemToInstallListGame(
   item: InstallationDraftItem,
   consoleSlug: string,
+  enrichment?: DraftItemEnrichment,
 ): InstallListGame {
   return {
     id: String(item.game.id),
     itemId: item.id,
     slug: `api-${item.game.id}`,
     name: item.game.name,
-    backgroundImage: null,
+    backgroundImage: enrichment?.coverImage ?? null,
     consoleSlug,
     price: item.price,
+    size: enrichment?.size ?? item.game.size,
   };
+}
+
+/** Sum line-item prices when every game has a finite price. */
+export function sumInstallListPrices(games: InstallListGame[]): number | null {
+  if (games.length === 0) return null;
+  if (!games.every((g) => g.price != null && Number.isFinite(g.price))) {
+    return null;
+  }
+  return games.reduce((sum, g) => sum + (g.price ?? 0), 0);
 }
 
 export function cacheDeviceTypeId(consoleSlug: string, deviceTypeId: number): void {

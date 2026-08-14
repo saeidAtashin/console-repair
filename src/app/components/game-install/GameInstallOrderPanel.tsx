@@ -16,6 +16,8 @@ import {
   VerificationCancelledError,
 } from "@/app/hooks/usePhoneVerifiedSubmit";
 import { ApiError } from "@/lib/api-client";
+import { sumInstallListPrices } from "@/lib/game-install-list";
+import { formatToman } from "@/lib/game-install-pricing";
 import { normalizeIranPhone, sanitizePhoneInput } from "@/lib/phone";
 import { consoleIdFromGameInstallSlug } from "@/lib/repair-links";
 import { submitGameInstallRequest } from "@/lib/repair/api";
@@ -39,6 +41,7 @@ export default function GameInstallOrderPanel({
   const games = useInstallGameList(consoleSlug);
   const { removeGame, clearConsoleList } = useGameInstallList();
   const installMethodId = useInstallMethodId(consoleSlug);
+  const apiTotal = sumInstallListPrices(games);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -225,6 +228,15 @@ export default function GameInstallOrderPanel({
           ))}
         </ol>
       )}
+
+      {apiTotal != null ? (
+        <div className="mb-6 flex items-center justify-between rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3">
+          <span className="text-sm font-bold text-emerald-200">جمع کل</span>
+          <span className="text-lg font-black text-emerald-100">
+            {formatToman(apiTotal)}
+          </span>
+        </div>
+      ) : null}
 
       <form onSubmit={handleSubmit} className="space-y-4 border-t border-white/10 pt-6">
         <FormInput

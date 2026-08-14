@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Gamepad2, Trash2 } from "lucide-react";
 
 import type { InstallListGame } from "@/lib/game-install-list";
+import { formatInstallGameSize } from "@/lib/game-install-catalog";
+import { formatToman } from "@/lib/game-install-pricing";
 import { resolveGameImages } from "@/lib/game-images";
 
 type Props = {
@@ -47,6 +49,12 @@ export default function InstallListGameItem({ game, index, onRemove }: Props) {
         </p>
         {game.custom ? (
           <span className="text-[9px] text-zinc-500">دلخواه</span>
+        ) : game.price != null || game.size != null ? (
+          <p className="mt-0.5 text-[9px] text-zinc-500">
+            {game.price != null ? formatToman(game.price) : null}
+            {game.price != null && game.size != null ? " · " : null}
+            {game.size != null ? formatInstallGameSize(game.size) : null}
+          </p>
         ) : null}
       </div>
 

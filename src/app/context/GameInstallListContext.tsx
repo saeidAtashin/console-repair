@@ -28,6 +28,7 @@ import {
   matchInstallationDevice,
   removeInstallationItem,
 } from "@/lib/installation/api";
+import { ensureInstallCatalogIndex } from "@/lib/installation/catalog-client";
 import {
   getVisibleListTargetRect,
   isOrderPanelInViewport,
@@ -162,16 +163,29 @@ export function GameInstallListProvider({
       }
 
       draftConsoleSlugRef.current = consoleSlug;
-      const mapped = draft.items.map((item) =>
-        draftItemToInstallListGame(item, consoleSlug),
-      );
-      applyDraftItems(consoleSlug, mapped);
+      const catalogIndex = await ensureInstallCatalogIndex();
+
+      setItemsByConsole((prev) => {
+        const existing = prev[consoleSlug] ?? [];
+        const mapped = draft.items.map((item) => {
+          const gameId = String(item.game.id);
+          const prevItem = existing.find((g) => g.id === gameId);
+          const catalogEntry = catalogIndex.get(item.game.id);
+          return draftItemToInstallListGame(item, consoleSlug, {
+            coverImage:
+              prevItem?.backgroundImage ?? catalogEntry?.coverImage ?? null,
+            size: item.game.size ?? catalogEntry?.size ?? prevItem?.size,
+          });
+        });
+        dispatchInstallListChanged();
+        return { ...prev, [consoleSlug]: mapped };
+      });
     } catch {
       /* keep existing */
     } finally {
       setDraftLoading(false);
     }
-  }, [authLoading, isLoggedIn, applyDraftItems]);
+  }, [authLoading, isLoggedIn]);
 
   useEffect(() => {
     void refreshDraft();
@@ -272,6 +286,7 @@ export function GameInstallListProvider({
           backgroundImage: game.coverImage || null,
           consoleSlug,
           price: game.price,
+          size: game.size,
         };
 
         applyDraftItems(consoleSlug, [

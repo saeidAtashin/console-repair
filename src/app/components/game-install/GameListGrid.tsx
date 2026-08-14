@@ -1,6 +1,7 @@
 import AddToGameListButton from "@/app/components/game-install/AddToGameListButton";
 import GameImageStrip from "@/app/components/ui/GameImageStrip";
 import type { InstallCatalogGame } from "@/lib/game-install-catalog";
+import { hasInstallGameRating } from "@/lib/game-install-catalog";
 import { getInstallCatalogConsoleLabel } from "@/lib/game-install-catalog";
 import { resolveGameImages } from "@/lib/game-images";
 
@@ -60,9 +61,9 @@ export default function GameListGrid({ games, totalCount, consoleSlug }: Props) 
                 <p className="mt-1 text-xs text-zinc-500">
                   {getInstallCatalogConsoleLabel(game.console)} · {game.genre}
                 </p>
-                {game.rating != null ? (
+                {hasInstallGameRating(game) ? (
                   <p className="mt-2 text-sm text-cyan-400/90">
-                    امتیاز: {game.rating.toFixed(1)}
+                    امتیاز: {game.rating!.toFixed(1)}
                     {game.metacritic != null ? (
                       <span className="text-zinc-500">
                         {" "}

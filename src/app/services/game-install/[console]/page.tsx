@@ -7,6 +7,7 @@ import GameInstallMethodPicker from "@/app/components/game-install/GameInstallMe
 import GameInstallOrderFab from "@/app/components/game-install/GameInstallOrderFab";
 import GameInstallOrderPanel from "@/app/components/game-install/GameInstallOrderPanel";
 import GameInstallPriceCalculator from "@/app/components/game-install/GameInstallPriceCalculator";
+import InstallDeviceTypeBootstrap from "@/app/components/game-install/InstallDeviceTypeBootstrap";
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
@@ -21,7 +22,7 @@ import {
   GAME_INSTALL_SUMMARY_TABLE,
 } from "@/lib/game-install-pricing";
 import { getGameInstallContent } from "@/lib/game-install-content";
-import { getInstallCatalogGames } from "@/lib/game-install-catalog.server";
+import { getInstallCatalogWithMeta } from "@/lib/game-install-catalog.server";
 
 type Props = {
   params: Promise<{ console: string }>;
@@ -70,7 +71,8 @@ export default async function GameInstallPage({ params }: Props) {
   if (!meta || !content) notFound();
 
   const path = `/services/game-install/${consoleSlug}`;
-  const catalogGames = await getInstallCatalogGames(consoleSlug);
+  const { games: catalogGames, deviceTypeId, fetchFailed } =
+    await getInstallCatalogWithMeta(consoleSlug);
   const pricingSections = content.pricingSectionKeys.map(
     (key) => GAME_INSTALL_PRICE_DATA[key],
   );
@@ -78,6 +80,10 @@ export default async function GameInstallPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 text-white">
+      <InstallDeviceTypeBootstrap
+        consoleSlug={consoleSlug}
+        deviceTypeId={deviceTypeId}
+      />
       <ServiceSchema
         title={`نصب بازی ${meta.label}`}
         description={jsonLdDescription}
@@ -129,11 +135,20 @@ export default async function GameInstallPage({ params }: Props) {
           </div>
 
           <div className="px-4 py-6 sm:px-6 md:px-8">
-            <GameCatalogGrid
-              consoleSlug={consoleSlug}
-              consoleLabel={meta.label}
-              games={catalogGames}
-            />
+            {fetchFailed ? (
+              <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-10 text-center">
+                <p className="text-red-200">
+                  بارگذاری لیست بازی‌ها ناموفق بود. لطفاً چند لحظه بعد دوباره
+                  تلاش کنید.
+                </p>
+              </div>
+            ) : (
+              <GameCatalogGrid
+                consoleSlug={consoleSlug}
+                consoleLabel={meta.label}
+                games={catalogGames}
+              />
+            )}
           </div>
 
           <div className="border-t border-cyan-400/20 px-4 py-6 sm:px-6 md:px-8">

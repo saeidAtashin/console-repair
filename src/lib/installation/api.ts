@@ -62,6 +62,10 @@ export type AddInstallItemResult = {
   clear_guest_uid: boolean;
 };
 
+export const INSTALLATION_CATALOG_REVALIDATE = 300;
+
+const publicCatalogFetch = { auth: false as const, next: { revalidate: INSTALLATION_CATALOG_REVALIDATE } };
+
 function normalizeDeviceName(name: string): string {
   return name
     .toLowerCase()
@@ -111,7 +115,7 @@ export function matchInstallationDevice(
 export async function fetchInstallationDevices(): Promise<InstallationDevice[]> {
   const response = await apiRequest<
     ApiWrapper<PaginatedResults<InstallationDevice>>
-  >("/installation/devices/", { auth: false });
+  >("/installation/devices/", publicCatalogFetch);
   return unwrapResults(response);
 }
 
@@ -124,7 +128,7 @@ export async function fetchInstallationGames(params?: {
   const response = await apiRequest<
     ApiWrapper<PaginatedResults<InstallationGame>>
   >(`/installation/games/?page=${page}&page_size=${pageSize}`, {
-    auth: false,
+    ...publicCatalogFetch,
   });
   return unwrapResults(response);
 }
@@ -141,7 +145,7 @@ export async function fetchAllInstallationGames(
     const response = await apiRequest<
       ApiWrapper<PaginatedResults<InstallationGame>>
     >(`/installation/games/?page=${page}&page_size=${pageSize}`, {
-      auth: false,
+      ...publicCatalogFetch,
     });
     const data = unwrapData(response);
     games.push(...(data.results ?? []));
@@ -178,7 +182,7 @@ export async function fetchInstallationDraft(options: {
 
   try {
     const response = await apiRequest<ApiWrapper<InstallationDraft>>(
-      `/installation/requests/draft/?${qs}`,
+      `/installation/games/?${qs}`,
       { auth: options.isLoggedIn },
     );
     return unwrapData(response);

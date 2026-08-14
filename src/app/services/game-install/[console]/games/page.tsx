@@ -6,13 +6,14 @@ import GameInstallMethodPicker from "@/app/components/game-install/GameInstallMe
 import GameInstallOrderFab from "@/app/components/game-install/GameInstallOrderFab";
 import GameInstallOrderPanel from "@/app/components/game-install/GameInstallOrderPanel";
 import GameInstallPriceCalculator from "@/app/components/game-install/GameInstallPriceCalculator";
+import InstallDeviceTypeBootstrap from "@/app/components/game-install/InstallDeviceTypeBootstrap";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
 import { webPageJsonLd } from "../../../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../../../lib/seo/metadata";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
 import { getGameInstallContent } from "@/lib/game-install-content";
-import { getInstallCatalogGames } from "@/lib/game-install-catalog.server";
+import { getInstallCatalogWithMeta } from "@/lib/game-install-catalog.server";
 
 type Props = {
   params: Promise<{ console: string }>;
@@ -58,11 +59,16 @@ export default async function GameListPage({ params }: Props) {
 
   const hubPath = `/services/game-install/${consoleSlug}`;
   const listPath = `${hubPath}/games`;
-  const catalogGames = await getInstallCatalogGames(consoleSlug);
+  const { games: catalogGames, deviceTypeId, fetchFailed } =
+    await getInstallCatalogWithMeta(consoleSlug);
   const introParagraphs = content.gamesPageIntro;
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 pb-24 text-white">
+      <InstallDeviceTypeBootstrap
+        consoleSlug={consoleSlug}
+        deviceTypeId={deviceTypeId}
+      />
       <PageShell
         currentPath={listPath}
         jsonLd={webPageJsonLd({
@@ -107,12 +113,21 @@ export default async function GameListPage({ params }: Props) {
           <GameInstallMethodPicker consoleSlug={consoleSlug} />
         </section>
 
-        <GameCatalogGrid
-          consoleSlug={consoleSlug}
-          consoleLabel={meta.label}
-          games={catalogGames}
-          showFullListLink={false}
-        />
+        {fetchFailed ? (
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-10 text-center">
+            <p className="text-red-200">
+              بارگذاری لیست بازی‌ها ناموفق بود. لطفاً چند لحظه بعد دوباره
+              تلاش کنید.
+            </p>
+          </div>
+        ) : (
+          <GameCatalogGrid
+            consoleSlug={consoleSlug}
+            consoleLabel={meta.label}
+            games={catalogGames}
+            showFullListLink={false}
+          />
+        )}
 
         <div className="my-10">
           <GameInstallPriceCalculator consoleSlug={consoleSlug} />

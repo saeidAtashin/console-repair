@@ -8,8 +8,9 @@ import GameInstallMethodPicker from "@/app/components/game-install/GameInstallMe
 import GameInstallOrderFab from "@/app/components/game-install/GameInstallOrderFab";
 import GameInstallOrderPanel from "@/app/components/game-install/GameInstallOrderPanel";
 import GameInstallPriceCalculator from "@/app/components/game-install/GameInstallPriceCalculator";
+import InstallDeviceTypeBootstrap from "@/app/components/game-install/InstallDeviceTypeBootstrap";
 import PageShell from "@/app/components/seo/PageShell";
-import { getAllInstallCatalogGames } from "@/lib/game-install-catalog.server";
+import { getAllInstallCatalogWithMeta } from "@/lib/game-install-catalog.server";
 import {
   GAME_INSTALL_CONSOLE_META,
   GAME_INSTALL_CONSOLE_ORDER,
@@ -50,11 +51,18 @@ export default async function GameInstallIndexPage({ searchParams }: Props) {
     ? GAME_INSTALL_CONSOLE_META[activeConsoleSlug]
     : undefined;
 
-  const catalogGames = await getAllInstallCatalogGames(activeConsoleSlug);
+  const { games: catalogGames, deviceTypeId, fetchFailed } =
+    await getAllInstallCatalogWithMeta(activeConsoleSlug);
   const consoleLabel = activeMeta?.label ?? "همه کنسول‌ها";
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 pb-24 text-white">
+      {activeConsoleSlug ? (
+        <InstallDeviceTypeBootstrap
+          consoleSlug={activeConsoleSlug}
+          deviceTypeId={deviceTypeId}
+        />
+      ) : null}
       <PageShell
         currentPath={PATH}
         jsonLd={collectionPageJsonLd({
@@ -90,6 +98,7 @@ export default async function GameInstallIndexPage({ searchParams }: Props) {
             consoleLabel={consoleLabel}
             games={catalogGames}
             showFullListLink={false}
+            fetchFailed={fetchFailed}
           />
         </section>
 

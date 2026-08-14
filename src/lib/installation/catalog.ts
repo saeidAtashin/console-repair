@@ -1,5 +1,8 @@
 import type { BlogGame } from "@/app/data/blog";
-import type { InstallCatalogGame } from "@/lib/game-install-catalog";
+import {
+  sortInstallCatalogByRating,
+  type InstallCatalogGame,
+} from "@/lib/game-install-catalog";
 import {
   fetchAllInstallationGames,
   fetchInstallationDevices,
@@ -37,6 +40,7 @@ function buildInstallCatalogGame(
 ): InstallCatalogGame {
   const metacritic = rateNumber(game.rates, "metacritic");
   const gamespot = rateNumber(game.rates, "gamespot");
+  const displayRating = gamespot ?? metacritic;
 
   return {
     id: String(game.id),
@@ -44,8 +48,9 @@ function buildInstallCatalogGame(
     slug: `api-${game.id}`,
     name: game.name,
     coverImage: game.image ?? "",
-    rating: gamespot ?? metacritic ?? 0,
+    ...(displayRating != null ? { rating: displayRating } : {}),
     metacritic,
+    gamespot,
     genre: "نصب بازی",
     console: consoleId,
     sectionTitle: "کاتالوگ نصب",
@@ -94,7 +99,9 @@ export async function getAllInstallationCatalogGames(
 
   if (!consoleSlug) {
     return {
-      games: allGames.map(mapInstallationGameToCatalogForAll),
+      games: sortInstallCatalogByRating(
+        allGames.map(mapInstallationGameToCatalogForAll),
+      ),
       deviceTypeId: null,
     };
   }
@@ -106,7 +113,9 @@ export async function getAllInstallationCatalogGames(
 
   const filtered = filterGamesForDevice(allGames, device.id);
   return {
-    games: filtered.map((g) => mapInstallationGameToCatalog(g, consoleSlug)),
+    games: sortInstallCatalogByRating(
+      filtered.map((g) => mapInstallationGameToCatalog(g, consoleSlug)),
+    ),
     deviceTypeId: device.id,
   };
 }

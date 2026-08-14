@@ -4,6 +4,7 @@ import { Flame, Sparkles, TrendingDown } from "lucide-react";
 
 import { useInstallMethodId } from "@/app/hooks/useInstallMethod";
 import { useInstallGameList } from "@/app/hooks/useInstallGameList";
+import { sumInstallListPrices } from "@/lib/game-install-list";
 import {
   calculateInstallQuote,
 } from "@/lib/game-install-quote";
@@ -22,6 +23,7 @@ export default function GameInstallPriceCalculator({
   const selectedGames = useInstallGameList(consoleSlug);
   const count = selectedGames.length;
   const quote = calculateInstallQuote(methodId, count);
+  const apiTotal = sumInstallListPrices(selectedGames);
 
   if (!quote) return null;
 
@@ -30,6 +32,14 @@ export default function GameInstallPriceCalculator({
       className={`rounded-2xl border border-amber-400/25 bg-amber-500/10 p-5 md:p-6 ${className}`}
       aria-live="polite"
     >
+      {apiTotal != null && count > 0 ? (
+        <div className="mb-4 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3">
+          <p className="text-xs font-bold text-emerald-300">جمع قیمت از API</p>
+          <p className="mt-1 text-xl font-black text-emerald-100 md:text-2xl">
+            {formatToman(apiTotal)}
+          </p>
+        </div>
+      ) : null}
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-300">
@@ -57,6 +67,11 @@ export default function GameInstallPriceCalculator({
       <p className="text-2xl font-black text-amber-100 md:text-3xl">
         {quote.priceLabel}
       </p>
+      {apiTotal != null && count > 0 ? (
+        <p className="mt-1 text-xs text-zinc-500">
+          برآورد پکیج (راهنما) — جمع دقیق در بالا
+        </p>
+      ) : null}
 
       {count > 0 && quote.discountPercent > 0 ? (
         <p className="mt-2 text-sm text-zinc-500 line-through">

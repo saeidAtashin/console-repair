@@ -7,8 +7,9 @@ export type InstallCatalogGame = {
   slug: string;
   name: string;
   coverImage: string;
-  rating: number;
+  rating?: number;
   metacritic?: number;
+  gamespot?: number;
   genre: string;
   console: BlogGame["console"];
   sectionTitle: string;
@@ -45,4 +46,27 @@ export function getInstallCatalogSections(
   return [...new Set(games.map((g) => g.sectionTitle))]
     .filter((title) => !isExcludedCatalogSection(title))
     .sort((a, b) => a.localeCompare(b, "fa"));
+}
+
+export function hasInstallGameRating(game: InstallCatalogGame): boolean {
+  return game.rating != null && game.rating > 0;
+}
+
+/** Display install size from API (assumed GB). */
+export function formatInstallGameSize(size: number): string {
+  if (size >= 1000) {
+    return `${(size / 1000).toLocaleString("fa-IR", { maximumFractionDigits: 1 })} ترابایت`;
+  }
+  return `${size.toLocaleString("fa-IR")} گیگابایت`;
+}
+
+export function sortInstallCatalogByRating(
+  games: InstallCatalogGame[],
+): InstallCatalogGame[] {
+  return [...games].sort((a, b) => {
+    const ratingA = a.rating ?? 0;
+    const ratingB = b.rating ?? 0;
+    if (ratingB !== ratingA) return ratingB - ratingA;
+    return a.name.localeCompare(b.name, "fa");
+  });
 }

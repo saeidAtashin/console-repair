@@ -15,6 +15,7 @@ type Props = {
   games: InstallCatalogGame[];
   allGamesHref?: string;
   showFullListLink?: boolean;
+  fetchFailed?: boolean;
 };
 
 export default function GameCatalogGrid({
@@ -23,6 +24,7 @@ export default function GameCatalogGrid({
   games,
   allGamesHref,
   showFullListLink = true,
+  fetchFailed = false,
 }: Props) {
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(GAMES_PER_BATCH);
@@ -72,9 +74,20 @@ export default function GameCatalogGrid({
         ) : null}
       </div>
 
-      {filtered.length === 0 ? (
+      {fetchFailed ? (
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-12 text-center">
+          <p className="text-red-200">
+            بارگذاری لیست بازی‌ها ناموفق بود. لطفاً چند لحظه بعد دوباره تلاش
+            کنید.
+          </p>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/20 bg-black/20 px-6 py-12 text-center">
-          <p className="text-zinc-400">بازی‌ای با این جستجو یافت نشد.</p>
+          <p className="text-zinc-400">
+            {games.length === 0
+              ? "هنوز بازی‌ای برای این کنسول ثبت نشده است."
+              : "بازی‌ای با این جستجو یافت نشد."}
+          </p>
         </div>
       ) : (
         <>

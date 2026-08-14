@@ -38,6 +38,7 @@ export class ApiError extends Error {
 type ApiRequestOptions = Omit<RequestInit, "headers"> & {
   headers?: HeadersInit;
   auth?: boolean;
+  next?: { revalidate?: number | false; tags?: string[] };
 };
 
 export async function apiRequest<T = unknown>(
