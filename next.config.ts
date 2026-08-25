@@ -10,7 +10,6 @@ const nextConfig: NextConfig = {
     "localhost",
     "127.0.0.1",
   ],
-  serverExternalPackages: ["better-sqlite3"],
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,
