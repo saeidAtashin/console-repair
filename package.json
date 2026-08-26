@@ -23,7 +23,6 @@
     "react-parallax-tilt": "^1.7.327",
     "server-only": "^0.0.1",
     "swagger-ui-react": "^5.32.6",
-    "vazirmatn": "^33.0.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
