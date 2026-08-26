@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef } from "react";
 import { Star } from "lucide-react";
 
@@ -13,6 +14,7 @@ import {
   hasInstallGamePrice,
   hasInstallGameRating,
   hasInstallGameSize,
+  installGameDetailPath,
 } from "@/lib/game-install-catalog";
 import { formatToman } from "@/lib/game-install-pricing";
 import { resolveGameImages } from "@/lib/game-images";
@@ -36,6 +38,9 @@ export default function GameCard({
   const cardRef = useRef<HTMLElement>(null);
   const { flyingGameId } = useGameInstallList();
   const isFlying = flyingGameId === game.id;
+  const detailHref = consoleSlug
+    ? installGameDetailPath(consoleSlug, game.slug)
+    : null;
 
   const { images } = resolveGameImages({
     slug: game.slug,
@@ -53,18 +58,8 @@ export default function GameCard({
       ? "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
       : "192px";
 
-  return (
-    <article
-      ref={cardRef}
-      className={cn(
-        "group/card flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] transition duration-300 hover:-translate-y-1 hover:border-cyan-400/35 hover:shadow-[0_16px_48px_-12px_rgba(34,211,238,0.25)]",
-        layout === "grid" &&
-          "hover:shadow-[0_16px_48px_-12px_rgba(34,211,238,0.3)]",
-        isFlying && "pointer-events-none opacity-0",
-        layoutClass,
-        className,
-      )}
-    >
+  const media = (
+    <>
       <div className="relative aspect-[3/4] overflow-hidden bg-zinc-950">
         <GameImageStrip
           images={images}
@@ -119,15 +114,38 @@ export default function GameCard({
             ) : null}
           </div>
         ) : null}
-        {showAddButton && consoleSlug ? (
+      </div>
+    </>
+  );
+
+  return (
+    <article
+      ref={cardRef}
+      className={cn(
+        "group/card flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/60 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] transition duration-300 hover:-translate-y-1 hover:border-cyan-400/35 hover:shadow-[0_16px_48px_-12px_rgba(34,211,238,0.25)]",
+        layout === "grid" &&
+          "hover:shadow-[0_16px_48px_-12px_rgba(34,211,238,0.3)]",
+        isFlying && "pointer-events-none opacity-0",
+        layoutClass,
+        className,
+      )}
+    >
+      {detailHref ? (
+        <Link href={detailHref} className="flex flex-1 flex-col">
+          {media}
+        </Link>
+      ) : (
+        <div className="flex flex-1 flex-col">{media}</div>
+      )}
+      {showAddButton && consoleSlug ? (
+        <div className="px-3 pb-3 sm:px-4 sm:pb-4">
           <AddToGameListButton
             game={game}
             consoleSlug={consoleSlug}
             animationSourceRef={cardRef}
-            className="mt-auto"
           />
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </article>
   );
 }

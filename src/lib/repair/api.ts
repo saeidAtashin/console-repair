@@ -149,6 +149,7 @@ export async function submitGameInstallRequest(params: {
   games: InstallListGame[];
   consoleLabel: string;
   installMethodId: InstallMethodId;
+  extraNote?: string;
 }): Promise<RepairRequestItem> {
   const devices = await fetchRepairDevices();
   const device = matchDeviceForConsole(devices, params.consoleId);
@@ -172,7 +173,10 @@ export async function submitGameInstallRequest(params: {
     description: formatInstallGameListDescription(
       params.games,
       params.consoleLabel,
-      { installMethodId: params.installMethodId },
+      {
+        installMethodId: params.installMethodId,
+        extraNote: params.extraNote,
+      },
     ),
   };
 

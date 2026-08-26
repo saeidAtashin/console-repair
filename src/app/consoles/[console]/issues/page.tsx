@@ -1,11 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import IssueListCard from "@/app/components/issues/IssueListCard";
 import PageShell from "@/app/components/seo/PageShell";
 import { issues as allIssues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
 import { consoleIds, getConsole } from "../../../../lib/console-catalog";
+import { gameInstallHrefForConsole } from "../../../../lib/repair-links";
 import { webPageJsonLd } from "../../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../../lib/seo/metadata";
 
@@ -83,12 +84,23 @@ export default async function ConsoleIssuesPage({ params }: Props) {
           ))}
         </ul>
 
-        <Link
-          href={`/services/${config.repairSlug}`}
-          className="mt-10 inline-flex rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-black transition hover:bg-cyan-400"
-        >
-          ثبت درخواست تعمیر {config.title}
-        </Link>
+        <div className="mt-10">
+          <FunnelNextStep
+            title={`تعمیر یا نصب بازی ${config.title}`}
+            description="اگر دستگاه معیوب است تعمیر کنید. اگر کنسول سالم است، نصب بازی را سفارش دهید."
+            actions={[
+              {
+                href: `/services/${config.repairSlug}`,
+                label: `ثبت درخواست تعمیر ${config.title}`,
+                primary: true,
+              },
+              {
+                href: gameInstallHrefForConsole(config.id),
+                label: `نصب بازی ${config.title}`,
+              },
+            ]}
+          />
+        </div>
       </PageShell>
     </main>
   );

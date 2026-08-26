@@ -8,6 +8,7 @@ import {
   BadgeDollarSign,
 } from "lucide-react";
 
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import { CtaButtonGroup } from "@/app/components/ui/cta";
@@ -22,6 +23,7 @@ import { brandThemes } from "../../../lib/brand-theme";
 import {
   buildRepairHref,
   consoleIdFromRepairSlug,
+  gameInstallHrefForConsole,
 } from "../../../lib/repair-links";
 import { getServiceGallery } from "@/lib/service-galleries";
 import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
@@ -211,6 +213,26 @@ export default async function ServicePage({ params }: Props) {
         </section>
 
         <FaqSection items={service.faqs} />
+
+        {consoleId ? (
+          <div className="container mx-auto px-6 pb-8">
+            <FunnelNextStep
+              title="بعد از تعمیر، بازی نصب کنیم؟"
+              description={`وقتی ${service.problemtag} آماده شد، می‌توانید نصب بازی را همان‌جا سفارش دهید — پکیج یا عنوان انتخابی.`}
+              actions={[
+                {
+                  href: gameInstallHrefForConsole(consoleId),
+                  label: `نصب بازی ${service.problemtag}`,
+                  primary: true,
+                },
+                {
+                  href: `/consoles/${consoleId}/issues`,
+                  label: "مشکلات رایج",
+                },
+              ]}
+            />
+          </div>
+        ) : null}
 
         <section className="pb-28">
           <div className="container mx-auto px-6">

@@ -11,6 +11,7 @@ import {
   Gauge,
 } from "lucide-react";
 
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
@@ -24,6 +25,7 @@ import {
 import {
   buildRepairHref,
   consoleIdFromIssueSlug,
+  gameInstallHrefForConsole,
 } from "../../../lib/repair-links";
 import { getIssueImage } from "@/lib/quick-access-images";
 import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
@@ -87,6 +89,7 @@ export default async function IssuePage({ params }: Props) {
     consoleId,
     issue: issue.title,
   });
+  const installHref = gameInstallHrefForConsole(consoleId);
   const related =
     issue.relatedIssues?.map((s) => issues.find((i) => i.slug === s)) ?? [];
 
@@ -295,6 +298,22 @@ export default async function IssuePage({ params }: Props) {
 
           <FaqSection items={seo.faqs} className="rounded-3xl py-12" />
 
+          <FunnelNextStep
+            title="قدم بعدی: تعمیر یا نصب بازی"
+            description="اگر دستگاه معیوب است سفارش تعمیر بدهید. اگر کنسول سالم است و فقط بازی می‌خواهید، از کاتالوگ نصب استفاده کنید."
+            actions={[
+              {
+                href: repairHref,
+                label: "شروع درخواست تعمیر",
+                primary: true,
+              },
+              {
+                href: installHref,
+                label: "نصب بازی روی همین کنسول",
+              },
+            ]}
+          />
+
           <section className="relative isolate overflow-hidden rounded-4xl border border-amber-200/20 bg-zinc-950 p-8 text-zinc-100 shadow-[0_40px_100px_-45px_rgba(0,0,0,0.9)] md:p-14">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(251,191,36,0.22),transparent_35%),radial-gradient(circle_at_90%_85%,rgba(244,114,182,0.18),transparent_38%)]" />
             <div className="absolute -right-16 top-0 h-52 w-52 rounded-full bg-amber-300/15 blur-3xl" />
@@ -334,6 +353,12 @@ export default async function IssuePage({ params }: Props) {
                     <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-amber-200 transition-transform duration-300 group-hover:translate-x-1">
                       <ArrowRight className="h-4 w-4" />
                     </span>
+                  </Link>
+                  <Link
+                    href={installHref}
+                    className="group my-auto mx-auto inline-flex items-center gap-3 rounded-2xl border border-cyan-400/30 bg-zinc-900 px-7 py-4 text-base font-bold text-cyan-200 transition-all duration-300 hover:border-cyan-300/50 hover:bg-cyan-400/10"
+                  >
+                    نصب بازی روی همین کنسول
                   </Link>
                 </div>
               </div>

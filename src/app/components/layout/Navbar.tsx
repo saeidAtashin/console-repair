@@ -37,9 +37,108 @@ function navLinkActive(pathname: string, href: string) {
   return pathname === path || pathname.startsWith(`${path}/`);
 }
 
-function navItemActive(pathname: string, item: SiteNavItem) {
+function navItemActive(pathname: string, item: SiteNavItem): boolean {
   if (navLinkActive(pathname, item.href)) return true;
-  return item.children?.some((child) => navLinkActive(pathname, child.href)) ?? false;
+  return item.children?.some((child) => navItemActive(pathname, child)) ?? false;
+}
+
+function hasNestedChildren(item: SiteNavItem) {
+  return item.children?.some((child) => (child.children?.length ?? 0) > 0) ?? false;
+}
+
+type MobileNavBranchProps = {
+  item: SiteNavItem;
+  pathname: string;
+  openKeys: Set<string>;
+  toggle: (key: string) => void;
+  onNavigate: () => void;
+  pathKey: string;
+  depth?: number;
+};
+
+function MobileNavBranch({
+  item,
+  pathname,
+  openKeys,
+  toggle,
+  onNavigate,
+  pathKey,
+  depth = 0,
+}: MobileNavBranchProps) {
+  const active = navItemActive(pathname, item);
+  const isOpen = openKeys.has(pathKey);
+  const titleClass =
+    depth === 0
+      ? "text-lg font-bold sm:text-xl"
+      : depth === 1
+        ? "text-sm font-semibold sm:text-base"
+        : "text-sm sm:text-base";
+
+  if (!item.children?.length) {
+    return (
+      <Link
+        href={item.href}
+        onClick={onNavigate}
+        aria-current={active ? "page" : undefined}
+        className={`block min-h-[44px] rounded-xl px-2 py-3 transition-colors ${titleClass} ${
+          active ? "text-cyan-400" : depth === 0 ? "text-white hover:text-cyan-400" : "text-zinc-400 hover:text-cyan-400"
+        }`}
+      >
+        {item.title}
+      </Link>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-2 py-2">
+        <Link
+          href={item.href}
+          onClick={onNavigate}
+          aria-current={active ? "page" : undefined}
+          className={`transition-colors ${titleClass} ${
+            active ? "text-cyan-400" : depth === 0 ? "text-white hover:text-cyan-400" : "text-zinc-300 hover:text-cyan-400"
+          }`}
+        >
+          {item.title}
+        </Link>
+        <button
+          type="button"
+          dir="ltr"
+          data-route-loader-ignore="true"
+          aria-expanded={isOpen}
+          aria-label={`${item.title} — زیرمنو`}
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-cyan-500 transition-colors hover:bg-white/5 touch-manipulation"
+          onClick={() => toggle(pathKey)}
+        >
+          <ChevronDown
+            size={18}
+            className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
+      <div
+        className={`grid transition-all duration-300 ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+      >
+        <div className="overflow-hidden">
+          <div className="mr-2 flex flex-col gap-1 border-r border-cyan-500/20 py-1 pr-3">
+            {item.children.map((child) => (
+              <MobileNavBranch
+                key={`${child.href}-${child.title}`}
+                item={child}
+                pathname={pathname}
+                openKeys={openKeys}
+                toggle={toggle}
+                onNavigate={onNavigate}
+                pathKey={`${pathKey}/${child.title}`}
+                depth={depth + 1}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Navbar() {
@@ -48,7 +147,7 @@ export default function Navbar() {
   const { itemCount, cartBounce } = useShopCart();
   const hideShopSearch = !SHOP_ENABLED || pathname.startsWith("/shop");
   const [open, setOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState<Set<string>>(() => new Set());
   const [scrolled, setScrolled] = useState(false);
   const cdRef = useRef<HTMLDivElement>(null);
   const menuToggleRef = useRef<HTMLButtonElement>(null);
@@ -142,7 +241,7 @@ export default function Navbar() {
       openTimerRef.current = null;
     }
     setOpen(false);
-    setMobileOpen(null);
+    setMobileOpen(new Set());
     const el = cdRef.current;
     if (el && !isBurstingRef.current) {
       el.style.transform = `rotate(${scrollRotationRef.current}deg)`;
@@ -156,6 +255,15 @@ export default function Navbar() {
     if (open) closeMenu(true);
     else openMenu();
   }, [open, closeMenu, openMenu]);
+
+  const toggleMobileBranch = useCallback((key: string) => {
+    setMobileOpen((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     closeMenu();
@@ -308,6 +416,7 @@ export default function Navbar() {
           >
             {navbarNavItems.map((item) => {
               const active = navItemActive(pathname, item);
+              const nested = hasNestedChildren(item);
 
               return item.children ? (
                 <div
@@ -334,26 +443,84 @@ export default function Navbar() {
                     />
                   </Link>
 
-                  <div className="invisible absolute top-full right-0 w-56 translate-y-2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                    <div className="rounded-2xl border border-white/10 bg-zinc-900/90 p-2 shadow-2xl backdrop-blur-2xl">
-                      {item.children.map((sub) => {
-                        const subActive = navLinkActive(pathname, sub.href);
+                  <div
+                    className={`invisible absolute top-full translate-y-2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 ${
+                      nested
+                        ? "left-1/2 z-20 w-[min(92vw,44rem)] -translate-x-1/2 group-hover:-translate-x-1/2"
+                        : "right-0 w-56"
+                    }`}
+                  >
+                    {nested ? (
+                      <div className="grid grid-cols-2 gap-3 rounded-2xl border border-white/10 bg-zinc-900/95 p-3 shadow-2xl backdrop-blur-2xl md:grid-cols-3">
+                        {item.children.map((col) => {
+                          const colActive = navItemActive(pathname, col);
+                          return (
+                            <div
+                              key={col.href}
+                              className="min-w-0 rounded-xl border border-white/5 bg-black/30 p-2"
+                            >
+                              <Link
+                                href={col.href}
+                                aria-current={colActive ? "page" : undefined}
+                                className={`block rounded-lg px-2 py-2 text-sm font-bold transition-all ${
+                                  colActive
+                                    ? "text-cyan-400"
+                                    : "text-white hover:text-cyan-300"
+                                }`}
+                              >
+                                {col.title}
+                              </Link>
+                              {col.children?.length ? (
+                                <div className="mt-1 flex flex-col gap-0.5">
+                                  {col.children.map((leaf) => {
+                                    const leafActive = navLinkActive(
+                                      pathname,
+                                      leaf.href,
+                                    );
+                                    return (
+                                      <Link
+                                        key={leaf.href}
+                                        href={leaf.href}
+                                        aria-current={
+                                          leafActive ? "page" : undefined
+                                        }
+                                        className={`block truncate rounded-lg px-2 py-1.5 text-xs transition-all ${
+                                          leafActive
+                                            ? "bg-white/5 text-cyan-400"
+                                            : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                                        }`}
+                                      >
+                                        {leaf.title}
+                                      </Link>
+                                    );
+                                  })}
+                                </div>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-white/10 bg-zinc-900/90 p-2 shadow-2xl backdrop-blur-2xl">
+                        {item.children.map((sub) => {
+                          const subActive = navLinkActive(pathname, sub.href);
 
-                        return (
-                          <Link
-                            key={sub.href}
-                            href={sub.href}
-                            aria-current={subActive ? "page" : undefined}
-                            className={`block rounded-xl px-4 py-2.5 text-sm transition-all ${subActive
-                              ? "bg-white/5 text-cyan-400"
-                              : "text-zinc-400 hover:bg-white/5 hover:text-white"
-                              }`}
-                          >
-                            {sub.title}
-                          </Link>
-                        );
-                      })}
-                    </div>
+                          return (
+                            <Link
+                              key={sub.href}
+                              href={sub.href}
+                              aria-current={subActive ? "page" : undefined}
+                              className={`block rounded-xl px-4 py-2.5 text-sm transition-all ${subActive
+                                ? "bg-white/5 text-cyan-400"
+                                : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                                }`}
+                            >
+                              {sub.title}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -435,87 +602,17 @@ export default function Navbar() {
                 className="flex flex-col gap-1 text-right"
                 aria-label="منوی موبایل"
               >
-                {navbarNavItems.map((item) => {
-                  const active = navItemActive(pathname, item);
-
-                  return (
-                    <div key={item.title}>
-                      {item.children ? (
-                        <>
-                          <div className="flex min-h-[44px] w-full items-center justify-between rounded-xl px-2 py-2">
-                            <Link
-                              href={item.href}
-                              onClick={() => closeMenu()}
-                              aria-current={active ? "page" : undefined}
-                              className={`text-lg font-bold transition-colors sm:text-xl ${active
-                                ? "text-cyan-400"
-                                : "text-white hover:text-cyan-400"
-                                }`}
-                            >
-                              {item.title}
-                            </Link>
-                            <button
-                              type="button"
-                              dir="ltr"
-                              data-route-loader-ignore="true"
-                              aria-expanded={mobileOpen === item.title}
-                              aria-label={`${item.title} — زیرمنو`}
-                              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-cyan-500 transition-colors hover:bg-white/5 touch-manipulation"
-                              onClick={() =>
-                                setMobileOpen(
-                                  mobileOpen === item.title ? null : item.title,
-                                )
-                              }
-                            >
-                              <ChevronDown
-                                size={18}
-                                className={`transition-transform ${mobileOpen === item.title ? "rotate-180" : ""}`}
-                              />
-                            </button>
-                          </div>
-                          <div
-                            className={`grid transition-all duration-300 ${mobileOpen === item.title ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-                          >
-                            <div className="overflow-hidden">
-                              <div className="mr-2 flex flex-col gap-3 border-r border-cyan-500/20 py-1 pr-4">
-                                {item.children.map((sub) => {
-                                  const subActive = navLinkActive(pathname, sub.href);
-
-                                  return (
-                                    <Link
-                                      key={sub.href}
-                                      href={sub.href}
-                                      onClick={() => closeMenu()}
-                                      aria-current={subActive ? "page" : undefined}
-                                      className={`text-sm transition-colors sm:text-base ${subActive
-                                        ? "text-cyan-400"
-                                        : "text-zinc-400 hover:text-cyan-400"
-                                        }`}
-                                    >
-                                      {sub.title}
-                                    </Link>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <Link
-                          href={item.href}
-                          onClick={() => closeMenu()}
-                          aria-current={active ? "page" : undefined}
-                          className={`block min-h-[44px] rounded-xl px-2 py-3 text-lg font-bold transition-colors sm:text-xl ${active
-                            ? "text-cyan-400"
-                            : "text-white hover:text-cyan-400"
-                            }`}
-                        >
-                          {item.title}
-                        </Link>
-                      )}
-                    </div>
-                  );
-                })}
+                {navbarNavItems.map((item) => (
+                  <MobileNavBranch
+                    key={item.title}
+                    item={item}
+                    pathname={pathname}
+                    openKeys={mobileOpen}
+                    toggle={toggleMobileBranch}
+                    onNavigate={() => closeMenu()}
+                    pathKey={item.title}
+                  />
+                ))}
               </nav>
             </div>
 

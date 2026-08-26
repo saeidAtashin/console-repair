@@ -114,6 +114,12 @@ export function parseRepairSearchParams(
   };
 }
 
+export function gameInstallHrefForConsole(consoleId?: ConsoleId): string {
+  if (!consoleId) return "/services/game-install";
+  const slug = consoleCatalog[consoleId].gameInstallSlugs[0]?.slug;
+  return slug ? `/services/game-install/${slug}` : "/services/game-install";
+}
+
 export function getRepairDeviceLabel(consoleId: ConsoleId): string {
   return (
     getRepairService(consoleId)?.title ??

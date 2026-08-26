@@ -90,16 +90,13 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     commonIssues: [
       { title: "روشن نشدن PS5", slug: "ps5-not-turning-on" },
+      { title: "PS5 تصویر ندارد", slug: "ps5-no-video" },
       { title: "خرابی HDMI", slug: "ps5-hdmi-port-damage" },
       { title: "داغ شدن بیش از حد", slug: "ps5-overheating" },
       { title: "خاموش شدن ناگهانی", slug: "ps5-random-shutdown" },
       { title: "صدای زیاد فن", slug: "ps5-loud-fan-noise" },
-      {
-        title: "خرابی دسته DualSense",
-        slug: "ps5-dualsense-controller-problem",
-      },
-      { title: "اتصال نداشتن به اینترنت", slug: "ps5-wifi-connection-problem" },
       { title: "مشکل درایو دیسک", slug: "ps5-disc-drive-not-working" },
+      { title: "تعمیر مادربرد PS5", slug: "ps5-motherboard-repair" },
     ],
     repairSteps: [
       "بررسی اولیه دستگاه",
@@ -342,6 +339,8 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
     ],
 
     commonIssues: [
+      { title: "دریفت DualSense", slug: "controller-dualsense-drift" },
+      { title: "دریفت DualShock", slug: "controller-dualshock-drift" },
       { title: "حرکت خودکار آنالوگ (Drift)", slug: "controller-analog-drift" },
       { title: "کار نکردن دکمه‌ها", slug: "controller-buttons-not-working" },
       { title: "شارژ نشدن دسته", slug: "controller-not-charging" },

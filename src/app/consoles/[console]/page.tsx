@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import HubLinkGrid from "@/app/components/HubLinkGrid";
+import IssueListCard from "@/app/components/issues/IssueListCard";
 import PageShell from "@/app/components/seo/PageShell";
+import { issues as allIssues } from "@/app/data/issues";
 import {
   consoleIds,
   getConsole,
@@ -47,6 +50,17 @@ export default async function ConsoleHubPage({ params }: Props) {
 
   const repair = getRepairService(config.id);
   const path = `/consoles/${config.id}`;
+  const commonIssues = repair?.commonIssues ?? [];
+  const resolvedIssues = commonIssues.map((item) => {
+    const full = allIssues.find((issue) => issue.slug === item.slug);
+    return (
+      full ?? {
+        slug: item.slug,
+        title: item.title,
+        description: `راهنمای عیب‌یابی و تعمیر ${item.title}`,
+      }
+    );
+  });
   const shopLinks = SHOP_ENABLED
     ? config.id === "xbox"
       ? [
@@ -113,6 +127,49 @@ export default async function ConsoleHubPage({ params }: Props) {
           description={config.description}
           links={links}
         />
+
+        {resolvedIssues.length > 0 ? (
+          <section className="mt-16" aria-labelledby="console-issues-heading">
+            <h2
+              id="console-issues-heading"
+              className="mb-3 text-2xl font-black"
+            >
+              مشکلات رایج {config.title}
+            </h2>
+            <p className="mb-8 max-w-2xl text-zinc-400">
+              راهنمای عیب‌یابی هر مشکل و ثبت درخواست تعمیر با عنوان از پیش پرشده.
+            </p>
+            <ul className="space-y-4">
+              {resolvedIssues.map((issue) => (
+                <li key={issue.slug}>
+                  <IssueListCard issue={issue} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <div className="mt-12">
+          <FunnelNextStep
+            title={`تعمیر یا نصب بازی ${config.title}`}
+            description="دو مسیر اصلی فیکس‌بازی: اول دستگاه را درست می‌کنیم، بعد بازی را نصب می‌کنیم. هر دو از همین صفحه شروع می‌شود."
+            actions={[
+              {
+                href: `/services/${config.repairSlug}`,
+                label: `تعمیر ${config.title}`,
+                primary: true,
+              },
+              ...(config.gameInstallSlugs[0]
+                ? [
+                    {
+                      href: `/services/game-install/${config.gameInstallSlugs[0].slug}`,
+                      label: `نصب بازی ${config.title}`,
+                    },
+                  ]
+                : []),
+            ]}
+          />
+        </div>
       </PageShell>
     </main>
   );

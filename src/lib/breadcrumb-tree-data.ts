@@ -28,10 +28,9 @@ const shopProductsByConsole = Object.fromEntries(
 function issuesBranch(
   consoleId: ConsoleId,
   repairSlug: string,
-  limit = 5,
 ): BranchNode {
   const repair = serviceBySlug[repairSlug];
-  const issues = repair?.commonIssues?.slice(0, limit) ?? [];
+  const issues = repair?.commonIssues ?? [];
 
   return {
     title: "مشکلات رایج",
@@ -51,6 +50,24 @@ function consoleBranch(consoleId: ConsoleId): BranchNode {
     (g) => ({
       title: g.label,
       href: `/services/game-install/${g.slug}`,
+      children: [
+        {
+          title: "لیست بازی‌ها",
+          href: `/services/game-install/${g.slug}/games`,
+        },
+        {
+          title: "پکیج ۵ بازی",
+          href: `/services/game-install/${g.slug}/packages/5`,
+        },
+        {
+          title: "پکیج ۱۰ بازی",
+          href: `/services/game-install/${g.slug}/packages/10`,
+        },
+        {
+          title: "پکیج اقتصادی",
+          href: `/services/game-install/${g.slug}/packages/economy`,
+        },
+      ],
     }),
   );
 

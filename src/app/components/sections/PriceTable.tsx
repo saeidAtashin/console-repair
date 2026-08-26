@@ -8,6 +8,7 @@ import {
   type HomeGameInstallTab,
   type PriceRange,
 } from "@/lib/game-install-pricing";
+import { gameInstallPackageHrefFromHighlight } from "@/lib/game-install-packages";
 import { cheatHubPath } from "@/lib/blog-cheats-paths";
 import { brandThemes, type Brand } from "@/lib/brand-theme";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -63,6 +64,11 @@ function calcDiscountPercent(current: PriceRange, previous: PriceRange): number 
   const previousMid = (previous.min + previous.max) / 2;
   if (previousMid <= 0) return 0;
   return Math.max(0, Math.round(((previousMid - currentMid) / previousMid) * 100));
+}
+
+function highlightHref(tabId: HomeGameInstallTab, title: string): string {
+  const consoleSlug = tabId === "xbox" ? "xbox-series" : tabId;
+  return gameInstallPackageHrefFromHighlight(consoleSlug, title);
 }
 
 function highlightIcon(title: string, index: number) {
@@ -246,6 +252,11 @@ const PriceTable = () => {
                     const isFeatured = index === 1;
 
                     return (
+                      <Link
+                        key={item.title}
+                        href={highlightHref(activeTab, item.title)}
+                        className="block"
+                      >
                       <motion.article
                         key={item.title}
                         initial={
@@ -311,6 +322,7 @@ const PriceTable = () => {
                           />
                         </div>
                       </motion.article>
+                      </Link>
                     );
                   })}
                 </div>

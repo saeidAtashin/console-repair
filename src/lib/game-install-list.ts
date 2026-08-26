@@ -113,6 +113,7 @@ export function formatInstallGameListDescription(
   consoleLabel: string,
   options?: {
     installMethodId?: InstallMethodId;
+    extraNote?: string;
   },
 ): string {
   const quote = options?.installMethodId
@@ -127,6 +128,8 @@ export function formatInstallGameListDescription(
   const header = [`درخواست نصب بازی — ${consoleLabel}`];
   const quoteLine = formatQuoteSummary(quote);
   if (quoteLine) header.push(quoteLine);
+  const note = options?.extraNote?.trim();
+  if (note) header.push("", note);
 
-  return [...header, "", ...lines].join("\n");
+  return [...header, ...(lines.length ? ["", ...lines] : [])].join("\n");
 }

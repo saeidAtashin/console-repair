@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import GameCatalogGrid from "@/app/components/game-install/GameCatalogGrid";
 import GameInstallConsoleTabs from "@/app/components/game-install/GameInstallConsoleTabs";
 import GameInstallMethodPicker from "@/app/components/game-install/GameInstallMethodPicker";
@@ -178,6 +179,17 @@ export default async function GameInstallIndexPage({ searchParams }: Props) {
             <GameInstallOrderFab consoleSlug={activeConsoleSlug!} />
           </>
         )}
+
+        <div className="mt-12">
+          <FunnelNextStep
+            title="کنسول مشکل دارد؟ اول تعمیر"
+            description="نصب بازی فقط روی دستگاه سالم انجام می‌شود. اگر روشن نمی‌شود یا تصویر ندارد، مسیر تعمیر را ببینید."
+            actions={[
+              { href: "/services", label: "تعمیر کنسول", primary: true },
+              { href: "/issues", label: "مشکلات رایج" },
+            ]}
+          />
+        </div>
       </PageShell>
     </main>
   );

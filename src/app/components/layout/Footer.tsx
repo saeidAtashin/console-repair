@@ -38,8 +38,7 @@ export default function Footer() {
               {footerInfoLinks.map((link) => (
                 <Link
                   key={link.href}
-                  // href={link.href}
-                  href="/coming-soon"
+                  href={link.href}
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
                   {link.title}
