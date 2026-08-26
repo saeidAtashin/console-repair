@@ -7,6 +7,7 @@ import {
   getConsole,
   getRepairService,
 } from "../../../lib/console-catalog";
+import { SHOP_ENABLED } from "../../../lib/shop";
 import { webPageJsonLd } from "../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
 
@@ -46,8 +47,8 @@ export default async function ConsoleHubPage({ params }: Props) {
 
   const repair = getRepairService(config.id);
   const path = `/consoles/${config.id}`;
-  const shopLinks =
-    config.id === "xbox"
+  const shopLinks = SHOP_ENABLED
+    ? config.id === "xbox"
       ? [
           {
             title: "فروش Xbox Series",
@@ -66,7 +67,8 @@ export default async function ConsoleHubPage({ params }: Props) {
             description: "خرید کنسول نو یا دست‌دوم تست‌شده با ضمانت.",
             href: `/shop/${config.id}`,
           },
-        ];
+        ]
+    : [];
 
   const links = [
     {
@@ -79,11 +81,15 @@ export default async function ConsoleHubPage({ params }: Props) {
       href: `/services/game-install/${g.slug}`,
     })),
     ...shopLinks,
-    {
-      title: "فروش قطعات",
-      description: "قطعات اورجینال و سازگار با این کنسول.",
-      href: `/shop/${config.id}/parts`,
-    },
+    ...(SHOP_ENABLED
+      ? [
+          {
+            title: "فروش قطعات",
+            description: "قطعات اورجینال و سازگار با این کنسول.",
+            href: `/shop/${config.id}/parts`,
+          },
+        ]
+      : []),
     {
       title: "مشکلات رایج",
       description: "راهنمای عیب‌یابی و ثبت تعمیر برای مشکلات متداول.",

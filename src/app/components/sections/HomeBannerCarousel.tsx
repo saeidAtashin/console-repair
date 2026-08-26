@@ -11,17 +11,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Gamepad2,
-  ShoppingBag,
   Sparkles,
   Truck,
-  Zap,
   type LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { cheatHubPath } from "@/lib/blog-cheats-paths";
 import { cn } from "@/lib/utils";
 
 type BannerAlign = "right" | "center" | "left";
@@ -60,48 +57,19 @@ const BANNER_SLIDES: BannerSlide[] = [
   },
   {
     image: "/images/banner2.png",
-    tag: "ارسال فوری",
-    title: "تحویل کالا",
-    highlight: "در منزل",
-    subtitle: "سریع‌ترین زمان ممکن — بدون دردسر، مستقیم تا درب منزل",
-    chips: ["پیک اختصاصی", "پیگیری لحظه‌ای", "بسته‌بندی امن"],
+    tag: "تحویل پس از تعمیر",
+    title: "کنسول تعمیرشده",
+    highlight: "تا درب منزل",
+    subtitle:
+      "پس از تعمیر تخصصی، دستگاه را سالم، تست‌شده و بسته‌بندی‌شده تا درب منزل تحویل می‌گیرید",
+    chips: ["پیک اختصاصی", "پیگیری لحظه‌ای", "گارانتی خدمات"],
     href: "/repair",
-    label: "همین حالا سفارش بده",
-    mobileLabel: "سفارش دهید",
+    label: "ثبت درخواست تعمیر",
+    mobileLabel: "ثبت درخواست",
     align: "right",
     accent: "from-violet-300 via-fuchsia-400 to-cyan-400",
     glow: "bg-violet-400/20",
     icon: Truck,
-  },
-  {
-    image: "/images/banner3.png",
-    tag: "فروشگاه آنلاین",
-    title: "کنسول و",
-    highlight: "لوازم جانبی",
-    subtitle: "خرید مطمئن با مشاوره رایگان و ارسال به سراسر کشور",
-    chips: ["PS5 / PS4", "دسته بازی", "لوازم جانبی"],
-    href: "/shop",
-    label: "رفتن به فروشگاه",
-    mobileLabel: "فروشگاه",
-    align: "center",
-    accent: "from-amber-200 via-orange-300 to-cyan-400",
-    glow: "bg-amber-400/20",
-    icon: ShoppingBag,
-  },
-  {
-    image: "/images/banner4.png",
-    tag: "راهنمای گیمر",
-    title: "رمز و چیت",
-    highlight: "بازی‌ها",
-    subtitle: "۴۰ بازی برتر PS5 و Xbox — کدهای تقلب و ترفند با راهنمای فارسی",
-    chips: ["GTA V", "Minecraft", "Sims 4"],
-    href: cheatHubPath(),
-    label: "مشاهده چیت‌ها",
-    mobileLabel: "چیت‌ها",
-    align: "right",
-    accent: "from-emerald-300 via-green-400 to-lime-400",
-    glow: "bg-emerald-400/20",
-    icon: Zap,
   },
 ];
 

@@ -7,7 +7,7 @@ import {
   type ConsoleId,
 } from "./console-catalog";
 import { siteBreadcrumbTree } from "./breadcrumb-tree-data";
-import { SHOP_CONSOLE_ORDER, SHOP_CONSOLE_META } from "./shop";
+import { SHOP_CONSOLE_ORDER, SHOP_CONSOLE_META, SHOP_ENABLED } from "./shop";
 
 export type SiteNavLeaf = {
   title: string;
@@ -93,11 +93,15 @@ export const navbarNavItems: SiteNavItem[] = [
     href: "/issues",
     children: issuesChildren(),
   },
-  {
-    title: "فروشگاه",
-    href: "/shop",
-    children: shopChildren(),
-  },
+  ...(SHOP_ENABLED
+    ? [
+        {
+          title: "فروشگاه",
+          href: "/shop",
+          children: shopChildren(),
+        },
+      ]
+    : []),
   trackingItem(),
   {
     title: "بازی",

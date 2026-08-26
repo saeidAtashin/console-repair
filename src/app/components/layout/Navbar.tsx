@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
 import CartNavLink from "../shop/CartNavLink";
 import { navbarNavItems, type SiteNavItem } from "@/lib/site-nav";
+import { SHOP_ENABLED } from "@/lib/shop";
 import SiteLogo from "../ui/SiteLogo";
 import ShopSearch from "../shop/ShopSearch";
 import {
@@ -45,7 +46,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { itemCount, cartBounce } = useShopCart();
-  const hideShopSearch = pathname.startsWith("/shop");
+  const hideShopSearch = !SHOP_ENABLED || pathname.startsWith("/shop");
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -252,11 +253,13 @@ export default function Navbar() {
                 </div>
               )}
 
-              <CartNavLink
-                itemCount={itemCount}
-                receiving={cartBounce}
-                className={cartClassName}
-              />
+              {SHOP_ENABLED ? (
+                <CartNavLink
+                  itemCount={itemCount}
+                  receiving={cartBounce}
+                  className={cartClassName}
+                />
+              ) : null}
               {!hideShopSearch ? (
                 <div className="hidden xl:block">
                   <ShopSearch variant="header" onNavigate={() => closeMenu()} />
@@ -289,11 +292,13 @@ export default function Navbar() {
                   />
                 </div>
               </button>
-              <CartNavLink
-                itemCount={itemCount}
-                receiving={cartBounce}
-                className={cartClassName}
-              />
+              {SHOP_ENABLED ? (
+                <CartNavLink
+                  itemCount={itemCount}
+                  receiving={cartBounce}
+                  className={cartClassName}
+                />
+              ) : null}
             </div>
           </div>
           {/* Desktop nav — center */}
@@ -516,20 +521,22 @@ export default function Navbar() {
 
             <div className="shrink-0 border-t border-white/5 px-5 py-5 sm:px-8 sm:py-6">
               <div className="flex flex-col gap-3">
-                <Link
-                  href="/shop/cart"
-                  data-shop-cart-target
-                  onClick={() => closeMenu()}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 py-3.5 text-center text-sm font-bold text-white transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
-                >
-                  <ShoppingCart size={20} className="text-cyan-400" />
-                  سبد خرید
-                  {itemCount > 0 ? (
-                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-cyan-500 px-1 text-xs text-black">
-                      {itemCount}
-                    </span>
-                  ) : null}
-                </Link>
+                {SHOP_ENABLED ? (
+                  <Link
+                    href="/shop/cart"
+                    data-shop-cart-target
+                    onClick={() => closeMenu()}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 py-3.5 text-center text-sm font-bold text-white transition-all hover:border-cyan-500/50 sm:py-4 sm:text-base touch-manipulation"
+                  >
+                    <ShoppingCart size={20} className="text-cyan-400" />
+                    سبد خرید
+                    {itemCount > 0 ? (
+                      <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-cyan-500 px-1 text-xs text-black">
+                        {itemCount}
+                      </span>
+                    ) : null}
+                  </Link>
+                ) : null}
                 {!user ? (
                   <Link
                     href="/login"

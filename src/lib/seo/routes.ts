@@ -2,7 +2,7 @@ import { blogPosts } from "@/app/data/blog";
 import { getAllCheatGames } from "@/lib/blog-cheats";
 import { issues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
-import { SHOP_CONSOLES, getProducts } from "@/lib/shop";
+import { SHOP_CONSOLES, SHOP_ENABLED, getProducts } from "@/lib/shop";
 import { GAME_FILTER_IDS } from "@/lib/game-filters";
 import { repairSitemapPaths } from "./repair-seo";
 
@@ -71,15 +71,19 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
       priority: 0.55,
     })),
   ),
-  { path: "/shop", changeFrequency: "daily", priority: 0.9 },
-  ...SHOP_CONSOLES.map((slug) => ({
-    path: `/shop/${slug}`,
-    changeFrequency: "daily" as const,
-    priority: 0.82,
-  })),
-  ...getProducts().map((product) => ({
-    path: `/shop/${product.console}/${product.slug}`,
-    changeFrequency: "weekly" as const,
-    priority: 0.72,
-  })),
+  ...(SHOP_ENABLED
+    ? [
+        { path: "/shop", changeFrequency: "daily" as const, priority: 0.9 },
+        ...SHOP_CONSOLES.map((slug) => ({
+          path: `/shop/${slug}`,
+          changeFrequency: "daily" as const,
+          priority: 0.82,
+        })),
+        ...getProducts().map((product) => ({
+          path: `/shop/${product.console}/${product.slug}`,
+          changeFrequency: "weekly" as const,
+          priority: 0.72,
+        })),
+      ]
+    : []),
 ];

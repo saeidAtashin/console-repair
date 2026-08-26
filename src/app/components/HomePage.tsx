@@ -7,6 +7,7 @@ import HomeBannerCarousel from "./sections/HomeBannerCarousel";
 import Hero from "./sections/hero/Hero";
 import Services from "./sections/Services";
 import ServicesSection from "./sections/ServicesSection";
+import { SHOP_ENABLED } from "@/lib/shop";
 import StoreSection from "./sections/StoreSection";
 import WhyUs from "./sections/WhyUs";
 import GamingBackground from "./ui/GamingBackground";
@@ -43,7 +44,7 @@ export default function HomePage({ featuredCheatCards }: Props) {
       <HomeBannerCarousel />
       <Hero />
       <Services />
-      <StoreSection />
+      {SHOP_ENABLED ? <StoreSection /> : null}
       <PriceTable />
       <HomeCheatsSectionClient featured={featuredCheatCards} />
       <ContactCTA />

@@ -10,6 +10,7 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import { SHOP_ENABLED } from "@/lib/shop";
 import ConsoleTabIcon from "@/app/components/ui/ConsoleTabIcon";
 import HeroQuickAccessButton from "./HeroQuickAccessButton";
 import { brandThemes, consoleBrands } from "@/lib/brand-theme";
@@ -47,7 +48,9 @@ const serviceOptions: {
 }[] = [
   { id: "game-install", label: "نصب بازی", icon: Gamepad2 },
   { id: "repair", label: "تعمیرات", icon: Wrench },
-  { id: "shop", label: "خرید", icon: ShoppingBag },
+  ...(SHOP_ENABLED
+    ? [{ id: "shop" as const, label: "خرید", icon: ShoppingBag }]
+    : []),
 ];
 
 const PICKER_IMAGE_HEIGHT = 360;
@@ -445,7 +448,14 @@ export default function HeroDeviceScene() {
                         <p className="hero-scene__picker-label mb-2 text-center text-[10px] font-medium tracking-wide text-cyan-300/75 sm:mb-2.5 sm:text-xs">
                           نوع سرویس را انتخاب کنید
                         </p>
-                        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                        <div
+                          className={cn(
+                            "grid gap-2 sm:gap-3",
+                            serviceOptions.length === 3
+                              ? "grid-cols-3"
+                              : "grid-cols-2",
+                          )}
+                        >
                           {serviceOptions.map(({ id, label, icon }) => (
                             <ServicePickerButton
                               key={id}
