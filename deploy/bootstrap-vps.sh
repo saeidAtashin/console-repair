@@ -11,11 +11,31 @@ if ! command -v docker >/dev/null 2>&1; then
   systemctl enable --now docker
 fi
 
+echo "==> Configuring GitHub deploy key..."
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+if [ ! -f ~/.ssh/github_fixbazi ]; then
+  ssh-keygen -t ed25519 -f ~/.ssh/github_fixbazi -N "" -C "fixbazi-vps-deploy"
+  echo "Add this deploy key to GitHub repo Settings -> Deploy keys (read-only):"
+  cat ~/.ssh/github_fixbazi.pub
+fi
+ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+chmod 600 ~/.ssh/known_hosts
+cat > ~/.ssh/config <<'EOF'
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github_fixbazi
+  IdentitiesOnly yes
+EOF
+chmod 600 ~/.ssh/config
+
 echo "==> Cloning or updating repo..."
 if [ ! -d "$APP_DIR/.git" ]; then
-  git clone -b "$BRANCH" "$REPO_URL" "$APP_DIR"
+  git clone -b "$BRANCH" git@github.com:saeidAtashin/console-repair.git "$APP_DIR"
 else
   cd "$APP_DIR"
+  git remote set-url origin git@github.com:saeidAtashin/console-repair.git
   git fetch origin "$BRANCH"
   git checkout "$BRANCH"
   git reset --hard "origin/$BRANCH"
