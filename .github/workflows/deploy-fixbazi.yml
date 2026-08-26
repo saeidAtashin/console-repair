@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: ".next,public,package.json,package-lock.json,Dockerfile.prod,docker-compose.prod.yml,deploy"
+          source: ".next/standalone,.next/static,public,Dockerfile.prod,docker-compose.prod.yml,deploy"
           target: "/root/fixbazi"
           overwrite: true
 
