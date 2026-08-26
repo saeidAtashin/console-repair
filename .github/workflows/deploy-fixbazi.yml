@@ -3,6 +3,7 @@ name: Deploy fixbazi to VPS
 on:
   push:
     branches: [fixbazi-deploy]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -18,6 +19,8 @@ jobs:
           cache: npm
 
       - name: Install and build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://fixbazi.ir
         run: npm ci --legacy-peer-deps && npm run build
 
       - name: Copy built app to VPS
@@ -26,7 +29,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: ".next,public,package.json,package-lock.json,Dockerfile.prod,docker-compose.prod.yml,deploy"
+          source: ".next/standalone,.next/static,public,Dockerfile.prod,docker-compose.prod.yml,deploy"
           target: "/root/fixbazi"
           overwrite: true
 
@@ -41,8 +44,7 @@ jobs:
             set -e
             cd /root/fixbazi
             if [ ! -f .env ]; then
-              cp .env.example .env
-              sed -i 's|NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=https://fixbazi.ir|' .env
+              printf 'NEXT_PUBLIC_SITE_URL=https://fixbazi.ir\n' > .env
             fi
             docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
             docker image prune -f
