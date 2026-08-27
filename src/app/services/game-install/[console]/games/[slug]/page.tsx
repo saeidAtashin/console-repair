@@ -29,7 +29,6 @@ import {
 } from "@/lib/game-install-game-page";
 import { GAME_INSTALL_CONSOLE_META, GAME_INSTALL_CONSOLE_ORDER } from "@/lib/game-install-meta";
 import { formatToman } from "@/lib/game-install-pricing";
-import { INSTALLATION_CATALOG_REVALIDATE } from "@/lib/installation/api";
 import {
   consoleIdFromGameInstallSlug,
   gameInstallHrefForConsole,
@@ -43,7 +42,7 @@ type Props = {
 };
 
 export const dynamicParams = true;
-export const revalidate = INSTALLATION_CATALOG_REVALIDATE;
+export const revalidate = 300;
 
 export async function generateStaticParams() {
   const params: { console: string; slug: string }[] = [];
