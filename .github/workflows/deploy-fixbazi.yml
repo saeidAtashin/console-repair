@@ -23,17 +23,28 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://fixbazi.ir
         run: npm ci --legacy-peer-deps && npm run build
 
-      - name: Copy built app to VPS
+      - name: Pack build artifacts
+        run: |
+          tar -czf fixbazi-build.tgz \
+            .next/standalone \
+            .next/static \
+            public \
+            Dockerfile.prod \
+            docker-compose.prod.yml
+
+      - name: Copy archive to VPS
         uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: ".next/standalone,.next/static,public,Dockerfile.prod,docker-compose.prod.yml,deploy"
-          target: "/root/fixbazi"
+          source: fixbazi-build.tgz
+          target: /root/fixbazi
           overwrite: true
+          timeout: 10m
+          command_timeout: 20m
 
-      - name: Build and restart on VPS
+      - name: Extract, rebuild, and restart on VPS
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -43,8 +54,12 @@ jobs:
           script: |
             set -e
             cd /root/fixbazi
+            tar -xzf fixbazi-build.tgz
+            rm -f fixbazi-build.tgz
+            printf '%s\n' "${{ github.sha }}" > DEPLOY_SHA
             if [ ! -f .env ]; then
               printf 'NEXT_PUBLIC_SITE_URL=https://fixbazi.ir\n' > .env
             fi
-            docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
             docker image prune -f
