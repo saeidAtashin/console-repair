@@ -31,6 +31,7 @@ export type SitemapEntry = {
 /** Public indexable routes for sitemap and internal linking. */
 export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
+  { path: "/diagnosis", changeFrequency: "weekly", priority: 0.9 },
   { path: "/services", changeFrequency: "weekly", priority: 0.9 },
   { path: "/issues", changeFrequency: "weekly", priority: 0.8 },
   ...repairSitemapPaths().map((path) => ({

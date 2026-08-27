@@ -299,12 +299,12 @@ export default async function IssuePage({ params }: Props) {
           <FaqSection items={seo.faqs} className="rounded-3xl py-12" />
 
           <FunnelNextStep
-            title="قدم بعدی: تعمیر یا نصب بازی"
-            description="اگر دستگاه معیوب است سفارش تعمیر بدهید. اگر کنسول سالم است و فقط بازی می‌خواهید، از کاتالوگ نصب استفاده کنید."
+            title="قدم بعدی: عیب‌یابی یا نصب بازی"
+            description="اول کنسول را مرحله‌به‌مرحله بررسی کنید. اگر دستگاه سالم است و فقط بازی می‌خواهید، از کاتالوگ نصب استفاده کنید."
             actions={[
               {
-                href: repairHref,
-                label: "شروع درخواست تعمیر",
+                href: "/diagnosis",
+                label: "شروع عیب‌یابی",
                 primary: true,
               },
               {

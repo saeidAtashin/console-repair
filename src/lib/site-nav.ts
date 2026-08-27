@@ -103,6 +103,7 @@ function shopChildren(): SiteNavItem[] {
 
 export const navbarNavItems: SiteNavItem[] = [
   { title: "خانه", href: "/" },
+  { title: "عیب‌یابی", href: "/diagnosis" },
   {
     title: "تعمیر کنسول",
     href: "/services",
@@ -139,6 +140,7 @@ export const navbarNavItems: SiteNavItem[] = [
 
 export const headerNavItems: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
+  { title: "عیب‌یابی", href: "/diagnosis" },
   { title: "تعمیر کنسول", href: "/services" },
   { title: "نصب بازی", href: "/services/game-install" },
   { title: "ثبت سفارش تعمیر", href: "/repair" },
@@ -147,6 +149,7 @@ export const headerNavItems: SiteNavLeaf[] = [
 
 export const footerQuickLinks: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
+  { title: "عیب‌یابی کنسول", href: "/diagnosis" },
   { title: "تعمیر کنسول", href: "/services" },
   { title: "نصب بازی", href: "/services/game-install" },
   { title: "مشکلات رایج", href: "/issues" },

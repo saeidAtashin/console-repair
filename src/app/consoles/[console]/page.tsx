@@ -151,12 +151,12 @@ export default async function ConsoleHubPage({ params }: Props) {
 
         <div className="mt-12">
           <FunnelNextStep
-            title={`تعمیر یا نصب بازی ${config.title}`}
-            description="دو مسیر اصلی فیکس‌بازی: اول دستگاه را درست می‌کنیم، بعد بازی را نصب می‌کنیم. هر دو از همین صفحه شروع می‌شود."
+            title={`عیب‌یابی یا نصب بازی ${config.title}`}
+            description="اول دستگاه را مرحله‌به‌مرحله بررسی می‌کنیم. اگر کنسول سالم است، نصب بازی از همین‌جا شروع می‌شود."
             actions={[
               {
-                href: `/services/${config.repairSlug}`,
-                label: `تعمیر ${config.title}`,
+                href: "/diagnosis",
+                label: `عیب‌یابی ${config.title}`,
                 primary: true,
               },
               ...(config.gameInstallSlugs[0]

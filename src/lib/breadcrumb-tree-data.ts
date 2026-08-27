@@ -160,6 +160,10 @@ export const siteBreadcrumbTree: BranchNode = {
       href: "/issues",
     },
     {
+      title: "عیب‌یابی کنسول",
+      href: "/diagnosis",
+    },
+    {
       title: "ثبت سفارش تعمیر",
       href: "/repair",
       children: consoleIds.map((id) => {
