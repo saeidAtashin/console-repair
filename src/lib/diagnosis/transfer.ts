@@ -1,6 +1,8 @@
 import type { ConsoleId } from "@/lib/console-catalog";
+import { consoleIdFromDeviceName } from "@/lib/repair-links";
 import {
   CONFIDENCE_LABELS,
+  MODE_LABELS,
   SEVERITY_LABELS,
 } from "./copy";
 import { evaluate, resolveDevice } from "./engine";
@@ -55,6 +57,7 @@ export function buildDiagnosisTransfer(
     `اطمینان: ${CONFIDENCE_LABELS[result.confidence]}`,
     `شدت: ${SEVERITY_LABELS[result.severity]}`,
     `اقدام: ${result.actionLabel}`,
+    session.mode ? `مسیر بررسی: ${MODE_LABELS[session.mode]}` : "",
     result.service ? `سرویس پیشنهادی: ${result.service.label}` : "",
     result.warning ? `هشدار: ${result.warning}` : "",
     "",
@@ -76,6 +79,76 @@ export function buildDiagnosisTransfer(
     consoleId: mapConsoleId(catalog, device?.familyId),
     description: lines.join("\n"),
   };
+}
+
+function normalizeHint(value: string): string {
+  return value.toLowerCase().replace(/[\s_-]+/g, "");
+}
+
+function inferredConsoleId(deviceName: string): ConsoleId | undefined {
+  const mapped = consoleIdFromDeviceName(deviceName);
+  if (mapped) return mapped;
+
+  const compact = normalizeHint(deviceName);
+  const lower = deviceName.toLowerCase();
+  if (
+    compact.includes("playstation5") ||
+    compact.includes("ps5") ||
+    /play\s*station\s*5/.test(lower)
+  ) {
+    return "ps5";
+  }
+  if (
+    compact.includes("playstation4") ||
+    compact.includes("ps4") ||
+    /play\s*station\s*4/.test(lower)
+  ) {
+    return "ps4";
+  }
+  if (compact.includes("xbox")) return "xbox";
+  return undefined;
+}
+
+export function matchDeviceForDiagnosis(
+  devices: { id: number; name: string }[],
+  catalog: DiagnosisCatalog,
+  session: DiagnosisSession,
+): { id: number; name: string } | undefined {
+  if (devices.length === 0) return undefined;
+
+  const family = catalog.families.find((item) => item.id === session.familyId);
+  const model = catalog.models.find((item) => item.id === session.modelId);
+  const hints = [
+    ...(family?.apiHints ?? []),
+    family?.label,
+    model?.label,
+    session.familyId,
+    session.modelId,
+  ].filter((hint): hint is string => Boolean(hint));
+
+  const scored = devices.map((device) => {
+    const compact = normalizeHint(device.name);
+    let score = 0;
+
+    const inferred = inferredConsoleId(device.name);
+    if (family?.repairConsoleId && inferred === family.repairConsoleId) {
+      score += 12;
+    }
+
+    for (const hint of hints) {
+      const needle = normalizeHint(hint);
+      if (!needle) continue;
+      if (compact.includes(needle) || needle.includes(compact)) {
+        score += needle.length > 8 ? 6 : 4;
+      }
+    }
+
+    return { device, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  if ((scored[0]?.score ?? 0) > 0) return scored[0].device;
+  return devices[0];
 }
 
 export function matchProblemTypeForDiagnosis(

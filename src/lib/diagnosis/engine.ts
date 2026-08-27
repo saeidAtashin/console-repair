@@ -18,6 +18,7 @@ import type {
   Confidence,
   DiagnosisAction,
   DiagnosisCatalog,
+  DiagnosisMode,
   DiagnosisResult,
   DiagnosisSession,
   Problem,
@@ -31,6 +32,12 @@ const BUDGET: Record<Complexity, { min: number; max: number }> = {
   simple: { min: 2, max: 4 },
   medium: { min: 4, max: 7 },
   complex: { min: 6, max: 10 },
+};
+
+const QUICK_BUDGET: Record<Complexity, { min: number; max: number }> = {
+  simple: { min: 1, max: 2 },
+  medium: { min: 2, max: 3 },
+  complex: { min: 3, max: 4 },
 };
 
 export function emptySession(): DiagnosisSession {
@@ -151,12 +158,20 @@ export function visibleProblems(
     .sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
-export function questionBudget(problem: Problem | null): { min: number; max: number } {
-  if (!problem) return BUDGET.medium;
-  if (problem.flags?.includes("misc")) return { min: 1, max: 2 };
+export function questionBudget(
+  problem: Problem | null,
+  mode: DiagnosisMode = "full",
+): { min: number; max: number } {
+  const table = mode === "quick" ? QUICK_BUDGET : BUDGET;
+  if (!problem) return table.medium;
+  if (problem.flags?.includes("misc")) {
+    return mode === "quick" ? { min: 1, max: 1 } : { min: 1, max: 2 };
+  }
   if (problem.flags?.includes("liquid")) return { min: 3, max: 4 };
-  if (problem.flags?.includes("skip-troubleshooting")) return { min: 1, max: 3 };
-  return BUDGET[problem.complexity];
+  if (problem.flags?.includes("skip-troubleshooting")) {
+    return mode === "quick" ? { min: 1, max: 2 } : { min: 1, max: 3 };
+  }
+  return table[problem.complexity];
 }
 
 function questionScore(question: Question): number {
@@ -176,13 +191,15 @@ export function selectNextQuestion(
   const problem = ctx.problem;
   if (!problem) return null;
 
-  const budget = questionBudget(problem);
+  const budget = questionBudget(problem, session.mode ?? "full");
   const answered = new Set(session.answers.map((answer) => answer.questionId));
   if (session.answers.length >= budget.max) return null;
 
+  const quick = session.mode === "quick";
   const candidates = catalog.questions
     .filter((question) => {
       if (answered.has(question.id)) return false;
+      if (quick && question.optional) return false;
       return evaluateConditions(question.conditions, ctx);
     })
     .sort((a, b) => questionScore(b) - questionScore(a));
@@ -191,6 +208,9 @@ export function selectNextQuestion(
 
   if (session.answers.length >= budget.min) {
     const snapshot = evaluate(session, catalog);
+    if (quick && snapshot.action !== "consult") {
+      return null;
+    }
     if (
       snapshot.confidence === "high" &&
       snapshot.action === "repair" &&
@@ -211,9 +231,11 @@ export function selectTroubleshooting(
   const ctx = createContext(session, catalog, device);
   if (ctx.problem?.flags?.includes("skip-troubleshooting")) return [];
 
-  return catalog.troubleshooting.filter((step) =>
+  const steps = catalog.troubleshooting.filter((step) =>
     evaluateConditions(step.conditions, ctx),
   );
+  if (session.mode === "quick") return steps.slice(0, 1);
+  return steps;
 }
 
 function optionLabel(catalog: DiagnosisCatalog, answer: Answer): string {
@@ -308,12 +330,15 @@ export function evaluate(
     action = "repair";
   }
 
-  const confidence = confidenceFromScores(
+  let confidence = confidenceFromScores(
     topWeight,
     secondWeight,
     action,
     problem?.flags,
   );
+  if (session.mode === "quick" && confidence === "high") {
+    confidence = "medium";
+  }
 
   const likelyCauses = (ranked.length ? ranked.slice(0, 3) : [{ causeId: fallback.id }])
     .map((item) => catalog.causes.find((cause) => cause.id === item.causeId))
@@ -328,7 +353,7 @@ export function evaluate(
     action === "consult" ||
     (confidence === "low" && action !== "self-help") ||
     (Boolean(problem) &&
-      session.answers.length >= questionBudget(problem).max &&
+      session.answers.length >= questionBudget(problem, session.mode ?? "full").max &&
       confidence !== "high");
 
   let warning: string | undefined;
@@ -372,6 +397,9 @@ export function shouldShowTroubleshooting(
   if (steps.length === 0) return false;
   const result = evaluate(session, catalog);
   const problem = catalog.problems.find((item) => item.id === session.problemId);
+  if (session.mode === "quick" && !problem?.flags?.includes("software")) {
+    return false;
+  }
   if (problem?.flags?.includes("software")) return true;
   return result.action === "self-help" || result.action === "monitor";
 }

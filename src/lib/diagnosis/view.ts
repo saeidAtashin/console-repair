@@ -1,4 +1,4 @@
-import { PICK_COPY } from "./copy";
+import { MODE_OPTIONS, PICK_COPY } from "./copy";
 import {
   enabledFamilies,
   enabledModels,
@@ -89,6 +89,19 @@ export function getWizardView(
     };
   }
 
+  if (resolveDevice(session, catalog) && !session.mode) {
+    return {
+      type: "pick",
+      id: "mode",
+      ...PICK_COPY.mode,
+      options: MODE_OPTIONS.map((option) => ({
+        id: option.id,
+        label: option.label,
+        hint: option.hint,
+      })),
+    };
+  }
+
   const device = resolveDevice(session, catalog);
   if (device && !session.categoryId) {
     const categories = visibleCategories(session, catalog);
@@ -144,6 +157,7 @@ export function progressPercent(
     "family",
     "model",
     "variant",
+    "mode",
     "category",
     "problem",
     "question",

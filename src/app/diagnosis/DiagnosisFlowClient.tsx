@@ -11,6 +11,7 @@ import {
   applyCategory,
   applyEntryGroup,
   applyFamily,
+  applyMode,
   applyModel,
   applyProblem,
   applyTroubleshootingDone,
@@ -32,7 +33,7 @@ import ResultView from "./components/ResultView";
 import SuccessView from "./components/SuccessView";
 import TroubleshootingView from "./components/TroubleshootingView";
 
-const STORAGE_KEY = "fixbazi-diagnosis-v1";
+const STORAGE_KEY = "fixbazi-diagnosis-v2";
 
 const THEMES: Record<string, BrandTheme> = {
   playstation: brandThemes.playstation,
@@ -140,6 +141,8 @@ export default function DiagnosisFlowClient() {
           return applyModel(current, id, diagnosisCatalog);
         case "variant":
           return applyVariant(current, id, diagnosisCatalog);
+        case "mode":
+          return applyMode(current, id === "quick" ? "quick" : "full");
         case "category":
           return applyCategory(current, id);
         case "problem":

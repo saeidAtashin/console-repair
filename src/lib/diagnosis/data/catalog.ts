@@ -55,6 +55,7 @@ export const families: CatalogFamily[] = [
     enabled: true,
     sortOrder: 10,
     repairConsoleId: "ps5",
+    apiHints: ["ps5", "playstation5", "playstation 5"],
   },
   {
     id: "playstation-4",
@@ -65,6 +66,7 @@ export const families: CatalogFamily[] = [
     enabled: true,
     sortOrder: 20,
     repairConsoleId: "ps4",
+    apiHints: ["ps4", "playstation4", "playstation 4"],
   },
   {
     id: "playstation-3",
@@ -102,6 +104,7 @@ export const families: CatalogFamily[] = [
     enabled: true,
     sortOrder: 10,
     repairConsoleId: "xbox",
+    apiHints: ["xbox", "series", "xbox1", "xboxseries"],
   },
   {
     id: "xbox-one",
@@ -112,6 +115,7 @@ export const families: CatalogFamily[] = [
     enabled: true,
     sortOrder: 20,
     repairConsoleId: "xbox",
+    apiHints: ["xbox", "xboxone", "xbox one"],
   },
   {
     id: "xbox-360",
@@ -130,6 +134,7 @@ export const families: CatalogFamily[] = [
     label: "Nintendo Switch",
     enabled: true,
     sortOrder: 10,
+    apiHints: ["switch", "nintendo"],
   },
   {
     id: "nintendo-switch-2",
@@ -149,6 +154,7 @@ export const families: CatalogFamily[] = [
     enabled: true,
     sortOrder: 10,
     repairConsoleId: "ps5",
+    apiHints: ["dualsense", "ps5", "controller"],
   },
   {
     id: "dualshock-4",
@@ -159,6 +165,7 @@ export const families: CatalogFamily[] = [
     enabled: true,
     sortOrder: 20,
     repairConsoleId: "ps4",
+    apiHints: ["dualshock", "ds4", "ps4", "controller"],
   },
   {
     id: "xbox-wireless",
@@ -169,6 +176,7 @@ export const families: CatalogFamily[] = [
     enabled: true,
     sortOrder: 30,
     repairConsoleId: "xbox",
+    apiHints: ["xbox", "controller", "gamepad"],
   },
   {
     id: "joy-con",
@@ -178,6 +186,7 @@ export const families: CatalogFamily[] = [
     label: "Joy-Con",
     enabled: true,
     sortOrder: 40,
+    apiHints: ["joycon", "joy-con", "switch", "nintendo", "controller"],
   },
   {
     id: "dualsense-edge",

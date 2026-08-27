@@ -111,6 +111,8 @@ export type CatalogModel = {
   sortOrder: number;
 };
 
+export type DiagnosisMode = "quick" | "full";
+
 export type CatalogFamily = {
   id: string;
   brandId: string;
@@ -120,6 +122,7 @@ export type CatalogFamily = {
   enabled: boolean;
   sortOrder: number;
   repairConsoleId?: "ps5" | "ps4" | "xbox";
+  apiHints?: string[];
 };
 
 export type EntryGroup = {
@@ -228,6 +231,7 @@ export type DiagnosisSession = {
   familyId?: string;
   modelId?: string;
   variantId?: string;
+  mode?: DiagnosisMode;
   categoryId?: string;
   problemId?: string;
   answers: Answer[];
@@ -262,7 +266,14 @@ export type PickOption = {
 export type WizardView =
   | {
       type: "pick";
-      id: "brand" | "family" | "model" | "variant" | "category" | "problem";
+      id:
+        | "brand"
+        | "family"
+        | "model"
+        | "variant"
+        | "mode"
+        | "category"
+        | "problem";
       title: string;
       subtitle?: string;
       options: PickOption[];

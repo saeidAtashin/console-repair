@@ -4,7 +4,12 @@ import {
   shouldSkipFamily,
   visibleCategories,
 } from "./engine";
-import type { Answer, DiagnosisCatalog, DiagnosisSession } from "./types";
+import type {
+  Answer,
+  DiagnosisCatalog,
+  DiagnosisMode,
+  DiagnosisSession,
+} from "./types";
 
 export function applyEntryGroup(
   _session: DiagnosisSession,
@@ -42,6 +47,7 @@ export function applyFamily(
     brandId: family?.brandId ?? session.brandId,
     modelId: undefined,
     variantId: undefined,
+    mode: undefined,
     categoryId: undefined,
     problemId: undefined,
     answers: [],
@@ -63,6 +69,7 @@ export function applyModel(
     familyId: model?.familyId ?? session.familyId,
     brandId: model?.brandId ?? session.brandId,
     variantId: autoVariantId(model),
+    mode: undefined,
     categoryId: undefined,
     problemId: undefined,
     answers: [],
@@ -87,6 +94,7 @@ export function applyVariant(
   const next: DiagnosisSession = {
     ...session,
     variantId,
+    mode: session.mode,
     categoryId: undefined,
     problemId: undefined,
     answers: [],
@@ -99,6 +107,20 @@ export function applyVariant(
     next.categoryId = categories[0].id;
   }
   return next;
+}
+
+export function applyMode(
+  session: DiagnosisSession,
+  mode: DiagnosisMode,
+): DiagnosisSession {
+  return {
+    ...session,
+    mode,
+    answers: [],
+    troubleshootingDone: false,
+    troubleshootingResolved: false,
+    phase: "flow",
+  };
 }
 
 export function applyCategory(
@@ -188,12 +210,22 @@ export function rewindSession(
     }
   }
 
+  if (session.mode) {
+    return {
+      ...session,
+      mode: undefined,
+      categoryId: undefined,
+      problemId: undefined,
+    };
+  }
+
   if (session.variantId) {
     const model = catalog.models.find((item) => item.id === session.modelId);
     if ((model?.variants?.length ?? 0) > 1) {
       return {
         ...session,
         variantId: undefined,
+        mode: undefined,
         categoryId: undefined,
         problemId: undefined,
       };
@@ -205,6 +237,7 @@ export function rewindSession(
       ...session,
       modelId: undefined,
       variantId: undefined,
+      mode: undefined,
       categoryId: undefined,
       problemId: undefined,
     };
@@ -222,6 +255,7 @@ export function rewindSession(
       familyId: undefined,
       modelId: undefined,
       variantId: undefined,
+      mode: undefined,
       categoryId: undefined,
       problemId: undefined,
     };

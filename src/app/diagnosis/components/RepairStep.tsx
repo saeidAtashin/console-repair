@@ -22,6 +22,7 @@ import {
   appendRepairDetails,
   buildDiagnosisTransfer,
   diagnosisCatalog,
+  matchDeviceForDiagnosis,
   matchProblemTypeForDiagnosis,
   type DiagnosisResult,
   type DiagnosisSession,
@@ -37,7 +38,6 @@ import {
   buildRepairRequestPayload,
   fetchRepairDevices,
   fetchRepairProblemTypes,
-  matchDeviceForConsole,
   submitRepairRequest,
 } from "@/lib/repair/api";
 import type { BrandTheme } from "@/lib/brand-theme";
@@ -115,11 +115,16 @@ export default function RepairStep({ session, result, theme, onSuccess }: Props)
     try {
       await requestSubmit(data.phone, async () => {
         const devices = await fetchRepairDevices();
-        const device = transfer.consoleId
-          ? matchDeviceForConsole(devices, transfer.consoleId)
-          : devices[0];
+        if (devices.length === 0) {
+          throw new Error("لیست دستگاه‌ها از سرور نیامد. کمی بعد دوباره تلاش کنید.");
+        }
+        const device = matchDeviceForDiagnosis(
+          devices,
+          diagnosisCatalog,
+          session,
+        );
         if (!device) {
-          throw new Error("دستگاه مورد نظر برای ثبت درخواست یافت نشد.");
+          throw new Error("لیست دستگاه‌ها از سرور نیامد. کمی بعد دوباره تلاش کنید.");
         }
         const problemTypes = await fetchRepairProblemTypes(device.id);
         const problemType = matchProblemTypeForDiagnosis(

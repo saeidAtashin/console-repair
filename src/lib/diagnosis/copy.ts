@@ -27,6 +27,11 @@ export const SEVERITY_LABELS = {
   high: "بالا",
 } as const;
 
+export const MODE_LABELS = {
+  quick: "عیب‌یابی سریع",
+  full: "اطلاعات کامل",
+} as const;
+
 export const PICK_COPY = {
   brand: {
     title: "کنسولت چیه؟",
@@ -44,6 +49,10 @@ export const PICK_COPY = {
     title: "نسخه دستگاهت چیه؟",
     subtitle: "دیسک یا دیجیتال بودن روی سؤال‌های بعدی اثر دارد.",
   },
+  mode: {
+    title: "چطور بررسی کنیم؟",
+    subtitle: "سریع به نتیجه احتمالی می‌رسی؛ کامل سؤال‌های دقیق‌تری می‌پرسد.",
+  },
   category: {
     title: "چه مشکلی برای دستگاهت پیش اومده؟",
     subtitle: "فقط دسته‌هایی را می‌بینی که به همین مدل مربوط‌اند.",
@@ -53,3 +62,16 @@ export const PICK_COPY = {
     subtitle: "نزدیک‌ترین گزینه را بزن؛ جزئیات را بعداً می‌پرسیم.",
   },
 } as const;
+
+export const MODE_OPTIONS = [
+  {
+    id: "quick" as const,
+    label: "عیب‌یابی سریع",
+    hint: "چند سؤال کوتاه و نتیجه احتمالی زودتر.",
+  },
+  {
+    id: "full" as const,
+    label: "اطلاعات کامل",
+    hint: "سؤال‌های دقیق‌تر برای بررسی مرحله‌به‌مرحله.",
+  },
+];
