@@ -1,10 +1,15 @@
-import { apiRequest } from "@/lib/api-client";
+import { apiRequest, ApiError } from "@/lib/api-client";
 import { consoleCatalog, type ConsoleId } from "@/lib/console-catalog";
 import {
   formatInstallGameListDescription,
   type InstallListGame,
 } from "@/lib/game-install-list";
 import type { InstallMethodId } from "@/lib/game-install-quote";
+import {
+  normalizeAcceptanceCode,
+  toTrackedRepair,
+  type TrackedRepair,
+} from "@/lib/repair/tracking";
 
 export type RepairDevice = { id: number; name: string };
 export type RepairProblemType = { id: number; name: string };
@@ -70,6 +75,7 @@ export type RepairRequestItem = {
   final_price?: number | null;
   admin_note?: string | null;
   created_at?: string;
+  updated_at?: string;
 };
 
 type ApiWrapper<T> = {
@@ -134,6 +140,58 @@ export async function fetchRepairRequests(
     ApiWrapper<PaginatedResults<RepairRequestItem>>
   >(`/repair/requests/?page=${page}&page_size=100`);
   return unwrapResults(response);
+}
+
+export async function fetchRepairRequestById(
+  id: string,
+): Promise<RepairRequestItem> {
+  const response = await apiRequest<ApiWrapper<RepairRequestItem>>(
+    `/repair/requests/${encodeURIComponent(id)}/`,
+    { auth: false },
+  );
+  return unwrapData(response);
+}
+
+export async function fetchTrackedRepair(
+  rawCode: string,
+): Promise<TrackedRepair> {
+  const code = normalizeAcceptanceCode(rawCode);
+  if (!code) {
+    throw new Error("کد پذیرش را وارد کنید");
+  }
+
+  let item: RepairRequestItem | undefined;
+
+  try {
+    item = await fetchRepairRequestById(code);
+  } catch {
+    try {
+      const items = await fetchRepairRequests();
+      item = items.find((entry) => String(entry.id) === code);
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+        throw new Error("سفارشی با این کد پذیرش پیدا نشد.");
+      }
+      throw error;
+    }
+  }
+
+  if (!item) {
+    throw new Error("سفارشی با این کد پذیرش پیدا نشد.");
+  }
+
+  const [devices, problemTypes] = await Promise.all([
+    fetchRepairDevices().catch(() => [] as RepairDevice[]),
+    fetchRepairProblemTypes(item.device_type).catch(
+      () => [] as RepairProblemType[],
+    ),
+  ]);
+
+  return toTrackedRepair(
+    item,
+    buildDeviceNameMap(devices),
+    new Map(problemTypes.map((type) => [type.id, type.name])),
+  );
 }
 
 export function matchProblemTypeForGameInstall(

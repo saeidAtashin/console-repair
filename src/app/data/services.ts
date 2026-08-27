@@ -64,13 +64,14 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/ps5repair/ps5-repair1.jpg",
 
-    seoTitle: "تعمیر PS5 | تعمیر تخصصی پلی استیشن 5 با ضمانت",
+    seoTitle: "تعمیر PS5 در تهران | تعمیر تخصصی پلی استیشن 5",
 
     keywords: [
       "تعمیر ps5",
       "تعمیر پلی استیشن 5",
       "تعمیر hdmi ps5",
       "تعمیر دسته ps5",
+      "قیمت تعمیر ps5",
     ],
 
     estimatedTime: "1 تا 5 روز کاری",
@@ -97,14 +98,16 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
       { title: "صدای زیاد فن", slug: "ps5-loud-fan-noise" },
       { title: "مشکل درایو دیسک", slug: "ps5-disc-drive-not-working" },
       { title: "تعمیر مادربرد PS5", slug: "ps5-motherboard-repair" },
+      { title: "تعمیر پاور PS5", slug: "ps5-power-supply-problem" },
     ],
     repairSteps: [
-      "بررسی اولیه دستگاه",
-      "عیب‌یابی تخصصی",
-      "اعلام هزینه تعمیر",
-      "تعمیر و تعویض قطعات",
-      "تست کامل دستگاه",
-      "تحویل به مشتری",
+      "ثبت درخواست",
+      "پذیرش",
+      "عیب‌یابی",
+      "اعلام هزینه",
+      "تعمیر",
+      "تست",
+      "تحویل",
     ],
   },
 
@@ -130,7 +133,7 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/ps4repair/fan1.png",
 
-    seoTitle: "تعمیر PS4 | تعمیر پلی استیشن 4 با ضمانت",
+    seoTitle: "تعمیر PS4 در تهران | تعمیر پلی استیشن 4 با ضمانت",
 
     keywords: [
       "تعمیر ps4",
@@ -163,14 +166,16 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
       { title: "مشکل اتصال اینترنت", slug: "ps4-wifi-connection-problem" },
       { title: "خاموش شدن ناگهانی", slug: "ps4-random-shutdown" },
       { title: "ارور Safe Mode", slug: "ps4-safe-mode-error" },
+      { title: "تعمیر پاور PS4", slug: "ps4-power-supply-problem" },
     ],
     repairSteps: [
-      "بررسی دستگاه",
+      "ثبت درخواست",
+      "پذیرش",
       "عیب‌یابی",
       "اعلام هزینه",
-      "تعمیر تخصصی",
-      "تست نهایی",
-      "تحویل دستگاه",
+      "تعمیر",
+      "تست",
+      "تحویل",
     ],
   },
 
@@ -196,7 +201,7 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/xboxrepair/xboxfanrepair.png",
 
-    seoTitle: "تعمیر Xbox | تعمیر تخصصی ایکس باکس",
+    seoTitle: "تعمیر Xbox در تهران | تعمیر تخصصی ایکس باکس",
 
     keywords: ["تعمیر xbox", "تعمیر xbox series x", "تعمیر xbox one"],
 
@@ -226,12 +231,13 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
       { title: "کرش بازی‌ها", slug: "xbox-game-crashing" },
     ],
     repairSteps: [
-      "بررسی اولیه",
-      "تشخیص خرابی",
+      "ثبت درخواست",
+      "پذیرش",
+      "عیب‌یابی",
       "اعلام هزینه",
       "تعمیر",
-      "تست کامل",
-      "تحویل دستگاه",
+      "تست",
+      "تحویل",
     ],
   },
 

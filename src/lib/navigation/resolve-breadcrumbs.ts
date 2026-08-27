@@ -10,11 +10,17 @@ import {
 import { getGameFilter } from "@/lib/game-filters";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
 import { isConsoleId } from "@/lib/repair-links";
+import { getClusterByIssueSlug, getClusterByServiceSlug } from "@/lib/seo/topic-clusters";
 import {
   getProducts,
   SHOP_CONSOLE_META,
   type ShopConsole,
 } from "@/lib/shop";
+import {
+  TEHRAN_PATH,
+  getTehranPage,
+  tehranHub,
+} from "@/lib/locations/tehran";
 import type { BreadcrumbItem } from "@/lib/seo/breadcrumbs";
 import {
   normalizePath,
@@ -123,6 +129,15 @@ function resolveServices(pathname: string, search: string): BreadcrumbItem[] | n
     return withHome(link("همه خدمات", "/services"));
   }
 
+  if (segments[2] === "price") {
+    const cluster = getClusterByServiceSlug(slug);
+    return withHome(
+      link("همه خدمات", "/services"),
+      link(service.title, `/services/${slug}`),
+      current(cluster?.priceTitle ?? "قیمت تعمیر"),
+    );
+  }
+
   return withHome(
     link("همه خدمات", "/services"),
     current(service.title),
@@ -206,13 +221,36 @@ function resolveIssues(pathname: string): BreadcrumbItem[] | null {
   if (segments[0] !== "issues") return null;
 
   if (segments.length === 1) {
-    return withHome(current("مشکلات رایج"));
+    return withHome(current("مشکلات کنسول"));
   }
 
   const issue = issues.find((i) => i.slug === segments[1]);
+  const cluster = getClusterByIssueSlug(segments[1] ?? "");
+  if (cluster) {
+    return withHome(
+      link(cluster.pillarTitle, cluster.pillarHref),
+      current(issue?.title ?? segments[1]),
+    );
+  }
+
   return withHome(
-    link("مشکلات رایج", "/issues"),
+    link("مشکلات کنسول", "/issues"),
     current(issue?.title ?? segments[1]),
+  );
+}
+
+function resolveTehran(pathname: string): BreadcrumbItem[] | null {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments[0] !== "tehran") return null;
+
+  if (segments.length === 1) {
+    return withHome(current(tehranHub.title));
+  }
+
+  const location = getTehranPage(segments[1] ?? "");
+  return withHome(
+    link(tehranHub.title, TEHRAN_PATH),
+    current(location?.title ?? segments[1]),
   );
 }
 
@@ -265,6 +303,7 @@ export function resolveBreadcrumbs(
     () => resolveShop(pathname),
     () => resolveConsoles(pathname),
     () => resolveIssues(pathname),
+    () => resolveTehran(pathname),
     () => resolveBlog(pathname),
   ];
 

@@ -60,8 +60,8 @@ export function consoleIdFromRepairSlug(slug: string): ConsoleId | undefined {
 }
 
 export function consoleIdFromIssueSlug(slug: string): ConsoleId | undefined {
-  if (slug.startsWith("ps5")) return "ps5";
-  if (slug.startsWith("ps4")) return "ps4";
+  if (slug.startsWith("ps5") || slug.includes("dualsense")) return "ps5";
+  if (slug.startsWith("ps4") || slug.includes("dualshock")) return "ps4";
   if (slug.startsWith("xbox")) return "xbox";
   return undefined;
 }

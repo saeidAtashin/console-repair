@@ -6,7 +6,9 @@ import { SHOP_CONSOLES, SHOP_ENABLED, getProducts } from "@/lib/shop";
 import { consoleIds } from "@/lib/console-catalog";
 import { GAME_FILTER_IDS } from "@/lib/game-filters";
 import { GAME_INSTALL_PACKAGE_TIERS } from "@/lib/game-install-packages";
+import { tehranSitemapPaths } from "@/lib/locations/tehran";
 import { repairSitemapPaths } from "./repair-seo";
+import { clusterSitemapPaths } from "./topic-clusters";
 
 export const GAME_INSTALL_CONSOLES = [
   "ps4",
@@ -55,6 +57,16 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
     path: `/services/${s.slug}`,
     changeFrequency: "weekly" as const,
     priority: 0.85,
+  })),
+  ...clusterSitemapPaths().map((path) => ({
+    path,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  })),
+  ...tehranSitemapPaths().map((path) => ({
+    path,
+    changeFrequency: "weekly" as const,
+    priority: path === "/tehran" ? 0.88 : 0.84,
   })),
   ...issues.map((i) => ({
     path: `/issues/${i.slug}`,

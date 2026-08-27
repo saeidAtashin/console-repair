@@ -17,6 +17,7 @@ import {
   LogOut,
   LayoutDashboard,
   ShoppingCart,
+  Wrench,
 } from "lucide-react";
 
 const CD_SCROLL_FACTOR = 0.35;
@@ -329,6 +330,13 @@ export default function Navbar() {
           {/* Actions — end (left in RTL) */}
           <div className="flex min-w-0 items-center justify-start gap-2 sm:gap-3">
             <div className="hidden items-center gap-2 lg:flex xl:gap-3">
+              <Link
+                href="/repair"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-linear-to-l from-cyan-500 to-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-[0_0_18px_rgba(6,182,212,0.35)] transition hover:scale-105 xl:px-4 xl:text-sm"
+              >
+                <Wrench size={16} className="shrink-0" aria-hidden />
+                ثبت تعمیر
+              </Link>
               {!user ? (
                 <Link href="/login" className={loginClassName}>
                   ورود
@@ -618,6 +626,14 @@ export default function Navbar() {
 
             <div className="shrink-0 border-t border-white/5 px-5 py-5 sm:px-8 sm:py-6">
               <div className="flex flex-col gap-3">
+                <Link
+                  href="/repair"
+                  onClick={() => closeMenu()}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-l from-cyan-500 to-blue-600 py-3.5 text-center text-sm font-bold text-white shadow-lg shadow-cyan-500/20 sm:py-4 sm:text-base touch-manipulation"
+                >
+                  <Wrench size={18} aria-hidden />
+                  ثبت تعمیر
+                </Link>
                 {SHOP_ENABLED ? (
                   <Link
                     href="/shop/cart"

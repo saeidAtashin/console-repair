@@ -7,6 +7,7 @@ import {
   type ConsoleId,
 } from "./console-catalog";
 import { SHOP_CONSOLE_META, SHOP_CONSOLE_ORDER, getProducts } from "./shop";
+import { TOPIC_CLUSTERS } from "./seo/topic-clusters";
 
 export type BranchNode = {
   title: string;
@@ -27,17 +28,15 @@ const shopProductsByConsole = Object.fromEntries(
 
 function issuesBranch(
   consoleId: ConsoleId,
-  repairSlug: string,
 ): BranchNode {
-  const repair = serviceBySlug[repairSlug];
-  const issues = repair?.commonIssues ?? [];
+  const cluster = TOPIC_CLUSTERS[consoleId];
 
   return {
     title: "مشکلات رایج",
     href: `/consoles/${consoleId}/issues`,
-    children: issues.map((issue) => ({
-      title: issue.title,
-      href: `/issues/${issue.slug}`,
+    children: cluster.pages.map((page) => ({
+      title: page.title,
+      href: page.href,
     })),
   };
 }
@@ -106,7 +105,7 @@ function consoleBranch(consoleId: ConsoleId): BranchNode {
         title: "فروش قطعات",
         href: `/shop/${consoleId}/parts`,
       },
-      issuesBranch(consoleId, config.repairSlug),
+      issuesBranch(consoleId),
     ],
   };
 }

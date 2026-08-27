@@ -1,6 +1,7 @@
 import {
   DEFAULT_OG_IMAGE,
   SITE_ADDRESS,
+  SITE_AREAS_SERVED,
   SITE_NAME,
   SITE_PHONE,
   SITE_TAGLINE,
@@ -25,10 +26,7 @@ export default function LocalBusinessSchema() {
           "@type": "PostalAddress",
           ...SITE_ADDRESS,
         },
-        areaServed: {
-          "@type": "AdministrativeArea",
-          name: "تهران",
-        },
+        areaServed: SITE_AREAS_SERVED,
         knowsAbout: [
           "تعمیر PS5",
           "تعمیر PS4",

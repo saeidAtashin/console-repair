@@ -18,11 +18,11 @@ export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
 
 export const BACKEND_REPAIR_STATUS_LABELS: Record<BackendRepairStatus, string> =
   {
-    PENDING: "در انتظار بررسی",
-    ACCEPTED: "پذیرفته شده",
+    PENDING: "در انتظار پذیرش",
+    ACCEPTED: "پذیرش شد",
     IN_PROGRESS: "در حال تعمیر",
-    WAITING_FOR_PART: "در انتظار قطعه",
-    DONE: "تعمیر انجام شد",
+    WAITING_FOR_PART: "منتظر تأیید مشتری",
+    DONE: "آماده تحویل",
     DELIVERED: "تحویل داده شد",
     CANCELED: "لغو شده",
   };

@@ -1,5 +1,9 @@
 import JsonLd from "@/app/components/seo/JsonLd";
-import { SITE_NAME, absoluteUrl } from "../../../lib/seo/site";
+import {
+  SITE_AREAS_SERVED,
+  SITE_NAME,
+  absoluteUrl,
+} from "../../../lib/seo/site";
 
 interface Props {
   title: string;
@@ -20,10 +24,7 @@ export default function ServiceSchema({ title, description, url }: Props) {
       name: SITE_NAME,
       "@id": `${absoluteUrl("/")}#business`,
     },
-    areaServed: {
-      "@type": "AdministrativeArea",
-      name: "تهران",
-    },
+    areaServed: SITE_AREAS_SERVED,
   };
 
   return <JsonLd data={schema} />;

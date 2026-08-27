@@ -8,9 +8,16 @@ import ImageLightbox from "@/app/components/ui/ImageLightbox";
 type Props = {
   images: string[];
   title: string;
+  heading?: string;
+  subtitle?: string;
 };
 
-export default function ServiceImageGallery({ images, title }: Props) {
+export default function ServiceImageGallery({
+  images,
+  title,
+  heading = "گالری تصاویر",
+  subtitle,
+}: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   if (images.length === 0) return null;
@@ -18,9 +25,9 @@ export default function ServiceImageGallery({ images, title }: Props) {
   return (
     <section className="container mx-auto px-6 py-16">
       <div className="mb-8">
-        <h2 className="text-2xl font-black md:text-3xl">گالری تصاویر</h2>
+        <h2 className="text-2xl font-black md:text-3xl">{heading}</h2>
         <p className="mt-3 max-w-2xl text-zinc-400">
-          نمونه‌هایی از کار و جزئیات مربوط به {title}
+          {subtitle ?? `نمونه‌هایی از کار و جزئیات مربوط به ${title}`}
         </p>
       </div>
       <ul className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">

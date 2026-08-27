@@ -16,6 +16,7 @@ import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
 import JsonLd from "@/app/components/seo/JsonLd";
+import TopicClusterNav from "@/app/components/seo/TopicClusterNav";
 import IssueListCard from "@/app/components/issues/IssueListCard";
 import { issues } from "@/app/data/issues";
 import {
@@ -29,8 +30,10 @@ import {
 } from "../../../lib/repair-links";
 import { getIssueImage } from "@/lib/quick-access-images";
 import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
+import { itemListJsonLd } from "../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
 import { absoluteUrl, SITE_NAME } from "../../../lib/seo/site";
+import { getClusterByIssueSlug } from "@/lib/seo/topic-clusters";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -84,14 +87,23 @@ export default async function IssuePage({ params }: Props) {
   const issueImage = getIssueImage(issue.slug, issue.image);
   const seo = buildIssueSeoExtras(issue);
   const issuePath = `/issues/${issue.slug}`;
-  const consoleId = consoleIdFromIssueSlug(issue.slug);
+  const cluster = getClusterByIssueSlug(issue.slug);
+  const consoleId =
+    consoleIdFromIssueSlug(issue.slug) ?? cluster?.id;
   const repairHref = buildRepairHref({
     consoleId,
     issue: issue.title,
   });
   const installHref = gameInstallHrefForConsole(consoleId);
-  const related =
-    issue.relatedIssues?.map((s) => issues.find((i) => i.slug === s)) ?? [];
+  const relatedSlugs = Array.from(
+    new Set([
+      ...(issue.relatedIssues ?? []),
+      ...(cluster?.pages
+        .map((page) => page.issueSlug)
+        .filter((slug): slug is string => Boolean(slug) && slug !== issue.slug) ?? []),
+    ]),
+  ).slice(0, 8);
+  const related = relatedSlugs.map((s) => issues.find((i) => i.slug === s));
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -124,6 +136,21 @@ export default async function IssuePage({ params }: Props) {
             path: issuePath,
             steps: diagnosticSteps,
           }),
+          ...(cluster
+            ? [
+                itemListJsonLd({
+                  name: cluster.pillarTitle,
+                  path: cluster.pillarHref,
+                  items: [
+                    { name: cluster.pillarTitle, url: cluster.pillarHref },
+                    ...cluster.pages.map((page) => ({
+                      name: page.title,
+                      url: page.href,
+                    })),
+                  ],
+                }),
+              ]
+            : []),
         ]}
       />
 
@@ -248,6 +275,17 @@ export default async function IssuePage({ params }: Props) {
               >
                 مشاهده خدمات تعمیر {seo.consoleLabel}
               </Link>
+              {cluster ? (
+                <>
+                  {" · "}
+                  <Link
+                    href={cluster.pillarHref}
+                    className="text-cyan-400 transition hover:text-cyan-300"
+                  >
+                    {cluster.pillarTitle}
+                  </Link>
+                </>
+              ) : null}
               {" · "}
               <Link
                 href="/issues"
@@ -295,6 +333,10 @@ export default async function IssuePage({ params }: Props) {
               </div>
             </section>
           )}
+
+          {cluster ? (
+            <TopicClusterNav cluster={cluster} currentHref={issuePath} />
+          ) : null}
 
           <FaqSection items={seo.faqs} className="rounded-3xl py-12" />
 

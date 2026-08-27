@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { footerInfoLinks, footerQuickLinks } from "@/lib/site-nav";
+import {
+  footerInfoLinks,
+  footerLocationLinks,
+  footerQuickLinks,
+} from "@/lib/site-nav";
+import {
+  SITE_ADDRESS_DISPLAY,
+  SITE_PHONE_DISPLAY,
+  SITE_TEL_HREF,
+} from "@/lib/seo/site";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -7,7 +16,7 @@ export default function Footer() {
   return (
     <footer className="mt-20 border-t border-white/10 bg-black/50 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           <div className="space-y-3">
             <p className="text-lg font-bold text-white">فیکس بازی</p>
             <p className="text-sm leading-7 text-zinc-400">
@@ -23,7 +32,21 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  // href="/coming-soon"
+                  className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-sm font-semibold text-cyan-400">تعمیر در تهران</p>
+            <div className="flex flex-wrap gap-3">
+              {footerLocationLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-cyan-400/50 hover:text-white"
                 >
                   {link.title}
@@ -49,9 +72,14 @@ export default function Footer() {
 
           <div className="space-y-3">
             <p className="text-sm font-semibold text-cyan-400">ارتباط</p>
-            <p className="text-sm text-zinc-400">تلفن: ۰۲۱-۱۲۳۴۵۶۷۸</p>
             <p className="text-sm text-zinc-400">
-              آدرس: تهران، خیابان مثال، پلاک ۲۴
+              تلفن:{" "}
+              <a href={SITE_TEL_HREF} className="hover:text-cyan-300">
+                {SITE_PHONE_DISPLAY}
+              </a>
+            </p>
+            <p className="text-sm leading-7 text-zinc-400">
+              آدرس: {SITE_ADDRESS_DISPLAY}
             </p>
           </div>
         </div>

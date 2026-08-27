@@ -7,6 +7,13 @@ import {
   type ConsoleId,
 } from "./console-catalog";
 import { GAME_INSTALL_CONSOLE_META, GAME_INSTALL_CONSOLE_ORDER } from "./game-install-meta";
+import { TOPIC_CLUSTERS } from "./seo/topic-clusters";
+import {
+  TEHRAN_SERVICE_SLUGS,
+  tehranHub,
+  tehranPagePath,
+  tehranPages,
+} from "./locations/tehran";
 import { SHOP_CONSOLE_ORDER, SHOP_CONSOLE_META, SHOP_ENABLED } from "./shop";
 
 export type SiteNavLeaf = {
@@ -24,7 +31,7 @@ function treeService(slug: string) {
 
 function trackingItem(): SiteNavLeaf {
   return {
-    title: "پیگیری",
+    title: "پیگیری تعمیر",
     href: "/tracking",
   };
 }
@@ -43,6 +50,7 @@ function issueLeaves(
 function repairConsoleChild(id: ConsoleId): SiteNavItem {
   const config = consoleCatalog[id];
   const repair = getRepairService(id);
+  const cluster = TOPIC_CLUSTERS[id];
   return {
     title: repair?.title ?? `تعمیر ${config.title}`,
     href: `/services/${config.repairSlug}`,
@@ -51,7 +59,10 @@ function repairConsoleChild(id: ConsoleId): SiteNavItem {
         title: `همه خدمات ${config.title}`,
         href: `/consoles/${id}`,
       },
-      ...issueLeaves(config.repairSlug),
+      ...cluster.pages.map((page) => ({
+        title: page.title,
+        href: page.href,
+      })),
     ],
   };
 }
@@ -102,7 +113,6 @@ function shopChildren(): SiteNavItem[] {
 }
 
 export const navbarNavItems: SiteNavItem[] = [
-  { title: "خانه", href: "/" },
   { title: "عیب‌یابی", href: "/diagnosis" },
   {
     title: "تعمیر کنسول",
@@ -110,9 +120,20 @@ export const navbarNavItems: SiteNavItem[] = [
     children: [
       ...consoleIds.map(repairConsoleChild),
       hdmiNavChild(),
+      controllerNavItem(),
     ],
   },
-  controllerNavItem(),
+  {
+    title: "مشکلات کنسول",
+    href: "/issues",
+    children: [
+      { title: "مشکلات PS5", href: "/consoles/ps5/issues" },
+      { title: "مشکلات PS4", href: "/consoles/ps4/issues" },
+      { title: "مشکلات Xbox", href: "/consoles/xbox/issues" },
+      { title: "مشکلات HDMI", href: "/services/hdmi-repair" },
+      { title: "مشکلات دسته", href: "/services/controller-repair" },
+    ],
+  },
   {
     title: "نصب بازی",
     href: "/services/game-install",
@@ -129,7 +150,7 @@ export const navbarNavItems: SiteNavItem[] = [
     : []),
   trackingItem(),
   {
-    title: "بلاگ",
+    title: "راهنما",
     href: "/blog",
     children: blogPosts.map((post) => ({
       title: post.title,
@@ -139,21 +160,30 @@ export const navbarNavItems: SiteNavItem[] = [
 ];
 
 export const headerNavItems: SiteNavLeaf[] = [
-  { title: "خانه", href: "/" },
   { title: "عیب‌یابی", href: "/diagnosis" },
   { title: "تعمیر کنسول", href: "/services" },
+  { title: "مشکلات کنسول", href: "/issues" },
   { title: "نصب بازی", href: "/services/game-install" },
-  { title: "ثبت سفارش تعمیر", href: "/repair" },
+  { title: "ثبت تعمیر", href: "/repair" },
   trackingItem(),
+  { title: "راهنما", href: "/blog" },
 ];
 
 export const footerQuickLinks: SiteNavLeaf[] = [
-  { title: "خانه", href: "/" },
-  { title: "عیب‌یابی کنسول", href: "/diagnosis" },
+  { title: "عیب‌یابی", href: "/diagnosis" },
   { title: "تعمیر کنسول", href: "/services" },
+  { title: "مشکلات کنسول", href: "/issues" },
   { title: "نصب بازی", href: "/services/game-install" },
-  { title: "مشکلات رایج", href: "/issues" },
   trackingItem(),
+  { title: "راهنما", href: "/blog" },
+];
+
+export const footerLocationLinks: SiteNavLeaf[] = [
+  { title: tehranHub.title, href: tehranHub.path },
+  ...TEHRAN_SERVICE_SLUGS.map((slug) => ({
+    title: tehranPages[slug].title,
+    href: tehranPagePath(slug),
+  })),
 ];
 
 export const footerInfoLinks: SiteNavLeaf[] = [

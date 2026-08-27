@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import MobileActionBar from "./components/layout/MobileActionBar";
 import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
@@ -18,6 +19,7 @@ export const viewport: Viewport = {
   themeColor: "#06b6d4",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 const samim = localFont({
@@ -77,6 +79,7 @@ export default function RootLayout({
               <Navbar />
               {children}
               <Footer />
+              <MobileActionBar />
             </GameInstallListProvider>
           </ShopCartProvider>
         </AuthProvider>
