@@ -93,6 +93,9 @@ export function createPageMetadata(input: PageMetadataInput): Metadata {
   };
 }
 
+const googleSiteVerification =
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+
 export const rootMetadata: Metadata = {
   ...createPageMetadata({
     title: SITE_NAME,
@@ -116,4 +119,7 @@ export const rootMetadata: Metadata = {
     shortcut: "/logos/logo-nobg.png",
     apple: "/logos/logo-nobg.png",
   },
+  verification: googleSiteVerification
+    ? { google: googleSiteVerification }
+    : undefined,
 };

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 
@@ -12,6 +13,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { GameInstallListProvider } from "./context/GameInstallListContext";
 import { ShopCartProvider } from "./context/ShopCartContext";
 import { rootMetadata } from "../lib/seo/metadata";
+
+const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim() || "G-JBDZK4TV60";
 
 export const metadata: Metadata = rootMetadata;
 
@@ -84,6 +87,7 @@ export default function RootLayout({
           </ShopCartProvider>
         </AuthProvider>
       </body>
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
