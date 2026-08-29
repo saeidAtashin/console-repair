@@ -10,7 +10,7 @@ import ProfileForm from "@/app/components/dashboard/ProfileForm";
 import AddressManager from "@/app/components/dashboard/AddressManager";
 import RepairFormClient from "@/app/repair/RepairFormClient";
 import { getRepairStatusLabel } from "@/lib/repair-status";
-import { SITE_PHONE } from "@/lib/seo/site";
+import { SITE_PHONE, SITE_PHONE_DISPLAY } from "@/lib/seo/site";
 import { apiRequest, ApiError } from "@/lib/api-client";
 import type { RepairPrefill } from "@/lib/repair-links";
 
@@ -24,8 +24,6 @@ type Order = {
   status: string;
   createdAt: string;
 };
-
-const DISPLAY_PHONE = "09107701704";
 
 const EMPTY_REPAIR_PREFILL: RepairPrefill = {};
 
@@ -128,7 +126,7 @@ export default function DashboardPage() {
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-3 font-bold text-black shadow-[0_0_20px_rgba(0,255,255,0.25)] transition hover:from-cyan-400 hover:to-blue-400"
           >
             <Phone className="h-5 w-5" />
-            تماس با پشتیبانی ({DISPLAY_PHONE})
+            تماس با پشتیبانی ({SITE_PHONE_DISPLAY})
           </a>
 
           <Link
