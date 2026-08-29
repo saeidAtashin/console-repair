@@ -19,7 +19,6 @@ import {
   hasInstallGameSize,
   installGameDetailPath,
 } from "@/lib/game-install-catalog";
-import { getAllInstallCatalogGames } from "@/lib/game-install-catalog.server";
 import {
   buildInstallGameFaqs,
   buildInstallGameOverview,
@@ -27,7 +26,7 @@ import {
   estimateInstallDuration,
   getInstallGameBySlug,
 } from "@/lib/game-install-game-page";
-import { GAME_INSTALL_CONSOLE_META, GAME_INSTALL_CONSOLE_ORDER } from "@/lib/game-install-meta";
+import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
 import { formatToman } from "@/lib/game-install-pricing";
 import {
   consoleIdFromGameInstallSlug,
@@ -45,18 +44,10 @@ export const dynamicParams = true;
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-  const params: { console: string; slug: string }[] = [];
-  for (const consoleSlug of GAME_INSTALL_CONSOLE_ORDER) {
-    try {
-      const games = await getAllInstallCatalogGames(consoleSlug);
-      for (const game of games) {
-        params.push({ console: consoleSlug, slug: game.slug });
-      }
-    } catch {
-      /* catalog unavailable at build */
-    }
-  }
-  return params;
+  // Do not prerender the full catalog at build time. Each page refetches the
+  // catalog, so 600+ routes exceed CI's 60s static-generation timeout.
+  // Pages are generated on demand (dynamicParams + ISR revalidate).
+  return [];
 }
 
 export async function generateMetadata({ params }: Props) {
