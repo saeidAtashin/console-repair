@@ -26,6 +26,8 @@ const TITLE = "نصب بازی";
 const DESCRIPTION =
   "لیست کامل بازی‌های قابل نصب برای PS4، PS5، Xbox One و Xbox Series — جستجو، انتخاب و ثبت سفارش نصب.";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = createPageMetadata({
   title: TITLE,
   description: DESCRIPTION,

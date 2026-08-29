@@ -35,6 +35,8 @@ type Props = {
   params: Promise<{ console: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return Object.keys(GAME_INSTALL_CONSOLE_META).map((console) => ({
     console,

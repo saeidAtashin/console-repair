@@ -55,7 +55,7 @@ export async function apiRequest<T = unknown>(
   path: string,
   options: ApiRequestOptions = {},
 ): Promise<T> {
-  const { auth = true, ...requestOptions } = options;
+  const { auth = true, signal: userSignal, ...requestOptions } = options;
   const headers = new Headers(requestOptions.headers ?? {});
   headers.set("X-Tenant-ID", getTenantId());
   const token = auth ? getAuthToken() : null;
@@ -64,9 +64,16 @@ export async function apiRequest<T = unknown>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
+  const timeoutSignal = AbortSignal.timeout(10_000);
+  const signal =
+    userSignal && typeof AbortSignal.any === "function"
+      ? AbortSignal.any([userSignal, timeoutSignal])
+      : (userSignal ?? timeoutSignal);
+
   const response = await fetch(buildUrl(path), {
     ...requestOptions,
     headers,
+    signal,
   });
 
   let payload: unknown = null;

@@ -6,6 +6,8 @@ import { GAME_INSTALL_CONSOLES, PUBLIC_SITEMAP_ENTRIES } from "../lib/seo/routes
 import { matchFeaturedInstallGame } from "../app/data/featured-install-games";
 import { absoluteUrl } from "../lib/seo/site";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
 
