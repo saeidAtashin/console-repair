@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 
@@ -71,6 +70,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fa" dir="rtl" className={`${samim.variable} ${samim.className}`}>
+      <head>
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`,
+          }}
+        />
+      </head>
       <body className="font-sans">
         <AuthProvider>
           <ShopCartProvider>
@@ -87,7 +100,6 @@ export default function RootLayout({
           </ShopCartProvider>
         </AuthProvider>
       </body>
-      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
