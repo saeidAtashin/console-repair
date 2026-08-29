@@ -5,7 +5,9 @@ import { getDesignedCdnHostname } from "./src/lib/designed-assets";
 const designedCdnHost = getDesignedCdnHostname();
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   reactCompiler: true,
+  skipTrailingSlashRedirect: true,
   async redirects() {
     return [
       { source: "/shop", destination: "/cases", permanent: true },
@@ -31,6 +33,16 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "media.rawg.io",
+        pathname: "/media/**",
+      },
+      {
+        protocol: "https",
+        hostname: "k3isonfire.ir",
+        pathname: "/media/**",
+      },
+      {
+        protocol: "https",
+        hostname: "api.k3isonfire.ir",
         pathname: "/media/**",
       },
       ...(designedCdnHost

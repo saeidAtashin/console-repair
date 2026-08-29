@@ -13,7 +13,7 @@ export const SITE_ADDRESS = {
 
 export function getSiteUrl(): string {
   const url =
-    process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://casekadeh.ir";
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://shopghab.ir";
   return url.replace(/\/$/, "");
 }
 

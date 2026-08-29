@@ -1,0 +1,53 @@
+# shopghab.ir on the existing VPS
+
+This site shares the FixBazi VPS and the k3isonfire API. FixBazi stays on port **3001**. ShopGhab runs in a second container on port **3002**.
+
+Tenant header: `X-Tenant-ID: shop-ghab`. Confirm that tenant exists on the API before going live.
+
+## DNS
+
+Point both records at the **same VPS IP** as fixbazi.ir:
+
+- `shopghab.ir` A
+- `www.shopghab.ir` A (or CNAME to `shopghab.ir`)
+
+## First-time VPS setup
+
+```bash
+mkdir -p /root/shopghab
+cd /root/shopghab
+# After the first CI deploy (or after copying .env.example from the repo):
+cp .env.example .env   # if you have the file locally; otherwise create it by hand
+```
+
+Required `.env` values:
+
+```
+NEXT_PUBLIC_SITE_URL=https://shopghab.ir
+API_BASE_URL=https://api.k3isonfire.ir/api/v1
+NEXT_PUBLIC_API_TENANT_ID=shop-ghab
+```
+
+Set `ADMIN_PHONE_NUMBER` and `ADMIN_PASSWORD` before opening the admin UI.
+
+## nginx
+
+```bash
+cp deploy/nginx/shopghab.ir.conf /etc/nginx/sites-available/shopghab.ir
+ln -sf /etc/nginx/sites-available/shopghab.ir /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx
+```
+
+The site proxies `shopghab.ir` / `www.shopghab.ir` to `127.0.0.1:3002`. Do not change the FixBazi site on port 3001.
+
+## TLS
+
+```bash
+certbot --nginx -d shopghab.ir -d www.shopghab.ir
+```
+
+## Deploy
+
+Push to `print-site` (or run **Deploy shopghab to VPS** in GitHub Actions). The workflow reuses `VPS_HOST`, `VPS_USER`, and `VPS_SSH_KEY`, copies the standalone build to `/root/shopghab`, and restarts the `shopghab` container.
+
+After a successful deploy the app should answer on `http://127.0.0.1:3002` and at `https://shopghab.ir`.
