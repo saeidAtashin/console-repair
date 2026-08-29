@@ -5,6 +5,10 @@ on:
     branches: [print-site]
   workflow_dispatch:
 
+concurrency:
+  group: shopghab-production
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
