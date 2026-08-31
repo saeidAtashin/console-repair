@@ -42,6 +42,12 @@ nginx -t && systemctl reload nginx
 
 The site proxies `shopghab.ir` / `www.shopghab.ir` to `127.0.0.1:3002`. Do not change the FixBazi site on port 3001.
 
+Or run the one-shot installer after a CI deploy has copied `deploy/` onto the VPS:
+
+```bash
+bash /root/shopghab/deploy/bootstrap-shopghab.sh
+```
+
 ## TLS
 
 ```bash

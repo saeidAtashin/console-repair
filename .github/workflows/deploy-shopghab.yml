@@ -35,7 +35,9 @@ jobs:
             .next/static \
             public \
             Dockerfile.prod \
-            docker-compose.prod.yml
+            docker-compose.prod.yml \
+            deploy/nginx/shopghab.ir.conf \
+            deploy/bootstrap-shopghab.sh
 
       - name: Copy archive to VPS
         uses: appleboy/scp-action@v1.0.0
