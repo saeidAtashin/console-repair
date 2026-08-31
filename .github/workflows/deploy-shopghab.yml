@@ -37,6 +37,7 @@ jobs:
             Dockerfile.prod \
             docker-compose.prod.yml \
             deploy/nginx/shopghab.ir.conf \
+            deploy/nginx/shopghab.ir.http.conf \
             deploy/bootstrap-shopghab.sh
 
       - name: Copy archive to VPS

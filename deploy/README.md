@@ -50,9 +50,16 @@ bash /root/shopghab/deploy/bootstrap-shopghab.sh
 
 ## TLS
 
+Use the Let's Encrypt PEMs (fullchain + private key). Do not commit them. Copy onto the VPS, then bootstrap:
+
 ```bash
-certbot --nginx -d shopghab.ir -d www.shopghab.ir
+ssh root@185.204.197.187 'mkdir -p /root/shopghab/deploy/ssl'
+scp deploy/ssl/fullchain.pem root@185.204.197.187:/root/shopghab/deploy/ssl/fullchain.pem
+scp deploy/ssl/privkey.pem root@185.204.197.187:/root/shopghab/deploy/ssl/privkey.pem
+ssh root@185.204.197.187 'bash /root/shopghab/deploy/bootstrap-shopghab.sh'
 ```
+
+nginx will listen on 443 and redirect HTTP to HTTPS. The `.pfx` is not used. Certs expire about every 90 days (this pair is valid until 29 Nov 2026).
 
 ## Deploy
 
