@@ -7,6 +7,8 @@ services:
     restart: unless-stopped
     ports:
       - "3002:3000"
+    mem_limit: 768m
+    cpus: 1.0
     env_file:
       - .env
     environment:

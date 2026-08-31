@@ -6,10 +6,12 @@ Tenant header: `X-Tenant-ID: shop-ghab`. Confirm that tenant exists on the API b
 
 ## DNS
 
-Point both records at the **same VPS IP** as fixbazi.ir:
+Point both records at the **same VPS IP** as fixbazi.ir and namaking.ir (`185.204.197.187`):
 
 - `shopghab.ir` A
 - `www.shopghab.ir` A (or CNAME to `shopghab.ir`)
+
+Until those records exist, shopghab.ir will not resolve. The other two frontends already share this IP.
 
 ## First-time VPS setup
 
@@ -51,3 +53,17 @@ certbot --nginx -d shopghab.ir -d www.shopghab.ir
 Push to `print-site` (or run **Deploy shopghab to VPS** in GitHub Actions). The workflow reuses `VPS_HOST`, `VPS_USER`, and `VPS_SSH_KEY`, copies the standalone build to `/root/shopghab`, and restarts the `shopghab` container.
 
 After a successful deploy the app should answer on `http://127.0.0.1:3002` and at `https://shopghab.ir`.
+
+## VPS health (three frontends)
+
+Three Next.js containers (FixBazi `:3001`, ShopGhab `:3002`, Namaking) plus nginx are fine on about **4 GB RAM**. On **2 GB** they will likely swap or get killed.
+
+ShopGhab is capped at **768 MB / 1 CPU** in `docker-compose.prod.yml` so it cannot starve the other sites. After ShopGhab is up, check leftover RAM on the server:
+
+```bash
+free -h; df -h; uptime
+docker stats --no-stream
+docker ps
+```
+
+If `free` shows less than about **1 GB unused**, lower the other sites' `mem_limit` the same way, or upgrade the VPS.
