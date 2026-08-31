@@ -64,9 +64,15 @@ export async function apiRequest<T = unknown>(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
+  const timeoutSignal = AbortSignal.timeout(15_000);
+  const signal = requestOptions.signal
+    ? AbortSignal.any([requestOptions.signal, timeoutSignal])
+    : timeoutSignal;
+
   const response = await fetch(buildUrl(path), {
     ...requestOptions,
     headers,
+    signal,
   });
 
   let payload: unknown = null;

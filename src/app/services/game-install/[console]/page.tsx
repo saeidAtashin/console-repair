@@ -28,6 +28,9 @@ type Props = {
   params: Promise<{ console: string }>;
 };
 
+/** Catalog comes from an external API that is often unreachable from CI. */
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return Object.keys(GAME_INSTALL_CONSOLE_META).map((console) => ({
     console,
