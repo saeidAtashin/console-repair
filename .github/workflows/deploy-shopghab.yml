@@ -71,3 +71,6 @@ jobs:
             docker compose -f docker-compose.prod.yml build --no-cache
             docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
             docker image prune -f
+            if [ -x /root/shopghab/deploy/bootstrap-shopghab.sh ] || [ -f /root/shopghab/deploy/bootstrap-shopghab.sh ]; then
+              bash /root/shopghab/deploy/bootstrap-shopghab.sh
+            fi

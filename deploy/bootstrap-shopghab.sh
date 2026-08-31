@@ -42,7 +42,7 @@ cp "$CONF_SRC" /etc/nginx/sites-available/shopghab.ir
 ln -sf /etc/nginx/sites-available/shopghab.ir /etc/nginx/sites-enabled/shopghab.ir
 nginx -t
 systemctl reload nginx
-echo "nginx reloaded. shopghab.ir → 127.0.0.1:3002"
+echo "nginx reloaded. shopghab.ir → 127.0.0.1:3002 (not the FixBazi default vhost)"
 
 echo "==> Checking public DNS (must be $VPS_IP)"
 dns_ok=1
