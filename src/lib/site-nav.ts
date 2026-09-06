@@ -83,6 +83,7 @@ function issuesChildren(): SiteNavLeaf[] {
 
 export const navbarNavItems: SiteNavItem[] = [
   { title: "خانه", href: "/" },
+  { title: "عیب‌یابی", href: "/diagnosis" },
   {
     title: "تعمیرات",
     href: "/services",
@@ -116,6 +117,7 @@ export const navbarNavItems: SiteNavItem[] = [
 
 export const headerNavItems: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
+  { title: "عیب‌یابی", href: "/diagnosis" },
   { title: "همه خدمات", href: "/services" },
   { title: "ثبت سفارش تعمیر", href: "/repair" },
   { title: "مشکلات رایج", href: "/issues" },
@@ -124,6 +126,7 @@ export const headerNavItems: SiteNavLeaf[] = [
 
 export const footerQuickLinks: SiteNavLeaf[] = [
   { title: "خانه", href: "/" },
+  { title: "عیب‌یابی", href: "/diagnosis" },
   { title: "همه خدمات", href: "/services" },
   { title: "ثبت سفارش تعمیر", href: "/repair" },
   { title: "مشکلات رایج", href: "/issues" },

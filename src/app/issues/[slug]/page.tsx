@@ -327,6 +327,12 @@ export default async function IssuePage({ params }: Props) {
                     بدون هزینه مشاوره
                   </span>
                   <Link
+                    href="/diagnosis"
+                    className="group my-auto inline-flex items-center gap-3 rounded-2xl border border-cyan-400/40 bg-cyan-500/15 px-7 py-4 text-base font-extrabold text-cyan-100 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-500/25"
+                  >
+                    شروع عیب‌یابی
+                  </Link>
+                  <Link
                     href={repairHref}
                     className="group my-auto mx-auto inline-flex items-center gap-3 rounded-2xl border border-amber-200/30 bg-linear-to-r from-amber-300 to-orange-300 px-7 py-4 text-base font-extrabold text-zinc-900 shadow-[0_18px_45px_-20px_rgba(251,191,36,0.95)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-20px_rgba(251,191,36,0.95)] active:translate-y-0"
                   >

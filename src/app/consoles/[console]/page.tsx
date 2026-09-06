@@ -70,6 +70,11 @@ export default async function ConsoleHubPage({ params }: Props) {
 
   const links = [
     {
+      title: `عیب‌یابی ${config.title}`,
+      description: "تشخیص مرحله‌به‌مرحله مشکل کنسول و مسیر تعمیر پیشنهادی.",
+      href: "/diagnosis",
+    },
+    {
       title: repair?.title ?? `تعمیر ${config.title}`,
       description: repair?.description,
       href: `/services/${config.repairSlug}`,

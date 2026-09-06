@@ -126,6 +126,10 @@ export const siteBreadcrumbTree: BranchNode = {
       href: "/services",
     },
     {
+      title: "عیب‌یابی کنسول",
+      href: "/diagnosis",
+    },
+    {
       title: "فروشگاه",
       href: "/shop",
       children: SHOP_CONSOLE_ORDER.map((slug) => ({
