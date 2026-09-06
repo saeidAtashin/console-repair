@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import MobileActionBar from "./components/layout/MobileActionBar";
 import LocalBusinessSchema from "./components/seo/LocalBusinessSchema";
 import RouteLoadingOverlay from "./components/ui/RouteLoadingOverlay";
 import { AuthProvider } from "./context/AuthContext";
@@ -12,98 +13,54 @@ import { GameInstallListProvider } from "./context/GameInstallListContext";
 import { ShopCartProvider } from "./context/ShopCartContext";
 import { rootMetadata } from "../lib/seo/metadata";
 
+const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim() || "G-JBDZK4TV60";
+
 export const metadata: Metadata = rootMetadata;
 
 export const viewport: Viewport = {
   themeColor: "#06b6d4",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
-const vazirmatn = localFont({
+const samim = localFont({
   src: [
     {
-      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Regular.woff2",
+      path: "./fonts/samim/Samim.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Medium.woff2",
+      path: "./fonts/samim/Samim-Medium.ttf",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-SemiBold.woff2",
+      path: "./fonts/samim/Samim-Medium.ttf",
       weight: "600",
       style: "normal",
     },
     {
-      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Bold.woff2",
+      path: "./fonts/samim/Samim-Bold.ttf",
       weight: "700",
       style: "normal",
     },
     {
-      path: "../../node_modules/vazirmatn/fonts/webfonts/Vazirmatn-Black.woff2",
+      path: "./fonts/samim/Samim-Bold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "./fonts/samim/Samim-Bold.ttf",
       weight: "900",
       style: "normal",
     },
   ],
-  variable: "--font-vazirmatn",
+  variable: "--font-samim",
   display: "swap",
-});
-
-const pixel = localFont({
-  src: "./fonts/A-Pixel.ttf",
-  variable: "--font-pixel",
-  display: "swap",
-});
-
-const pixel2 = localFont({
-  src: "./fonts/A-Pixel-2.ttf",
-  variable: "--Pixel2",
-  display: "swap",
-});
-
-const sorenanormal = localFont({
-  src: "./fonts/Sorena-Normal.ttf",
-  variable: "--font-Sorena-Normal",
-  display: "swap",
-});
-
-const sorenapixelFont = localFont({
-  src: "./fonts/Sorena-Pixel.ttf",
-  variable: "--font-Sorena-Pixel",
-  display: "swap",
-});
-
-const Cristik = localFont({
-  src: "./fonts/Cristik.ttf",
-  variable: "--Cristik",
-  display: "swap",
-});
-
-const Mojita = localFont({
-  src: "./fonts/Mojita.ttf",
-  variable: "--Mojita",
-  display: "swap",
-});
-
-const WAGHUBold = localFont({
-  src: "./fonts/WAGHUBold.ttf",
-  variable: "--WAGHUBold",
-  display: "swap",
-});
-
-const WAGHURegular = localFont({
-  src: "./fonts/WAGHURegular.ttf",
-  variable: "--WAGHURegular",
-  display: "swap",
-});
-
-const unixelFont = localFont({
-  src: "./fonts/unixel-Regular.woff2",
-  variable: "--font-unixel-Regular",
-  display: "swap",
+  fallback: ["Tahoma", "Arial", "sans-serif"],
+  adjustFontFallback: false,
 });
 
 export default function RootLayout({
@@ -112,10 +69,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fa" dir="rtl">
-      <body
-        className={`${vazirmatn.variable} ${pixel.variable} ${pixel2.variable} ${sorenanormal.variable} ${sorenapixelFont.variable} ${Cristik.variable} ${Mojita.variable} ${WAGHUBold.variable} ${WAGHURegular.variable} ${unixelFont.variable} `}
-      >
+    <html lang="fa" dir="rtl" className={`${samim.variable} ${samim.className}`}>
+      <head>
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`,
+          }}
+        />
+      </head>
+      <body className="font-sans">
         <AuthProvider>
           <ShopCartProvider>
             <GameInstallListProvider>
@@ -126,6 +95,7 @@ export default function RootLayout({
               <Navbar />
               {children}
               <Footer />
+              <MobileActionBar />
             </GameInstallListProvider>
           </ShopCartProvider>
         </AuthProvider>

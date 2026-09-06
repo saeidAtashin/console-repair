@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,6 +73,7 @@ type Props = {
   onSuccess?: () => void;
   theme?: BrandTheme;
   onConsoleChange?: (consoleId: ConsoleId | undefined) => void;
+  variant?: "page" | "embedded";
 };
 
 const defaultTheme = brandThemes.gaming;
@@ -87,6 +89,7 @@ export default function RepairFormClient({
   onSuccess,
   theme = defaultTheme,
   onConsoleChange,
+  variant = "page",
 }: Props) {
   const { user } = useAuth();
   const { requestSubmit, verifying, modalProps } = usePhoneVerifiedSubmit();
@@ -141,8 +144,11 @@ export default function RepairFormClient({
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [acceptanceCode, setAcceptanceCode] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const embedded = variant === "embedded";
+  const HeadingTag = embedded ? "h2" : "h1";
 
   const {
     register,
@@ -208,6 +214,7 @@ export default function RepairFormClient({
 
   const onSubmit = async (data: RepairFormData) => {
     setSuccess(false);
+    setAcceptanceCode(null);
     setSubmitError(null);
     setLoading(true);
 
@@ -221,8 +228,8 @@ export default function RepairFormClient({
           problemTypes,
         );
 
-        await submitRepairRequest(payload);
-
+        const created = await submitRepairRequest(payload);
+        setAcceptanceCode(created.id != null ? String(created.id) : null);
         setSuccess(true);
         reset(defaultValues);
         setImagePreview(null);
@@ -267,7 +274,10 @@ export default function RepairFormClient({
     : "نوع دستگاه را انتخاب کرده و فرم زیر را تکمیل کنید.";
 
   return (
-    <div className="relative px-6 py-12 text-white">
+    <div
+      id={embedded ? "repair-request" : undefined}
+      className={cn("relative text-white", embedded ? "px-0 py-4" : "px-6 py-12")}
+    >
       <PhoneVerificationModal {...modalProps} />
 
       <div className="relative mx-auto max-w-3xl">
@@ -322,9 +332,9 @@ export default function RepairFormClient({
             )}
           </div>
 
-          <h1 className="relative text-4xl font-extrabold leading-snug tracking-tight text-white md:text-5xl">
+          <HeadingTag className="relative text-4xl font-extrabold leading-snug tracking-tight text-white md:text-5xl">
             {headerTitle}
-          </h1>
+          </HeadingTag>
 
           <p className="relative mx-auto mt-4 max-w-xl text-lg text-zinc-300">
             {headerSubtitle}
@@ -373,10 +383,24 @@ export default function RepairFormClient({
         >
           {success && (
             <div
-              className="mb-6 rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-green-300 shadow-[0_0_15px_rgba(0,255,100,0.2)]"
+              className="mb-6 rounded-2xl border border-green-500/30 bg-green-500/10 p-5 text-green-300 shadow-[0_0_15px_rgba(0,255,100,0.2)]"
               role="status"
             >
-              <p className="text-white">درخواست شما با موفقیت ثبت شد.</p>
+              <p className="font-bold text-white">درخواست شما با موفقیت ثبت شد.</p>
+              {acceptanceCode ? (
+                <div className="mt-3">
+                  <p className="text-sm text-zinc-300">کد پذیرش</p>
+                  <p className="mt-1 text-2xl font-black tracking-[0.28em] text-white">
+                    {acceptanceCode}
+                  </p>
+                  <Link
+                    href={`/tracking?code=${encodeURIComponent(acceptanceCode)}`}
+                    className="mt-4 inline-flex rounded-xl bg-cyan-400 px-4 py-2 text-sm font-bold text-black"
+                  >
+                    مشاهده وضعیت
+                  </Link>
+                </div>
+              ) : null}
             </div>
           )}
 

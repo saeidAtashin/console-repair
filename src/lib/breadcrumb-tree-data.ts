@@ -7,6 +7,7 @@ import {
   type ConsoleId,
 } from "./console-catalog";
 import { SHOP_CONSOLE_META, SHOP_CONSOLE_ORDER, getProducts } from "./shop";
+import { TOPIC_CLUSTERS } from "./seo/topic-clusters";
 
 export type BranchNode = {
   title: string;
@@ -27,18 +28,15 @@ const shopProductsByConsole = Object.fromEntries(
 
 function issuesBranch(
   consoleId: ConsoleId,
-  repairSlug: string,
-  limit = 5,
 ): BranchNode {
-  const repair = serviceBySlug[repairSlug];
-  const issues = repair?.commonIssues?.slice(0, limit) ?? [];
+  const cluster = TOPIC_CLUSTERS[consoleId];
 
   return {
     title: "مشکلات رایج",
     href: `/consoles/${consoleId}/issues`,
-    children: issues.map((issue) => ({
-      title: issue.title,
-      href: `/issues/${issue.slug}`,
+    children: cluster.pages.map((page) => ({
+      title: page.title,
+      href: page.href,
     })),
   };
 }
@@ -51,6 +49,24 @@ function consoleBranch(consoleId: ConsoleId): BranchNode {
     (g) => ({
       title: g.label,
       href: `/services/game-install/${g.slug}`,
+      children: [
+        {
+          title: "لیست بازی‌ها",
+          href: `/services/game-install/${g.slug}/games`,
+        },
+        {
+          title: "پکیج ۵ بازی",
+          href: `/services/game-install/${g.slug}/packages/5`,
+        },
+        {
+          title: "پکیج ۱۰ بازی",
+          href: `/services/game-install/${g.slug}/packages/10`,
+        },
+        {
+          title: "پکیج اقتصادی",
+          href: `/services/game-install/${g.slug}/packages/economy`,
+        },
+      ],
     }),
   );
 
@@ -89,7 +105,7 @@ function consoleBranch(consoleId: ConsoleId): BranchNode {
         title: "فروش قطعات",
         href: `/shop/${consoleId}/parts`,
       },
-      issuesBranch(consoleId, config.repairSlug),
+      issuesBranch(consoleId),
     ],
   };
 }
@@ -126,10 +142,6 @@ export const siteBreadcrumbTree: BranchNode = {
       href: "/services",
     },
     {
-      title: "عیب‌یابی کنسول",
-      href: "/diagnosis",
-    },
-    {
       title: "فروشگاه",
       href: "/shop",
       children: SHOP_CONSOLE_ORDER.map((slug) => ({
@@ -145,6 +157,10 @@ export const siteBreadcrumbTree: BranchNode = {
     {
       title: "مشکلات رایج",
       href: "/issues",
+    },
+    {
+      title: "عیب‌یابی کنسول",
+      href: "/diagnosis",
     },
     {
       title: "ثبت سفارش تعمیر",

@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
 import GameInstallListCountBadge from "@/app/components/game-install/GameInstallListCountBadge";
 import InstallListGameItem from "@/app/components/game-install/InstallListGameItem";
-import { FormInput } from "@/app/components/ui/form";
+import { FormInput, FormTextarea } from "@/app/components/ui/form";
 import { useAuth } from "@/app/context/AuthContext";
 import { useGameInstallList } from "@/app/context/GameInstallListContext";
 import { useInstallMethodId } from "@/app/hooks/useInstallMethod";
@@ -28,6 +28,7 @@ type Props = {
   consoleLabel: string;
   variant?: "default" | "compact";
   embedded?: boolean;
+  suggestedNote?: string;
 };
 
 export default function GameInstallOrderPanel({
@@ -35,6 +36,7 @@ export default function GameInstallOrderPanel({
   consoleLabel,
   variant = "default",
   embedded = false,
+  suggestedNote,
 }: Props) {
   const { user } = useAuth();
   const { requestSubmit, verifying, modalProps } = usePhoneVerifiedSubmit();
@@ -45,6 +47,7 @@ export default function GameInstallOrderPanel({
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [customNote, setCustomNote] = useState(suggestedNote ?? "");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -57,6 +60,10 @@ export default function GameInstallOrderPanel({
       setPhone(accountPhone);
     }
   }, [accountPhone]);
+
+  useEffect(() => {
+    if (suggestedNote) setCustomNote(suggestedNote);
+  }, [suggestedNote]);
 
   useEffect(() => {
     function onFabDocked() {
@@ -83,8 +90,8 @@ export default function GameInstallOrderPanel({
     event.preventDefault();
     setSubmitError(null);
 
-    if (games.length === 0) {
-      setSubmitError("حداقل یک بازی انتخاب کنید.");
+    if (games.length === 0 && !customNote.trim()) {
+      setSubmitError("حداقل یک بازی انتخاب کنید یا نام بازی را در توضیحات بنویسید.");
       return;
     }
 
@@ -109,6 +116,7 @@ export default function GameInstallOrderPanel({
           games,
           consoleLabel,
           installMethodId,
+          extraNote: customNote.trim() || undefined,
         });
         await clearConsoleList(consoleSlug);
         setSuccess(true);
@@ -263,6 +271,15 @@ export default function GameInstallOrderPanel({
           placeholder="مثلاً علی محمدی"
         />
 
+        <FormTextarea
+          label="بازی در لیست نیست؟ (اختیاری)"
+          id={`install-note-${consoleSlug}`}
+          rows={3}
+          value={customNote}
+          onChange={(e) => setCustomNote(e.target.value)}
+          placeholder="نام بازی یا توضیح پکیج مورد نظر را بنویسید"
+        />
+
         {submitError ? (
           <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
             {submitError}
@@ -272,7 +289,7 @@ export default function GameInstallOrderPanel({
         <motion.button
           type="submit"
           data-game-install-submit-target
-          disabled={loading || verifying || games.length === 0}
+          disabled={loading || verifying || (games.length === 0 && !customNote.trim())}
           animate={
             submitHighlight
               ? {

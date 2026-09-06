@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import GameCatalogGrid from "@/app/components/game-install/GameCatalogGrid";
+import GameInstallFilterBar from "@/app/components/game-install/GameInstallFilterBar";
 import GameInstallMethodPicker from "@/app/components/game-install/GameInstallMethodPicker";
 import GameInstallOrderFab from "@/app/components/game-install/GameInstallOrderFab";
 import GameInstallOrderPanel from "@/app/components/game-install/GameInstallOrderPanel";
@@ -14,12 +15,16 @@ import { createPageMetadata } from "../../../../../lib/seo/metadata";
 import { GAME_INSTALL_CONSOLE_META } from "@/lib/game-install-meta";
 import { getGameInstallContent } from "@/lib/game-install-content";
 import { getInstallCatalogWithMeta } from "@/lib/game-install-catalog.server";
+import {
+  sortInstallCatalogByFilter,
+} from "@/lib/game-install-catalog";
+import { getGameFilter, isGameFilter, type GameFilterId } from "@/lib/game-filters";
 
 type Props = {
   params: Promise<{ console: string }>;
+  searchParams: Promise<{ filter?: string }>;
 };
 
-/** Catalog comes from an external API that is often unreachable from CI. */
 export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
@@ -28,10 +33,13 @@ export function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const { console: consoleSlug } = await params;
+  const { filter: filterParam } = await searchParams;
   const meta = GAME_INSTALL_CONSOLE_META[consoleSlug];
   const content = getGameInstallContent(consoleSlug);
+  const filter = filterParam && isGameFilter(filterParam) ? filterParam : undefined;
+  const filterMeta = filter ? getGameFilter(filter) : undefined;
 
   if (!meta) {
     return createPageMetadata({
@@ -42,21 +50,29 @@ export async function generateMetadata({ params }: Props) {
   }
 
   const description =
-    content?.gamesPageIntro[0]?.slice(0, 160) ??
+    (filter && content?.filterIntros[filter]) ||
+    content?.gamesPageIntro[0] ||
     `لیست کامل بازی‌های ${meta.label} برای انتخاب و ثبت سفارش نصب.`;
 
   return createPageMetadata({
-    title: `لیست بازی‌ها — ${meta.label}`,
-    description,
-    path: `/services/game-install/${consoleSlug}/games`,
-    keywords: [meta.label, "نصب بازی", "لیست بازی"],
+    title: filterMeta
+      ? `${filterMeta.label} — لیست بازی ${meta.label}`
+      : `لیست بازی‌ها — ${meta.label}`,
+    description: description.slice(0, 160),
+    path: filter
+      ? `/services/game-install/${consoleSlug}/games?filter=${filter}`
+      : `/services/game-install/${consoleSlug}/games`,
+    keywords: [meta.label, "نصب بازی", "لیست بازی", filterMeta?.label ?? ""].filter(Boolean),
   });
 }
 
-export default async function GameListPage({ params }: Props) {
+export default async function GameListPage({ params, searchParams }: Props) {
   const { console: consoleSlug } = await params;
+  const { filter: filterParam } = await searchParams;
   const meta = GAME_INSTALL_CONSOLE_META[consoleSlug];
   const content = getGameInstallContent(consoleSlug);
+  const filter: GameFilterId | undefined =
+    filterParam && isGameFilter(filterParam) ? filterParam : undefined;
 
   if (!meta || !content) notFound();
 
@@ -64,7 +80,12 @@ export default async function GameListPage({ params }: Props) {
   const listPath = `${hubPath}/games`;
   const { games: catalogGames, deviceTypeId, fetchFailed, hasMoreGames, totalCount } =
     await getInstallCatalogWithMeta(consoleSlug);
-  const introParagraphs = content.gamesPageIntro;
+  const games = filter
+    ? sortInstallCatalogByFilter(catalogGames, filter)
+    : catalogGames;
+  const introParagraphs = filter
+    ? [content.filterIntros[filter] ?? content.gamesPageIntro[0]]
+    : content.gamesPageIntro;
 
   return (
     <main className="min-h-screen bg-[#050816] pt-24 pb-24 text-white">
@@ -95,6 +116,8 @@ export default async function GameListPage({ params }: Props) {
         </h1>
 
         <OverviewSection paragraphs={introParagraphs} className="border-t-0 py-8" />
+
+        <GameInstallFilterBar consoleSlug={consoleSlug} active={filter} />
 
         <div className="mb-8 flex flex-wrap gap-3">
           <a
@@ -127,7 +150,7 @@ export default async function GameListPage({ params }: Props) {
           <GameCatalogGrid
             consoleSlug={consoleSlug}
             consoleLabel={meta.label}
-            games={catalogGames}
+            games={games}
             deviceTypeId={deviceTypeId}
             hasMoreGames={hasMoreGames}
             totalCount={totalCount}

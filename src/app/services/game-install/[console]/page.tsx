@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import GameCatalogGrid from "@/app/components/game-install/GameCatalogGrid";
 import GameInstallCheatsLink from "@/app/components/game-install/GameInstallCheatsLink";
 import GameInstallMethodPicker from "@/app/components/game-install/GameInstallMethodPicker";
@@ -21,6 +22,12 @@ import {
   GAME_INSTALL_PRICE_DATA,
   GAME_INSTALL_SUMMARY_TABLE,
 } from "@/lib/game-install-pricing";
+import {
+  GAME_INSTALL_PACKAGE_TIERS,
+  GAME_INSTALL_PACKAGES,
+  gameInstallPackagePath,
+} from "@/lib/game-install-packages";
+import { consoleIdFromGameInstallSlug } from "@/lib/repair-links";
 import { getGameInstallContent } from "@/lib/game-install-content";
 import { getInstallCatalogWithMeta } from "@/lib/game-install-catalog.server";
 
@@ -28,7 +35,6 @@ type Props = {
   params: Promise<{ console: string }>;
 };
 
-/** Catalog comes from an external API that is often unreachable from CI. */
 export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
@@ -74,6 +80,7 @@ export default async function GameInstallPage({ params }: Props) {
   if (!meta || !content) notFound();
 
   const path = `/services/game-install/${consoleSlug}`;
+  const consoleId = consoleIdFromGameInstallSlug(consoleSlug);
   const { games: catalogGames, deviceTypeId, fetchFailed, hasMoreGames, totalCount } =
     await getInstallCatalogWithMeta(consoleSlug);
   const pricingSections = content.pricingSectionKeys.map(
@@ -110,6 +117,26 @@ export default async function GameInstallPage({ params }: Props) {
           روش نصب را انتخاب کنید، بازی‌ها را به لیست اضافه کنید، برآورد قیمت را
           ببینید و سفارش را ثبت کنید.
         </p>
+
+        <section className="mb-10 grid gap-4 sm:grid-cols-3">
+          {GAME_INSTALL_PACKAGE_TIERS.map((tier) => {
+            const pkg = GAME_INSTALL_PACKAGES[tier];
+            return (
+              <Link
+                key={tier}
+                href={gameInstallPackagePath(consoleSlug, tier)}
+                className="rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-cyan-400/40"
+              >
+                <p className="text-sm font-bold text-cyan-300">{pkg.shortTitle}</p>
+                <h2 className="mt-1 text-lg font-black">{pkg.title}</h2>
+                <p className="mt-3 text-sm text-zinc-400">{pkg.gameCountHint}</p>
+                <p className="mt-3 font-black text-cyan-200">
+                  {formatRangeToman(pkg.priceRange)}
+                </p>
+              </Link>
+            );
+          })}
+        </section>
 
         <section
           id="game-install-games"
@@ -253,6 +280,26 @@ export default async function GameInstallPage({ params }: Props) {
         <TrustSignalsBar signals={content.trustSignals} className="py-8" />
 
         <FaqSection items={content.faqs} className="py-12" />
+
+        <div className="mb-10">
+          <FunnelNextStep
+            title="کنسول روشن نمی‌شود یا تصویر ندارد؟"
+            description="نصب بازی روی دستگاه معیوب انجام نمی‌شود. اگر HDMI، بوت یا تصویر مشکل دارد، اول تعمیر کنید."
+            actions={[
+              {
+                href: consoleId
+                  ? `/services/${consoleId === "xbox" ? "xbox-repair" : `${consoleId}-repair`}`
+                  : "/services",
+                label: `تعمیر ${meta.label}`,
+                primary: true,
+              },
+              {
+                href: `/consoles/${consoleId ?? "ps5"}/issues`,
+                label: "مشاهده مشکلات رایج",
+              },
+            ]}
+          />
+        </div>
 
         <div className="flex flex-wrap gap-4">
           <a

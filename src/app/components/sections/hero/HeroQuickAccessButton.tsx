@@ -18,7 +18,7 @@ export default function HeroQuickAccessButton({
       type="button"
       aria-expanded={isOpen}
       onClick={onClick}
-      className={`group flex w-full min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-transparent px-3 py-2.5 text-xl sorenanormal text-blue-500 transition-[color,border-color,background-color,transform] active:scale-[0.98] hover:border-blue-400/20 hover:bg-blue-500/5 hover:text-blue-400 sm:min-h-0 sm:justify-start sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-2xl sm:hover:bg-transparent ${className}`}
+      className={`group flex w-full min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-transparent px-3 py-2.5 text-xl font-medium text-blue-500 transition-[color,border-color,background-color,transform] active:scale-[0.98] hover:border-blue-400/20 hover:bg-blue-500/5 hover:text-blue-400 sm:min-h-0 sm:justify-start sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-2xl sm:hover:bg-transparent ${className}`}
     >
       <span
         aria-hidden

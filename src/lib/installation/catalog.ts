@@ -2,9 +2,11 @@ import type { BlogGame } from "@/app/data/blog";
 import {
   positiveOrUndefined,
   sortInstallCatalogByRating,
+  uniquifyInstallCatalogSlugs,
   type InstallCatalogGame,
 } from "@/lib/game-install-catalog";
 import {
+  fetchAllInstallationGames,
   fetchInstallationDevices,
   fetchInstallationGamesPage,
   filterGamesForDevice,
@@ -105,8 +107,10 @@ export async function getInstallationCatalogPage(
 
   if (!consoleSlug) {
     return {
-      games: sortInstallCatalogByRating(
-        rawGames.map(mapInstallationGameToCatalogForAll),
+      games: uniquifyInstallCatalogSlugs(
+        sortInstallCatalogByRating(
+          rawGames.map(mapInstallationGameToCatalogForAll),
+        ),
       ),
       deviceTypeId: null,
       hasNext,
@@ -122,8 +126,10 @@ export async function getInstallationCatalogPage(
 
   const filtered = filterGamesForDevice(rawGames, device.id);
   return {
-    games: sortInstallCatalogByRating(
-      filtered.map((game) => mapInstallationGameToCatalog(game, consoleSlug)),
+    games: uniquifyInstallCatalogSlugs(
+      sortInstallCatalogByRating(
+        filtered.map((game) => mapInstallationGameToCatalog(game, consoleSlug)),
+      ),
     ),
     deviceTypeId: device.id,
     hasNext,
@@ -140,5 +146,39 @@ export async function getInstallationCatalogForConsole(
 export async function getAllInstallationCatalogGames(
   consoleSlug?: string,
 ): Promise<InstallationCatalogPage> {
-  return getInstallationCatalogPage(consoleSlug, 1);
+  const rawGames = await fetchAllInstallationGames(100);
+
+  if (!consoleSlug) {
+    const games = uniquifyInstallCatalogSlugs(
+      sortInstallCatalogByRating(
+        rawGames.map(mapInstallationGameToCatalogForAll),
+      ),
+    );
+    return {
+      games,
+      deviceTypeId: null,
+      hasNext: false,
+      totalCount: games.length,
+    };
+  }
+
+  const devices = await fetchInstallationDevices();
+  const device = matchInstallationDevice(devices, consoleSlug);
+  if (!device) {
+    return { games: [], deviceTypeId: null, hasNext: false, totalCount: 0 };
+  }
+
+  const filtered = filterGamesForDevice(rawGames, device.id);
+  const games = uniquifyInstallCatalogSlugs(
+    sortInstallCatalogByRating(
+      filtered.map((game) => mapInstallationGameToCatalog(game, consoleSlug)),
+    ),
+  );
+
+  return {
+    games,
+    deviceTypeId: device.id,
+    hasNext: false,
+    totalCount: games.length,
+  };
 }

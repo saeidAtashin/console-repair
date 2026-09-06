@@ -60,8 +60,8 @@ export function consoleIdFromRepairSlug(slug: string): ConsoleId | undefined {
 }
 
 export function consoleIdFromIssueSlug(slug: string): ConsoleId | undefined {
-  if (slug.startsWith("ps5")) return "ps5";
-  if (slug.startsWith("ps4")) return "ps4";
+  if (slug.startsWith("ps5") || slug.includes("dualsense")) return "ps5";
+  if (slug.startsWith("ps4") || slug.includes("dualshock")) return "ps4";
   if (slug.startsWith("xbox")) return "xbox";
   return undefined;
 }
@@ -112,6 +112,12 @@ export function parseRepairSearchParams(
     issue: searchParams.get("issue")?.trim() || undefined,
     description: searchParams.get("description")?.trim() || undefined,
   };
+}
+
+export function gameInstallHrefForConsole(consoleId?: ConsoleId): string {
+  if (!consoleId) return "/services/game-install";
+  const slug = consoleCatalog[consoleId].gameInstallSlugs[0]?.slug;
+  return slug ? `/services/game-install/${slug}` : "/services/game-install";
 }
 
 export function getRepairDeviceLabel(consoleId: ConsoleId): string {

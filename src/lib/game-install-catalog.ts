@@ -1,3 +1,4 @@
+import type { GameFilterId } from "@/lib/game-filters";
 import type { BlogGame } from "@/app/data/blog";
 
 export type InstallCatalogGame = {
@@ -87,4 +88,48 @@ export function sortInstallCatalogByRating(
     if (ratingB !== ratingA) return ratingB - ratingA;
     return a.name.localeCompare(b.name, "fa");
   });
+}
+
+export function sortInstallCatalogByFilter(
+  games: InstallCatalogGame[],
+  filter: GameFilterId,
+): InstallCatalogGame[] {
+  if (filter === "metacritic") {
+    return [...games].sort((a, b) => {
+      const scoreA = a.metacritic ?? 0;
+      const scoreB = b.metacritic ?? 0;
+      if (scoreB !== scoreA) return scoreB - scoreA;
+      return a.name.localeCompare(b.name, "fa");
+    });
+  }
+  if (filter === "newest") {
+    return [...games].sort((a, b) => {
+      const idA = a.apiId ?? (Number.parseInt(a.id, 10) || 0);
+      const idB = b.apiId ?? (Number.parseInt(b.id, 10) || 0);
+      if (idB !== idA) return idB - idA;
+      return a.name.localeCompare(b.name, "fa");
+    });
+  }
+  return sortInstallCatalogByRating(games);
+}
+
+export function uniquifyInstallCatalogSlugs(
+  games: InstallCatalogGame[],
+): InstallCatalogGame[] {
+  const seen = new Map<string, number>();
+  return games.map((game) => {
+    const key = `${game.console}:${game.slug}`;
+    const count = seen.get(key) ?? 0;
+    seen.set(key, count + 1);
+    if (count === 0) return game;
+    const suffix = game.apiId ?? game.id;
+    return { ...game, slug: `${game.slug}-${suffix}` };
+  });
+}
+
+export function installGameDetailPath(
+  consoleSlug: string,
+  gameSlug: string,
+): string {
+  return `/services/game-install/${consoleSlug}/games/${gameSlug}`;
 }

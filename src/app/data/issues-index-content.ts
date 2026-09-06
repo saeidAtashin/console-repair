@@ -75,7 +75,7 @@ export const ISSUES_INDEX_FAQS: FaqItem[] = [
 ];
 
 export const ISSUES_INDEX_TRUST_SIGNALS: TrustSignal[] = [
-  { icon: "expert", label: "راهنمای فنی", value: "۳۵+ مشکل رایج" },
+  { icon: "expert", label: "راهنمای فنی", value: "۳۹+ مشکل رایج" },
   { icon: "shield", label: "ضمانت تعمیر", value: "۳۰ روز تست" },
   { icon: "clock", label: "زمان تحویل", value: "۱ تا ۵ روز کاری" },
   { icon: "price", label: "شفافیت", value: "اعلام هزینه قبل از تعمیر" },

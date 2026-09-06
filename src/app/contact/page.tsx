@@ -1,5 +1,10 @@
 import PageShell from "@/app/components/seo/PageShell";
 import { createPageMetadata } from "@/lib/seo/metadata";
+import {
+  SITE_ADDRESS_DISPLAY,
+  SITE_PHONE_DISPLAY,
+  SITE_TEL_HREF,
+} from "@/lib/seo/site";
 
 const PATH = "/contact";
 const TITLE = "تماس با ما";
@@ -25,12 +30,16 @@ export default function ContactPage() {
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6">
             <p className="text-sm text-cyan-400">تلفن پشتیبانی</p>
-            <p className="mt-3 text-lg text-zinc-100">09107701704</p>
+            <p className="mt-3 text-lg text-zinc-100">
+              <a href={SITE_TEL_HREF} className="hover:text-cyan-300">
+                {SITE_PHONE_DISPLAY}
+              </a>
+            </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6">
             <p className="text-sm text-cyan-400">آدرس</p>
             <p className="mt-3 text-lg text-zinc-100">
-              تهران، توپخانه پاساژ لیلا طبقه 4 واحد 21
+              {SITE_ADDRESS_DISPLAY}
             </p>
           </div>
         </div>

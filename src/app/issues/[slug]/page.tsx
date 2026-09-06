@@ -11,10 +11,12 @@ import {
   Gauge,
 } from "lucide-react";
 
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
 import JsonLd from "@/app/components/seo/JsonLd";
+import TopicClusterNav from "@/app/components/seo/TopicClusterNav";
 import IssueListCard from "@/app/components/issues/IssueListCard";
 import { issues } from "@/app/data/issues";
 import {
@@ -24,11 +26,14 @@ import {
 import {
   buildRepairHref,
   consoleIdFromIssueSlug,
+  gameInstallHrefForConsole,
 } from "../../../lib/repair-links";
 import { getIssueImage } from "@/lib/quick-access-images";
 import { howToJsonLd } from "../../../lib/seo/howto-jsonld";
+import { itemListJsonLd } from "../../../lib/seo/jsonld";
 import { createPageMetadata } from "../../../lib/seo/metadata";
 import { absoluteUrl, SITE_NAME } from "../../../lib/seo/site";
+import { getClusterByIssueSlug } from "@/lib/seo/topic-clusters";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -82,13 +87,23 @@ export default async function IssuePage({ params }: Props) {
   const issueImage = getIssueImage(issue.slug, issue.image);
   const seo = buildIssueSeoExtras(issue);
   const issuePath = `/issues/${issue.slug}`;
-  const consoleId = consoleIdFromIssueSlug(issue.slug);
+  const cluster = getClusterByIssueSlug(issue.slug);
+  const consoleId =
+    consoleIdFromIssueSlug(issue.slug) ?? cluster?.id;
   const repairHref = buildRepairHref({
     consoleId,
     issue: issue.title,
   });
-  const related =
-    issue.relatedIssues?.map((s) => issues.find((i) => i.slug === s)) ?? [];
+  const installHref = gameInstallHrefForConsole(consoleId);
+  const relatedSlugs = Array.from(
+    new Set([
+      ...(issue.relatedIssues ?? []),
+      ...(cluster?.pages
+        .map((page) => page.issueSlug)
+        .filter((slug): slug is string => Boolean(slug) && slug !== issue.slug) ?? []),
+    ]),
+  ).slice(0, 8);
+  const related = relatedSlugs.map((s) => issues.find((i) => i.slug === s));
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -121,6 +136,21 @@ export default async function IssuePage({ params }: Props) {
             path: issuePath,
             steps: diagnosticSteps,
           }),
+          ...(cluster
+            ? [
+                itemListJsonLd({
+                  name: cluster.pillarTitle,
+                  path: cluster.pillarHref,
+                  items: [
+                    { name: cluster.pillarTitle, url: cluster.pillarHref },
+                    ...cluster.pages.map((page) => ({
+                      name: page.title,
+                      url: page.href,
+                    })),
+                  ],
+                }),
+              ]
+            : []),
         ]}
       />
 
@@ -245,6 +275,17 @@ export default async function IssuePage({ params }: Props) {
               >
                 مشاهده خدمات تعمیر {seo.consoleLabel}
               </Link>
+              {cluster ? (
+                <>
+                  {" · "}
+                  <Link
+                    href={cluster.pillarHref}
+                    className="text-cyan-400 transition hover:text-cyan-300"
+                  >
+                    {cluster.pillarTitle}
+                  </Link>
+                </>
+              ) : null}
               {" · "}
               <Link
                 href="/issues"
@@ -293,7 +334,27 @@ export default async function IssuePage({ params }: Props) {
             </section>
           )}
 
+          {cluster ? (
+            <TopicClusterNav cluster={cluster} currentHref={issuePath} />
+          ) : null}
+
           <FaqSection items={seo.faqs} className="rounded-3xl py-12" />
+
+          <FunnelNextStep
+            title="قدم بعدی: عیب‌یابی یا نصب بازی"
+            description="اول کنسول را مرحله‌به‌مرحله بررسی کنید. اگر دستگاه سالم است و فقط بازی می‌خواهید، از کاتالوگ نصب استفاده کنید."
+            actions={[
+              {
+                href: "/diagnosis",
+                label: "شروع عیب‌یابی",
+                primary: true,
+              },
+              {
+                href: installHref,
+                label: "نصب بازی روی همین کنسول",
+              },
+            ]}
+          />
 
           <section className="relative isolate overflow-hidden rounded-4xl border border-amber-200/20 bg-zinc-950 p-8 text-zinc-100 shadow-[0_40px_100px_-45px_rgba(0,0,0,0.9)] md:p-14">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(251,191,36,0.22),transparent_35%),radial-gradient(circle_at_90%_85%,rgba(244,114,182,0.18),transparent_38%)]" />
@@ -327,12 +388,6 @@ export default async function IssuePage({ params }: Props) {
                     بدون هزینه مشاوره
                   </span>
                   <Link
-                    href="/diagnosis"
-                    className="group my-auto inline-flex items-center gap-3 rounded-2xl border border-cyan-400/40 bg-cyan-500/15 px-7 py-4 text-base font-extrabold text-cyan-100 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cyan-500/25"
-                  >
-                    شروع عیب‌یابی
-                  </Link>
-                  <Link
                     href={repairHref}
                     className="group my-auto mx-auto inline-flex items-center gap-3 rounded-2xl border border-amber-200/30 bg-linear-to-r from-amber-300 to-orange-300 px-7 py-4 text-base font-extrabold text-zinc-900 shadow-[0_18px_45px_-20px_rgba(251,191,36,0.95)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-20px_rgba(251,191,36,0.95)] active:translate-y-0"
                   >
@@ -340,6 +395,12 @@ export default async function IssuePage({ params }: Props) {
                     <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-amber-200 transition-transform duration-300 group-hover:translate-x-1">
                       <ArrowRight className="h-4 w-4" />
                     </span>
+                  </Link>
+                  <Link
+                    href={installHref}
+                    className="group my-auto mx-auto inline-flex items-center gap-3 rounded-2xl border border-cyan-400/30 bg-zinc-900 px-7 py-4 text-base font-bold text-cyan-200 transition-all duration-300 hover:border-cyan-300/50 hover:bg-cyan-400/10"
+                  >
+                    نصب بازی روی همین کنسول
                   </Link>
                 </div>
               </div>

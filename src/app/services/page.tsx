@@ -6,6 +6,7 @@ import FaqSection from "@/app/components/seo/FaqSection";
 import OverviewSection from "@/app/components/seo/OverviewSection";
 import PageShell from "@/app/components/seo/PageShell";
 import TrustSignalsBar from "@/app/components/seo/TrustSignalsBar";
+import FunnelNextStep from "@/app/components/funnel/FunnelNextStep";
 import { CtaButtonGroup } from "@/app/components/ui/cta";
 import { services } from "@/app/data/services";
 import {
@@ -173,6 +174,20 @@ export default function ServicesIndexPage() {
         </section>
 
         <TrustSignalsBar signals={SERVICES_INDEX_TRUST_SIGNALS} />
+
+        <div className="py-8">
+          <FunnelNextStep
+            title="در تهران زندگی می‌کنید؟"
+            description="پیک آنلاین در شهر و استان تهران دستگاه را از محل شما می‌گیرد. مرکز حضوری در توپخانه است."
+            actions={[
+              {
+                href: "/tehran",
+                label: "تعمیر کنسول در تهران",
+                primary: true,
+              },
+            ]}
+          />
+        </div>
 
         <FaqSection items={SERVICES_INDEX_FAQS} />
 

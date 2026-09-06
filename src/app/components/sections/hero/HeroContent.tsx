@@ -31,13 +31,13 @@ export default function HeroContent() {
           initial={{ opacity: 1, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.7 }}
-          className="font-black sorenanormal leading-[1.05] tracking-tight text-white text-[clamp(2.8rem,5vw,4.5rem)]"
+          className="font-black leading-[1.05] tracking-tight text-white text-[clamp(2.8rem,5vw,4.5rem)]"
         >
           تعمیر حرفه‌ای
-          <span className="mt-2 block text-zinc-200 sorenanormal">
+          <span className="mt-2 block text-zinc-200">
             کنسول و دسته بازی
           </span>
-          <span className="mt-3 block sorenanormal bg-[linear-gradient(90deg,#60a5fa,#22d3ee,#a78bfa,#60a5fa)] bg-[length:220%_220%] bg-clip-text text-transparent animate-gradient-x">
+          <span className="mt-3 block bg-[linear-gradient(90deg,#60a5fa,#22d3ee,#a78bfa,#60a5fa)] bg-[length:220%_220%] bg-clip-text text-transparent animate-gradient-x">
             دقیق، سریع، مطمئن
           </span>
         </motion.h1>

@@ -69,12 +69,17 @@ export const serviceIssueImages: Record<string, string> = {
   "ps5-hdmi-port-damage": "/hdmi/hdmi1.avif",
   "ps5-random-shutdown": "/ps5repair/ps5-repair2.webp",
   "ps5-dualsense-controller-problem": "/controller/controller1.webp",
+  "ps5-no-video": "/hdmi/hdmi1.avif",
+  "ps5-motherboard-repair": "/ps5repair/ps5-repair1.jpg",
+  "ps5-power-supply-problem": "/ps5repair/ps5-repair2.webp",
+  "ps5-disc-drive-not-working": "/ps5repair/ps5repair1.webp",
 
   // PS4
   "ps4-loud-fan-noise": "/ps4repair/fan1.png",
   "ps4-overheating": "/ps4repair/fan2.png",
   "ps4-not-turning-on": "/ps4repair/fan3.png",
   "ps4-hdmi-port-damage": "/hdmi/hdmi2.jpg",
+  "ps4-power-supply-problem": "/ps4repair/fan3.png",
 
   // Xbox
   "xbox-loud-fan-noise": "/xboxrepair/xboxfanrepair.png",

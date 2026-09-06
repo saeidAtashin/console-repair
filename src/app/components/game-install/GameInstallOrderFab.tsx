@@ -80,7 +80,7 @@ export default function GameInstallOrderFab({
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
+    <div className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex justify-center px-4 lg:bottom-6">
       <AnimatePresence>
         {phase !== "hidden" ? (
           <motion.a
