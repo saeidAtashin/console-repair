@@ -3,6 +3,7 @@ name: Deploy fixbazi to VPS
 on:
   push:
     branches: [fixbazi-deploy]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -19,6 +20,17 @@ jobs:
 
       - name: Install and build
         run: npm ci --legacy-peer-deps && npm run build
+
+      - name: Wipe remote .next before upload
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            mkdir -p /root/fixbazi
+            rm -rf /root/fixbazi/.next
 
       - name: Copy built app to VPS
         uses: appleboy/scp-action@v1.0.0
@@ -44,5 +56,9 @@ jobs:
               cp .env.example .env
               sed -i 's|NEXT_PUBLIC_SITE_URL=.*|NEXT_PUBLIC_SITE_URL=https://fixbazi.ir|' .env
             fi
-            docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+            echo "${{ github.sha }}" > DEPLOY_SHA
+            docker compose -f docker-compose.prod.yml up -d --build --force-recreate --remove-orphans
             docker image prune -f
+            echo -n "DEPLOY_SHA="
+            cat DEPLOY_SHA
+            curl -sI -o /dev/null -w "local3001 %{http_code}\n" http://127.0.0.1:3001/ || true

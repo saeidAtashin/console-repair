@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+_deploy_vps.py
 
 # debug
 npm-debug.log*
