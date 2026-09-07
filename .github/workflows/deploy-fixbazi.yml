@@ -5,6 +5,10 @@ on:
     branches: [fixbazi-deploy]
   workflow_dispatch:
 
+concurrency:
+  group: fixbazi-deploy
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

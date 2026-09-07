@@ -6,7 +6,7 @@ import {
   getRepairService,
   type ConsoleId,
 } from "./console-catalog";
-import { SHOP_CONSOLE_META, SHOP_CONSOLE_ORDER, getProducts } from "./shop";
+import { SHOP_CONSOLE_META, SHOP_CONSOLE_ORDER, SHOP_ENABLED, getProducts } from "./shop";
 import { TOPIC_CLUSTERS } from "./seo/topic-clusters";
 
 export type BranchNode = {
@@ -16,15 +16,17 @@ export type BranchNode = {
 };
 
 const serviceBySlug = Object.fromEntries(services.map((s) => [s.slug, s]));
-const shopProductsByConsole = Object.fromEntries(
-  SHOP_CONSOLE_ORDER.map((slug) => [
-    slug,
-    getProducts({ console: slug }).map((product) => ({
-      title: product.title,
-      href: `/shop/${slug}/${product.slug}`,
-    })),
-  ]),
-);
+const shopProductsByConsole = SHOP_ENABLED
+  ? Object.fromEntries(
+      SHOP_CONSOLE_ORDER.map((slug) => [
+        slug,
+        getProducts({ console: slug }).map((product) => ({
+          title: product.title,
+          href: `/shop/${slug}/${product.slug}`,
+        })),
+      ]),
+    )
+  : {};
 
 function issuesBranch(
   consoleId: ConsoleId,
@@ -87,6 +89,21 @@ function consoleBranch(consoleId: ConsoleId): BranchNode {
         ]
       : [{ title: `فروش ${config.title}`, href: `/shop/${consoleId}` }];
 
+  const shopChildren: BranchNode[] = SHOP_ENABLED
+    ? [
+        {
+          title: "فروش کنسول",
+          href:
+            consoleId === "xbox" ? "/shop/xbox-series" : `/shop/${consoleId}`,
+          children: shopConsoleLinks,
+        },
+        {
+          title: "فروش قطعات",
+          href: `/shop/${consoleId}/parts`,
+        },
+      ]
+    : [];
+
   return {
     title: config.title,
     href: `/consoles/${consoleId}`,
@@ -96,15 +113,7 @@ function consoleBranch(consoleId: ConsoleId): BranchNode {
         href: `/services/${config.repairSlug}`,
       },
       gameInstallNode,
-      {
-        title: "فروش کنسول",
-        href: consoleId === "xbox" ? "/shop/xbox-series" : `/shop/${consoleId}`,
-        children: shopConsoleLinks,
-      },
-      {
-        title: "فروش قطعات",
-        href: `/shop/${consoleId}/parts`,
-      },
+      ...shopChildren,
       issuesBranch(consoleId),
     ],
   };
@@ -141,15 +150,19 @@ export const siteBreadcrumbTree: BranchNode = {
       title: "همه خدمات",
       href: "/services",
     },
-    {
-      title: "فروشگاه",
-      href: "/shop",
-      children: SHOP_CONSOLE_ORDER.map((slug) => ({
-        title: `خرید ${SHOP_CONSOLE_META[slug].label}`,
-        href: `/shop/${slug}`,
-        children: shopProductsByConsole[slug],
-      })),
-    },
+    ...(SHOP_ENABLED
+      ? [
+          {
+            title: "فروشگاه",
+            href: "/shop",
+            children: SHOP_CONSOLE_ORDER.map((slug) => ({
+              title: `خرید ${SHOP_CONSOLE_META[slug].label}`,
+              href: `/shop/${slug}`,
+              children: shopProductsByConsole[slug],
+            })),
+          } satisfies BranchNode,
+        ]
+      : []),
     {
       title: "تعمیر HDMI",
       href: "/services/hdmi-repair",
