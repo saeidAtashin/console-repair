@@ -5,6 +5,13 @@ import {
   footerQuickLinks,
 } from "@/lib/site-nav";
 import {
+  DEVELOPER_CREDIT_FA,
+  DEVELOPER_EMAIL,
+  DEVELOPER_MAILTO_HREF,
+  DEVELOPER_PHONE_DISPLAY,
+  DEVELOPER_TEL_HREF,
+} from "@/lib/developer";
+import {
   SITE_ADDRESS_DISPLAY,
   SITE_PHONE_DISPLAY,
   SITE_TEL_HREF,
@@ -98,8 +105,26 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-white/10 pt-4 text-center text-xs text-zinc-500">
-          {`© ${year} Console Repair. All rights reserved.`}
+        <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-4 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {year} فیکس‌بازی. تمامی حقوق محفوظ است.</p>
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>{DEVELOPER_CREDIT_FA}</span>
+            <span aria-hidden="true">·</span>
+            <a
+              href={DEVELOPER_MAILTO_HREF}
+              className="transition-colors hover:text-cyan-300"
+            >
+              {DEVELOPER_EMAIL}
+            </a>
+            <span aria-hidden="true">·</span>
+            <a
+              href={DEVELOPER_TEL_HREF}
+              className="transition-colors hover:text-cyan-300"
+              dir="ltr"
+            >
+              {DEVELOPER_PHONE_DISPLAY}
+            </a>
+          </p>
         </div>
       </div>
     </footer>
