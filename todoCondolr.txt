@@ -262,3 +262,35 @@ also set these for مشکلات رایج part too.
 also user ps4repair folder for ps4 repair.
 also use ps5repair folder for ps5 repair.
 
+===============================
+
+
+in /repair there is too many item for devices, 
+it should be ps4 ps5 and noth xboxs, and controller of these in controller item. others should go to other console.
+
+
+make /consoles/ps5/issues these cards with better UI.
+
+with search of عیب یابی کنسول should redirect to /diagnosis
+
+in diagnosis when reach to نتیجه بررسی اولیه step, should btn of ثبت تعمیر be in center of page and details that user added, be in a colaapsable part. and show اطمینان
+
+متوسط
+
+شدت
+
+متوسط
+
+اقدام
+
+بررسی تخصصی / تعمیر
+
+سرویس پیشنهادی
+
+تعمیر دسته
+ part as a small chart and btn of ثبت تعمیر be in center for more user enteraction.
+
+
+
+
+ 
