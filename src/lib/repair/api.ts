@@ -1,5 +1,6 @@
 import { apiRequest, ApiError } from "@/lib/api-client";
-import { consoleCatalog, type ConsoleId } from "@/lib/console-catalog";
+import type { ConsoleId } from "@/lib/console-catalog";
+import { classifyRepairDevice } from "@/lib/repair-links";
 import {
   formatInstallGameListDescription,
   type InstallListGame,
@@ -246,19 +247,18 @@ export function matchDeviceForConsole(
   consoleId: ConsoleId,
 ): RepairDevice | undefined {
   if (consoleId === "xbox") {
-    return devices.find((device) =>
-      device.name.toLowerCase().includes("xbox"),
+    return (
+      devices.find(
+        (device) => classifyRepairDevice(device.name) === "xbox-series",
+      ) ??
+      devices.find(
+        (device) => classifyRepairDevice(device.name) === "xbox-one",
+      )
     );
   }
 
-  const title = consoleCatalog[consoleId].title.toLowerCase();
-  const id = consoleId.toLowerCase();
-
   return devices.find(
-    (device) => {
-      const name = device.name.toLowerCase();
-      return name.includes(title) || name.includes(id);
-    },
+    (device) => classifyRepairDevice(device.name) === consoleId,
   );
 }
 

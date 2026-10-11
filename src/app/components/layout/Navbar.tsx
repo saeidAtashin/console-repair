@@ -146,7 +146,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { itemCount, cartBounce } = useShopCart();
-  const hideShopSearch = !SHOP_ENABLED || pathname.startsWith("/shop");
+  const hideHeaderSearch = pathname.startsWith("/shop");
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState<Set<string>>(() => new Set());
   const [scrolled, setScrolled] = useState(false);
@@ -376,7 +376,7 @@ export default function Navbar() {
                   className={cartClassName}
                 />
               ) : null}
-              {!hideShopSearch ? (
+              {!hideHeaderSearch ? (
                 <div className="hidden xl:block">
                   <ShopSearch variant="header" onNavigate={() => closeMenu()} />
                 </div>
@@ -600,7 +600,7 @@ export default function Navbar() {
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-6 [-webkit-overflow-scrolling:touch] sm:px-8">
-              {!hideShopSearch ? (
+              {!hideHeaderSearch ? (
                 <div className="mb-6">
                   <ShopSearch variant="header" onNavigate={() => closeMenu()} />
                 </div>

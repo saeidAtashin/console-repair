@@ -9,6 +9,7 @@ import {
   isConsoleDiagnosisQuery,
   normalizeSearchQuery,
   searchShopProducts,
+  SHOP_ENABLED,
 } from "@/lib/shop";
 
 const ShopSearchSuggestions = dynamic(() => import("./ShopSearchSuggestions"), {
@@ -70,9 +71,11 @@ export default function ShopSearch({
   }, [query]);
 
   const results = useMemo(
-    () => searchShopProducts(debouncedQuery, { limit: 8 }),
+    () =>
+      SHOP_ENABLED ? searchShopProducts(debouncedQuery, { limit: 8 }) : [],
     [debouncedQuery],
   );
+  const diagnosisMatch = isConsoleDiagnosisQuery(debouncedQuery);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -120,6 +123,8 @@ export default function ShopSearch({
         router.push("/diagnosis");
         return;
       }
+
+      if (!SHOP_ENABLED) return;
 
       if (syncUrl || pathname.startsWith("/shop")) {
         router.push(buildShopUrl(normalized));
@@ -206,9 +211,11 @@ export default function ShopSearch({
           onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={
-            isPage
-              ? "جستجوی کنسول، دسته، HDMI، هدست... (فارسی یا English)"
-              : "جستجو در فروشگاه..."
+            !SHOP_ENABLED
+              ? "عیب‌یابی کنسول..."
+              : isPage
+                ? "جستجوی کنسول، دسته، HDMI، هدست... (فارسی یا English)"
+                : "جستجو در فروشگاه..."
           }
           aria-expanded={open}
           aria-controls={listboxId}
@@ -241,13 +248,13 @@ export default function ShopSearch({
         ) : null}
       </div>
 
-      {open ? (
+      {open && (SHOP_ENABLED || diagnosisMatch) ? (
         <div
           className={`absolute start-0 top-[calc(100%+0.5rem)] z-[110] w-full overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/95 shadow-2xl backdrop-blur-xl ${
             isPage ? "" : "min-w-[280px]"
           }`}
         >
-          {isConsoleDiagnosisQuery(debouncedQuery) ? (
+          {diagnosisMatch ? (
             <button
               type="button"
               onClick={() => submitSearch(debouncedQuery)}
@@ -257,17 +264,19 @@ export default function ShopSearch({
               <span className="text-xs font-medium text-zinc-400">رفتن به تشخیص</span>
             </button>
           ) : null}
-          <ShopSearchSuggestions
-            listboxId={listboxId}
-            results={results}
-            activeIndex={activeIndex}
-            query={debouncedQuery}
-            showPopularLabel={showPopularLabel}
-            onHover={setActiveIndex}
-            onSelect={(result) =>
-              navigateToProduct(result.product.console, result.product.slug)
-            }
-          />
+          {SHOP_ENABLED ? (
+            <ShopSearchSuggestions
+              listboxId={listboxId}
+              results={results}
+              activeIndex={activeIndex}
+              query={debouncedQuery}
+              showPopularLabel={showPopularLabel}
+              onHover={setActiveIndex}
+              onSelect={(result) =>
+                navigateToProduct(result.product.console, result.product.slug)
+              }
+            />
+          ) : null}
         </div>
       ) : null}
     </div>

@@ -127,17 +127,13 @@ export function repairDeviceHeaderVisual(
   return { src: meta.icon, invert: meta.invert };
 }
 
-/** Map API device `name` (ps5, ps4, xbox1, xboxone, …) to a console id. */
+/** Map API device `name` (PlayStation 5, ps4, Xbox Series, …) to a console id. */
 export function consoleIdFromDeviceName(
   deviceName: string,
 ): ConsoleId | undefined {
-  const key = normalizeDeviceName(deviceName);
-
-  if (isControllerDeviceName(key)) return undefined;
-  if (key.includes("ps5")) return "ps5";
-  if (key.includes("ps4")) return "ps4";
-  if (key.includes("xbox")) return "xbox";
-
+  const group = classifyRepairDevice(deviceName);
+  if (group === "ps5" || group === "ps4") return group;
+  if (group === "xbox-series" || group === "xbox-one") return "xbox";
   return undefined;
 }
 
