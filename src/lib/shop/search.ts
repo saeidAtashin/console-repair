@@ -33,6 +33,12 @@ export function normalizeSearchQuery(query: string): string {
   return normalized.replace(/\s+/g, " ");
 }
 
+/** Header search phrases that should open the diagnosis wizard. */
+export function isConsoleDiagnosisQuery(query: string): boolean {
+  const compact = normalizeSearchQuery(query).replace(/[\u200c\s]/g, "");
+  return compact === "عیبیابی" || compact === "عیبیابیکنسول";
+}
+
 function tokenize(value: string): string[] {
   return normalizeSearchQuery(value)
     .split(/[\s,/|+]+/)

@@ -5,7 +5,11 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import { usePathname, useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 
-import { normalizeSearchQuery, searchShopProducts } from "@/lib/shop";
+import {
+  isConsoleDiagnosisQuery,
+  normalizeSearchQuery,
+  searchShopProducts,
+} from "@/lib/shop";
 
 const ShopSearchSuggestions = dynamic(() => import("./ShopSearchSuggestions"), {
   ssr: false,
@@ -112,6 +116,11 @@ export default function ShopSearch({
       setOpen(false);
       onNavigate?.();
 
+      if (isConsoleDiagnosisQuery(normalized)) {
+        router.push("/diagnosis");
+        return;
+      }
+
       if (syncUrl || pathname.startsWith("/shop")) {
         router.push(buildShopUrl(normalized));
         return;
@@ -150,6 +159,10 @@ export default function ShopSearch({
 
     if (event.key === "Enter") {
       event.preventDefault();
+      if (isConsoleDiagnosisQuery(query)) {
+        submitSearch(query);
+        return;
+      }
       if (open && results[activeIndex]) {
         handleSelect(activeIndex);
         return;
@@ -234,6 +247,16 @@ export default function ShopSearch({
             isPage ? "" : "min-w-[280px]"
           }`}
         >
+          {isConsoleDiagnosisQuery(debouncedQuery) ? (
+            <button
+              type="button"
+              onClick={() => submitSearch(debouncedQuery)}
+              className="flex w-full items-center justify-between gap-3 border-b border-white/10 px-4 py-3 text-start text-sm font-bold text-cyan-200 transition hover:bg-white/5"
+            >
+              <span>عیب‌یابی کنسول</span>
+              <span className="text-xs font-medium text-zinc-400">رفتن به تشخیص</span>
+            </button>
+          ) : null}
           <ShopSearchSuggestions
             listboxId={listboxId}
             results={results}

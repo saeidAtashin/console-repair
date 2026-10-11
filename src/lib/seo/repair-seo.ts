@@ -7,6 +7,7 @@ import {
 import {
   buildRepairCanonicalPath,
   isConsoleId,
+  isRepairDeviceGroupId,
   type RepairPrefill,
 } from "../repair-links";
 import { webPageJsonLd } from "./jsonld";
@@ -45,11 +46,13 @@ export function repairPrefillFromPageSearchParams(
 ): RepairPrefill {
   const consoleParam = firstParam(searchParams.console) ?? "";
   const consoleId = isConsoleId(consoleParam) ? consoleParam : undefined;
+  const deviceParam = firstParam(searchParams.device) ?? "";
 
   return {
     consoleId,
     issue: firstParam(searchParams.issue),
     description: firstParam(searchParams.description),
+    deviceGroup: isRepairDeviceGroupId(deviceParam) ? deviceParam : undefined,
   };
 }
 

@@ -206,7 +206,7 @@ export async function fetchInstallationDraft(options: {
   pageSize?: number;
 }): Promise<InstallationDraft | null> {
   const page = options.page ?? 1;
-  const pageSize = options.pageSize ?? 20;
+  const pageSize = options.pageSize ?? 100;
   const qs = `page=${page}&page_size=${pageSize}${guestQuery(options.isLoggedIn)}`;
 
   try {

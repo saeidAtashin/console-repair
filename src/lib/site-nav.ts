@@ -121,7 +121,12 @@ export const navbarNavItems: SiteNavItem[] = [
       ...consoleIds.map(repairConsoleChild),
       hdmiNavChild(),
       controllerNavItem(),
+      { title: "سایر کنسول", href: "/repair?device=other" },
     ],
+  },
+  {
+    title: "تعمیر دسته",
+    href: "/services/controller-repair",
   },
   {
     title: "مشکلات کنسول",

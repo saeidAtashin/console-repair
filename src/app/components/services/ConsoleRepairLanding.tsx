@@ -15,6 +15,7 @@ import {
   getConsoleLanding,
 } from "@/lib/repair/console-landing";
 import { buildRepairHref, gameInstallHrefForConsole } from "@/lib/repair-links";
+import { getServiceIssueImage } from "@/lib/service-galleries";
 import type { ConsoleId } from "@/lib/console-catalog";
 import type { TopicCluster } from "@/lib/seo/topic-clusters";
 import { cn } from "@/lib/utils";
@@ -89,15 +90,33 @@ export default function ConsoleRepairLanding({
           روی مورد نزدیک به علائم دستگاه بزنید تا راهنمای همان مشکل را ببینید.
         </p>
         <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
-          {landing.problems.map((problem) => (
-            <Link
-              key={problem.href}
-              href={problem.href}
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-5 text-center text-sm font-bold text-white transition hover:-translate-y-0.5 hover:border-cyan-400/40 sm:text-base"
-            >
-              {problem.label}
-            </Link>
-          ))}
+          {landing.problems.map((problem) => {
+            const slug = problem.href.split("/").pop() ?? "";
+            const image = getServiceIssueImage(slug);
+
+            return (
+              <Link
+                key={problem.href}
+                href={problem.href}
+                className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-center transition hover:-translate-y-0.5 hover:border-cyan-400/40"
+              >
+                {image ? (
+                  <div className="relative aspect-[4/3] bg-black/40">
+                    <Image
+                      src={image}
+                      alt=""
+                      fill
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                ) : null}
+                <span className="block px-4 py-4 text-sm font-bold text-white sm:text-base">
+                  {problem.label}
+                </span>
+              </Link>
+            );
+          })}
           <Link
             href={landing.otherHref}
             className="rounded-2xl border border-dashed border-white/20 bg-transparent px-4 py-5 text-center text-sm font-bold text-zinc-300 transition hover:border-cyan-400/40 hover:text-white sm:text-base"

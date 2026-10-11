@@ -76,10 +76,10 @@ export default async function ConsoleIssuesPage({ params }: Props) {
           رایج‌ترین خرابی‌های {config.title} و لینک راهنمای تعمیر هر مورد.
         </p>
 
-        <ul className="space-y-4">
+        <ul className="grid gap-4 sm:grid-cols-2">
           {resolvedIssues.map((issue) => (
-            <li key={issue.slug}>
-              <IssueListCard issue={issue} />
+            <li key={issue.slug} className="h-full">
+              <IssueListCard issue={issue} layout="tile" />
             </li>
           ))}
         </ul>

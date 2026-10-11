@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 
 import {
   CONFIDENCE_LABELS,
@@ -17,89 +18,132 @@ type Props = {
 };
 
 export default function ResultView({ result, theme, onRepair }: Props) {
+  const summary = `${result.consoleModel}${result.variant ? ` · ${result.variant}` : ""} — ${result.problem}`;
+
   return (
     <div className="space-y-6">
       {result.warning ? (
-        <div className="rounded-3xl border border-amber-400/30 bg-amber-500/10 p-5 text-amber-100">
+        <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
           {result.warning}
         </div>
       ) : null}
 
-      <div className={cn("rounded-3xl border bg-white/5 p-6 backdrop-blur-xl", theme.border)}>
-        <p className="text-sm text-zinc-400">دستگاه</p>
-        <p className="mt-1 text-2xl font-black text-white">
-          {result.consoleModel}
-          {result.variant ? ` · ${result.variant}` : ""}
-        </p>
-        <p className="mt-4 text-sm text-zinc-400">مشکل</p>
-        <p className="mt-1 text-lg font-bold text-white">
-          {result.problemCategory} / {result.problem}
-        </p>
-      </div>
-
-      <div className={cn("rounded-3xl border bg-white/5 p-6 backdrop-blur-xl", theme.border)}>
-        <h2 className="text-xl font-black text-white">احتمال علت</h2>
-        <ul className="mt-4 space-y-4">
-          {result.likelyCauses.map((cause) => (
-            <li key={cause.id}>
-              <p className={cn("font-bold", theme.primary)}>{cause.label}</p>
-              <p className="mt-1 text-sm leading-7 text-zinc-300">{cause.summary}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {result.symptoms.length > 0 ? (
-        <div className={cn("rounded-3xl border bg-white/5 p-6 backdrop-blur-xl", theme.border)}>
-          <h2 className="text-xl font-black text-white">علائم ثبت‌شده</h2>
-          <ul className="mt-3 space-y-2 text-sm leading-7 text-zinc-300">
-            {result.symptoms.map((line) => (
-              <li key={line}>• {line}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="اطمینان" value={CONFIDENCE_LABELS[result.confidence]} />
         <Stat label="شدت" value={SEVERITY_LABELS[result.severity]} />
         <Stat label="اقدام" value={result.actionLabel} />
+        <Stat
+          label="سرویس پیشنهادی"
+          value={result.service?.label ?? "بررسی تخصصی"}
+          href={result.service?.href}
+          accent={theme.primary}
+        />
       </div>
 
-      {result.service ? (
-        <div className={cn("rounded-3xl border bg-white/5 p-6 backdrop-blur-xl", theme.border)}>
-          <p className="text-sm text-zinc-400">سرویس پیشنهادی</p>
-          <Link
-            href={result.service.href}
-            className={cn("mt-2 inline-block text-lg font-bold", theme.primary)}
-          >
-            {result.service.label}
-          </Link>
+      <div className="flex justify-center">
+        <button
+          type="button"
+          onClick={onRepair}
+          className={cn(
+            "mx-auto h-14 w-full max-w-xs rounded-2xl text-lg font-bold text-black",
+            theme.submit,
+          )}
+        >
+          ثبت درخواست تعمیر
+        </button>
+      </div>
+
+      <details className="group rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
+          <span>
+            <span className="block text-sm font-bold text-white">جزئیات بررسی</span>
+            <span className="mt-1 block text-xs text-zinc-400">{summary}</span>
+          </span>
+          <ChevronDown className="h-4 w-4 shrink-0 text-zinc-400 transition group-open:rotate-180" />
+        </summary>
+        <div className="space-y-5 border-t border-white/10 px-5 py-5">
+          <div>
+            <p className="text-sm text-zinc-400">دستگاه</p>
+            <p className="mt-1 text-lg font-black text-white">
+              {result.consoleModel}
+              {result.variant ? ` · ${result.variant}` : ""}
+            </p>
+            <p className="mt-4 text-sm text-zinc-400">مشکل</p>
+            <p className="mt-1 font-bold text-white">
+              {result.problemCategory} / {result.problem}
+            </p>
+          </div>
+
+          {result.likelyCauses.length > 0 ? (
+            <div>
+              <h2 className="font-black text-white">احتمال علت</h2>
+              <ul className="mt-3 space-y-3">
+                {result.likelyCauses.map((cause) => (
+                  <li key={cause.id}>
+                    <p className={cn("font-bold", theme.primary)}>{cause.label}</p>
+                    <p className="mt-1 text-sm leading-7 text-zinc-300">
+                      {cause.summary}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {result.symptoms.length > 0 ? (
+            <div>
+              <h2 className="font-black text-white">علائم ثبت‌شده</h2>
+              <ul className="mt-3 space-y-2 text-sm leading-7 text-zinc-300">
+                {result.symptoms.map((line) => (
+                  <li key={line}>• {line}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {result.needsSpecialist ? (
+            <p className="text-sm text-zinc-400">نیازمند بررسی تخصصی</p>
+          ) : null}
         </div>
-      ) : null}
+      </details>
 
-      {result.needsSpecialist ? (
-        <p className="text-sm text-zinc-400">نیازمند بررسی تخصصی</p>
-      ) : null}
-
-      <p className="text-sm leading-7 text-zinc-500">{result.disclaimer}</p>
-
-      <button
-        type="button"
-        onClick={onRepair}
-        className={cn("h-14 w-full rounded-2xl text-lg font-bold text-black", theme.submit)}
-      >
-        🔧 ثبت درخواست تعمیر
-      </button>
+      <p className="text-center text-xs leading-6 text-zinc-500">{result.disclaimer}</p>
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-3xl border border-white/10 bg-black/30 p-4">
+function Stat({
+  label,
+  value,
+  href,
+  accent,
+}: {
+  label: string;
+  value: string;
+  href?: string;
+  accent?: string;
+}) {
+  const body = (
+    <>
       <p className="text-xs text-zinc-400">{label}</p>
-      <p className="mt-1 text-lg font-bold text-white">{value}</p>
-    </div>
+      <p className={cn("mt-1 text-sm font-bold leading-6 text-white", accent)}>
+        {value}
+      </p>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="rounded-2xl border border-white/10 bg-black/30 p-3 transition hover:border-white/25"
+      >
+        {body}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/30 p-3">{body}</div>
   );
 }

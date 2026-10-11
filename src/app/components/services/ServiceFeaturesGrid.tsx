@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   BadgeCheck,
   Cpu,
@@ -13,8 +14,13 @@ import {
 } from "lucide-react";
 
 import FadeUp from "@/app/components/animations/FadeUp";
+import { CONTROLLER_KIT_IMAGE } from "@/lib/service-galleries";
 import { cn } from "@/lib/utils";
 import type { brandThemes } from "@/lib/brand-theme";
+
+const FEATURE_IMAGES: Record<string, string> = {
+  "تعمیر یا تعویض دکمه‌ها": CONTROLLER_KIT_IMAGE,
+};
 
 type BrandTheme = (typeof brandThemes)[keyof typeof brandThemes];
 
@@ -64,6 +70,7 @@ function ServiceFeatureCard({
   const tag = FEATURE_TAGS[index % FEATURE_TAGS.length];
   const featureDescription =
     description ?? FEATURE_DESCRIPTIONS[index % FEATURE_DESCRIPTIONS.length];
+  const featureImage = FEATURE_IMAGES[feature];
 
   return (
     <div
@@ -116,7 +123,18 @@ function ServiceFeatureCard({
       />
 
       <div className="relative z-10">
-        <div className="relative mb-6 inline-flex">
+        {featureImage ? (
+          <div className="relative mb-6 h-36 overflow-hidden rounded-xl border border-white/10 bg-black/40">
+            <Image
+              src={featureImage}
+              alt=""
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
+        <div className={cn("relative mb-6 inline-flex", featureImage && "hidden")}>
           <div
             className={cn(
               "relative flex h-14 w-14 items-center justify-center rounded-xl border bg-black/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-500 group-hover:scale-110",

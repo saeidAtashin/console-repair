@@ -57,6 +57,8 @@ export const serviceIssueImages: Record<string, string> = {
 
   // Controller
   "controller-analog-drift": "/controller/drift1.webp",
+  "controller-dualsense-drift": "/controller/drift2.webp",
+  "controller-dualshock-drift": "/controller/drift3.webp",
   "controller-buttons-not-working": CONTROLLER_KIT_IMAGE,
   "controller-not-charging": "/controller/controller2.webp",
   "controller-connection-dropping": "/controller/controller3.webp",
@@ -73,6 +75,7 @@ export const serviceIssueImages: Record<string, string> = {
   "ps5-motherboard-repair": "/ps5repair/ps5-repair1.jpg",
   "ps5-power-supply-problem": "/ps5repair/ps5-repair2.webp",
   "ps5-disc-drive-not-working": "/ps5repair/ps5repair1.webp",
+  "ps5-wifi-connection-problem": "/ps5repair/ps5-repair2.webp",
 
   // PS4
   "ps4-loud-fan-noise": "/ps4repair/fan1.png",
@@ -80,6 +83,10 @@ export const serviceIssueImages: Record<string, string> = {
   "ps4-not-turning-on": "/ps4repair/fan3.png",
   "ps4-hdmi-port-damage": "/hdmi/hdmi2.jpg",
   "ps4-power-supply-problem": "/ps4repair/fan3.png",
+  "ps4-hard-drive-failure": "/ps4repair/fan2.png",
+  "ps4-wifi-connection-problem": "/ps4repair/fan1.png",
+  "ps4-random-shutdown": "/ps4repair/fan3.png",
+  "ps4-safe-mode-error": "/ps4repair/fan2.png",
 
   // Xbox
   "xbox-loud-fan-noise": "/xboxrepair/xboxfanrepair.png",
@@ -87,6 +94,9 @@ export const serviceIssueImages: Record<string, string> = {
   "xbox-not-turning-on": "/xboxrepair/xboxfanrepair2.png",
   "xbox-hdmi-port-damage": "/hdmi/hdmi3.jpg",
   "xbox-power-supply-problem": "/xboxrepair/xboxfanrepair3.png",
+  "xbox-hard-drive-failure": "/xboxrepair/xboxfanrepair1.jpg",
+  "xbox-wifi-connection-problem": "/xboxrepair/xboxfanrepair2.png",
+  "xbox-game-crashing": "/xboxrepair/xboxfanrepair3.png",
 };
 
 export function getServiceGallery(slug: string): string[] {

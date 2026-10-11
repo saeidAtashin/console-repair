@@ -29,10 +29,12 @@ import {
 } from "../../lib/phone";
 import {
   consoleRepairIcons,
+  classifyRepairDevice,
   consoleIdFromDeviceName,
   getRepairDeviceDisplayName,
-  getRepairDeviceIcon,
   getRepairDeviceLabel,
+  groupRepairDevices,
+  repairDeviceHeaderVisual,
   type RepairPrefill,
 } from "../../lib/repair-links";
 import type { BrandTheme } from "@/lib/brand-theme";
@@ -103,6 +105,7 @@ export default function RepairFormClient({
   const accountPhone = user?.phone_number ?? user?.phone ?? defaultPhone;
   const initialPhone = authHydrated ? accountPhone : defaultPhone;
   const consoleId = initialPrefill.consoleId;
+  const deviceGroup = initialPrefill.deviceGroup;
   const prefillIssue = initialPrefill.issue;
   const prefillDescription = initialPrefill.description;
   const consoleConfig = consoleId ? consoleCatalog[consoleId] : null;
@@ -123,10 +126,10 @@ export default function RepairFormClient({
       ? getRepairDeviceDisplayName(selectedDevice.name)
       : null;
 
-  const headerIconSrc = consoleId
-    ? consoleRepairIcons[consoleId]
+  const headerVisual = consoleId
+    ? { src: consoleRepairIcons[consoleId], invert: true }
     : selectedDevice
-      ? getRepairDeviceIcon(selectedDevice.name)
+      ? repairDeviceHeaderVisual(selectedDevice.name)
       : null;
 
   const defaultValues = useMemo<RepairFormInput>(
@@ -198,6 +201,15 @@ export default function RepairFormClient({
             setDeviceTypeId(matched.id);
             void loadProblemTypes(matched.id);
           }
+        } else if (deviceGroup) {
+          const group = groupRepairDevices(results).find(
+            (item) => item.id === deviceGroup,
+          );
+          const matched = group?.devices[0];
+          if (matched) {
+            setDeviceTypeId(matched.id);
+            void loadProblemTypes(matched.id);
+          }
         }
       })
       .catch((error) => {
@@ -210,7 +222,7 @@ export default function RepairFormClient({
     return () => {
       cancelled = true;
     };
-  }, [consoleId, loadProblemTypes]);
+  }, [consoleId, deviceGroup, loadProblemTypes]);
 
   const onSubmit = async (data: RepairFormData) => {
     setSuccess(false);
@@ -297,20 +309,23 @@ export default function RepairFormClient({
             </div>
           )}
 
-          {!consoleId && selectedDevice && (
+          {!consoleId && headerVisual ? (
             <div
               className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
               aria-hidden
             >
               <Image
-                src={getRepairDeviceIcon(selectedDevice.name)}
+                src={headerVisual.src}
                 alt=""
                 width={280}
                 height={280}
-                className="opacity-[0.07] blur-[1px]"
+                className={cn(
+                  "opacity-[0.07] blur-[1px]",
+                  headerVisual.invert && "invert",
+                )}
               />
             </div>
-          )}
+          ) : null}
 
           <div
             className={cn(
@@ -319,13 +334,16 @@ export default function RepairFormClient({
               theme.bg,
             )}
           >
-            {headerIconSrc ? (
+            {headerVisual ? (
               <Image
-                src={headerIconSrc}
+                src={headerVisual.src}
                 alt={deviceLabel ?? ""}
                 width={56}
                 height={56}
-                className="relative z-10 h-24 w-24 object-contain invert"
+                className={cn(
+                  "relative z-10 h-24 w-24 object-contain",
+                  headerVisual.invert && "invert",
+                )}
               />
             ) : (
               <Wrench className={cn("h-12 w-12", theme.primary)} aria-hidden />
