@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { trackEvent } from "@/lib/analytics";
 
 type FunnelAction = {
   href: string;
@@ -19,6 +24,8 @@ export default function FunnelNextStep({
   description,
   actions,
 }: Props) {
+  const pathname = usePathname();
+
   if (actions.length === 0) return null;
 
   return (
@@ -40,6 +47,11 @@ export default function FunnelNextStep({
           <Link
             key={action.href}
             href={action.href}
+            onClick={() => {
+              if (action.href.startsWith("/repair")) {
+                trackEvent("repair_start", { page_path: pathname });
+              }
+            }}
             className={
               action.primary
                 ? "inline-flex items-center justify-center rounded-2xl bg-cyan-500 px-6 py-3.5 text-sm font-bold text-black transition hover:bg-cyan-400"

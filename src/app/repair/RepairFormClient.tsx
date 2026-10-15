@@ -44,6 +44,7 @@ import { ApiError } from "@/lib/api-client";
 import PhoneVerificationModal from "@/app/components/auth/PhoneVerificationModal";
 import { useAuth } from "@/app/context/AuthContext";
 import { usePhoneVerifiedSubmit, VerificationCancelledError } from "@/app/hooks/usePhoneVerifiedSubmit";
+import { trackEvent } from "@/lib/analytics";
 import {
   buildRepairRequestPayload,
   fetchRepairDevices,
@@ -241,6 +242,9 @@ export default function RepairFormClient({
         );
 
         const created = await submitRepairRequest(payload);
+        trackEvent("repair_submit", {
+          page_path: typeof window === "undefined" ? "/repair" : window.location.pathname,
+        });
         setAcceptanceCode(created.id != null ? String(created.id) : null);
         setSuccess(true);
         reset(defaultValues);

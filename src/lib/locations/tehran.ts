@@ -118,7 +118,7 @@ export const tehranPages: Record<TehranServiceSlug, TehranPageContent> = {
   "ps5-repair": {
     slug: "ps5-repair",
     title: "تعمیر PS5 در تهران",
-    seoTitle: "تعمیر PS5 در تهران | پیک آنلاین پلی‌استیشن ۵",
+    seoTitle: "تعمیر PS5 در تهران | پیک توپخانه",
     seoDescription:
       "تعمیر PS5 در تهران: HDMI، فن، پاور و روشن نشدن با پیک لحظه‌ای در شهر و استان تهران. مرکز حضوری توپخانه.",
     keywords: [
@@ -160,7 +160,7 @@ export const tehranPages: Record<TehranServiceSlug, TehranPageContent> = {
   "ps4-repair": {
     slug: "ps4-repair",
     title: "تعمیر PS4 در تهران",
-    seoTitle: "تعمیر PS4 در تهران | Slim و Pro با پیک",
+    seoTitle: "تعمیر PS4 در تهران | پیک توپخانه",
     seoDescription:
       "تعمیر PS4 Slim و Pro در تهران با پیک لحظه‌ای. پاور، HDMI، فن و Safe Mode — پوشش شهر و استان تهران.",
     keywords: [
@@ -202,7 +202,7 @@ export const tehranPages: Record<TehranServiceSlug, TehranPageContent> = {
   "xbox-repair": {
     slug: "xbox-repair",
     title: "تعمیر Xbox در تهران",
-    seoTitle: "تعمیر Xbox در تهران | Series و One با پیک",
+    seoTitle: "تعمیر Xbox در تهران | پیک توپخانه",
     seoDescription:
       "تعمیر Xbox Series X/S و Xbox One در تهران با پیک آنلاین. HDMI، پاور و فن — شهر و استان تهران.",
     keywords: [
@@ -244,7 +244,7 @@ export const tehranPages: Record<TehranServiceSlug, TehranPageContent> = {
   "controller-repair": {
     slug: "controller-repair",
     title: "تعمیر دسته PS5 در تهران",
-    seoTitle: "تعمیر دسته PS5 در تهران | DualSense و دریفت",
+    seoTitle: "تعمیر دسته PS5 در تهران | پیک توپخانه",
     seoDescription:
       "تعمیر دسته PS5 در تهران: دریفت DualSense، دکمه و شارژ. پیک در شهر و استان تهران؛ دسته PS4 و Xbox هم پذیرش می‌شود.",
     keywords: [
@@ -286,7 +286,7 @@ export const tehranPages: Record<TehranServiceSlug, TehranPageContent> = {
   "hdmi-repair": {
     slug: "hdmi-repair",
     title: "تعمیر HDMI PS5 در تهران",
-    seoTitle: "تعمیر HDMI PS5 در تهران | سوکت تصویر کنسول",
+    seoTitle: "تعمیر HDMI PS5 در تهران | پیک توپخانه",
     seoDescription:
       "تعمیر HDMI PS5 در تهران با تجهیزات BGA. پیک لحظه‌ای برای PS5، PS4 و Xbox در شهر و استان تهران.",
     keywords: [

@@ -209,10 +209,23 @@ export type RepairPrefill = {
   deviceGroup?: RepairDeviceGroupId;
 };
 
-/** Canonical URL for SEO — strips one-off prefill params. */
+/** Canonical URL for SEO — form URLs consolidate on /repair. */
 export function buildRepairCanonicalPath(prefill?: RepairPrefill): string {
-  if (prefill?.consoleId) {
-    return `/repair?console=${prefill.consoleId}`;
+  void prefill;
+  return "/repair";
+}
+
+/** Infer a prefilled repair form URL from the page the visitor is on. */
+export function inferRepairHrefFromPath(pathname: string): string {
+  const path = pathname.toLowerCase();
+  if (path.includes("dualsense") || path.includes("/ps5") || path.includes("ps5-")) {
+    return buildRepairHref({ consoleId: "ps5" });
+  }
+  if (path.includes("dualshock") || path.includes("/ps4") || path.includes("ps4-")) {
+    return buildRepairHref({ consoleId: "ps4" });
+  }
+  if (path.includes("xbox")) {
+    return buildRepairHref({ consoleId: "xbox" });
   }
   return "/repair";
 }

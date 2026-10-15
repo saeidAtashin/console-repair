@@ -4,7 +4,7 @@ import { createPageMetadata } from "@/lib/seo/metadata";
 const PATH = "/terms";
 const TITLE = "قوانین و شرایط";
 const DESCRIPTION =
-  "شرایط استفاده از خدمات کنسول ریپیر، مسئولیت ها، روند پذیرش سفارش و قوانین مرتبط با تعمیر.";
+  "شرایط استفاده از خدمات فیکس‌بازی، مسئولیت ها، روند پذیرش سفارش و قوانین مرتبط با تعمیر.";
 
 export const metadata = createPageMetadata({
   title: TITLE,
@@ -23,7 +23,7 @@ export default function TermsPage() {
       >
         <h1 className="text-4xl font-black md:text-5xl">{TITLE}</h1>
         <p className="mt-6 max-w-4xl leading-8 text-zinc-300">
-          ثبت سفارش در کنسول ریپیر به معنی پذیرش قوانین مربوط به روند عیب یابی،
+          ثبت سفارش در فیکس‌بازی به معنی پذیرش قوانین مربوط به روند عیب یابی،
           اعلام هزینه، مدت زمان تقریبی تعمیر و شرایط تحویل دستگاه است. جزئیات
           دقیق هر سفارش پیش از شروع تعمیر با مشتری هماهنگ می شود.
         </p>

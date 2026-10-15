@@ -4,7 +4,6 @@ import { issues } from "@/app/data/issues";
 import { services } from "@/app/data/services";
 import { SHOP_CONSOLES, SHOP_ENABLED, getProducts } from "@/lib/shop";
 import { consoleIds } from "@/lib/console-catalog";
-import { GAME_FILTER_IDS } from "@/lib/game-filters";
 import { GAME_INSTALL_PACKAGE_TIERS } from "@/lib/game-install-packages";
 import { tehranSitemapPaths } from "@/lib/locations/tehran";
 import { repairSitemapPaths } from "./repair-seo";
@@ -106,13 +105,6 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
       priority: 0.62,
     })),
   ),
-  ...GAME_INSTALL_CONSOLES.flatMap((slug) =>
-    GAME_FILTER_IDS.map((filter) => ({
-      path: `/services/game-install/${slug}/games?filter=${filter}`,
-      changeFrequency: "weekly" as const,
-      priority: 0.55,
-    })),
-  ),
   ...(SHOP_ENABLED
     ? [
         { path: "/shop", changeFrequency: "daily" as const, priority: 0.9 },
@@ -128,4 +120,4 @@ export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
         })),
       ]
     : []),
-];
+].filter((entry) => entry.path.startsWith("/") && !entry.path.includes("?"));

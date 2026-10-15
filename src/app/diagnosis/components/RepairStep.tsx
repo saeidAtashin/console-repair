@@ -17,6 +17,7 @@ import {
   usePhoneVerifiedSubmit,
   VerificationCancelledError,
 } from "@/app/hooks/usePhoneVerifiedSubmit";
+import { trackEvent } from "@/lib/analytics";
 import { ApiError } from "@/lib/api-client";
 import {
   appendRepairDetails,
@@ -147,6 +148,7 @@ export default function RepairStep({ session, result, theme, onSuccess }: Props)
           problemTypes,
         );
         const created = await submitRepairRequest(payload);
+        trackEvent("repair_submit", { page_path: "/diagnosis" });
         onSuccess(created.id != null ? String(created.id) : data.phone);
       });
     } catch (error) {

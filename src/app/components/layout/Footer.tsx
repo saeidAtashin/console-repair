@@ -11,10 +11,10 @@ import {
   DEVELOPER_PHONE_DISPLAY,
   DEVELOPER_TEL_HREF,
 } from "@/lib/developer";
+import TrackedPhoneLink from "@/app/components/tracking/TrackedPhoneLink";
 import {
   SITE_ADDRESS_DISPLAY,
   SITE_PHONE_DISPLAY,
-  SITE_TEL_HREF,
 } from "@/lib/seo/site";
 
 export default function Footer() {
@@ -81,9 +81,9 @@ export default function Footer() {
             <p className="text-sm font-semibold text-cyan-400">ارتباط</p>
             <p className="text-sm text-zinc-400">
               تلفن:{" "}
-              <a href={SITE_TEL_HREF} className="hover:text-cyan-300">
+              <TrackedPhoneLink className="hover:text-cyan-300">
                 {SITE_PHONE_DISPLAY}
-              </a>
+              </TrackedPhoneLink>
             </p>
             <p className="text-sm leading-7 text-zinc-400">
               آدرس: {SITE_ADDRESS_DISPLAY}

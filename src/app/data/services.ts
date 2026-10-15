@@ -64,7 +64,7 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/ps5repair/ps5-repair1.jpg",
 
-    seoTitle: "تعمیر PS5 در تهران | تعمیر تخصصی پلی استیشن 5",
+    seoTitle: "تعمیر PS5 | قطعات اصلی و ضمانت تست",
 
     keywords: [
       "تعمیر ps5",
@@ -133,7 +133,7 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/ps4repair/fan1.png",
 
-    seoTitle: "تعمیر PS4 در تهران | تعمیر پلی استیشن 4 با ضمانت",
+    seoTitle: "تعمیر PS4 | قطعات اصلی و ضمانت تست",
 
     keywords: [
       "تعمیر ps4",
@@ -201,7 +201,7 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/xboxrepair/xboxfanrepair.png",
 
-    seoTitle: "تعمیر Xbox در تهران | تعمیر تخصصی ایکس باکس",
+    seoTitle: "تعمیر Xbox | قطعات اصلی و ضمانت تست",
 
     keywords: ["تعمیر xbox", "تعمیر xbox series x", "تعمیر xbox one"],
 
@@ -263,7 +263,7 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/hdmi/hdmi1.avif",
 
-    seoTitle: "تعمیر HDMI کنسول | تعمیر سوکت HDMI PS5 و Xbox",
+    seoTitle: "تعمیر HDMI کنسول | قطعات و ضمانت",
 
     keywords: ["تعمیر hdmi ps5", "تعمیر hdmi xbox", "تعویض سوکت hdmi"],
 
@@ -320,7 +320,7 @@ const baseServices: Omit<Service, keyof ServiceSeoContent>[] = [
 
     cover: "/controller/controller1.webp",
 
-    seoTitle: "تعمیر دسته PS5، PS4 و Xbox",
+    seoTitle: "تعمیر دسته PS5، PS4 و Xbox | قطعات و ضمانت",
 
     keywords: [
       "تعمیر دسته ps5",

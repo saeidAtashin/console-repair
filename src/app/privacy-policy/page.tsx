@@ -4,7 +4,7 @@ import { createPageMetadata } from "@/lib/seo/metadata";
 const PATH = "/privacy-policy";
 const TITLE = "حریم خصوصی";
 const DESCRIPTION =
-  "نحوه جمع آوری، استفاده و نگهداری اطلاعات کاربران در کنسول ریپیر.";
+  "نحوه جمع آوری، استفاده و نگهداری اطلاعات کاربران در فیکس‌بازی.";
 
 export const metadata = createPageMetadata({
   title: TITLE,

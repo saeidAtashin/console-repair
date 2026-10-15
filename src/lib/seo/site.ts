@@ -1,3 +1,4 @@
+export const SITE_BRAND = "فیکس‌بازی";
 export const SITE_NAME = "فیکس‌بازی | fix bazi";
 export const SITE_TAGLINE =
   "fix bazi (فیکس‌بازی) - تعمیر تخصصی پلی‌استیشن و ایکس‌باکس با گارانتی و قطعات اورجینال";
@@ -7,7 +8,8 @@ export const DEFAULT_OG_IMAGE = "/images/ps5-repair.webp";
 export const SITE_PHONE = "+989368165125";
 export const SITE_PHONE_DISPLAY = "09368165125";
 export const SITE_TEL_HREF = `tel:${SITE_PHONE}`;
-export const SITE_WHATSAPP_URL = "https://wa.me/989368165125";
+export const SITE_WHATSAPP_NUMBER = SITE_PHONE.replace(/^\+/, "");
+export const SITE_WHATSAPP_URL = `https://wa.me/${SITE_WHATSAPP_NUMBER}`;
 export const SITE_ADDRESS_DISPLAY =
   "تهران، توپخانه پاساژ لیلا طبقه ۴ واحد ۲۱";
 export const SITE_ADDRESS = {

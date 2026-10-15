@@ -7,7 +7,7 @@ export function repairContentJsonLd(consoleId?: ConsoleId) {
   return howToJsonLd({
     name: "مراحل ثبت و تعمیر کنسول",
     description: content.overview[0],
-    path: consoleId ? `/repair?console=${consoleId}` : "/repair",
+    path: "/repair",
     steps: content.processSteps,
   });
 }

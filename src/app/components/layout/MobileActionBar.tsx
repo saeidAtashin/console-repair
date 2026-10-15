@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MessageCircle, Phone, Wrench } from "lucide-react";
 
-import {
-  SITE_TEL_HREF,
-  SITE_WHATSAPP_URL,
-} from "@/lib/seo/site";
+import { trackEvent } from "@/lib/analytics";
+import { inferRepairHrefFromPath } from "@/lib/repair-links";
+import TrackedPhoneLink from "@/app/components/tracking/TrackedPhoneLink";
+import TrackedWhatsAppLink from "@/app/components/tracking/TrackedWhatsAppLink";
 
 const HIDDEN_PREFIXES = [
   "/admin",
@@ -25,6 +25,7 @@ export function shouldHideMobileActionBar(pathname: string) {
 
 export default function MobileActionBar() {
   const pathname = usePathname();
+  const repairHref = inferRepairHrefFromPath(pathname);
 
   if (shouldHideMobileActionBar(pathname)) return null;
 
@@ -35,29 +36,25 @@ export default function MobileActionBar() {
         aria-label="دسترسی سریع موبایل"
       >
         <div className="grid grid-cols-3">
-          <a
-            href={SITE_TEL_HREF}
-            className="flex min-h-14 flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-bold text-zinc-200 touch-manipulation"
-          >
-            <Phone size={20} className="text-cyan-400" aria-hidden />
-            تماس
-          </a>
-          <a
-            href={SITE_WHATSAPP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex min-h-14 flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-bold text-zinc-200 touch-manipulation"
-          >
-            <MessageCircle size={20} className="text-emerald-400" aria-hidden />
-            واتساپ
-          </a>
           <Link
-            href="/repair"
-            className="flex min-h-14 flex-col items-center justify-center gap-1 bg-linear-to-t from-blue-600/40 to-cyan-500/20 px-2 py-2 text-xs font-bold text-white touch-manipulation"
+            href={repairHref}
+            className="flex min-h-14 flex-col items-center justify-center gap-1 bg-linear-to-t from-blue-600/50 to-cyan-500/30 px-2 py-2 text-xs font-extrabold text-white touch-manipulation"
+            onClick={() => trackEvent("repair_start", { page_path: pathname })}
           >
             <Wrench size={20} className="text-cyan-300" aria-hidden />
             ثبت تعمیر
           </Link>
+          <TrackedWhatsAppLink
+            repairHref={repairHref}
+            className="flex min-h-14 flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-bold text-zinc-200 touch-manipulation"
+          >
+            <MessageCircle size={20} className="text-emerald-400" aria-hidden />
+            واتساپ
+          </TrackedWhatsAppLink>
+          <TrackedPhoneLink className="flex min-h-14 flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-bold text-zinc-200 touch-manipulation">
+            <Phone size={20} className="text-cyan-400" aria-hidden />
+            تماس
+          </TrackedPhoneLink>
         </div>
       </nav>
       <div

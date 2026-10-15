@@ -1,6 +1,5 @@
 import {
   consoleCatalog,
-  consoleIds,
   getRepairService,
   type ConsoleId,
 } from "../console-catalog";
@@ -64,6 +63,9 @@ export function resolveRepairSeo(
   const hasIssue = Boolean(prefill.issue);
   const hasDescription = Boolean(prefill.description);
 
+  const hasQueryPrefill =
+    hasIssue || hasDescription || Boolean(prefill.consoleId) || Boolean(prefill.deviceGroup);
+
   if (prefill.consoleId) {
     const service = getRepairService(prefill.consoleId);
     const config = consoleCatalog[prefill.consoleId];
@@ -83,7 +85,7 @@ export function resolveRepairSeo(
       ],
       canonicalPath,
       ogImage: service?.cover ?? service?.image,
-      noIndex: false,
+      noIndex: true,
       consoleId: prefill.consoleId,
     };
   }
@@ -93,7 +95,7 @@ export function resolveRepairSeo(
     description: DEFAULT_DESCRIPTION,
     keywords: DEFAULT_KEYWORDS,
     canonicalPath,
-    noIndex: hasIssue || hasDescription,
+    noIndex: hasQueryPrefill,
   };
 }
 
@@ -148,7 +150,7 @@ export function repairPageJsonLd(
   return schemas;
 }
 
-/** Indexable repair landing URLs for sitemap. */
+/** Indexable repair landing URLs for sitemap. Query landings stay off the sitemap. */
 export function repairSitemapPaths(): string[] {
-  return ["/repair", ...consoleIds.map((id) => `/repair?console=${id}`)];
+  return ["/repair"];
 }

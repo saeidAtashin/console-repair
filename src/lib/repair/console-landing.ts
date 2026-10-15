@@ -106,7 +106,7 @@ function chip(label: string, slug: string): LandingProblemChip {
 
 export const CONSOLE_LANDING: Record<ConsoleId, ConsoleLandingContent> = {
   ps5: {
-    headline: TOPIC_CLUSTERS.ps5.cityHeadline,
+    headline: TOPIC_CLUSTERS.ps5.pillarTitle,
     intro:
       "تعمیر تخصصی پلی‌استیشن ۵ در تهران با عیب‌یابی دقیق، قطعات اصلی، ضمانت ۳۰ روزه و پیگیری آنلاین از پذیرش تا تحویل.",
     problems: [
@@ -181,7 +181,7 @@ export const CONSOLE_LANDING: Record<ConsoleId, ConsoleLandingContent> = {
     ],
   },
   ps4: {
-    headline: TOPIC_CLUSTERS.ps4.cityHeadline,
+    headline: TOPIC_CLUSTERS.ps4.pillarTitle,
     intro:
       "تعمیر PS4 Slim و Pro در تهران: HDMI، پاور، فن، هارد و Safe Mode با قطعات باکیفیت و پیگیری آنلاین.",
     problems: [
@@ -255,7 +255,7 @@ export const CONSOLE_LANDING: Record<ConsoleId, ConsoleLandingContent> = {
     ],
   },
   xbox: {
-    headline: TOPIC_CLUSTERS.xbox.cityHeadline,
+    headline: TOPIC_CLUSTERS.xbox.pillarTitle,
     intro:
       "تعمیر Xbox Series X|S و Xbox One در تهران: HDMI، پاور، فن و هارد با ضمانت تست و پیگیری وضعیت.",
     problems: [

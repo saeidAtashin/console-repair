@@ -28,8 +28,8 @@ export const metadata = createPageMetadata({
     "تعمیر xbox",
     "تعمیر hdmi کنسول",
     "تعمیر دسته ps5",
-    "رمز بازی",
-    "چیت ps5",
+    "تعمیر کنسول در تهران",
+    "ثبت تعمیر کنسول",
   ],
 });
 

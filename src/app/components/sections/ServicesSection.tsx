@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import FadeUp from "@/app/components/animations/FadeUp";
 import { Cpu, Gamepad2, Zap, Wind, Monitor, HardDrive } from "lucide-react";
 
@@ -7,36 +9,42 @@ const services = [
     desc: "عیب‌یابی و تعمیر تخصصی ICها و مدارهای تغذیه کنسول.",
     icon: <Cpu className="text-cyan-400" size={32} />,
     tag: "Hardware",
+    href: "/issues/ps5-motherboard-repair",
   },
   {
     title: "رفع دریفت آنالوگ",
     desc: "تعویض آنالوگ و رفع مشکل کشیده شدن دسته PS5 و Xbox.",
     icon: <Gamepad2 className="text-purple-400" size={32} />,
     tag: "Controller",
+    href: "/services/controller-repair",
   },
   {
     title: "تعویض پورت HDMI",
     desc: "تعویض پورت‌های شکسته و رفع مشکل تصویر (4K/120Hz).",
     icon: <Monitor className="text-blue-400" size={32} />,
     tag: "Display",
+    href: "/services/hdmi-repair",
   },
   {
     title: "سرویس و رفع داغی",
     desc: "تعویض خمیر سیلیکون (یا فلز مایع) و جرم‌گیری کامل فن.",
     icon: <Wind className="text-emerald-400" size={32} />,
     tag: "Cooling",
+    href: "/issues/ps5-overheating",
   },
   {
     title: "تعمیر منبع تغذیه",
     desc: "رفع مشکل روشن نشدن و پریدن فیوز در اثر نوسان برق.",
     icon: <Zap className="text-yellow-400" size={32} />,
     tag: "Power",
+    href: "/issues/ps5-power-supply-problem",
   },
   {
     title: "ارتقا و هارد",
     desc: "نصب حافظه SSD پرسرعت و ارتقای ظرفیت کنسول.",
     icon: <HardDrive className="text-pink-400" size={32} />,
     tag: "Storage",
+    href: "/issues/ps4-hard-drive-failure",
   },
 ];
 
@@ -67,8 +75,11 @@ export default function ServicesSection() {
         {/* Services Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => (
-            <FadeUp key={index} delay={index * 0.1}>
-              <div className="group relative h-full overflow-hidden rounded-2xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-md transition-all duration-500 hover:border-cyan-500/50">
+            <FadeUp key={service.href} delay={index * 0.1}>
+              <Link
+                href={service.href}
+                className="group relative block h-full overflow-hidden rounded-2xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-md transition-all duration-500 hover:border-cyan-500/50"
+              >
                 {/* Glow Effect on Hover */}
                 <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-cyan-500/10 blur-[80px] transition-opacity opacity-0 group-hover:opacity-100" />
 
@@ -92,7 +103,7 @@ export default function ServicesSection() {
 
                 {/* Bottom Line Decoration */}
                 <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent transition-all duration-700 group-hover:w-full" />
-              </div>
+              </Link>
             </FadeUp>
           ))}
         </div>

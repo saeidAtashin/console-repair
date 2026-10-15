@@ -23,6 +23,7 @@ import {
   buildIssueSeoExtras,
   enrichIssueSeoDescription,
 } from "@/lib/issues/issue-seo-content";
+import { resolveIssueSeo } from "@/lib/issues/issue-seo-titles";
 import {
   buildRepairHref,
   consoleIdFromIssueSlug,
@@ -68,10 +69,15 @@ export async function generateMetadata({ params }: Props) {
   }
 
   const issueImage = getIssueImage(issue.slug, issue.image);
+  const seoMeta = resolveIssueSeo(issue);
 
   return createPageMetadata({
-    title: issue.seoTitle ?? issue.title,
-    description: enrichIssueSeoDescription(issue),
+    title: seoMeta.seoTitle,
+    description: enrichIssueSeoDescription({
+      ...issue,
+      seoTitle: seoMeta.seoTitle,
+      seoDescription: seoMeta.seoDescription,
+    }),
     path: `/issues/${issue.slug}`,
     type: "article",
     ogImage: issueImage,
@@ -341,17 +347,17 @@ export default async function IssuePage({ params }: Props) {
           <FaqSection items={seo.faqs} className="rounded-3xl py-12" />
 
           <FunnelNextStep
-            title="قدم بعدی: عیب‌یابی یا نصب بازی"
-            description="اول کنسول را مرحله‌به‌مرحله بررسی کنید. اگر دستگاه سالم است و فقط بازی می‌خواهید، از کاتالوگ نصب استفاده کنید."
+            title="قدم بعدی: ثبت درخواست تعمیر"
+            description="اگر علائم دستگاه با این راهنما یکی است، درخواست تعمیر را ثبت کنید تا کارشناس هماهنگی پیک یا مراجعه را انجام دهد. برای بررسی مرحله‌ای می‌توانید عیب‌یابی را هم شروع کنید."
             actions={[
               {
-                href: "/diagnosis",
-                label: "شروع عیب‌یابی",
+                href: repairHref,
+                label: "ثبت درخواست تعمیر",
                 primary: true,
               },
               {
-                href: installHref,
-                label: "نصب بازی روی همین کنسول",
+                href: "/diagnosis",
+                label: "شروع عیب‌یابی",
               },
             ]}
           />

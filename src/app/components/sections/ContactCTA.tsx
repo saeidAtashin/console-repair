@@ -1,5 +1,7 @@
 import FadeUp from "@/app/components/animations/FadeUp";
-import { SITE_ADDRESS_DISPLAY, SITE_PHONE_DISPLAY, SITE_TEL_HREF, SITE_WHATSAPP_URL } from "../../../lib/seo/site";
+import TrackedPhoneLink from "@/app/components/tracking/TrackedPhoneLink";
+import TrackedWhatsAppLink from "@/app/components/tracking/TrackedWhatsAppLink";
+import { SITE_ADDRESS_DISPLAY, SITE_PHONE_DISPLAY } from "../../../lib/seo/site";
 import {
   Phone,
   MessageCircle,
@@ -78,8 +80,7 @@ export default function ContactConsultation() {
           {/* Right Side: Contact Cards */}
           <div className="grid gap-4">
             <FadeUp delay={0.2}>
-              <a
-                href={SITE_TEL_HREF}
+              <TrackedPhoneLink
                 className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-cyan-500/40 hover:bg-zinc-900/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-cyan-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
@@ -94,12 +95,12 @@ export default function ContactConsultation() {
                   </h4>
                   <p className="text-zinc-400">{SITE_PHONE_DISPLAY}</p>
                 </div>
-              </a>
+              </TrackedPhoneLink>
             </FadeUp>
 
             <FadeUp delay={0.3}>
-              <a
-                href={SITE_WHATSAPP_URL}
+              <TrackedWhatsAppLink
+                repairHref="/repair"
                 className="group relative flex items-center justify-between overflow-hidden rounded-3xl border border-white/5 bg-zinc-900/40 p-8 backdrop-blur-xl transition-all hover:border-green-500/40 hover:bg-zinc-900/60"
               >
                 <div className="absolute right-0 top-0 h-full w-2 bg-green-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
@@ -116,7 +117,7 @@ export default function ContactConsultation() {
                     مشاوره آنلاین و ارسال عکس دستگاه
                   </p>
                 </div>
-              </a>
+              </TrackedWhatsAppLink>
             </FadeUp>
 
             <FadeUp delay={0.4}>
